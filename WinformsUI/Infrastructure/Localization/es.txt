@@ -1,0 +1,145 @@
+﻿
+=============MAIN FORM=============
+Clientes=Clientes
+Empleados=Empleados
+Ventas=Ventas
+Pagos=Pagos
+Productos=Productos
+Proveedores=Proveedores
+Modo Tablero=Modo Tablero
+Modo Pestañas=Modo Pestañas
+Configuraciones=Configuraciones
+
+
+=============BASEFORM=============
+Agregar=Agregar
+Eliminar=Eliminar
+Refrescar lista=Refrescar lista
+Modificar=Modificar
+Generar Venta=Generar Venta
+
+
+=============DGVFORM=============
+Búsqueda=Búsqueda
+Desde=Desde
+Hasta=Hasta
+Seleccionar columna=Seleccionar columna
+Buscar=Buscar
+
+
+=============TÍTULOS DE UI=============
+Empleados=Empleados
+Pagos=Pagos
+Ventas=Ventas
+Clientes=Clientes
+Productos=Productos
+Proveedores=Proveedores
+
+
+
+=============================================================================================== DTOS ===============================================================================================
+
+Nota: Por la lógica de traducción primero se requiere que se "automatchee", o sea, que encuentre el nombre del parámetro como originalmente se llama (ej: WareHouseAddress=WareHouseAddress).
+	  Una vez hecho esto, ya se puede tratar con las traducciones normalmente.
+	  Tener en cuenta que el flujo importa -y mucho- ya que la traducción devuelve el primer matcheo encontrado; primero el programá irá hasta "Name=Name" y retornará por match, luego hará "Name=Nombre" porque "Name=Name" ya no matchea.
+
+
+=============ClientDTO=============
+Name=Nombre
+LastName=Apellido
+ShipAddress=Dirección envío
+WareHouseAddress=Dirección depósito
+Email=Email
+Phone=Teléfono
+TaxId=DNI
+DocNumber=N°Documento
+IsActive=Activo
+
+Name=Name
+LastName=LastName
+ShipAddress=ShipAddress
+WareHouseAddress=WareHouseAddress
+Email=Email
+Phone=Phone
+TaxId=TaxId
+DocNumber=DocNumber
+IsActive=IsActive
+
+
+=============EmployeeDTO=============
+Email=Email
+FileNumber=Nº Legajo
+FirstName=Nombre
+LastName=Apellido
+NationalId=Nº Documento
+PhoneNumber=Teléfono
+HomeAddress=Dirección
+Active=Activo
+
+Email=Email
+FileNumber=FileNumber
+FirstName=FirstName
+LastName=LastName
+NationalId=NationalId
+PhoneNumber=PhoneNumber
+HomeAddress=HomeAddress
+Active=Active
+
+
+=============PaymentDTO=============
+Amount=Mono
+CreationDate=Fecha creación
+EffectiveDate=Fecha de pago
+Method=Método de pago
+Reference=Código de Referencia
+
+Amount=Amount
+CreationDate=CreationDate
+EffectiveDate=EffectiveDate
+ClientId=ClientId
+Method=Method
+Reference=Reference
+
+
+=============ProductDTO=============
+Name=Nombre
+Description=Descripción
+Price=Precio
+Stock=Stock
+Categories=Categorías
+IsActive=Activo
+CreatedAt=Fecha creación
+
+Name=Name
+Description=Description
+Price=Price
+Stock=Stock
+Categories=Categories
+IsActive=IsActive
+CreatedAt=CreatedAt
+
+
+=============SaleDTO=============
+Date=Fecha de venta
+Employee=Empleado
+TotalAmount=Monto total
+
+Date=Date
+Employee=Employee
+TotalAmount=TotalAmount
+
+
+=============SuppliersDTO=============
+CompanyName=Nombre de la empresa
+ContactName=Nombre de contacto
+TaxId=Tipo deocumento
+Phone=Teléfono
+Mail=Email
+Observations=Observaciones
+
+CompanyName=CompanyName
+ContactName=ContactName
+TaxId=TaxId
+Phone=Phone
+Mail=Mail
+Observations=Observations

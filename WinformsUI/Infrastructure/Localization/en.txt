@@ -1,0 +1,99 @@
+﻿
+=============MAIN FORM=============
+Clientes=Clients
+Empleados=Employees
+Ventas=Sells
+Pagos=Payments
+Productos=Products
+Proveedores=Suppliers
+
+Modo Tablero=Dashboard Mode
+Modo Pestañas=Tabbed Mode
+
+Configuraciones=Configurations
+
+
+
+=============BASEFORM=============
+Agregar=Add
+Eliminar=Delete
+Refrescar lista=Refresh List
+Modificar=Modify
+Generar Venta=Generate Sale
+
+
+=============DGVFORM=============
+Búsqueda=Search
+Desde=From
+Hasta=Since
+Seleccionar columna=Select column
+Buscar=Search
+
+
+=============TÍTULOS DE UI=============
+Empleados=Employees
+Pagos=Payments
+Ventas=Sells
+Clientes=Clients
+Productos=Products
+Proveedores=Suppliers
+
+
+=============ClientDTO=============
+Name=Name
+LastName=Last Name
+ShipAddress=Ship Address
+WareHouseAddress=Warehouse Address
+Email=Email
+Phone=Phone
+TaxId=Tax Id
+DocNumber=Doc Number
+IsActive=Is Active
+
+
+=============EmployeeDTO=============
+Email=Email
+FileNumber=File Number
+FirstName=First Name
+LastName=Lastname
+NationalId=ID Number
+PhoneNumber=Phone number
+HomeAddress=Home address
+Active=Active
+
+
+=============PaymentDTO=============
+Amount=Amount
+CreationDate=Creation Date
+EffectiveDate=Effective Date
+Method=Payment Method
+Reference=Reference Code
+
+
+=============ProductDTO=============
+Name=Name
+Description=Description
+Price=Price
+Stock=Stock
+Categories=Categories
+IsActive=Is Active
+CreatedAt=Created At
+
+
+=============SaleDTO=============
+Date=Fecha de venta
+Employee=Empleado
+TotalAmount=Monto total
+
+Date=Date
+Employee=Employee
+TotalAmount=TotalAmount
+
+
+=============SuppliersDTO=============
+CompanyName=Company Name
+ContactName=Contact Name
+TaxId=Tax Id
+Phone=Phone
+Mail=Mail
+Observations=Observations

@@ -1,0 +1,86 @@
+﻿using BLL.DTOs;
+using BLL.DTOs.Errors;
+using BLL.Infrastructure.Errors;
+using Domain.Exceptions;
+using Domain.Infrastructure;
+using Domain.Repositories;
+using Shared;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+
+namespace BLL.LogicLayers.Clients //=======================================================================REFACTORIZADO AL 27/02=======================================================================
+{
+    public class UCGetAllClients : IUCGetAllClients
+    {
+        private readonly IUnitOfWork _uow;
+        private readonly IApplicationSettings _appSettings;
+        private readonly IErrorsFactory _errorsFactory;
+        private readonly IErrorsRepository _errorsRepository;
+
+        public UCGetAllClients
+        (
+            IUnitOfWork uow,
+            IApplicationSettings appSettings,
+            IErrorsFactory errorsFactory,
+            IErrorsRepository errorsRepository
+        )
+        {
+            _uow = uow;
+            _appSettings = appSettings;
+            _errorsFactory = errorsFactory;
+            _errorsRepository = errorsRepository;
+        }
+
+        public async Task<(IEnumerable<ClientDTO>, OperationResult<ClientDTO>)> ExecuteAsync()
+        {
+            var result = new OperationResult<ClientDTO>();
+            var listDto = new List<ClientDTO>();
+
+            try
+            {
+                _uow.SetConnectionString(_appSettings.EntitiesConnection);
+                await _uow.BeginTransactionAsync();
+
+                var clients = await _uow.ClientRepo.GetAllAsync();
+
+                listDto = clients.Select(c => ClientMapper.ToDto(c)).ToList();
+
+                await _uow.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                var h = ex;
+                
+                if (_uow.HasActiveTransaction)
+                {
+                    await _uow.RollbackAsync();
+                }
+
+                // 1. Log técnico interno
+                var dbError = _errorsFactory.CreateFromException(ex);
+                dbError.Table = _appSettings.ClientTableName ?? "Client";
+
+                try
+                {
+                    await _errorsRepository.CreateAsync(dbError);
+                }
+                catch { /* Falla silenciosa para no romper el retorno a la UI */ }
+
+                // 2. Error catalogado para el usuario (CERO strings mágicos)
+                var uiError = _errorsFactory.Create(ErrorCatalogEnum.DataLoadError, _appSettings.ClientTableName);
+
+                // 3. Mapeo y vinculación de trazabilidad para soporte técnico
+                var errorDto = ErrorMapper.ToDTO(uiError);
+                errorDto.LogId = dbError.Id; // ¡Clave para rastrear el fallo en la BD!
+                errorDto.InformativeMessage = $"Falla técnica. Reference ID: {dbError.Id}";
+
+                result.Errors.Add(errorDto);
+            }
+
+            return (listDto, result);
+        }
+    }
+}

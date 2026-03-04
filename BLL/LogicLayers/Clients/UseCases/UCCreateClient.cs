@@ -1,0 +1,170 @@
+﻿using BLL.DTOs;
+using BLL.DTOs.Errors;
+using BLL.Infrastructure.AuditLogs;
+using BLL.Infrastructure.Errors;
+using Domain.Exceptions;
+using Domain.Infrastructure;
+using Domain.Infrastructure.Audit;
+using Domain.Repositories;
+using Shared;
+using Shared.Services;
+using Shared.Sessions;
+using System;
+using System.Threading.Tasks;
+
+namespace BLL.LogicLayers.Clients  //=======================================================================REFACTORIZADO AL 27/02=======================================================================
+{
+    public class UCCreateClient : IUCCreateClient
+    {
+        private readonly IApplicationSettings _appSettings;
+        private readonly IUnitOfWork _uow;
+        private readonly IBitacoraFactory _bitacoraFact;
+        private readonly ISessionProvider _sessionProvider;
+        private readonly IErrorsFactory _errorsFactory;
+        private readonly IErrorsRepository _errorsRepository;
+
+        private readonly string _tableNameClient;
+
+        public UCCreateClient
+        (
+            IUnitOfWork uow,
+            IApplicationSettings appSettings,
+            IBitacoraFactory bitacoraFact,
+            ISessionProvider sessionProvider,
+            IErrorsFactory errorsFactory,
+            IErrorsRepository errorsRepository
+        )
+        {
+            _uow = uow ?? throw new ArgumentNullException(nameof(uow));
+            _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings)); 
+            _bitacoraFact = bitacoraFact ?? throw new ArgumentNullException(nameof(bitacoraFact)); 
+            _sessionProvider = sessionProvider ?? throw new ArgumentNullException(nameof(sessionProvider)); 
+            _errorsFactory = errorsFactory ?? throw new ArgumentNullException(nameof(errorsFactory)); 
+            _errorsRepository = errorsRepository ?? throw new ArgumentNullException(nameof(errorsRepository)); 
+
+            _tableNameClient = appSettings.ClientTableName ?? "Client";
+        }
+
+        public async Task<OperationResult<ClientDTO>> ExecuteAsync(ClientDTO dto)
+        {
+            var opRes = new OperationResult<ClientDTO>();
+
+            try
+            {
+                // 1. Validar Sesión Activa (Fail Fast)
+                if (_sessionProvider.Current == null)
+                {
+                    var newError = _errorsFactory.Create(ErrorCatalogEnum.SessionExpired);        
+                    
+                    opRes.Errors.Add(ErrorMapper.ToDTO(newError));
+                    return opRes;
+                }
+
+                // 2. Configurar conexión y abrir transacción
+                _uow.SetConnectionString(_appSettings.EntitiesConnection);
+                await _uow.BeginTransactionAsync();
+
+                // 3. Validar Usuario y Permisos
+                var currentUser = await _uow.UserRepo.GetById(_sessionProvider.Current.CurrentUserId);
+
+                // Evaluamos el permiso (solo necesitamos el específico de esta acción)
+                if (!currentUser.HasPermission("CLIENT_CREATE"))
+                {
+                    var authError = _errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameClient);
+                    opRes.Errors.Add(ErrorMapper.ToDTO(authError));
+                    return opRes;
+                }
+
+                // 4. Validar Reglas de Negocio (Ej. Campos obligatorios y Duplicados)
+                if (string.IsNullOrWhiteSpace(dto.TaxId) || string.IsNullOrWhiteSpace(dto.Name))
+                {
+                    opRes.Errors.Add(new ErrorLogDTO { Message = "El Nombre y el Documento/CUIT son obligatorios." });
+                    return opRes;
+                }
+
+                var existingClient = await _uow.ClientRepo.GetByTaxIdAsync(dto.TaxId);
+               
+                if (existingClient != null)
+                {
+                    var dupError = _errorsFactory.Create(ErrorCatalogEnum.DuplicateEntry, _tableNameClient);
+                    opRes.Errors.Add(ErrorMapper.ToDTO(dupError));
+                    return opRes;
+                }
+
+                // 5. Mapeo a Entidad
+                var newClientEntity = ClientMapper.ToEntity(dto);
+                newClientEntity.Activate();
+
+           
+                //  Podría optarse por incluir DVH de ser necesario
+                //  
+                //  newClientEntity.DVH = IntegrityService.GetIntegrityHash(
+                //      newClientEntity.Id,
+                //      newClientEntity.TaxId,
+                //      newClientEntity.Name);
+
+
+                // 6. Persistencia principal
+                await _uow.ClientRepo.Create(newClientEntity);
+
+                // 7. Integridad Vertical (DVV)
+                await UpdateDVVAsync(_tableNameClient, _appSettings.EntitiesConnection);
+
+                // 8. Registrar Bitácora
+                var log = _bitacoraFact.Create
+                (
+                    entry: BitacoraCatalogEnum.CreateOnBD,
+                    user: currentUser.Id.ToString(),
+                    tableName: _tableNameClient,
+                    extraInfo: $"Se creó el cliente {newClientEntity.Name} (TaxId: {newClientEntity.TaxId})"
+                );
+                await _uow.BitacoraRepo.CreateAsync(log); 
+
+                // 9. Confirmar Transacción
+                await _uow.CommitAsync();
+
+                // 10. Retornamos el DTO actualizado (ej. con su nuevo ID)
+                opRes.Value = ClientMapper.ToDto(newClientEntity);
+                return opRes;
+            }
+
+            catch (Exception ex)
+            {
+                if (_uow.HasActiveTransaction)
+                {
+                    await _uow.RollbackAsync();
+                }
+
+                // Generamos error técnico para la BD y seguro para la UI
+                var dbError = _errorsFactory.CreateFromException(ex);
+                dbError.Table = _tableNameClient;
+
+                try
+                {
+                    await _errorsRepository.CreateAsync(dbError);
+                }
+                catch { /* Ignoramos fallos al loguear para no romper el flujo de retorno */ }
+
+
+                // Emitimos error limpio a la UI
+                var uiError = _errorsFactory.Create(ErrorCatalogEnum.InternalError, _tableNameClient);
+                                
+                opRes.Errors.Add(new ErrorLogDTO
+                {
+                    Code = uiError.Code,
+                    Message = uiError.Message,
+                    RecommendedAction = uiError.RecommendedAction
+                });
+
+                return opRes;
+            }
+        }
+
+        private async Task UpdateDVVAsync(string nombreTabla, string connectionString)
+        {
+            var hashes = await _uow.IntegrityRepo.GetVerticalHashesAsync(nombreTabla, connectionString);
+            var dvvFinal = IntegrityService.CalculateDVV(hashes);
+            await _uow.IntegrityRepo.UpdateDVVAsync(nombreTabla, dvvFinal, connectionString);
+        }
+    }
+}

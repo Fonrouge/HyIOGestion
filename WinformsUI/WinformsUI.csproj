@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{BD8ACA37-0B29-4428-8879-2DBC7DE2277C}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>WinformsUI</RootNamespace>
+    <AssemblyName>WinformsUI</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=10.0.0.3, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.10.0.3\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection, Version=10.0.0.3, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.10.0.3\lib\net462\Microsoft.Extensions.DependencyInjection.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=10.0.0.3, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.10.0.3\lib\net462\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.1.2\lib\net462\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.4.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.6.3\lib\net462\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Forms.DataVisualization" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Core\Forms\Base\BaseManagementForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Core\Forms\Base\HostForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Core\Forms\Base\HostForm.Designer.cs">
+      <DependentUpon>HostForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Forms\Main\MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Core\Forms\Main\MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Features\ClientCRUDL\ClientForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Features\ClientCRUDL\ClientForm.Designer.cs">
+      <DependentUpon>ClientForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Features\ClientCRUDL\CreateClientForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Features\ClientCRUDL\CreateClientForm.Designer.cs">
+      <DependentUpon>CreateClientForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Features\ConfigurationsMenu\ConfigurationsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Features\ConfigurationsMenu\ConfigurationsForm.Designer.cs">
+      <DependentUpon>ConfigurationsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Features\EmployeeCRUDL\CreateEmployeeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Features\EmployeeCRUDL\CreateEmployeeForm.Designer.cs">
+      <DependentUpon>CreateEmployeeForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Features\EmployeeCRUDL\EmployeeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Features\EmployeeCRUDL\EmployeeForm.Designer.cs">
+      <DependentUpon>EmployeeForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Features\Login\LoginFrm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Features\Login\LoginFrm.Designer.cs">
+      <DependentUpon>LoginFrm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Features\PaymentCRUDL\CreatePaymentForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Features\PaymentCRUDL\CreatePaymentForm.Designer.cs">
+      <DependentUpon>CreatePaymentForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Features\PaymentCRUDL\PaymentForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Features\PaymentCRUDL\PaymentForm.Designer.cs">
+      <DependentUpon>PaymentForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Features\ProductCRUDL\CreateProductForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Features\ProductCRUDL\CreateProductForm.Designer.cs">
+      <DependentUpon>CreateProductForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Features\ProductCRUDL\ProductForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Features\ProductCRUDL\ProductForm.Designer.cs">
+      <DependentUpon>ProductForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Features\SaleCRUDL\CreateSaleForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Features\SaleCRUDL\CreateSaleForm.Designer.cs">
+      <DependentUpon>CreateSaleForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Features\SaleCRUDL\SaleForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Features\SaleCRUDL\SaleForm.Designer.cs">
+      <DependentUpon>SaleForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Features\SupplierCRUDL\CreateSupplierForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Features\SupplierCRUDL\CreateSupplierForm.Designer.cs">
+      <DependentUpon>CreateSupplierForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Features\SupplierCRUDL\SupplierForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Features\SupplierCRUDL\SupplierForm.Designer.cs">
+      <DependentUpon>SupplierForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Helpers\TextBoxPlaceholder.cs" />
+    <Compile Include="Infrastructure\Culture\CultureProfile.cs" />
+    <Compile Include="Infrastructure\Culture\ICultureSwitcher.cs" />
+    <Compile Include="Infrastructure\DI\ServiceCollectionForUI.cs" />
+    <Compile Include="Infrastructure\Factories\AppEnvironmentFactory.cs" />
+    <Compile Include="Infrastructure\Factories\FormsFactory.cs" />
+    <Compile Include="Infrastructure\Factories\IFormsFactory.cs" />
+    <Compile Include="Infrastructure\Localization\ILocalizationService.cs" />
+    <Compile Include="Infrastructure\Localization\LocalizationService.cs" />
+    <Compile Include="Infrastructure\Shells\AppEnvironment.cs" />
+    <Compile Include="Infrastructure\Shells\FormTypeEnum.cs" />
+    <Compile Include="Infrastructure\Translations\ITranslatableControlsManager.cs" />
+    <Compile Include="Infrastructure\Translations\TranslationsManager.cs" />
+    <Compile Include="Infrastructure\UserInterface\Theming\DataGridViewThemer.cs" />
+    <Compile Include="Infrastructure\UserInterface\Theming\GiveMainDataGridViewFormat.cs" />
+    <Compile Include="Infrastructure\UserInterface\Theming\ToolAndMenuStripThemer.cs" />
+    <Compile Include="Infrastructure\UserInterface\Windowing\CascadeStrategy.cs" />
+    <Compile Include="Infrastructure\UserInterface\Windowing\ILayoutStrategy.cs" />
+    <Compile Include="Infrastructure\UserInterface\Windowing\LayoutStrategyFactory.cs" />
+    <Compile Include="Infrastructure\UserInterface\Windowing\SmartGridStrategy.cs" />
+    <Compile Include="Infrastructure\UserInterface\Windowing\VerticalTileStrategy.cs" />
+    <Compile Include="Infrastructure\UserInterface\Windowing\ILayoutStrategyFactory.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Infrastructure\UserInterface\Theming\ComboBoxThemer.cs" />
+    <Compile Include="Infrastructure\UserInterface\Theming\DarkTheme.cs" />
+    <Compile Include="Infrastructure\UserInterface\Theming\DateTimePickerThemer.cs" />
+    <Compile Include="UserControls\CollectionExtensions.cs" />
+    <Compile Include="UserControls\CustomDGV\CustomDGVFactory.cs" />
+    <Compile Include="UserControls\CustomDGV\CustomDGVForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UserControls\CustomDGV\CustomDGVForm.Designer.cs">
+      <DependentUpon>CustomDGVForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\CustomDGV\ICustomDGVFactory.cs" />
+    <Compile Include="UserControls\CustomDGV\IICustomDGVFormII.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UserControls\CustomDGV\IICustomDGVFormII.Designer.cs">
+      <DependentUpon>IICustomDGVFormII.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\DoubleBuffering.cs" />
+    <Compile Include="UserControls\SearchBar\SearchBehavior.cs" />
+    <Compile Include="UserControls\Wizard\IWizardPanelNavigator.cs" />
+    <Compile Include="UserControls\Wizard\WizardPanelNavigator.cs" />
+    <EmbeddedResource Include="Core\Forms\Base\BaseManagementForm.resx">
+      <DependentUpon>BaseManagementForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Core\Forms\Base\HostForm.resx">
+      <DependentUpon>HostForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Core\Forms\Main\MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Features\ClientCRUDL\ClientForm.resx">
+      <DependentUpon>ClientForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Features\ClientCRUDL\CreateClientForm.resx">
+      <DependentUpon>CreateClientForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Features\ConfigurationsMenu\ConfigurationsForm.resx">
+      <DependentUpon>ConfigurationsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Features\EmployeeCRUDL\CreateEmployeeForm.resx">
+      <DependentUpon>CreateEmployeeForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Features\EmployeeCRUDL\EmployeeForm.resx">
+      <DependentUpon>EmployeeForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Features\Login\LoginFrm.resx">
+      <DependentUpon>LoginFrm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Features\PaymentCRUDL\CreatePaymentForm.resx">
+      <DependentUpon>CreatePaymentForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Features\PaymentCRUDL\PaymentForm.resx">
+      <DependentUpon>PaymentForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Features\ProductCRUDL\CreateProductForm.resx">
+      <DependentUpon>CreateProductForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Features\ProductCRUDL\ProductForm.resx">
+      <DependentUpon>ProductForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Features\SaleCRUDL\CreateSaleForm.resx">
+      <DependentUpon>CreateSaleForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Features\SaleCRUDL\SaleForm.resx">
+      <DependentUpon>SaleForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Features\SupplierCRUDL\CreateSupplierForm.resx">
+      <DependentUpon>CreateSupplierForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Features\SupplierCRUDL\SupplierForm.resx">
+      <DependentUpon>SupplierForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\EntityBase.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <EmbeddedResource Include="UserControls\CustomDGV\CustomDGVForm.resx">
+      <DependentUpon>CustomDGVForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\CustomDGV\IICustomDGVFormII.resx">
+      <DependentUpon>IICustomDGVFormII.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Infrastructure\Localization\en.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Infrastructure\Localization\es.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BLL\BLL.csproj">
+      <Project>{F535A5AA-37A5-471D-AD1F-1B0C440EAFFC}</Project>
+      <Name>BLL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Bootstrapper\Bootstrapper.csproj">
+      <Project>{A09FB1F8-F752-4EC9-8CB5-98BFEE515CEB}</Project>
+      <Name>Bootstrapper</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Presenter\Presenter.csproj">
+      <Project>{A3406F78-E81B-4BE5-BD95-33A092E9DA9B}</Project>
+      <Name>Presenter</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SharedAbstractions\Shared.csproj">
+      <Project>{BA217900-69B9-4AF8-95D9-8601D9BFA7D8}</Project>
+      <Name>Shared</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

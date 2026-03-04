@@ -1,0 +1,137 @@
+﻿using Domain.BaseContracts;
+using Domain.Entities.Sales.ValueObjects;   // ← nuevo using
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace Domain.Entities
+{
+    public class Sale : EntityBase, ISoftDeletable
+    {
+        // --- PROPIEDADES DE DOMINIO (Rich Domain Model) ---
+        public SaleDateVO Date { get; private set; }
+        public Guid ClientId { get; private set; }
+        public Guid EmployeeId { get; private set; }
+        public TotalAmountVO TotalAmount { get; private set; }
+        public IEnumerable<SaleDetail> Items { get; private set; }
+
+        // --- CAMPOS TÉCNICOS Y DE ESTADO ---
+        public bool Active { get; private set; }
+        public DateTime CreatedAt { get; private set; }
+        public bool IsDeleted { get; private set; }
+
+        // Constructor privado para forzar el uso de Factories
+        private Sale() { }
+
+        /// <summary>
+        /// ÚNICO punto de creación para una NUEVA Venta.
+        /// TotalAmount se calcula automáticamente (invariante del agregado).
+        /// </summary>
+        public static Sale Create
+        (
+            Guid clientId,
+            Guid employeeId,
+            IEnumerable<SaleDetail> items
+        )
+        {
+            if (items == null || !items.Any())
+                throw new InvalidOperationException("Una venta debe contener al menos un detalle.");
+
+            // 1. En Sale.Create (después de asignar Items)
+            var sale = new Sale
+            {
+                Date = SaleDateVO.Create(DateTime.UtcNow),
+                ClientId = clientId,
+                EmployeeId = employeeId,
+                Items = new List<SaleDetail>(items),
+                Active = true,
+                CreatedAt = DateTime.UtcNow,
+                IsDeleted = false
+            };
+
+
+            foreach (var detail in sale.Items)
+            {
+                detail.AssignToSale(sale.Id);
+            }
+
+            sale.CalculateTotal();
+            return sale;
+
+        }
+
+        /// <summary>
+        /// Reconstruye una Sale EXISTENTE desde la persistencia (DB).
+        /// </summary>
+        public static Sale Reconstitute
+        (
+            Guid id,
+            DateTime date,
+            Guid clientId,
+            Guid employeeId,
+            decimal totalAmountRaw,
+            IEnumerable<SaleDetail> items,
+            bool active,
+            DateTime createdAt,
+            bool isDeleted
+        )
+        {
+            return new Sale
+            {
+                Id = id,
+                Date = SaleDateVO.Create(date),
+                ClientId = clientId,
+                EmployeeId = employeeId,
+                TotalAmount = TotalAmountVO.Create(totalAmountRaw),
+                Items = items != null ? new List<SaleDetail>(items) : new List<SaleDetail>(),
+                Active = active,
+                CreatedAt = createdAt,
+                IsDeleted = isDeleted
+            };
+        }
+
+        // --- COMPORTAMIENTO (Transiciones de Estado Seguras) ---
+        private void CalculateTotal()
+        {
+            // Se asume que SaleDetail tiene .Subtotal (decimal)
+            var subtotalSum = Items.Sum(detail => detail.Subtotal);
+            TotalAmount = TotalAmountVO.Create(subtotalSum);
+        }
+
+        public void AddItem(SaleDetail detail)
+        {
+            if (detail == null)
+                throw new ArgumentNullException(nameof(detail));
+
+            if (!Active || IsDeleted)
+                throw new InvalidOperationException("No se pueden modificar ventas inactivas o eliminadas.");
+
+            var list = Items.ToList();
+            list.Add(detail);
+            Items = list;
+            CalculateTotal();
+        }
+
+        public void MarkAsDeleted()
+        {
+            if (IsDeleted) return;
+            IsDeleted = true;
+            Active = false;
+        }
+
+        public void Activate()
+        {
+            if (IsDeleted)
+                throw new InvalidOperationException("No se puede activar una venta que ha sido eliminada.");
+            Active = true;
+        }
+
+        public void Deactivate()
+        {
+            Active = false;
+        }
+
+        public override string ToString()
+            => $"Venta #{Id} - {Date.Value:dd/MM/yyyy} - Cliente: {ClientId} - Total: {TotalAmount.Value:C2}";
+    }
+}

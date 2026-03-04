@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{F535A5AA-37A5-471D-AD1F-1B0C440EAFFC}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>BLL</RootNamespace>
+    <AssemblyName>BLL</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=10.0.0.3, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.10.0.3\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection, Version=10.0.0.3, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.10.0.3\lib\net462\Microsoft.Extensions.DependencyInjection.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=10.0.0.3, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.10.0.3\lib\net462\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.1.2\lib\net462\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.4.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.6.3\lib\net462\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Infrastructure\Errors\IErrorsFactory.cs" />
+    <Compile Include="LogicLayers\Clients\UseCases\IUCCreateClient.cs" />
+    <Compile Include="LogicLayers\Clients\UseCases\IUCDeleteClient.cs" />
+    <Compile Include="LogicLayers\Clients\UseCases\IUCUpdateClient.cs" />
+    <Compile Include="LogicLayers\Clients\UseCases\UCCreateClient.cs" />
+    <Compile Include="LogicLayers\Clients\UseCases\UCDeleteClient.cs" />
+    <Compile Include="LogicLayers\Clients\UseCases\UCUpdateClient.cs" />
+    <Compile Include="LogicLayers\Employees\UseCases\IUCCreateEmployee.cs" />
+    <Compile Include="LogicLayers\Employees\UseCases\IUCDeleteEmployee.cs" />
+    <Compile Include="LogicLayers\Employees\UseCases\IUCGetAllEmployees.cs" />
+    <Compile Include="LogicLayers\Employees\UseCases\IUCUpdateEmployee.cs" />
+    <Compile Include="LogicLayers\Employees\UseCases\UCCreateEmployee.cs" />
+    <Compile Include="LogicLayers\Employees\UseCases\UCDeleteEmployeeMOCK.cs" />
+    <Compile Include="LogicLayers\Employees\UseCases\UCGetAllEmployees.cs" />
+    <Compile Include="LogicLayers\Employees\UseCases\UCUpdateEmployeeMOCK.cs" />
+    <Compile Include="LogicLayers\Payments\UseCases\IUCCreatePayment.cs" />
+    <Compile Include="LogicLayers\Payments\UseCases\IUCDeletePayment.cs" />
+    <Compile Include="LogicLayers\Payments\UseCases\IUCGetAllPayments.cs" />
+    <Compile Include="LogicLayers\Payments\UseCases\IUCUpdatePayment.cs" />
+    <Compile Include="LogicLayers\Payments\UseCases\UCCreatePaymentMOCK.cs" />
+    <Compile Include="LogicLayers\Payments\UseCases\UCDeletePaymentMOCK.cs" />
+    <Compile Include="LogicLayers\Payments\UseCases\UCGetAllPayments.cs" />
+    <Compile Include="LogicLayers\Payments\UseCases\UCUpdatePaymentMOCK.cs" />
+    <Compile Include="LogicLayers\Products\Categories\UseCases\IUCGetAllCategories.cs" />
+    <Compile Include="LogicLayers\Products\Categories\UseCases\UCGetAllCategories.cs" />
+    <Compile Include="LogicLayers\Products\UseCases\IUCCreateProduct.cs" />
+    <Compile Include="LogicLayers\Products\UseCases\IUCDeleteProduct.cs" />
+    <Compile Include="LogicLayers\Products\UseCases\IUCGetAllProducts.cs" />
+    <Compile Include="LogicLayers\Products\UseCases\IUCUpdateProduct.cs" />
+    <Compile Include="LogicLayers\Products\UseCases\UCCreateProductMOCK.cs" />
+    <Compile Include="LogicLayers\Products\UseCases\UCDeleteProductMOCK.cs" />
+    <Compile Include="LogicLayers\Products\UseCases\UCGetAllProducts.cs" />
+    <Compile Include="LogicLayers\Products\UseCases\UCUpdateProductMOCK.cs" />
+    <Compile Include="LogicLayers\Sales\SaleDetailDTO.cs" />
+    <Compile Include="LogicLayers\Sales\SaleDetailMapper.cs" />
+    <Compile Include="LogicLayers\Sales\UseCases\IUCCreateSale.cs" />
+    <Compile Include="LogicLayers\Sales\UseCases\IUCDeleteSale.cs" />
+    <Compile Include="LogicLayers\Sales\UseCases\IUCGetAllSales.cs" />
+    <Compile Include="LogicLayers\Sales\UseCases\IUCUpdateSale.cs" />
+    <Compile Include="LogicLayers\Sales\UseCases\UCCreateSale.cs" />
+    <Compile Include="LogicLayers\Sales\UseCases\UCDeleteSale.cs" />
+    <Compile Include="LogicLayers\Sales\UseCases\UCGetAllSales.cs" />
+    <Compile Include="LogicLayers\Sales\UseCases\UCUpdateSale.cs" />
+    <Compile Include="LogicLayers\Suppliers\UseCases\IUCCreateSupplier.cs" />
+    <Compile Include="LogicLayers\Suppliers\UseCases\IUCDeleteSupplier.cs" />
+    <Compile Include="LogicLayers\Suppliers\UseCases\IUCGetAllSuppliers.cs" />
+    <Compile Include="LogicLayers\Suppliers\UseCases\IUCUpdateSupplier.cs" />
+    <Compile Include="LogicLayers\Suppliers\UseCases\UCCreateSupplier.cs" />
+    <Compile Include="LogicLayers\Suppliers\UseCases\UCDeleteSupplier.cs" />
+    <Compile Include="LogicLayers\Suppliers\UseCases\UCGetAllSuppliers.cs" />
+    <Compile Include="LogicLayers\Suppliers\UseCases\UCUpdateSale.cs" />
+    <Compile Include="LogicLayers\Clients\UseCases\IUCGetAllClients.cs" />
+    <Compile Include="LogicLayers\User\UseCases\IUCModifyUser.cs" />
+    <Compile Include="LogicLayers\Clients\UseCases\UCGetAllClients.cs" />
+    <Compile Include="LogicLayers\User\UseCases\UCModifyUser.cs" />
+    <Compile Include="LogicLayers\Products\Categories\CategoryDTO.cs" />
+    <Compile Include="LogicLayers\Products\Categories\CategoryMapper.cs" />
+    <Compile Include="LogicLayers\Clients\ClientDTO.cs" />
+    <Compile Include="LogicLayers\Clients\ClientMapper.cs" />
+    <Compile Include="LogicLayers\Employees\EmployeeDTO.cs" />
+    <Compile Include="LogicLayers\Payments\PaymentDTO.cs" />
+    <Compile Include="LogicLayers\Payments\PaymentMapper.cs" />
+    <Compile Include="LogicLayers\Products\ProductDTO.cs" />
+    <Compile Include="LogicLayers\Products\ProductMapper.cs" />
+    <Compile Include="LogicLayers\Sales\SaleDTO.cs" />
+    <Compile Include="LogicLayers\Sales\SaleMapper.cs" />
+    <Compile Include="LogicLayers\Suppliers\SupplierDTO.cs" />
+    <Compile Include="LogicLayers\Suppliers\SupplierMapper.cs" />
+    <Compile Include="LogicLayers\User\UseCases\IUCLogin.cs" />
+    <Compile Include="LogicLayers\User\UseCases\UCLogin.cs" />
+    <Compile Include="Infrastructure\AuditLogs\BitacoraDTO.cs" />
+    <Compile Include="Infrastructure\AuditLogs\BitacoraMapper.cs" />
+    <Compile Include="Infrastructure\AuditLogs\IBitacoraFactory.cs" />
+    <Compile Include="Infrastructure\AuditLogs\IBitacoraMapper.cs" />
+    <Compile Include="Infrastructure\Errors\ErrorLogDTO.cs" />
+    <Compile Include="Infrastructure\Errors\ErrorsFactory.cs" />
+    <Compile Include="Infrastructure\Errors\ErrorMapper.cs" />
+    <Compile Include="LogicLayers\Employees\EmployeeMapper.cs" />
+    <Compile Include="LogicLayers\User\UsuarioMapper.cs" />
+    <Compile Include="LogicLayers\User\UsuarioDTO.cs" />
+    <Compile Include="Infrastructure\AuditLogs\BitacoraFactory.cs" />
+    <Compile Include="Infrastructure\Integrity\IVerifyDVV.cs" />
+    <Compile Include="Infrastructure\Integrity\VerifyDVV.cs" />
+    <Compile Include="OperationResult.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="LogicLayers\User\UseCases\IUCCreateUser.cs" />
+    <Compile Include="Infrastructure\Integrity\IVerifyDVH.cs" />
+    <Compile Include="LogicLayers\User\UseCases\UCCreateUser.cs" />
+    <Compile Include="Infrastructure\Integrity\VerifyDVH.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\Domain.csproj">
+      <Project>{AB067875-FF98-426E-9D73-B0B2D238C9CE}</Project>
+      <Name>Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SharedAbstractions\Shared.csproj">
+      <Project>{BA217900-69B9-4AF8-95D9-8601D9BFA7D8}</Project>
+      <Name>Shared</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
