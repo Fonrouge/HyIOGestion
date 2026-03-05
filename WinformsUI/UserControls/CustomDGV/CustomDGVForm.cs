@@ -3,8 +3,8 @@ using Shared.Services.Searching;
 using SharedAbstractions.ArchitecturalMarkers;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Winforms.Theme;
 using WinformsUI.Infrastructure.Translations;
@@ -12,7 +12,7 @@ using WinformsUI.UserControls.SearchBar;
 
 namespace WinformsUI.UserControls.CustomDGV
 {
-    public partial class CustomDGVForm : Form
+    public partial class CustomDGVForm : Form, IDisposable
     {
         public event EventHandler<IDto> SelectedRowChanged;
 
@@ -23,6 +23,8 @@ namespace WinformsUI.UserControls.CustomDGV
         private string _placeholder;
         private dynamic _searchBehavior;
         private bool _filtersConfigured = false;
+
+        private CheckBox _allCategories;
 
         public CustomDGVForm
         (
@@ -38,27 +40,23 @@ namespace WinformsUI.UserControls.CustomDGV
             InitializeComponent();
             InitializeVariables();
             SetFormAppearence();
-            SetDGVAppearence();
             WireCommonEvents();
 
-            // Wire de botones del panel de filtros
+            // Wire de botones del panel de filtros (Refactorizado sin lambdas)
             btnApplyFilter.Click += BtnApplyFilter_Click;
-            btnCleanFilters.Click += (s, e) => ClearFilters();
-
+            btnCleanFilters.Click += BtnCleanFilters_Click;
 
             panelHorDivider.Visible = false;
             tableLayoutPanelFilters.Visible = false;
 
-            btnShowFilters.Click += (s, e) =>
-            {
-                panelHorDivider.Visible = !tableLayoutPanelFilters.Visible;
-                tableLayoutPanelFilters.Visible = !tableLayoutPanelFilters.Visible;
-            };
-            
+            btnShowFilters.Click += BtnShowFilters_Click;
         }
 
-
         // ====================== APIS PÚBLICAS ======================
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        private static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
+        private const int LB_SETITEMHEIGHT = 0x01A0;
 
         public void ConfigureFilters<TItem>
         (
@@ -74,6 +72,10 @@ namespace WinformsUI.UserControls.CustomDGV
                 checkedListBoxFilters.Items.Add(item);
 
             _filtersConfigured = true;
+
+            // MAGIA: 30 es la nueva altura en píxeles (juega con este valor)
+            SendMessage(checkedListBoxFilters.Handle, LB_SETITEMHEIGHT, IntPtr.Zero, (IntPtr)24);
+            checkedListBoxFilters.Refresh();
         }
 
         public void ClearFilters()
@@ -83,7 +85,6 @@ namespace WinformsUI.UserControls.CustomDGV
 
             _searchBehavior?.ExecuteContainsFilter("Categories", string.Empty);
         }
-
 
         public void FillDGV<T>(IEnumerable<T> data) where T : IDto
         {
@@ -104,6 +105,7 @@ namespace WinformsUI.UserControls.CustomDGV
 
             AddTranslatables();
             ApplyTranslation();
+            SetDGVAppearence();
         }
 
         public void EnsureDgvRowSelection()
@@ -119,13 +121,8 @@ namespace WinformsUI.UserControls.CustomDGV
 
         private void WireCommonEvents()
         {
-            mainDGV.SelectionChanged += (sender, e) =>
-            {
-                if (mainDGV.SelectedRows.Count > 0)
-                {
-                    SelectedRowChanged?.Invoke(this, mainDGV.SelectedRows[0].DataBoundItem as IDto);
-                }
-            };
+            mainDGV.SelectionChanged += MainDGV_SelectionChanged;
+            this.FormClosed += CustomDGVForm_FormClosed;
         }
 
         private void InitializeVariables()
@@ -163,9 +160,7 @@ namespace WinformsUI.UserControls.CustomDGV
             _searchBehavior.AttachColumnSelector(cbColumnsName);
         }
 
-
         public void NotifiedByTranslationManager() => ApplyTranslation(); //By reflection, DON'T DELETE. 
-
 
         private void ApplyTranslation()
         {
@@ -180,20 +175,79 @@ namespace WinformsUI.UserControls.CustomDGV
             _transMgr.Apply();
         }
 
+        // ====================== EVENT HANDLERS (Refactorizados) ======================
+
         private void BtnApplyFilter_Click(object sender, EventArgs e)
         {
             if (!_filtersConfigured || checkedListBoxFilters.Items.Count == 0) return;
 
-            var selected = checkedListBoxFilters.CheckedItems
-                .Cast<object>()
-                .Select(x => x.ToString())
-                .ToList();
+            // LINQ mágico para extraer los strings de la colección de items chequeados
+            var selectedValues = checkedListBoxFilters.CheckedItems
+                                                      .Cast<object>()
+                                                      .Select(item => item.ToString())
+                                                      .ToList();
 
-            string filterValue = selected.Any() ? string.Join(" ", selected) : string.Empty;
-
-            _searchBehavior?.ExecuteContainsFilter("Categories", filterValue);
+            _searchBehavior?.ExecuteContainsFilter(selectedValues); //ASDKFJASHDFKAJSDFHJKASDKFJASHDFKAJSDFHJKASDKFJASHDFKAJSDFHJKASDKFJASHDFKAJSDFHJKASDKFJASHDFKAJSDFHJKASDKFJASHDFKAJSDFHJK
         }
 
+        private void BtnCleanFilters_Click(object sender, EventArgs e) => ClearFilters();
 
+        private void BtnShowFilters_Click(object sender, EventArgs e)
+        {
+            panelHorDivider.Visible = !tableLayoutPanelFilters.Visible;
+            tableLayoutPanelFilters.Visible = !tableLayoutPanelFilters.Visible;
+        }
+
+        private void MainDGV_SelectionChanged(object sender, EventArgs e)
+        {
+            if (mainDGV.SelectedRows.Count > 0)
+            {
+                SelectedRowChanged?.Invoke(this, mainDGV.SelectedRows[0].DataBoundItem as IDto);
+            }
+        }
+
+        private void CustomDGVForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            if (_searchBehavior != null)
+            {
+                _searchBehavior.Dispose();
+            }
+        }
+
+        // ====================== DISPOSE (Seguro contra Memory Leaks) ======================
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // 1. Desuscribir todos los eventos cableados a métodos
+                btnApplyFilter.Click -= BtnApplyFilter_Click;
+                btnCleanFilters.Click -= BtnCleanFilters_Click;
+                btnShowFilters.Click -= BtnShowFilters_Click;
+
+                if (mainDGV != null)
+                {
+                    mainDGV.SelectionChanged -= MainDGV_SelectionChanged;
+                }
+
+                this.FormClosed -= CustomDGVForm_FormClosed;
+
+                // 2. Liberar delegados externos
+                SelectedRowChanged = null;
+
+                // 3. Dispose de recursos dinámicos
+                if (_searchBehavior != null)
+                {
+                    _searchBehavior.Dispose();
+                    _searchBehavior = null;
+                }
+
+                // IMPORTANTE: Si ITranslatableControlsManager guarda este form, 
+                // descomenta la siguiente línea si tienes el método implementado:
+                // _transMgr?.RemoveFormNotify(this);
+            }
+
+            base.Dispose(disposing);
+        }
     }
 }

@@ -6,37 +6,39 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using static Winforms.Theme.DarkTheme;
 
-
 namespace Winforms.Theme
 {
     internal static class DateTimePickerThemer
     {
         #region Win32 Constants & Imports
 
-        // Constantes para estilos de ventana
         private const int GWL_STYLE = -16;
         private const int GWL_EXSTYLE = -20;
         private const int WS_BORDER = 0x00800000;
         private const int WS_EX_CLIENTEDGE = 0x00000200;
 
-        // Mensajes
+        private const int WM_SETFOCUS = 0x0007;
+        private const int WM_KILLFOCUS = 0x0008;
         private const int WM_PAINT = 0x000F;
-        private const int WM_NCPAINT = 0x0085;
         private const int WM_ERASEBKGND = 0x0014;
+        private const int WM_NCPAINT = 0x0085;
 
-        // MonthCalendar messages
         private const int DTM_FIRST = 0x1000;
         private const int DTM_GETMONTHCAL = DTM_FIRST + 8;
         private const int MCM_FIRST = 0x1000;
-        private const int MCM_SETCOLOR = MCM_FIRST + 10;
         private const int MCM_GETMINREQRECT = MCM_FIRST + 9;
+        private const int MCM_SETCOLOR = MCM_FIRST + 10;
 
-        // MonthCalendar color constants
         private const int MCSC_BACKGROUND = 0;
         private const int MCSC_TEXT = 1;
         private const int MCSC_TITLEBK = 2;
         private const int MCSC_TITLETEXT = 3;
         private const int MCSC_TRAILINGTEXT = 4;
+
+        private const uint SWP_NOSIZE = 0x0001;
+        private const uint SWP_NOMOVE = 0x0002;
+        private const uint SWP_NOZORDER = 0x0004;
+        private const uint SWP_FRAMECHANGED = 0x0020;
 
         [DllImport("uxtheme.dll", CharSet = CharSet.Unicode)]
         private static extern int SetWindowTheme(IntPtr hWnd, string appName, string idList);
@@ -59,19 +61,33 @@ namespace Winforms.Theme
         [DllImport("user32.dll")]
         private static extern bool UpdateWindow(IntPtr hWnd);
 
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
-
-        [DllImport("user32.dll")]
-        private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
-
         [DllImport("user32.dll")]
         private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
 
-        private const uint SWP_NOMOVE = 0x0002;
-        private const uint SWP_NOSIZE = 0x0001;
-        private const uint SWP_NOZORDER = 0x0004;
-        private const uint SWP_FRAMECHANGED = 0x0020;
+        // Soporte P/Invoke seguro para 32 y 64 bits
+        public static IntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex)
+        {
+            if (IntPtr.Size == 8) return GetWindowLongPtr64(hWnd, nIndex);
+            return new IntPtr(GetWindowLong32(hWnd, nIndex));
+        }
+
+        public static IntPtr SetWindowLongPtr(IntPtr hWnd, int nIndex, IntPtr dwNewLong)
+        {
+            if (IntPtr.Size == 8) return SetWindowLongPtr64(hWnd, nIndex, dwNewLong);
+            return new IntPtr(SetWindowLong32(hWnd, nIndex, dwNewLong.ToInt32()));
+        }
+
+        [DllImport("user32.dll", EntryPoint = "GetWindowLong")]
+        private static extern int GetWindowLong32(IntPtr hWnd, int nIndex);
+
+        [DllImport("user32.dll", EntryPoint = "GetWindowLongPtr")]
+        private static extern IntPtr GetWindowLongPtr64(IntPtr hWnd, int nIndex);
+
+        [DllImport("user32.dll", EntryPoint = "SetWindowLong")]
+        private static extern int SetWindowLong32(IntPtr hWnd, int nIndex, int dwNewLong);
+
+        [DllImport("user32.dll", EntryPoint = "SetWindowLongPtr")]
+        private static extern IntPtr SetWindowLongPtr64(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
 
         [StructLayout(LayoutKind.Sequential)]
         private struct RECT
@@ -96,30 +112,20 @@ namespace Winforms.Theme
 
         #endregion
 
-        #region Estado y Renderer
+        #region Estado y Clases Auxiliares
 
         private sealed class DtpState
         {
             public bool WindowThemeApplied;
             public bool DropDownHooked;
             public bool ApplyingColors;
-            // Guardamos referencia al renderer para que no lo recolecte el GC
             public DtpRenderer Renderer;
         }
 
-        private static readonly ConditionalWeakTable<DateTimePicker, DtpState> _state
-            = new ConditionalWeakTable<DateTimePicker, DtpState>();
+        private static readonly ConditionalWeakTable<DateTimePicker, DtpState> _state = new ConditionalWeakTable<DateTimePicker, DtpState>();
 
-        private static DtpState GetState(DateTimePicker dtp)
-        {
-            return _state.GetValue(dtp, _ => new DtpState());
-        }
+        private static DtpState GetState(DateTimePicker dtp) => _state.GetValue(dtp, _ => new DtpState());
 
-        #endregion
-
-        #region Esquema de colores
-
-        // (Tu clase DtpColorScheme original se mantiene igual)
         private sealed class DtpColorScheme
         {
             public Color TextBoxBack { get; set; }
@@ -130,17 +136,15 @@ namespace Winforms.Theme
             public Color AccentText { get; set; }
             public Color TrailingText { get; set; }
             public Color TextSecondary { get; set; }
-
-            // Color del borde del DTP (Nuevo)
             public Color BorderColor { get; set; }
 
             public static DtpColorScheme FromPalette(Palette p)
             {
                 var baseBack = p.SurfaceAlt;
+                // Asumo que ChooseReadableForeground existe en tu clase DarkTheme
                 var baseText = ChooseReadableForeground(baseBack);
                 var accentBack = p.Accent;
                 var accentText = ChooseReadableForeground(accentBack);
-                var trailingText = p.SurfaceAlt;
 
                 return new DtpColorScheme
                 {
@@ -150,16 +154,15 @@ namespace Winforms.Theme
                     CalendarText = baseText,
                     AccentBack = accentBack,
                     AccentText = accentText,
-                    TrailingText = trailingText,
-                    // Usamos el acento o un gris suave para el borde
+                    TrailingText = p.SurfaceAlt,
                     BorderColor = p.Border,
                     TextSecondary = p.TextSecondary
                 };
             }
-        }
 
-        // Simulación de helpers externos
-        // private static Color ChooseReadableForeground(Color c) => c.R + c.G + c.B > 382 ? Color.Black : Color.White;
+            // Si no tenías el método, descomentá este:
+            // private static Color ChooseReadableForeground(Color c) => c.R * 0.299 + c.G * 0.587 + c.B * 0.114 > 186 ? Color.Black : Color.White;
+        }
 
         #endregion
 
@@ -172,16 +175,10 @@ namespace Winforms.Theme
             var state = GetState(dtp);
             var colors = DtpColorScheme.FromPalette(palette);
 
-            // 1. Quitar tema visual de Windows
             EnsureClassicThemeApplied(dtp, state);
-
-            // 2. Aplicar colores base .NET
             ApplyDateTimePickerColors(dtp, colors, state);
-
-            // 3. Hook para el dropdown (calendario antiguo)
             WireMonthCalendar(dtp, state);
 
-            // 4. Attachar el Renderer para pintar bordes y flecha
             if (state.Renderer == null)
             {
                 state.Renderer = new DtpRenderer(dtp, colors);
@@ -189,8 +186,10 @@ namespace Winforms.Theme
             else
             {
                 state.Renderer.UpdateColors(colors);
-                dtp.Invalidate(); // Forzar repintado
+                dtp.Invalidate();
             }
+
+            // Asignación de fuente y color general
             dtp.ForeColor = palette.TextSecondary;
         }
 
@@ -198,10 +197,6 @@ namespace Winforms.Theme
 
         #region Implementación del Renderer (Subclassing)
 
-        /// <summary>
-        /// Esta clase se encarga de interceptar el pintado del control para quitar
-        /// los bordes 3D nativos y dibujar una flecha moderna.
-        /// </summary>
         private class DtpRenderer : NativeWindow
         {
             private readonly DateTimePicker _dtp;
@@ -212,8 +207,6 @@ namespace Winforms.Theme
                 _dtp = dtp;
                 _colors = colors;
                 AssignHandle(dtp.Handle);
-
-                // Al iniciar, forzamos quitar los bordes 3D de Windows
                 RemoveNativeBorder();
             }
 
@@ -225,17 +218,14 @@ namespace Winforms.Theme
             private void RemoveNativeBorder()
             {
                 IntPtr h = _dtp.Handle;
-                // Quitar WS_BORDER
-                int style = GetWindowLong(h, GWL_STYLE);
+                long style = GetWindowLongPtr(h, GWL_STYLE).ToInt64();
                 style &= ~WS_BORDER;
-                SetWindowLong(h, GWL_STYLE, style);
+                SetWindowLongPtr(h, GWL_STYLE, new IntPtr(style));
 
-                // Quitar WS_EX_CLIENTEDGE (el efecto hundido 3D)
-                int exStyle = GetWindowLong(h, GWL_EXSTYLE);
+                long exStyle = GetWindowLongPtr(h, GWL_EXSTYLE).ToInt64();
                 exStyle &= ~WS_EX_CLIENTEDGE;
-                SetWindowLong(h, GWL_EXSTYLE, exStyle);
+                SetWindowLongPtr(h, GWL_EXSTYLE, new IntPtr(exStyle));
 
-                // Forzar a Windows a recalcular el área cliente
                 SetWindowPos(h, IntPtr.Zero, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
             }
 
@@ -244,119 +234,73 @@ namespace Winforms.Theme
                 switch (m.Msg)
                 {
                     case WM_NCPAINT:
-                        // Bloqueamos el pintado del borde nativo (devolvemos 0)
-                        // Esto evita que Windows intente dibujar el borde gris clásico.
-                        return;
-
-                    case WM_PAINT:
-                        // 1. Dejar que el control pinte el texto y fondo base
-                        base.WndProc(ref m);
-
-                        // 2. Pintar nuestra decoración encima
-                        PaintCustomLook();
+                        // Bloquear el borde gris nativo
                         return;
 
                     case WM_ERASEBKGND:
-                        // Evita parpadeo
+                        // Evitar parpadeos al limpiar el fondo
                         m.Result = (IntPtr)1;
+                        return;
+
+                    case WM_PAINT:
+                        // 1. Dejar que el OS procese primero (vital para estado interno)
+                        base.WndProc(ref m);
+                        // 2. Pintar nuestra UI plana por encima
+                        PaintCustomLook();
+                        return;
+
+                    case WM_SETFOCUS:
+                    case WM_KILLFOCUS:
+                        base.WndProc(ref m);
+                        // Forzamos repintado para actualizar el color del borde (estado activo/inactivo)
+                        _dtp.Invalidate();
                         return;
                 }
 
                 base.WndProc(ref m);
             }
 
-            // Dentro de DateTimePickerThemer.cs -> clase privada DtpRenderer
-
             private void PaintCustomLook()
             {
-                // Usamos Graphics desde el handle para pintar sobre todo
                 using (var g = Graphics.FromHwnd(_dtp.Handle))
                 {
-                    g.SmoothingMode = SmoothingMode.AntiAlias;
-
                     var rect = _dtp.ClientRectangle;
+                    int buttonWidth = SystemInformation.VerticalScrollBarWidth;
 
-                    // -- A. PINTAR SOBRE EL BOTÓN NATIVO --
-                    int nativeButtonWidth = SystemInformation.VerticalScrollBarWidth;
-                    int overlapFix = 3;
-
-                    var eraserRect = new Rectangle(
-                        rect.Right - nativeButtonWidth - overlapFix,
-                        0,
-                        nativeButtonWidth + overlapFix,
-                        rect.Height
-                    );
-
-                    using (var brush = new SolidBrush(_colors.TextBoxBack))
+                    // 1. Limpiar todo el fondo de una vez para evitar parpadeos y solapamientos
+                    using (var backBrush = new SolidBrush(_colors.TextBoxBack))
                     {
-                        g.FillRectangle(brush, eraserRect);
+                        g.FillRectangle(backBrush, rect);
                     }
 
-                    // -- B. DIBUJAR FLECHA MODERNA --
-                    var cx = rect.Right - (nativeButtonWidth / 2);
-                    var cy = rect.Height / 2;
+                    // 2. Dibujar el texto centrado y limpio (sin espacios agregados al texto)
+                    var textRect = new Rectangle(rect.Left + 4, rect.Top, rect.Width - buttonWidth - 4, rect.Height);
+                    TextRenderer.DrawText(g, _dtp.Text, _dtp.Font, textRect, _colors.TextBoxFore,
+                        TextFormatFlags.VerticalCenter | TextFormatFlags.Left | TextFormatFlags.SingleLine | TextFormatFlags.PreserveGraphicsClipping);
 
-                    int arrowSize = 3;
-                    var arrowPoints = new Point[]
-                    {
-            new Point(cx - arrowSize, cy - 1),
-            new Point(cx, cy + 2),
-            new Point(cx + arrowSize, cy - 1)
+                    // 3. Dibujar la flecha moderna (Polygon sólido)
+                    g.SmoothingMode = SmoothingMode.AntiAlias;
+                    int cx = rect.Right - (buttonWidth / 2);
+                    int cy = rect.Height / 2;
+
+                    // Ajuste sutil de las coordenadas del triángulo
+                    Point[] arrow = new Point[] {
+                        new Point(cx - 4, cy - 1),
+                        new Point(cx + 4, cy - 1),
+                        new Point(cx, cy + 3)
                     };
 
-                    using (var pen = new Pen(_colors.TextBoxFore, 1.5f))
+                    using (var arrowBrush = new SolidBrush(_colors.TextBoxFore))
                     {
-                        g.DrawLines(pen, arrowPoints);
+                        g.FillPolygon(arrowBrush, arrow);
                     }
+                    g.SmoothingMode = SmoothingMode.Default;
 
-                    // -- C. PINTAR EL TEXTO MANUALMENTE (NUEVO) --
-                    // Aquí es donde "tapamos" el texto nativo y dibujamos el nuestro con el color deseado.
-
-                    // 1. Definimos el área donde va el texto (todo el control menos el botón)
-                    var textArea = new Rectangle(0, 0, rect.Right - nativeButtonWidth - overlapFix, rect.Height);
-
-                    // 2. Limpiamos el fondo del área de texto (opcional, pero recomendado para evitar "fantasmas")
-                    using (var backBrush = new SolidBrush(_colors.TextBoxBack))
+                    // 4. Dibujar Borde (Destacar si el control tiene el foco)
+                    Color currentBorderColor = _dtp.Focused ? _colors.AccentBack : _colors.BorderColor;
+                    using (var pen = new Pen(currentBorderColor))
                     {
-                        g.FillRectangle(backBrush, textArea);
-                    }
-
-                    // 3. Dibujamos el texto
-                    // Usamos TextRenderer para mejor calidad de texto en WinForms, o g.DrawString.
-                    // TextRenderer suele alinearse mejor con el renderizado nativo de GDI.
-                    TextRenderer.DrawText(g,
-                        "  " + _dtp.Text, // Agregamos espacios para margen izquierdo
-                        _dtp.Font,
-                        textArea,
-                        _colors.TextBoxFore, // ¡Aquí usas tu color personalizado!
-                        TextFormatFlags.VerticalCenter | TextFormatFlags.Left | TextFormatFlags.SingleLine);
-
-                    // Definimos el área de texto
-
-                    // 1. Limpiamos el fondo
-                    using (var backBrush = new SolidBrush(_colors.TextBoxBack))
-                    {
-                        g.FillRectangle(backBrush, textArea);
-                    }
-
-                    // 2. Creamos la fuente en Italic basada en la original
-                    // Usamos 'using' porque las fuentes son recursos GDI que deben liberarse
-                    using (var italicFont = new Font(_dtp.Font, FontStyle.Italic))
-                    {
-                        // 3. Dibujamos usando TextSecondary
-                        TextRenderer.DrawText(g,
-                            " " + _dtp.Text, // Pequeño espacio extra a la izq
-                            italicFont,      // <--- Usamos la fuente Italic
-                            textArea,
-                            _colors.TextSecondary, // <--- Usamos el color secundario de la paleta
-                            TextFormatFlags.VerticalCenter | TextFormatFlags.Left | TextFormatFlags.SingleLine | TextFormatFlags.PreserveGraphicsClipping);
-                    }
-
-                    // -- D. DIBUJAR BORDE PLANO --
-                    using (var pen = new Pen(_colors.BorderColor))
-                    {
-                        var borderRect = new Rectangle(0, 0, rect.Width - 1, rect.Height - 1);
-                        g.DrawRectangle(pen, borderRect);
+                        g.DrawRectangle(pen, 0, 0, rect.Width - 1, rect.Height - 1);
                     }
                 }
             }
@@ -364,7 +308,7 @@ namespace Winforms.Theme
 
         #endregion
 
-        #region Helpers Existentes (Sin cambios)
+        #region Helpers Existentes
 
         private static void EnsureClassicThemeApplied(DateTimePicker dtp, DtpState state)
         {
@@ -415,8 +359,11 @@ namespace Winforms.Theme
         {
             var dtp = sender as DateTimePicker;
             if (dtp == null || !dtp.IsHandleCreated) return;
+
+            // IMPORTANTE: Asegurate de tener acceso a GetPaletteFor(dtp) en tu contexto.
             var palette = GetPaletteFor(dtp);
             var colors = DtpColorScheme.FromPalette(palette);
+
             dtp.BeginInvoke((Action)delegate
             {
                 IntPtr hMc = SendMessage(dtp.Handle, DTM_GETMONTHCAL, IntPtr.Zero, IntPtr.Zero);
@@ -424,7 +371,7 @@ namespace Winforms.Theme
                 ApplyClassicTheme(hMc);
                 ApplyMonthCalColors(hMc, colors);
                 FixMonthCalSize(hMc);
-            });            
+            });
         }
 
         private static void ApplyMonthCalColors(IntPtr hMc, DtpColorScheme c)

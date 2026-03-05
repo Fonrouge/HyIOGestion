@@ -3,6 +3,7 @@ using SharedAbstractions.ArchitecturalMarkers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace BLL.LogicLayers
 {
@@ -17,5 +18,17 @@ namespace BLL.LogicLayers
         public List<CategoryDTO> Categories { get; set; }
         public bool IsActive { get; set; } = true;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        public string CategoriesName
+        {
+            get
+            {
+                if (Categories == null || Categories.Count == 0) return "Sin categorizar";
+
+                return string.Join(", ", Categories.Select(c => c.Name));
+            }
+        }
+
+
     }
 }

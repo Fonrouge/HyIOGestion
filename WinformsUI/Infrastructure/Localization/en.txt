@@ -78,6 +78,7 @@ Stock=Stock
 Categories=Categories
 IsActive=Is Active
 CreatedAt=Created At
+Categoriesname=Categories
 
 
 =============SaleDTO=============

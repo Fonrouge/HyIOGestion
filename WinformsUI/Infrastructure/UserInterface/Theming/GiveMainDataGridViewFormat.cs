@@ -5,25 +5,15 @@ using System.Windows.Forms;
 namespace Winforms.Theme
 {
     /// <summary>
-    /// Aplica un formato consistente al <see cref="DataGridView"/> principal:
-    /// bordes, tamaños de encabezado/filas, ocultación de row headers y
-    /// ajuste automático del ancho de columnas para evitar “gris” sobrante
-    /// cuando el contenido no completa el ancho disponible.
+    /// Aplica un formato consistente al DataGridView principal.
     /// </summary>
     public static class GiveMainDataGridViewFormat
     {
-        /// <summary>
-        /// Configura el <paramref name="dgv"/> con el estilo estándar de la UI.
-        /// Esta operación está pensada para formularios/columnas fijas (one-shot).
-        /// </summary>
-        /// <param name="dgv">Instancia del grid a formatear.</param>
         public static void Execute(DataGridView dgv)
         {
             if (dgv == null) return;
 
-            // Reduce parpadeos en scroll/redraw (prop interna)
             TryEnableDoubleBuffer(dgv);
-
             dgv.SuspendLayout();
 
             try
@@ -34,39 +24,58 @@ namespace Winforms.Theme
                 dgv.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
                 dgv.MultiSelect = true;
                 dgv.ReadOnly = true;
-                dgv.ScrollBars = ScrollBars.None;
-                dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells; // o None
+
+                dgv.ScrollBars = ScrollBars.Both;                    // ← CLAVE: permite scrollbar horizontal
                 dgv.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None;
                 dgv.AllowUserToResizeColumns = true;
                 dgv.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.False;
                 dgv.ClipboardCopyMode = DataGridViewClipboardCopyMode.EnableAlwaysIncludeHeaderText;
 
-                // --- Estilo visual base ---
                 dgv.CellBorderStyle = DataGridViewCellBorderStyle.SingleVertical;
                 dgv.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
-
-                // dgv.EnableHeadersVisualStyles = false; // respeta colores/tema propios
-                dgv.RowHeadersVisible = false;
-
-                // --- Alturas estándar ---
                 dgv.ColumnHeadersHeight = 30;
                 dgv.RowTemplate.Height = 40;
 
-                // Ajuste inicial para filas existentes (si las hubiera)
+                // ====================== COLUMNA NATURAL + SCROLL HORIZONTAL ======================
+                // 1. Calculamos el tamaño exacto según contenido (AllCells)
+                dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+
+                // 2. Forzamos el cálculo inmediato
+                dgv.PerformLayout();
+
+                // 3. ¡Congelamos los anchos! (esto es lo que hace aparecer la scrollbar horizontal)
+                dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
+
+                // Ajustes por columna (mantenemos tu lógica original)
+                foreach (DataGridViewColumn col in dgv.Columns)
+                {
+                    col.MinimumWidth = 100;   // tu valor original
+                    col.Width = 300;
+
+                    // Columna especial (Nombre/Descripción) ocupa más espacio natural
+                    string nombreCol = col.Name.ToLowerInvariant();
+                    if (nombreCol.Contains("descripcion") || nombreCol.Contains("nombre"))
+                    {
+                        col.MinimumWidth = 380;   // un poco más generoso
+                    }
+
+                    // Pequeño padding visual para que no quede pegado
+                    col.Width += 12;
+                }
+
+                // Altura de filas existentes
                 foreach (DataGridViewRow row in dgv.Rows)
                     row.Height = dgv.RowTemplate.Height;
 
-                // Asegura altura consistente para filas que se agreguen en runtime
+                // Altura para filas que se agreguen después
                 dgv.RowsAdded += (s, e) =>
                 {
                     for (int i = e.RowIndex; i < e.RowIndex + e.RowCount; i++)
-                        dgv.Rows[i].Height = dgv.RowTemplate.Height;
+                    {
+                        if (i < dgv.Rows.Count)
+                            dgv.Rows[i].Height = dgv.RowTemplate.Height;
+                    }
                 };
-
-                // Desactivar la adición de filas por el usuario (la fila “*” al final)
-                dgv.AllowUserToAddRows = false;
-
-
             }
             finally
             {
@@ -74,26 +83,16 @@ namespace Winforms.Theme
             }
         }
 
-
-        /// <summary>
-        /// Activa el doble buffer del grid para minimizar flicker al dibujar.
-        /// (Propiedad interna; se accede por reflexión).
-        /// </summary>
         private static void TryEnableDoubleBuffer(DataGridView dgv)
         {
             try
             {
                 typeof(DataGridView).InvokeMember(
                     "DoubleBuffered",
-                    System.Reflection.BindingFlags.NonPublic
-                    | System.Reflection.BindingFlags.Instance
-                    | System.Reflection.BindingFlags.SetProperty,
+                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.SetProperty,
                     null, dgv, new object[] { true });
             }
-            catch
-            {
-                // Si falla (p. ej., cambios de framework), no es crítico.
-            }
+            catch { }
         }
     }
 }

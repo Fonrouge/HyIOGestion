@@ -285,11 +285,10 @@ namespace Winforms.Theme
 
             if (!(form.Tag is "NonPaintable"))
             {
-                //form.BackColor = Color.Green;
-                form.BackColor = Darken(p.LowAccent, 0.7);
-
-                // ApplyGradientBackground(form, Darken(p.LowAccent, 0.5), Darken(p.Accent, 0.5), LinearGradientMode.Vertical, false);
+                form.BackColor = Darken(p.LowAccent, 0.6);
             }
+
+
 
             PaintControlTree(form, p);
             StyleToolStrips(form, p, depth);
@@ -352,38 +351,14 @@ namespace Winforms.Theme
         {
             foreach (Control c in root.Controls)
             {
-                if (c.Name is "tbSearchBar")
-                {
-                    //  Debugger.Break();
-                }
-                if (c.Name == "tbSearchBar")
-                {
-                    //   Debugger.Break();
-                }
-
 
                 if (IsNonPaintable(c.Tag))
                 {
-                    // LÓGICA AGREGADA: Tratamiento especial para Botones NonPaintable
-                    if (c is Button btnNonPaint)
+                    if (c is Panel || c is TableLayoutPanel)
                     {
-                        btnNonPaint.FlatStyle = FlatStyle.Flat;
-                        btnNonPaint.FlatAppearance.BorderSize = 0;
-                        btnNonPaint.BackColor = Color.Transparent;
-
-                        btnNonPaint.ForeColor = Darken(p.TextSecondary, -0.4);
-                        Color hoverColor = Darken(p.LowAccent, 0.2);
-                        Color pressColor = p.LowAccent;
-
-                        btnNonPaint.FlatAppearance.MouseOverBackColor = hoverColor;
-                        btnNonPaint.FlatAppearance.MouseDownBackColor = pressColor;
-                    }
-
-                    if (c is Panel px)
+                        HasChildren(c, p);
                         continue;
-
-                    //   if (c is Label l)
-                    //       l.ForeColor = ChooseReadableForeground(p.SurfaceAlt);
+                    }
                 }
 
 
@@ -397,15 +372,28 @@ namespace Winforms.Theme
                 else if (c is CheckedListBox clb)
                 {
                     clb.BorderStyle = BorderStyle.None;
-                    clb.BackColor = p.Surface;
+                    clb.BackColor = p.SurfaceAlt;
                     clb.ForeColor = p.TextSecondary;
+                }
+
+                else if (c is CheckBox chb)
+                {                    
+                    chb.BackColor = Color.Transparent;
+                    chb.ForeColor = p.TextSecondary;
+                    continue;
+                }
+                else if (c is RadioButton rb)
+                {
+                    rb.BackColor = Color.Transparent;
+                    rb.ForeColor = p.TextSecondary;
+                    continue;
                 }
                 else if (c is GroupBox || c is Panel)
                 {
                     c.ForeColor = p.TextPrimary;
                     c.BackColor = p.Surface;
 
-                    if (IsTitleBar(c.Tag))
+                    if (c.Tag is "TitleBar")
                     {
                         c.BackColor = Darken(p.LowAccent, 0.4);
                     }
@@ -413,34 +401,55 @@ namespace Winforms.Theme
                 else if (c is Button)
                 {
                     var b = (Button)c;
+
+                    if (b.Tag is "NonPaintable")
+                    {
+                        b.FlatStyle = FlatStyle.Flat;
+                        b.FlatAppearance.BorderSize = 0;
+                        b.BackColor = Color.Transparent;
+
+                        b.ForeColor = Darken(p.TextSecondary, -0.4);
+                        Color hoverColor = Darken(p.LowAccent, 0.2);
+                        Color pressColor = p.LowAccent;
+
+                        b.FlatAppearance.MouseOverBackColor = hoverColor;
+                        b.FlatAppearance.MouseDownBackColor = pressColor;
+
+                        continue;
+
+                    }
+                    if (b.Tag is "ExternalTitleBar")
+                    {
+                        b.BackColor = Darken(p.LowAccent, 0.8);
+                        continue;
+                    }
+
+                    if (b.Tag is "IsImageColorable")
+                    {
+                        MaybeRecolorControlImages(c, p, 1.6f, 0.10f);
+                    }
+
+                    if (b.Tag is "HighAccented")
+                    {
+                        b.FlatStyle = FlatStyle.Flat;
+                        b.FlatAppearance.BorderColor = p.HighAccent;
+                        b.FlatAppearance.BorderSize = 1;
+                        b.BackColor = p.HighAccent;
+                        b.ForeColor = p.TextSecondary;                        
+                        continue;
+                    }
+
                     b.FlatStyle = FlatStyle.Flat;
                     b.FlatAppearance.BorderColor = p.Border;
                     b.FlatAppearance.BorderSize = 1;
                     b.BackColor = p.Surface;
                     b.ForeColor = p.TextSecondary;
 
-                    if (HasTag(b, "ExternalTitleBar"))
-                    {
-                        b.BackColor = Darken(p.LowAccent, 0.8);
-                        break;
-                    }
-
-                    if (HasTag(b, "FilterButton"))
-                    {
-                        b.ForeColor = p.TextSecondary;
-                    }
-
-                    if (c.Tag is "IsImageColorable")
-                    {
-                        MaybeRecolorControlImages(c, p, 1.6f, 0.10f); break;
-                    }
                 }
 
                 else if (c is TextBox)
                 {
                     var tb = (TextBox)c;
-
-
 
                     tb.BackColor = p.Surface;
                     tb.ForeColor = p.TextPrimary;
@@ -456,36 +465,46 @@ namespace Winforms.Theme
                         AttachCustomBorder(tb, borderColor);
                     }
                 }
+
                 else if (c is DateTimePicker)
                 {
-                    root.SuspendLayout();
                     var dtp = (DateTimePicker)c;
 
-
-
                     DateTimePickerThemer.ThemeDateTimePicker(dtp, p);
-                    root.ResumeLayout();
                 }
+
                 else if (c is Label)
                 {
                     var lbl = (Label)c;
+
                     lbl.ForeColor = p.TextSecondary;
                     lbl.BackColor = Color.Transparent;
 
                     if (lbl.Tag is "InternalTitleBar")
                     {
                         lbl.ForeColor = Darken(p.Accent, -0.85);
-                        break;
+                        continue;
                     }
+
+                    if (lbl.Tag is "Accentuable")
+                    {
+                        lbl.ForeColor = p.LowAccent;
+                        continue;
+                    }
+
+
                 }
                 else if (c is ComboBox)
                 {
                     var cb = (ComboBox)c;
+
                     cb.FlatStyle = FlatStyle.Flat; // Importante para que acepte mejor el pintado
+
                     cb.BackColor = p.Surface;
                     cb.ForeColor = p.TextSecondary;
 
-                    //    ComboBoxThemer.ThemeComboBox(cb, p);
+
+                    ComboBoxThemer.ThemeComboBox(cb, p);
 
                 }
                 else if (c is MdiClient)
@@ -595,33 +614,28 @@ namespace Winforms.Theme
                     if (IsDarkPalette(p)) SimpleDarkMenuPass(ts2, p, GetCurrentDepth(c.FindForm()));
                 }
 
-                // DataGridView
-
-
-                // Recolor opcional de imágenes
-                //MaybeRecolorControlImages(c, p);
 
                 if (c.ContextMenuStrip != null)
                     WireAndStyleContextMenu(c.ContextMenuStrip, p, GetCurrentDepth(c.FindForm()));
-                // ContextMenuStrip en dark (mismo criterio que drop-down)
 
-
-                // Descender
-                if (c.HasChildren) PaintControlTree(c, p);
+                // CORRECCIÓN CRÍTICA: c, no root.
+                HasChildren(c, p);
 
                 var dgv = c as DataGridView;
                 if (dgv != null)
                 {
                     DataGridViewThemer.AccentDgvColumns(dgv, p);
-
                     dgv.ScrollBars = ScrollBars.None;
-
                 }
 
             }
         }
 
-
+        private static void HasChildren(Control c, Palette p)
+        {
+            // Descender
+            if (c.HasChildren) PaintControlTree(c, p);
+        }
 
         // ============================
         // 5) TAG HELPERS
@@ -633,13 +647,6 @@ namespace Winforms.Theme
         internal static bool IsAccentuable(object tag) => HasTag(tag, "Accentuable");
         internal static bool IsLowAccented(object tag) => HasTag(tag, "LowAccented");
         internal static bool IsHighAccented(object tag) => HasTag(tag, "HighAccented");
-        internal static bool IsTitleBar(object tag) => HasTag(tag, "TitleBar");
-        internal static bool IsSubPanel(object tag) => HasTag(tag, "SubPanel");
-        internal static bool IsExternalTitleBar(object tag) => HasTag(tag, "ExternalTitleBar");
-        internal static bool IsInternalTitleBar(object tag) => HasTag(tag, "InternalTitleBar");
-
-
-
 
 
         internal static bool HasTag(object tag, string wanted)
@@ -939,8 +946,6 @@ namespace Winforms.Theme
         {
             foreach (var pnl in FindAll<Panel>(form))
             {
-                if (pnl is TableLayoutPanel)
-                    continue;
 
                 if (IsNonPaintable(pnl.Tag))
                 {
@@ -948,184 +953,135 @@ namespace Winforms.Theme
                     continue;
                 }
 
-                if (IsDarkPalette(p)) //MODO OSCURO
+                bool isDarkPalette = IsDarkPalette(p);
+
+                // Panel común 3D o plano - Revisa taggeos, de no haberlos, pinta por default.
+
+                if (pnl.Tag is "SubPanel")
                 {
-
-                    // Panel común 3D o plano - Revisa taggeos, de no haberlos, pinta por default.
-
-                    if (pnl.Tag is "SubPanel")
-                    {
-                        //        MessageBox.Show("subpanel isdarkpallete (''claro'') pa form");
+                    if (isDarkPalette)
                         ApplyGradientBackground(pnl, Darken(p.Accent, 0.6), Darken(p.LowAccent, 0.6), LinearGradientMode.Horizontal, false);
-                    }
-
-                    else if (pnl.Tag is "InternalTitleBar")
-                    {
-                        ApplyGradientBackground(pnl, Darken(p.LowAccent, 0.65), Darken(p.Accent, 0.55), LinearGradientMode.Vertical, false);
-                    }
-
-                    else if (pnl.Tag is "ExternalTitleBar")
-                    {
-                        //                  if (pnl.Name == "tlpMenu" || pnl.Name == "tableLayoutPanel1")
-                        //                     Debugger.Break();
-                        ApplyGradientBackground(pnl, Darken(p.LowAccent, 0.8), Darken(p.Accent, 0.8), LinearGradientMode.Horizontal, false);
-                    }
-
-                    else if (pnl.Tag is "LowAccented")
-                    {
-                        ApplyGradientBackground(pnl, Darken(p.LowAccent, 0.8), Darken(p.Accent, 0.8), LinearGradientMode.Vertical, false);
-                    }
-
                     else
-                    {
-                        //  if (pnl.Container != null)
-                        //      MessageBox.Show($"Modo oscuro - PNL + {pnl.Name} + {pnl.Container.ToString()}"); 
-                        //  else
-                        //      MessageBox.Show($"Modo oscuro - PNL + {pnl.Name}");
+                        ApplyGradientBackground(pnl, Darken(p.Accent, 0.6), Darken(p.LowAccent, 0.6), LinearGradientMode.Horizontal, false);
+                }
+
+                else if (pnl.Tag is "InternalTitleBar")
+                {
+                    if (isDarkPalette)
+                        ApplyGradientBackground(pnl, Darken(p.LowAccent, 0.65), Darken(p.Accent, 0.65), LinearGradientMode.Vertical, false);
+                    else
+                        ApplyGradientBackground(pnl, Darken(p.LowAccent, 0.65), Darken(p.Accent, 0.65), LinearGradientMode.Vertical, false);
+                }
+
+                else if (pnl.Tag is "ExternalTitleBar")
+                {
+                    ApplyGradientBackground(pnl, Darken(p.LowAccent, 0.8), Darken(p.Accent, 0.8), LinearGradientMode.Horizontal, false);
+                }
+
+                else if (pnl.Tag is "LowAccented")
+                {
+                    ApplyGradientBackground(pnl, Darken(p.LowAccent, 0.8), Darken(p.Accent, 0.8), LinearGradientMode.Vertical, false);
+                }
+
+                else
+                {
+                    if (isDarkPalette)
                         ApplyGradientBackground(pnl, Darken(p.SurfaceAlt, 0.7), Darken(p.Surface, 0.8), LinearGradientMode.Vertical, false);
-                    }
-
-
-
-                }
-
-                else if (!IsDarkPalette(p)) //MODO claro
-                {
-
-
-                    if (pnl.Tag is "SubPanel")
-                    {
-                        //         MessageBox.Show("subpanel isdarkpallete (''oscuro'') pa form");
-                        ApplyGradientBackground(pnl, Darken(p.Accent, 0.6), Darken(p.LowAccent, 0.6), LinearGradientMode.Horizontal, false);
-                    }
-
-                    else if (pnl.Tag is "InternalTitleBar")
-                    {
-                        ApplyGradientBackground(pnl, Darken(p.LowAccent, 0.65), Darken(p.Accent, 0.55), LinearGradientMode.Vertical, false);
-                    }
-
-                    else if (pnl.Tag is "ExternalTitleBar")
-                    {
-                        //            if (pnl.Name == "tlpMenu" || pnl.Name == "tableLayoutPanel1")
-                        //                 Debugger.Break();
-                        ApplyGradientBackground(pnl, Darken(p.LowAccent, 0.8), Darken(p.Accent, 0.8), LinearGradientMode.Horizontal, false);
-                    }
-
-                    else if (pnl.Tag is "LowAccented")
-                    {
-                        ApplyGradientBackground(pnl, Darken(p.LowAccent, 0.8), Darken(p.Accent, 0.8), LinearGradientMode.Vertical, false);
-                    }
-
                     else
-                    {
-                        //        if (pnl.Container != null)
-                        //            MessageBox.Show($"Modo claro - TLP + {pnl.Name} + {pnl.Container.ToString()}");
-                        //        else
-                        //            MessageBox.Show($"Modo claro - TLP + {pnl.Name}");
-
                         ApplyGradientBackground(pnl, p.Surface, p.SurfaceAlt, LinearGradientMode.Vertical, false);
-                    }
-
-
-
-                }
-            }
-
-            foreach (var pnl in FindAll<TableLayoutPanel>(form))
-            {
-                if (IsNonPaintable(pnl.Tag))
-                {
-                    RemoveGradientBackground(pnl);
-                    continue;
                 }
 
 
-                if (IsDarkPalette(GetCurrentPalette())) //MODO CLARO
-                {
-                    if (pnl.Tag is "SubPanel")
-                    {
-                        //             MessageBox.Show("subpanel isdarkpallete");
-                        ApplyGradientBackground(pnl, Darken(p.Accent, 0.6), Darken(p.LowAccent, 0.6), LinearGradientMode.Horizontal, false);
-                    }
 
-                    else if (pnl.Tag is "InternalTitleBar")
-                    {
-                        ApplyGradientBackground(pnl, Darken(p.LowAccent, 0.55), Darken(p.Accent, 0.65), LinearGradientMode.Vertical, false);
-                    }
-
-                    else if (pnl.Tag is "ExternalTitleBar")
-                    {
-                        if (pnl.Name == "tlpMenu")
-                            ApplyGradientBackground(pnl, Darken(p.Accent, 0.8), Darken(p.LowAccent, 0.8), LinearGradientMode.Horizontal, false);
-
-                        if (pnl.Name == "tableLayoutPanel1")
-                            ApplyGradientBackground(pnl, Darken(p.LowAccent, 0.8), Darken(p.Accent, 0.8), LinearGradientMode.Horizontal, false);
-
-                        //Debugger.Break();
-
-
-
-                    }
-
-                    else if (pnl.Tag is "LowAccented")
-                    {
-                        ApplyGradientBackground(pnl, Darken(p.LowAccent, 0.8), Darken(p.Accent, 0.8), LinearGradientMode.Vertical, false);
-                    }
-
-                    else
-                    {
-                        //             if (pnl.Container != null)
-                        //                 MessageBox.Show($"Paleta oscura - TLP + {pnl.Name} + {pnl.Container.ToString()}");
-                        //             else
-                        //                 MessageBox.Show($"Paleta oscura - TLP + {pnl.Name}");
-
-                        ApplyGradientBackground(pnl, p.SurfaceAlt, p.Surface, LinearGradientMode.Vertical, false);
-                    }
-
-                }
-
-                else if (!IsDarkPalette(GetCurrentPalette())) //MODO OSCURO
-                {
-
-
-                    if (pnl.Tag is "SubPanel")
-                    {
-                        //            MessageBox.Show("");
-                        ApplyGradientBackground(pnl, Darken(p.Accent, 0.6), Darken(p.LowAccent, 0.6), LinearGradientMode.Horizontal, false);
-                    }
-
-                    else if (pnl.Tag is "InternalTitleBar")
-                    {
-                        ApplyGradientBackground(pnl, Darken(p.LowAccent, 0.55), Darken(p.Accent, 0.65), LinearGradientMode.Vertical, false);
-                    }
-
-                    else if (pnl.Tag is "ExternalTitleBar")
-                    {
-                        //           if (pnl.Name == "tlpMenu" || pnl.Name == "tableLayoutPanel1")
-                        //                Debugger.Break();
-                        ApplyGradientBackground(pnl, Darken(p.LowAccent, 0.8), Darken(p.Accent, 0.8), LinearGradientMode.Horizontal, false);
-                    }
-
-                    else if (pnl.Tag is "LowAccented")
-                    {
-                        ApplyGradientBackground(pnl, Darken(p.LowAccent, 0.8), Darken(p.Accent, 0.8), LinearGradientMode.Vertical, false);
-                    }
-                    else
-                    {
-                        //          if (pnl.Container != null)
-                        //              MessageBox.Show($"Paleta clara - TLP + {pnl.Name} + {pnl.Container.ToString()}");
-                        //          else
-                        //              MessageBox.Show($"Paleta clara - TLP + {pnl.Name}");
-                        ApplyGradientBackground(pnl, p.Surface, p.SurfaceAlt, LinearGradientMode.Vertical, false);
-                    }
-
-
-                }
 
 
 
             }
-
+            //
+            //   foreach (var pnl in FindAll<TableLayoutPanel>(form))
+            //   {
+            //       if (IsNonPaintable(pnl.Tag))
+            //       {
+            //           RemoveGradientBackground(pnl);
+            //           continue;
+            //       }
+            //
+            //
+            //       if (IsDarkPalette(GetCurrentPalette())) //MODO CLARO
+            //       {
+            //           if (pnl.Tag is "SubPanel")
+            //           {
+            //               //             MessageBox.Show("subpanel isdarkpallete");
+            //               ApplyGradientBackground(pnl, Darken(p.Accent, 0.6), Darken(p.LowAccent, 0.6), LinearGradientMode.Horizontal, false);
+            //           }
+            //
+            //           else if (pnl.Tag is "InternalTitleBar")
+            //           {
+            //               ApplyGradientBackground(pnl, Darken(p.LowAccent, 0.55), Darken(p.Accent, 0.65), LinearGradientMode.Vertical, false);
+            //           }
+            //
+            //           else if (pnl.Tag is "ExternalTitleBar")
+            //           {
+            //               if (pnl.Name == "tlpMenu")
+            //                   ApplyGradientBackground(pnl, Darken(p.Accent, 0.8), Darken(p.LowAccent, 0.8), LinearGradientMode.Horizontal, false);
+            //
+            //               if (pnl.Name == "tableLayoutPanel1")
+            //                   ApplyGradientBackground(pnl, Darken(p.LowAccent, 0.8), Darken(p.Accent, 0.8), LinearGradientMode.Horizontal, false);
+            //
+            //           }
+            //
+            //           else if (pnl.Tag is "LowAccented")
+            //           {
+            //               ApplyGradientBackground(pnl, Darken(p.LowAccent, 0.8), Darken(p.Accent, 0.8), LinearGradientMode.Vertical, false);
+            //           }
+            //
+            //           else
+            //           {
+            //               //             if (pnl.Container != null)
+            //               //                 MessageBox.Show($"Paleta oscura - TLP + {pnl.Name} + {pnl.Container.ToString()}");
+            //               //             else
+            //               //                 MessageBox.Show($"Paleta oscura - TLP + {pnl.Name}");
+            //
+            //               ApplyGradientBackground(pnl, p.SurfaceAlt, p.Surface, LinearGradientMode.Vertical, false);
+            //           }
+            //
+            //       }
+            //
+            //       else if (!IsDarkPalette(GetCurrentPalette())) //MODO OSCURO
+            //       {
+            //
+            //
+            //           if (pnl.Tag is "SubPanel")
+            //           {
+            //               ApplyGradientBackground(pnl, Darken(p.Accent, 0.6), Darken(p.LowAccent, 0.6), LinearGradientMode.Horizontal, false);
+            //           }
+            //
+            //           else if (pnl.Tag is "InternalTitleBar")
+            //           {
+            //               ApplyGradientBackground(pnl, Darken(p.LowAccent, 0.55), Darken(p.Accent, 0.65), LinearGradientMode.Vertical, false);
+            //           }
+            //
+            //           else if (pnl.Tag is "ExternalTitleBar")
+            //           {
+            //               ApplyGradientBackground(pnl, Darken(p.LowAccent, 0.8), Darken(p.Accent, 0.8), LinearGradientMode.Horizontal, false);
+            //           }
+            //
+            //           else if (pnl.Tag is "LowAccented")
+            //           {
+            //               ApplyGradientBackground(pnl, Darken(p.LowAccent, 0.8), Darken(p.Accent, 0.8), LinearGradientMode.Vertical, false);
+            //           }
+            //           else
+            //           {
+            //               ApplyGradientBackground(pnl, p.Surface, p.SurfaceAlt, LinearGradientMode.Vertical, false);
+            //           }
+            //
+            //
+            //       }
+            //
+            //
+            //
+            //            }
+            //
         }
 
 

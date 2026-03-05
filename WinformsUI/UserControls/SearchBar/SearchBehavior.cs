@@ -28,13 +28,17 @@ namespace WinformsUI.UserControls.SearchBar
         private ITranslatableControlsManager _transMgr { get; set; }
         private readonly IApplicationSettings _appSettings;
 
-        // --- Datos / Estado ---
+        // --- Datos / Estado Base ---
         private BindingList<T> _items { get; set; }
         private readonly BindingSource _bs = new BindingSource();
         private string _placeholder;
         private bool _placeholderActive = true;
         private bool _isTranslating = false;
         private bool _sortAsc = true;
+
+        // --- Estado de Filtros Avanzados ---
+        private List<string> _advancedFilterValues = new List<string>();
+        private bool _advancedMatchAll = false;
 
         // --- Timer (debounce) ---
         private readonly Timer _debounce = new Timer();
@@ -82,10 +86,9 @@ namespace WinformsUI.UserControls.SearchBar
 
             _dgv.ColumnHeaderMouseClick -= DgvOnHeaderClick;
             _dgv.ColumnHeaderMouseClick += DgvOnHeaderClick;
-            _transMgr.AddString("columnselector.all", _appSettings.ComboBoxPlaceholder);
+            _transMgr?.AddString("columnselector.all", _appSettings.ComboBoxPlaceholder);
             SetupTranslationAndPlaceholder();
         }
-
 
         /// <summary>
         /// Adjunta un TextBox como caja de búsqueda y aplica placeholder.
@@ -111,7 +114,6 @@ namespace WinformsUI.UserControls.SearchBar
                     _transMgr.AddSingleObject(_placeholderProxy, "Text");
                     _transMgr.Apply();
                     _placeholder = _placeholderProxy.Text;
-                    
                 }
             }
 
@@ -139,47 +141,13 @@ namespace WinformsUI.UserControls.SearchBar
             _columnSelector.SelectionChangeCommitted -= ColumnSelectorOnSelectionChangeCommitted;
         }
 
-        public void ExecuteContainsFilter(string columnName, string filterValue)
-        {
-            if (string.IsNullOrWhiteSpace(filterValue) || _placeholderActive)
-            {
-                // Sin filtro → volvemos a la lista completa
-                _bs.DataSource = _items;
-                _dgv.DataSource = _bs;
-                return;
-            }
-
-            // Si tenés ComboBox de columnas, lo respetamos (pero priorizamos el que viene por parámetro)
-            string effectiveColumn = !string.IsNullOrWhiteSpace(columnName)
-                ? columnName
-                : (_columnSelector != null && _columnSelector.SelectedIndex > 0
-                    ? (_columnSelector.SelectedItem as ColumnItem)?.DataPropertyName ?? "0"
-                    : "0");
-
-            // Reutilizamos el presenter (ya hace el Contains internamente)
-            var filtered = _searchPresenter.Filter(_items.ToList(), filterValue, effectiveColumn).ToList();
-
-            _bs.DataSource = filtered;
-            _dgv.DataSource = _bs;
-        }
-
-        //   /// <summary>
-        //   /// Actualiza la lista fuente y re-ejecuta la búsqueda/ordenamiento.
-        //   /// </summary>
-        //   public void UpdateList(List<T> items)
-        //   {
-        //       _items = new List<T>(items ?? new List<T>());
-        //       ExecuteSearch();
-        //   }
-
         // (opcional pero útil y mínimo) Overload si ya tenés una BindingList<T>
         public void UpdateList(BindingList<T> items)
         {
             _items = items ?? new BindingList<T>();
             _dgv.DataSource = _items;
-            ExecuteSearch();
+            ExecuteSearch(); // Ejecutamos la búsqueda para re-aplicar filtros existentes sobre la nueva lista
         }
-
 
         /// <summary>
         /// Si cambian las columnas del DGV, rebindea el ComboBox respetando la selección previa.
@@ -204,33 +172,92 @@ namespace WinformsUI.UserControls.SearchBar
             finally { _rebindingCols = false; }
         }
 
+        // =========================
+        // PIPELINE DE FILTRADO (EL MOTOR)
+        // =========================
+
         /// <summary>
-        /// Ejecuta el filtro usando el presenter. Si no hay texto válido, rebindea la lista original.
+        /// Actualiza el estado de los filtros avanzados y dispara la tubería de filtrado.
+        /// </summary>
+        public void ExecuteContainsFilter(List<string> filterValues, bool matchAll = false)
+        {
+            _advancedFilterValues = filterValues ?? new List<string>();
+            _advancedMatchAll = matchAll;
+            ApplyAllFilters();
+        }
+
+        /// <summary>
+        /// Dispara la tubería de filtrado (usualmente llamado por el debounce del SearchBar).
         /// </summary>
         public void ExecuteSearch()
         {
-            var txt = _tb?.Text ?? string.Empty;
+            ApplyAllFilters();
+        }
 
-            if (_placeholderActive || string.IsNullOrWhiteSpace(txt) || txt == _placeholder)
+        /// <summary>
+        /// Método maestro que encadena los filtros avanzados y la búsqueda por texto.
+        /// </summary>
+        private void ApplyAllFilters()
+        {
+            if (_items == null || !_items.Any()) return;
+
+            // Arrancamos con la lista original
+            IEnumerable<T> query = _items;
+
+            // ==========================================
+            // ETAPA 1: Filtros Avanzados (Categorías / Atributos)
+            // ==========================================
+            if (_advancedFilterValues != null && _advancedFilterValues.Count > 0)
             {
-                _bs.DataSource = _items;       // lista viva (BindingList)
-                _dgv.DataSource = _bs;
-                return;
+                var stringProperties = typeof(T).GetProperties()
+                                                .Where(p => p.PropertyType == typeof(string) && p.CanRead)
+                                                .ToList();
+
+                query = query.Where(item =>
+                {
+                    if (_advancedMatchAll)
+                    {
+                        // LÓGICA ESTRICTA (AND)
+                        return _advancedFilterValues.All(filter =>
+                            stringProperties.Any(prop =>
+                                (prop.GetValue(item) as string)?.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0));
+                    }
+                    else
+                    {
+                        // LÓGICA PERMISIVA (OR)
+                        return _advancedFilterValues.Any(filter =>
+                            stringProperties.Any(prop =>
+                                (prop.GetValue(item) as string)?.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0));
+                    }
+                });
             }
 
-            string columnName = "0";
+            // ==========================================
+            // ETAPA 2: Búsqueda por Texto (SearchBar)
+            // ==========================================
+            var txt = _tb?.Text ?? string.Empty;
 
-            if (_columnSelector != null && _columnSelector.SelectedIndex > 0)
-                columnName = (_columnSelector.SelectedItem as ColumnItem)?.DataPropertyName ?? "0";
+            if (!_placeholderActive && !string.IsNullOrWhiteSpace(txt) && txt != _placeholder)
+            {
+                string columnName = "0";
 
-            // Filtrado: el presenter puede esperar List<T>, por eso ToList()
-            var filtered = _searchPresenter.Filter(_items.ToList(), txt, columnName).ToList();
-            _bs.DataSource = filtered;         // vista filtrada (lista temporal)
+                if (_columnSelector != null && _columnSelector.SelectedIndex > 0)
+                    columnName = (_columnSelector.SelectedItem as ColumnItem)?.DataPropertyName ?? "0";
+
+                // Le pasamos al presenter el query temporal, NO la lista original
+                query = _searchPresenter.Filter(query.ToList(), txt, columnName);
+            }
+
+            // ==========================================
+            // ETAPA 3: Refrescar UI
+            // ==========================================
+            _bs.DataSource = query.ToList();
             _dgv.DataSource = _bs;
         }
 
+
         // =========================
-        // Internals
+        // Internals (Eventos y UI)
         // =========================
 
         private void SetupTranslationAndPlaceholder()
@@ -247,7 +274,7 @@ namespace WinformsUI.UserControls.SearchBar
                 {
                     _tb.Text = _placeholder;
                     _tb.ForeColor = SystemColors.GrayText;
-    }
+                }
             }
             ApplyPlaceholder();
         }
@@ -278,9 +305,9 @@ namespace WinformsUI.UserControls.SearchBar
             TextBoxPlaceholder.Apply
             (
                 tb: _tb,
-                isPlaceholder: true,
+                isPlaceholder: false, // Corrección: acá va false porque estamos sacando el placeholder
                 isPassword: false,
-                normalForeColor: DarkTheme.GetCurrentPalette().TextSecondary,
+                normalForeColor: DarkTheme.GetCurrentPalette().TextPrimary, // Corrección sugerida de UI
                 placeholderForeColor: null,
                 fontSize: 11.00f
             );
@@ -342,6 +369,7 @@ namespace WinformsUI.UserControls.SearchBar
             var colName = _dgv.Columns[e.ColumnIndex]?.DataPropertyName;
             if (string.IsNullOrWhiteSpace(colName)) return;
 
+            // Ordena respetando los filtros actuales (lo que se ve en pantalla)
             var current = (_bs.List as IEnumerable<T>)?.ToList() ?? _items.ToList();
             var sorted = _searchPresenter.Sort(current, colName, _sortAsc).ToList();
 
@@ -364,8 +392,7 @@ namespace WinformsUI.UserControls.SearchBar
             _columnSelector.SelectedIndexChanged -= ColumnSelectorOnSelectionChangeCommitted;
 
             // Texto visible: traducido (no afecta la lógica)
-            
-            string allText = _transMgr.GetString("columnselector.all");
+            string allText = _transMgr != null ? _transMgr.GetString("columnselector.all") : "Todas";
 
             var cols = _dgv.Columns.Cast<DataGridViewColumn>().Select
             (
@@ -391,7 +418,6 @@ namespace WinformsUI.UserControls.SearchBar
         }
 
         private string ComputeColumnsSignature()
-
         {
             var parts = _dgv.Columns.Cast<DataGridViewColumn>()
                 .Select(c => $"{c.Name}|{c.DataPropertyName}|{c.HeaderText}|{c.Visible}")
@@ -416,6 +442,5 @@ namespace WinformsUI.UserControls.SearchBar
             if (_columnSelector != null)
                 _columnSelector.SelectionChangeCommitted -= ColumnSelectorOnSelectionChangeCommitted;
         }
-
     }
 }

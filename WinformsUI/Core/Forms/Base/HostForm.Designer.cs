@@ -39,14 +39,13 @@
             // 
             // internalContainer
             // 
-            this.internalContainer.BackColor = System.Drawing.Color.RosyBrown;
+            this.internalContainer.BackColor = System.Drawing.Color.DimGray;
             this.internalContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.internalContainer.Location = new System.Drawing.Point(0, 31);
             this.internalContainer.Name = "internalContainer";
-            this.internalContainer.Padding = new System.Windows.Forms.Padding(3);
             this.internalContainer.Size = new System.Drawing.Size(1057, 511);
             this.internalContainer.TabIndex = 7;
-            this.internalContainer.Tag = "";
+            this.internalContainer.Tag = "InternalTitleBar";
             // 
             // btnClose
             // 
@@ -146,7 +145,7 @@
             this.Controls.Add(this.tlpTitleBar);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "HostForm";
-            this.Tag = "SubPanel";
+            this.Tag = "";
             this.Text = "HostForm";
             this.tlpTitleBar.ResumeLayout(false);
             this.tlpTitleBar.PerformLayout();

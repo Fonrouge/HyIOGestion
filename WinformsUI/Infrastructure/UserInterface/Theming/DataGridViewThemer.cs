@@ -48,8 +48,6 @@ namespace WinformsUI.Infrastructure.UserInterface.Theming
             // ====================================================================
             AttachCustomScrollbars(dgv, p);
 
-
-
             dgv.EnableHeadersVisualStyles = false;
             dgv.BackgroundColor = p.SurfaceAlt;
 
@@ -72,14 +70,12 @@ namespace WinformsUI.Infrastructure.UserInterface.Theming
 
                     dgv.ColumnHeadersDefaultCellStyle.ForeColor = Darken(ChooseReadableForeground(Darken(p.Accent, -0.8)), -0.5);
                 }
-
-
             }
             else
             {
                 DetachGradientHeaderRenderer(dgv);
                 var headerBg = p.LowAccent;
-                var headerFg = Color.Red; //CÓDIGO DEBUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUG
+                var headerFg = ChooseReadableForeground(p.LowAccent); //CÓDIGO DEBUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUG
                 dgv.ColumnHeadersDefaultCellStyle.BackColor = headerBg;
                 dgv.ColumnHeadersDefaultCellStyle.ForeColor = headerFg;
                 dgv.ColumnHeadersDefaultCellStyle.SelectionBackColor = headerBg;
@@ -98,8 +94,8 @@ namespace WinformsUI.Infrastructure.UserInterface.Theming
             dgv.RowHeadersVisible = false;
             dgv.AllowUserToAddRows = false;
 
-            if (HasTag(dgv.Tag, "AutoFill"))
-                dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            //if (HasTag(dgv.Tag, "AutoFill"))
+            //    dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
             dgv.Disposed -= DgvOnDisposed;
             dgv.Disposed += DgvOnDisposed;
@@ -217,6 +213,8 @@ namespace WinformsUI.Infrastructure.UserInterface.Theming
             var oldFore = e.CellStyle.ForeColor;
             e.PaintContent(r);
             e.CellStyle.ForeColor = oldFore;
+
+
         }
 
 

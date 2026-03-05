@@ -52,7 +52,7 @@ namespace Winforms.Theme
             Application.SetCompatibleTextRenderingDefault(false);
         }
 
-        private static void SetGlobalPalette() => DarkTheme.SetGlobalPalette(DarkTheme.PalettesDark.Oceanic());
+        private static void SetGlobalPalette() => DarkTheme.SetGlobalPalette(DarkTheme.PalettesLight.Paper());
 
         private static void CreateServiceCollection() => _services = new ServiceCollection();
 

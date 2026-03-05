@@ -37,12 +37,12 @@ namespace WinformsUI.Features.ProductCRUDL
             WireSpecificEvents();
             WireCommonEvents();
             AddTranslatables();
-            DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
+            ApplyGlobalPalette();
         }
 
 
-        
-        public void SetSearchFilters<T>(IEnumerable<T> categories) where T: CategoryDTO
+
+        public void SetSearchFilters<T>(IEnumerable<T> categories) where T : CategoryDTO
         {
             _dgvForm.ConfigureFilters<CategoryDTO>(categories.ToList());
         }
@@ -110,8 +110,11 @@ namespace WinformsUI.Features.ProductCRUDL
 
         public void OpenCreationForm() => ((Form)_formsFactory.ProductCreationForm(this)).Show();
 
-        public new void ApplyGlobalPalette() => DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
-
+        public new void ApplyGlobalPalette()
+        {
+            DarkTheme.RedrawBorders = true;
+            DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
+        }
         public void ShowOperationResult(OperationResult<ProductDTO> opRes)
         {
             if (!opRes.Errors.Any()) MessageBox.Show("Ok" + $"No");

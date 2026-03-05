@@ -87,7 +87,7 @@ Active=Active
 
 
 =============PaymentDTO=============
-Amount=Mono
+Amount=Monto
 CreationDate=Fecha creación
 EffectiveDate=Fecha de pago
 Method=Método de pago
@@ -109,6 +109,7 @@ Stock=Stock
 Categories=Categorías
 IsActive=Activo
 CreatedAt=Fecha creación
+CategoriesName=Categorías
 
 Name=Name
 Description=Description
@@ -117,6 +118,7 @@ Stock=Stock
 Categories=Categories
 IsActive=IsActive
 CreatedAt=CreatedAt
+CategoriesName=CategoriesName
 
 
 =============SaleDTO=============
@@ -132,7 +134,7 @@ TotalAmount=TotalAmount
 =============SuppliersDTO=============
 CompanyName=Nombre de la empresa
 ContactName=Nombre de contacto
-TaxId=Tipo deocumento
+TaxId=Tipo documento
 Phone=Teléfono
 Mail=Email
 Observations=Observaciones
