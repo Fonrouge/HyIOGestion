@@ -16,18 +16,12 @@ namespace BLL.LogicLayers // Ajusta el namespace según tu proyecto
             {
                 Id = entity.Id,
                 Name = entity.Name.Value,
-                Description = entity.Description.Value,
-
-                // El DTO espera tipos numéricos. Extraemos el Value del VO.
-                // (Nota: Asumo que casteamos Stock a int si en el VO lo dejaste como decimal)
+                Description = entity.Description.Value,              
                 Price = entity.Price.Value,
                 Stock = (int)entity.Stock.Value,
-
                 Categories = CategoryMapper.ToListDTO(entity.Categories).ToList(),
-
-                IsActive = entity.Active,     // Ojo a la diferencia de nombres (Active vs IsActive)
+                IsActive = entity.Active,     
                 CreatedAt = entity.CreatedAt
-                // IsDeleted no está en el DTO, así que no se mapea hacia afuera.
             };
         }
 
@@ -35,29 +29,27 @@ namespace BLL.LogicLayers // Ajusta el namespace según tu proyecto
         {
             if (dto == null) return null;
 
-            // Si el ID es vacío, es un producto nuevo
             if (dto.Id == Guid.Empty)
             {
                 return Product.Create(
                     dto.Name,
                     dto.Description,
-                    dto.Price.ToString(), // El Factory del Domain espera un string crudo
-                    dto.Stock.ToString(), // El Factory del Domain espera un string crudo
+                    dto.Price, 
+                    dto.Stock, 
                     CategoryMapper.ToListEntity(dto.Categories)
                 );
             }
 
-            // Si ya tiene ID, reconstruimos el objeto existente
             return Product.Reconstitute(
                 dto.Id,
                 dto.Name,
                 dto.Description,
-                dto.Price.ToString(),
-                dto.Stock.ToString(),
+                dto.Price,
+                dto.Stock,
                 CategoryMapper.ToListEntity(dto.Categories),
                 dto.IsActive,
                 dto.CreatedAt,
-                false // Al no existir en el DTO, asumimos false, o deberías agregarlo al DTO si viaja desde la UI.
+                false 
             );
         }
 

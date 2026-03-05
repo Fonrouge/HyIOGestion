@@ -77,7 +77,7 @@ namespace BLL.UseCases //=======================================================
                 // 2. FASE DE LECTURA CRUZADA (Negocio): Buscamos al empleado asociado
                 // Cambiamos el connection string ANTES de abrir cualquier transacción
                 _uow.SetConnectionString(_appSettings.EntitiesConnection);
-                var employee = await _uow.EmployeeRepo.GetById(user.EmployeeId);
+                var employee = await _uow.EmployeeRepo.GetByIdAsync(user.EmployeeId);
 
                 if (employee == null)
                 {

@@ -46,6 +46,9 @@ namespace Shared
         public string ClientTableName { get; } = "Clients";
         public string SupplierTableName { get; } = "Suppliers";
         public string SaleTableName { get; } = "Sales";
+        public string PaymentTableName { get; } = "Payments";
+        public string ProductTableName { get; } = "Products";
+        public string CategoryTableName { get; } = "Categories";
 
         public string SearchBarPlaceHolder { get; } = "Búsqueda";
         public string SuccessOnOperation { get; } = "Operación existosa:";

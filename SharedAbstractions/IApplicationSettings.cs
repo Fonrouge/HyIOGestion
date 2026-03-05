@@ -13,6 +13,9 @@
         string EmployeeTableName { get; }
         string SupplierTableName { get; }
         string SaleTableName { get; }
+        string PaymentTableName { get; }
+        string ProductTableName { get; }
+        string CategoryTableName { get; }
 
         //UI
         string SearchBarPlaceHolder { get; }

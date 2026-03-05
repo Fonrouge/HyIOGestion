@@ -24,32 +24,40 @@ namespace DAL.Persistence.MicrosoftSQL
             _currentTransaction = (SqlTransaction)transaction;
         }
 
-        public Task Create(Category entity)
+        // --- MÉTODOS PÚBLICOS ---
+
+        public async Task CreateAsync(Category entity)
         {
             string query = @"INSERT INTO Categories (Id_Category, Name, Description) 
                              VALUES (@Id, @Name, @Description)";
 
-            return ExecuteNonQueryAsync(query, cmd => SetParameters(cmd, entity));
+            // Usamos await para asegurar que la tarea se complete antes de salir del método
+            await ExecuteNonQueryAsync(query, cmd => SetParameters(cmd, entity));
         }
 
-        public Task Update(Category entity)
+        public async Task UpdateAsync(Category entity)
         {
             string query = @"UPDATE Categories 
                              SET Name = @Name, Description = @Description 
                              WHERE Id_Category = @Id";
 
-            return ExecuteNonQueryAsync(query, cmd => SetParameters(cmd, entity));
+            await ExecuteNonQueryAsync(query, cmd => SetParameters(cmd, entity));
         }
 
-        public Task Delete(Guid entityId)
+        public async Task DeleteAsync(Guid entityId)
         {
-            string query = "DELETE FROM Categories WHERE Id_Category = @Id";
+            // 1. Definimos las queries
+            string deleteRelations = "DELETE FROM ProductsCategories WHERE Id_Category = @Id";
+            string deleteCategory = "DELETE FROM Categories WHERE Id_Category = @Id";
 
-            return ExecuteNonQueryAsync(query, cmd =>
+            await ExecuteNonQueryAsync(deleteRelations, cmd =>
+                cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = entityId }));
+
+            await ExecuteNonQueryAsync(deleteCategory, cmd =>
                 cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = entityId }));
         }
 
-        public async Task<Category> GetById(Guid id)
+        public async Task<Category> GetByIdAsync(Guid id)
         {
             Category category = null;
             string query = "SELECT Id_Category, Name, Description FROM Categories WHERE Id_Category = @Id";
@@ -71,7 +79,21 @@ namespace DAL.Persistence.MicrosoftSQL
             return categories;
         }
 
-        // --- MÉTODOS PRIVADOS DE INFRAESTRUCTURA (EL MOTOR) ---
+        public async Task<Category> GetByNameAsync(string name)
+        {
+            Category category = null;
+            string query = "SELECT Id_Category, Name, Description FROM Categories WHERE Name = @Name";
+
+            await ExecuteReaderAsync(query,
+                cmd => cmd.Parameters.Add(new SqlParameter("@Name", SqlDbType.VarChar) { Value = (object)name ?? DBNull.Value }),
+                reader => category = Map(reader));
+
+            return category;
+        }
+
+        // --- MOTOR ASÍNCRONO (INFRAESTRUCTURA) ---
+
+
 
         private async Task ExecuteNonQueryAsync(string query, Action<SqlCommand> parameterSetter)
         {
@@ -85,17 +107,20 @@ namespace DAL.Persistence.MicrosoftSQL
                 using (var cmd = new SqlCommand(query, conn))
                 {
                     if (isExternalConn) cmd.Transaction = _currentTransaction;
-
                     parameterSetter?.Invoke(cmd);
 
                     if (!isExternalConn) await conn.OpenAsync();
-
                     await cmd.ExecuteNonQueryAsync();
                 }
             }
             finally
             {
-                if (!isExternalConn) conn.Dispose();
+                // Solo cerramos la conexión si nosotros la creamos (no es una transacción externa)
+                if (!isExternalConn)
+                {
+                    conn.Close();
+                    conn.Dispose();
+                }
             }
         }
 
@@ -111,7 +136,6 @@ namespace DAL.Persistence.MicrosoftSQL
                 using (var cmd = new SqlCommand(query, conn))
                 {
                     if (isExternalConn) cmd.Transaction = _currentTransaction;
-
                     parameterSetter?.Invoke(cmd);
 
                     if (!isExternalConn) await conn.OpenAsync();
@@ -127,17 +151,19 @@ namespace DAL.Persistence.MicrosoftSQL
             }
             finally
             {
-                if (!isExternalConn) conn.Dispose();
+                if (!isExternalConn)
+                {
+                    conn.Close();
+                    conn.Dispose();
+                }
             }
         }
 
-        // --- MAPEO Y PARÁMETROS ---
+        // --- HELPERS ---
 
         private void SetParameters(SqlCommand cmd, Category entity)
         {
             cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = entity.Id });
-
-            // Asumimos VarChar para los textos
             cmd.Parameters.Add(new SqlParameter("@Name", SqlDbType.VarChar) { Value = (object)entity.Name ?? DBNull.Value });
             cmd.Parameters.Add(new SqlParameter("@Description", SqlDbType.VarChar) { Value = (object)entity.Description ?? DBNull.Value });
         }

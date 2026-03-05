@@ -5,6 +5,6 @@ namespace BLL.LogicLayers.Payments
 {
     public interface IUCCreatePayment
     {
-        Task<OperationResult<PaymentDTO>> Execute(PaymentDTO dto);
+        Task<OperationResult<PaymentDTO>> ExecuteAsync(PaymentDTO dto);
     } 
 }

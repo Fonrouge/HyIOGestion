@@ -51,8 +51,8 @@ namespace BLL.LogicLayers.Sales
 
                 foreach (var sale in salesListDto)
                 {
-                    sale.Employee = EmployeeMapper.ToDto(await _uow.EmployeeRepo.GetById(sale.EmployeeId));
-                    sale.Client = ClientMapper.ToDto(await _uow.ClientRepo.GetById(sale.ClientId));
+                    sale.Employee = EmployeeMapper.ToDto(await _uow.EmployeeRepo.GetByIdAsync(sale.EmployeeId));
+                    sale.Client = ClientMapper.ToDto(await _uow.ClientRepo.GetByIdAsync(sale.ClientId));
                 }
 
                 await _uow.CommitAsync();

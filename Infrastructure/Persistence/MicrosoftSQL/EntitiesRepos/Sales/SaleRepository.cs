@@ -32,7 +32,7 @@ namespace DAL.Persistence.MicrosoftSQL
 
         public void SetTransaction(object transaction) => _currentTransaction = (SqlTransaction)transaction;
 
-        public async Task Create(Sale entity)
+        public async Task CreateAsync(Sale entity)
         {
             string query = @"
                 INSERT INTO Sales 
@@ -44,7 +44,7 @@ namespace DAL.Persistence.MicrosoftSQL
             await SyncSaleDetails(entity.Id, entity.Items);
         }
 
-        public async Task Update(Sale entity)
+        public async Task UpdateAsync(Sale entity)
         {
             string query = @"
                 UPDATE Sales 
@@ -61,13 +61,13 @@ namespace DAL.Persistence.MicrosoftSQL
             await SyncSaleDetails(entity.Id, entity.Items);
         }
 
-        public async Task Delete(Guid entityId)
+        public async Task DeleteAsync(Guid entityId)
         {
             string query = "UPDATE Sales SET IsDeleted = 1, Active = 0 WHERE Id = @Id";
             await ExecuteNonQueryAsync(query, cmd => cmd.Parameters.AddWithValue("@Id", entityId));
         }
 
-        public async Task<Sale> GetById(Guid id)
+        public async Task<Sale> GetByIdAsync(Guid id)
         {
             SaleHeader header = null;
 

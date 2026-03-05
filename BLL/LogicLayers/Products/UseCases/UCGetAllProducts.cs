@@ -6,7 +6,6 @@ using Domain.Infrastructure;
 using Domain.Repositories;
 using Shared;
 using Shared.Sessions;
-using SharedAbstractions.ArchitecturalMarkers;
 using System;
 using System.Collections.Generic;
 using System.Linq;

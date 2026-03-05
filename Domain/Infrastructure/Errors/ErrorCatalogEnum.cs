@@ -95,6 +95,14 @@ namespace Domain.Exceptions
                          InformativeMessage = "Falla en el mapeo de la entidad o timeout en la consulta.",
                          Table = "",
                          Severity = SeverityEnum.WARNING)]
-        DataLoadError
+        DataLoadError,
+        
+        [ErrorDescriptor(Code = "BUSI_004",
+                         Message = "Registro no encontrado.",
+                         RecommendedAction = "Verifique si el identificador es correcto o si el registro fue eliminado por otro usuario.",
+                         InformativeMessage = "La consulta no devolvió ningún resultado para los criterios especificados.",
+                         Table = "",
+                         Severity = SeverityEnum.INFO)]
+        NotFound,
     }
 }

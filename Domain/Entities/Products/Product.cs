@@ -32,8 +32,8 @@ namespace Domain.Entities
         (
             string rawName,
             string rawDescription,
-            string rawPrice,
-            string rawStock,
+            decimal rawPrice,
+            decimal rawStock,
             IEnumerable<Category> categories = null
         )
         {
@@ -59,8 +59,8 @@ namespace Domain.Entities
             Guid id,
             string rawName,
             string rawDescription,
-            string rawPrice,
-            string rawStock,
+            decimal rawPrice,
+            decimal rawStock,
             IEnumerable<Category> categories,
             bool active,
             DateTime createdAt,
@@ -100,6 +100,45 @@ namespace Domain.Entities
         public void Deactivate()
         {
             Active = false;
+        }
+        /// <summary>
+        /// Reduce la cantidad de stock disponible. 
+        /// Valida que no se intente reducir una cantidad negativa y que haya stock suficiente.
+        /// </summary>
+     // --- COMPORTAMIENTO (Transiciones de Estado Seguras) ---
+
+        /// <summary>
+        /// Reduce el stock. Al usar decimal, soportamos ventas por peso, volumen o fracción.
+        /// </summary>
+        public void ReduceStock(decimal quantity)
+        {
+            if (quantity <= 0)
+                throw new ArgumentException("La cantidad a descontar debe ser mayor a cero.");
+
+            // Acceso directo al valor decimal del VO (sin parseos lentos)
+            decimal currentStock = this.Stock.Value;
+
+            if (currentStock < quantity)
+                throw new InvalidOperationException($"Stock insuficiente para {Name.Value}. Disponible: {currentStock}, Solicitado: {quantity}");
+
+            decimal newStockValue = currentStock - quantity;
+
+            // El VO se encarga de validar que el resultado final sea coherente (ej: >= 0)
+            this.Stock = StockVO.Create(newStockValue);
+        }
+
+        /// <summary>
+        /// Incrementa el stock por ingresos de mercadería o devoluciones.
+        /// </summary>
+        public void AddStock(decimal quantity)
+        {
+            if (quantity <= 0)
+                throw new ArgumentException("La cantidad a sumar debe ser mayor a cero.");
+
+            decimal currentStock = this.Stock.Value;
+            decimal newStockValue = currentStock + quantity;
+
+            this.Stock = StockVO.Create(newStockValue);
         }
 
         public override string ToString()

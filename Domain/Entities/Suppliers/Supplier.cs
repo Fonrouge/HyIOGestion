@@ -1,6 +1,5 @@
 ﻿using Domain.BaseContracts;
-using Domain.Entities.Clients.ValueObjects;
-using Domain.Entities.Suppliers.ValueObjects; // Asegúrate de crear este namespace
+using Domain.Entities.Suppliers.ValueObjects;
 using System;
 
 namespace Domain.Entities
@@ -10,39 +9,50 @@ namespace Domain.Entities
         // --- PROPIEDADES DE DOMINIO (Encapsuladas con Value Objects) ---
         public CompanyNameVO CompanyName { get; private set; }
         public ContactNameVO ContactName { get; private set; }
-        public SupplierTaxIdVO TaxId { get; private set; } // CUIT/RUT/DNI
-        public SupplierPhoneVO Phone { get; private set; }
         public SupplierEmailVO Mail { get; private set; }
-        public string Observations { get; private set; } // Puede quedar como string si no requiere validación compleja
+        public SupplierPhoneVO Phone { get; private set; }
+        public SupplierTaxIdVO TaxId { get; private set; }
+        public SupplierAddressVO Address { get; private set; } 
+        public SupplierCityVO City { get; private set; }        
+        public SupplierObservationsVO Observations { get; private set; } 
+
 
         // --- CAMPOS TÉCNICOS Y DE ESTADO ---
         public string DVH { get; private set; }
         public bool Active { get; private set; }
         public bool IsDeleted { get; private set; }
 
+
+
         // Constructor privado para forzar el uso de Factory Methods
         private Supplier() { }
+
 
         /// <summary>
         /// ÚNICO punto de creación para un NUEVO Supplier.
         /// </summary>
-        public static Supplier Create(
+        public static Supplier Create
+        (
             string rawCompanyName,
             string rawContactName,
             string rawTaxId,
             string rawPhone,
             string rawMail,
-            string observations = "")
+            string rawAddress,
+            string rawCity,   
+            string observations = ""
+        )
         {
             return new Supplier
             {
-                // El Id se genera en EntityBase
-                CompanyName = CompanyNameVO.Create(rawCompanyName.Trim().ToUpper()),
-                ContactName = ContactNameVO.Create(rawContactName.Trim().ToUpper()),
-                TaxId = SupplierTaxIdVO.Create(rawTaxId.Trim().ToUpper()),
-                Phone = SupplierPhoneVO.Create(rawPhone.Trim().ToUpper()),
-                Mail = SupplierEmailVO.Create(rawMail.Trim().ToLower()),
-                Observations = observations?.Trim() ?? string.Empty,
+                CompanyName = CompanyNameVO.Create(rawCompanyName), 
+                ContactName = ContactNameVO.Create(rawContactName),
+                TaxId = SupplierTaxIdVO.Create(rawTaxId),
+                Phone = SupplierPhoneVO.Create(rawPhone),
+                Mail = SupplierEmailVO.Create(rawMail),
+                Address = SupplierAddressVO.Create(rawAddress), 
+                City = SupplierCityVO.Create(rawCity),          
+                Observations = SupplierObservationsVO.Create(observations),
                 DVH = string.Empty,
                 Active = true,
                 IsDeleted = false
@@ -52,17 +62,21 @@ namespace Domain.Entities
         /// <summary>
         /// Reconstruye un Supplier EXISTENTE desde la base de datos.
         /// </summary>
-        public static Supplier Reconstitute(
+        public static Supplier Reconstitute
+        (
             Guid id,
             string rawCompanyName,
             string rawContactName,
             string rawTaxId,
             string rawPhone,
             string rawMail,
+            string rawAddress, 
+            string rawCity,    
             string observations,
             string dvh,
             bool active,
-            bool isDeleted)
+            bool isDeleted
+        )
         {
             return new Supplier
             {
@@ -72,19 +86,17 @@ namespace Domain.Entities
                 TaxId = SupplierTaxIdVO.Create(rawTaxId),
                 Phone = SupplierPhoneVO.Create(rawPhone),
                 Mail = SupplierEmailVO.Create(rawMail),
-                Observations = observations,
+                Address = SupplierAddressVO.Create(rawAddress),
+                City = SupplierCityVO.Create(rawCity),         
+                Observations = SupplierObservationsVO.Create(observations),
                 DVH = dvh ?? string.Empty,
                 Active = active,
                 IsDeleted = isDeleted
             };
         }
 
-        // --- COMPORTAMIENTO (Transiciones de Estado) ---
 
-        public void UpdateObservations(string newObservations)
-        {
-            Observations = newObservations?.Trim() ?? string.Empty;
-        }
+        // --- COMPORTAMIENTO (Transiciones de Estado) ---
 
         public void MarkAsDeleted()
         {
@@ -105,13 +117,7 @@ namespace Domain.Entities
             Active = false;
         }
 
-        public void UpdateDVH(string newDvh)
-        {
-            if (string.IsNullOrWhiteSpace(newDvh))
-                throw new ArgumentException("El DVH no puede estar vacío.", nameof(newDvh));
-            DVH = newDvh;
-        }
-
+    
         public override string ToString()
             => $"{CompanyName.Value} (TaxId: {TaxId.Value})";
     }

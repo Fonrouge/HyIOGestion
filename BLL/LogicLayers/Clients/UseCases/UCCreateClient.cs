@@ -65,7 +65,7 @@ namespace BLL.LogicLayers.Clients  //===========================================
                 await _uow.BeginTransactionAsync();
 
                 // 3. Validar Usuario y Permisos
-                var currentUser = await _uow.UserRepo.GetById(_sessionProvider.Current.CurrentUserId);
+                var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
 
                 // Evaluamos el permiso (solo necesitamos el específico de esta acción)
                 if (!currentUser.HasPermission("CLIENT_CREATE"))
@@ -105,7 +105,7 @@ namespace BLL.LogicLayers.Clients  //===========================================
 
 
                 // 6. Persistencia principal
-                await _uow.ClientRepo.Create(newClientEntity);
+                await _uow.ClientRepo.CreateAsync(newClientEntity);
 
                 // 7. Integridad Vertical (DVV)
                 await UpdateDVVAsync(_tableNameClient, _appSettings.EntitiesConnection);
@@ -143,7 +143,7 @@ namespace BLL.LogicLayers.Clients  //===========================================
                 {
                     await _errorsRepository.CreateAsync(dbError);
                 }
-                catch { /* Ignoramos fallos al loguear para no romper el flujo de retorno */ }
+                catch { }
 
 
                 // Emitimos error limpio a la UI

@@ -61,7 +61,7 @@ namespace Presenter.ForSupplier
         {
             if (e == null) throw new ArgumentNullException(nameof(e));
 
-            var opRes = await _ucDelete.Execute(e);
+            var opRes = await _ucDelete.ExecuteAsync(e);
             ShowResult(opRes);
 
             // Refrescar lista si salió bien

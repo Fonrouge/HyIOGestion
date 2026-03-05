@@ -5,6 +5,6 @@ namespace BLL.LogicLayers.Suppliers
 {
     public interface IUCDeleteSupplier
     {
-        Task<OperationResult<SupplierDTO>> Execute(SupplierDTO dto);
+        Task<OperationResult<SupplierDTO>> ExecuteAsync(SupplierDTO dto);
     }
 }

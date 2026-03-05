@@ -5,6 +5,6 @@ namespace BLL.LogicLayers.Products
 {
     public interface IUCUpdateProduct
     {
-        Task<OperationResult<ProductDTO>> Execute(ProductDTO dto);
+        Task<OperationResult<ProductDTO>> ExecuteAsync(ProductDTO dto);
     }
 }

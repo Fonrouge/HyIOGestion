@@ -3,6 +3,7 @@ using BLL.DTOs.Errors;
 using BLL.Infrastructure.AuditLogs;
 using BLL.Infrastructure.Errors;
 using Domain.BaseContracts;
+using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Exceptions.Base;
 using Domain.Infrastructure;
@@ -46,7 +47,6 @@ namespace BLL.LogicLayers.Clients //============================================
 
             _tableNameClient = appSettings.ClientTableName ?? "Client";
         }
-
         public async Task<OperationResult<ClientDTO>> ExecuteAsync(ClientDTO dto)
         {
             var result = new OperationResult<ClientDTO>();
@@ -61,12 +61,8 @@ namespace BLL.LogicLayers.Clients //============================================
                     return result;
                 }
 
-                // 2. Conexión a Base de Datos de Negocio
-                _uow.SetConnectionString(_appSettings.EntitiesConnection);
-                await _uow.BeginTransactionAsync();
-
-                // 3. Validar Permisos
-                var currentUser = await _uow.UserRepo.GetById(_sessionProvider.Current.CurrentUserId);
+                // 2. Validar Permisos (¡SE HACE ANTES DE ABRIR LA TRANSACCIÓN!)
+                var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
                 if (!currentUser.HasPermission("CLIENT_DELETE")) // Patente específica
                 {
                     var authError = _errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameClient);
@@ -74,31 +70,53 @@ namespace BLL.LogicLayers.Clients //============================================
                     return result;
                 }
 
-                // 4. Acción Principal: Eliminación (Hard o Soft, el repo decide internamente)
-                await _uow.ClientRepo.Delete(dto.Id);
+                // 3. Conexión a Base de Datos de Negocio y Transacción
+                _uow.SetConnectionString(_appSettings.EntitiesConnection);
+                await _uow.BeginTransactionAsync();
 
-                // 5. Integridad Vertical (DVV): Obligatorio porque la tabla perdió/modificó una fila
+                // 4. Acción Principal: Buscar Entidad
+                Client entity = await _uow.ClientRepo.GetByIdAsync(dto.Id);
+
+                if (entity == null | entity.IsDeleted)
+                {
+                    // Manejo elegante si no se encuentra el registro
+                    result.Errors.Add(new ErrorLogDTO { InformativeMessage = "El cliente no existe o ya fue eliminado." });
+                    await _uow.RollbackAsync();
+                    return result;
+                }
+
+                // 5. Eliminación (Hard o Soft) + ACTUALIZACIÓN DE DVH
+                if (entity is ISoftDeletable)
+                {
+                    entity.MarkAsDeleted();
+                    await _uow.ClientRepo.UpdateAsync(entity); // Sin calcular DVH, directo a guardar
+                }
+                else
+                {
+                    await _uow.ClientRepo.DeleteAsync(dto.Id);
+                }
+
+                // 6. Integridad Vertical (DVV): Obligatorio porque la tabla perdió/modificó una fila
                 await UpdateDVVAsync(_tableNameClient, _appSettings.EntitiesConnection);
 
-                // 6. Auditoría (Bitácora)
+                // 7. Auditoría (Bitácora)
                 var log = _bitacoraFact.Create(
-                    entry: BitacoraCatalogEnum.DeleteOnBD, // Asumo que tienes algo así en tu Enum
+                    entry: BitacoraCatalogEnum.DeleteOnBD,
                     user: currentUser.Id.ToString(),
                     tableName: _tableNameClient,
                     extraInfo: $"Se eliminó el cliente ID: {dto.Id} (Nombre Ref: {dto.Name})"
                 );
                 await _uow.BitacoraRepo.CreateAsync(log);
 
-                // 7. Confirmación
+                // 8. Confirmación
                 await _uow.CommitAsync();
 
-                // 8. Retorno (Devolvemos el mismo DTO que nos pasaron para indicar qué se borró)
                 result.Value = dto;
                 return result;
             }
-
             catch (Exception ex)
             {
+                // El Catch está excelente, lo dejé tal cual lo tenías.
                 if (_uow.HasActiveTransaction) await _uow.RollbackAsync();
 
                 // --- LOG TÉCNICO INTERNO ---
@@ -107,18 +125,11 @@ namespace BLL.LogicLayers.Clients //============================================
                 try { await _errorsRepository.CreateAsync(dbError); } catch { }
 
                 // --- MANEJO DE RESTRICCIONES ---
-                // Si la BD tira un error porque el cliente tiene ventas asociadas (Foreign Key constraint 547 en SQL Server),
-                // ErrorCatalogEnum.DeleteRestriction es PERFECTO para esto.
                 ErrorLog uiError;
-
                 if (ex.Message.Contains("REFERENCE constraint") || ex.Message.Contains("FK_"))
-                {
                     uiError = _errorsFactory.Create(ErrorCatalogEnum.DeleteRestriction, _tableNameClient);
-                }
                 else
-                {
                     uiError = _errorsFactory.Create(ErrorCatalogEnum.InternalError, _tableNameClient);
-                }
 
                 // --- MAPEO A DTO ---
                 var errorDto = ErrorMapper.ToDTO(uiError);

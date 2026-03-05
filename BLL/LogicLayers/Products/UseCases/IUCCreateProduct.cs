@@ -5,6 +5,6 @@ namespace BLL.LogicLayers.Products
 {
     public interface IUCCreateProduct
     {
-        Task<OperationResult<ProductDTO>> Execute(ProductDTO dto);
+        Task<OperationResult<ProductDTO>> ExecuteAsync(ProductDTO dto);
     } 
 }

@@ -73,7 +73,7 @@ namespace BLL.LogicLayers.Suppliers
                 await _uow.BeginTransactionAsync();
 
                 // 3. Validar Usuario y Permisos
-                var currentUser = await _uow.UserRepo.GetById(_sessionProvider.Current.CurrentUserId);
+                var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
 
                 if (!currentUser.HasPermission("SUPPLIER_CREATE")) // Patente específica
                 {
@@ -110,13 +110,12 @@ namespace BLL.LogicLayers.Suppliers
 
                 // 5. Mapeo a Entidad (KISS)
                 var newSupplierEntity = SupplierMapper.ToEntity(dto);
-                newSupplierEntity.Id = Guid.NewGuid(); // Garantizamos un ID fresco
 
                 // Si Supplier tuviera DVH en tu modelo de dominio, lo calcularías aquí:
                 // newSupplierEntity.DVH = IntegrityService.GetIntegrityHash(newSupplierEntity.Id, newSupplierEntity.TaxId, newSupplierEntity.CompanyName);
 
                 // 6. Persistencia principal
-                await _uow.SupplierRepo.Create(newSupplierEntity);
+                await _uow.SupplierRepo.CreateAsync(newSupplierEntity);
 
                 // 7. Integridad Vertical (DVV)
                 await UpdateDVVAsync(_tableNameSupplier, _appSettings.EntitiesConnection);

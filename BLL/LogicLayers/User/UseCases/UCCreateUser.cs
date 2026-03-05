@@ -63,7 +63,7 @@ namespace BLL.UseCases
                 return result;
             }
 
-            var currentUser = await _uow.UserRepo.GetById(_sessionProvider.Current.CurrentUserId);
+            var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
 
             if (!currentUser.HasPermission("USER_CREATE"))
             {
@@ -116,7 +116,7 @@ namespace BLL.UseCases
                 _uow.SetConnectionString(_appSettings.EntitiesConnection);
                 await _uow.BeginTransactionAsync();
 
-                await _uow.EmployeeRepo.Create(employeeEntity);
+                await _uow.EmployeeRepo.CreateAsync(employeeEntity);
                 await UpdateDVVAsync(_tableNameEmployee, _appSettings.EntitiesConnection);
 
                 await _uow.CommitAsync(); // Empleado guardado con éxito
@@ -137,7 +137,7 @@ namespace BLL.UseCases
                 _uow.SetConnectionString(_appSettings.SecurityConnection);
                 await _uow.BeginTransactionAsync();
 
-                await _uow.UserRepo.Create(userEntity);
+                await _uow.UserRepo.CreateAsync(userEntity);
                 await UpdateDVVAsync(_tableNameUser, _appSettings.SecurityConnection);
 
                 var log = _bitacoraFact.Create(
@@ -201,7 +201,7 @@ namespace BLL.UseCases
                 await _uow.BeginTransactionAsync();
 
                 // 1. Borramos el empleado huérfano
-                await _uow.EmployeeRepo.Delete(employeeId);
+                await _uow.EmployeeRepo.DeleteAsync(employeeId);
 
                 // 2. CRÍTICO: Como alteramos la tabla, recalculamos el DVV para no dejarla corrupta
                 await UpdateDVVAsync(_tableNameEmployee, _appSettings.EntitiesConnection);

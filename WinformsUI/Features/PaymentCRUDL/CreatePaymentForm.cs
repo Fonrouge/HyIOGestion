@@ -97,9 +97,9 @@ namespace WinformsUI.Features.PaymentCRUDL
             var dto = new PaymentDTO()
             {
                 //Id = Automático
-                Amount = txtAmount.Text,
-                EffectiveDate = txtEffectiveDate.Text,
-                ClientId = txtClient.Text,
+                Amount = decimal.Parse(txtAmount.Text),
+                EffectiveDate = DateTime.Parse(txtEffectiveDate.Text),
+                ClientId = Guid.Parse(txtClient.Text),
                 Method = txtMethod.Text,
                 Reference = txtReference.Text
             };

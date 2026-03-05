@@ -3,6 +3,7 @@ using BLL.Infrastructure.AuditLogs;
 using BLL.Infrastructure.Errors;
 using BLL.LogicLayer;
 using BLL.LogicLayers;
+using BLL.LogicLayers.Categories;
 using BLL.LogicLayers.Clients;
 using BLL.LogicLayers.Employees;
 using BLL.LogicLayers.Payments;
@@ -133,24 +134,26 @@ namespace Bootstrapper
             //Employee
             services.AddTransient<IUCGetAllEmployees, UCGetAllEmployees>();
             services.AddTransient<IUCCreateEmployee, UCCreateEmployee>();
-            services.AddTransient<IUCUpdateEmployee, UCUpdateEmployeeMOCK>();
-            services.AddTransient<IUCDeleteEmployee, UCDeleteEmployeeMOCK>();
+            services.AddTransient<IUCUpdateEmployee, UCUpdateEmployee>();
+            services.AddTransient<IUCDeleteEmployee, UCDeleteEmployee>();
 
 
             //Payment
             services.AddTransient<IUCGetAllPayments, UCGetAllPayments>();
-            services.AddTransient<IUCCreatePayment, UCCreatePaymentMOCK>();
-            services.AddTransient<IUCUpdatePayment, UCUpdatePaymentMOCK>();
-            services.AddTransient<IUCDeletePayment, UCDeletePaymentMOCK>();
+            services.AddTransient<IUCCreatePayment, UCCreatePayment>();
+            services.AddTransient<IUCUpdatePayment, UCUpdatePayment>();
+            services.AddTransient<IUCDeletePayment, UCDeletePayment>();
 
 
             //Products + it's categories
             services.AddTransient<IUCGetAllProducts, UCGetAllProducts>();
-            services.AddTransient<IUCCreateProduct, UCCreateProductMOCK>();
-            services.AddTransient<IUCUpdateProduct, UCUpdateProductMOCK>();
-            services.AddTransient<IUCDeleteProduct, UCDeleteProductMOCK>();
-
+            services.AddTransient<IUCCreateProduct, UCCreateProduct>();
+            services.AddTransient<IUCUpdateProduct, UCUpdateProduct>();
+            services.AddTransient<IUCDeleteProduct, UCDeleteProduct>();
+            
+            services.AddTransient<IUCCreateCategory, UCCreateCategory>();
             services.AddTransient<IUCGetAllCategories, UCGetAllCategories>();
+            services.AddTransient<IUCDeleteCategory, UCDeleteCategory>();
 
             //Sale
             services.AddTransient<IUCGetAllSales, UCGetAllSales>();
@@ -162,7 +165,7 @@ namespace Bootstrapper
             services.AddTransient<IUCGetAllSuppliers, UCGetAllSuppliers>();
             services.AddTransient<IUCCreateSupplier, UCCreateSupplier>();
             services.AddTransient<IUCUpdateSupplier, UCUpdateSupplierMOCK>();
-            services.AddTransient<IUCDeleteSupplier, UCDeleteSupplierMOCK>();
+            services.AddTransient<IUCDeleteSupplier, UCDeleteSupplier>();
         }
 
 

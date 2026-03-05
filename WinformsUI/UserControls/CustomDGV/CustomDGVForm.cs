@@ -83,7 +83,7 @@ namespace WinformsUI.UserControls.CustomDGV
             for (int i = 0; i < checkedListBoxFilters.Items.Count; i++)
                 checkedListBoxFilters.SetItemChecked(i, false);
 
-            _searchBehavior?.ExecuteContainsFilter("Categories", string.Empty);
+            _searchBehavior?.ExecuteContainsFilter(new List<string>());
         }
 
         public void FillDGV<T>(IEnumerable<T> data) where T : IDto

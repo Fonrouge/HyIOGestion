@@ -64,7 +64,7 @@ namespace BLL.LogicLayers.Sales
                 await _uow.BeginTransactionAsync();
 
                 // 3. Validar Permisos
-                var currentUser = await _uow.UserRepo.GetById(_sessionProvider.Current.CurrentUserId);
+                var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
                 if (!currentUser.HasPermission("SALE_DELETE"))
                 {
                     var authError = _errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameSale);
@@ -73,7 +73,7 @@ namespace BLL.LogicLayers.Sales
                 }
 
                 // 4. Acción Principal: Eliminación (Soft Delete - el repositorio ya lo maneja)
-                await _uow.SaleRepo.Delete(dto.Id);
+                await _uow.SaleRepo.DeleteAsync(dto.Id);
 
                 // 5. Integridad Vertical (DVV)
                 await UpdateDVVAsync(_tableNameSale, _appSettings.EntitiesConnection);

@@ -88,7 +88,10 @@
     <Compile Include="Entities\Suppliers\Supplier.cs" />
     <Compile Include="Entities\Suppliers\ValueObjects\CompanyNameVO.cs" />
     <Compile Include="Entities\Suppliers\ValueObjects\ContactNameVO.cs" />
+    <Compile Include="Entities\Suppliers\ValueObjects\SupplierAddressVO.cs" />
+    <Compile Include="Entities\Suppliers\ValueObjects\SupplierCityVO.cs" />
     <Compile Include="Entities\Suppliers\ValueObjects\SupplierEmailVO.cs" />
+    <Compile Include="Entities\Suppliers\ValueObjects\SupplierObservationsVO.cs" />
     <Compile Include="Entities\Suppliers\ValueObjects\SupplierPhoneVO.cs" />
     <Compile Include="Entities\Suppliers\ValueObjects\SupplierTaxIdVO.cs" />
     <Compile Include="Infrastructure\Audit\BitacoraAttributes.cs" />

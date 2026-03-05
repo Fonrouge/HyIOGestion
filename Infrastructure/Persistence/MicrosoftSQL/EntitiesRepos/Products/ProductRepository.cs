@@ -25,7 +25,7 @@ namespace DAL.Persistence.MicrosoftSQL
             _currentTransaction = (SqlTransaction)transaction;
         }
 
-        public async Task Create(Product entity)
+        public async Task CreateAsync(Product entity)
         {
             // 1. Insertar el Producto
             string query = @"
@@ -40,7 +40,7 @@ namespace DAL.Persistence.MicrosoftSQL
             await SyncCategories(entity.Id, entity.Categories);
         }
 
-        public async Task Update(Product entity)
+        public async Task UpdateAsync(Product entity)
         {
             // 1. Actualizar el Producto
             string query = @"
@@ -67,7 +67,7 @@ namespace DAL.Persistence.MicrosoftSQL
         /// <summary>
         /// Soft Delete (consistente con ISoftDeletable y la clase Employee)
         /// </summary>
-        public async Task Delete(Guid entityId)
+        public async Task DeleteAsync(Guid entityId)
         {
             string query = @"
                 UPDATE Products 
@@ -79,7 +79,7 @@ namespace DAL.Persistence.MicrosoftSQL
                 cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = entityId }));
         }
 
-        public async Task<Product> GetById(Guid id)
+        public async Task<Product> GetByIdAsync(Guid id)
         {
             Product product = null;
 
@@ -132,6 +132,36 @@ namespace DAL.Persistence.MicrosoftSQL
             });
 
             return productDictionary.Values;
+        }
+
+        public async Task<Product> GetByNameAsync(string name)
+        {
+            Product product = null;
+
+            // Reutilizamos la query de GetById pero filtrando por Name
+            string query = @"
+                             SELECT p.Id_Product, p.Name, p.Description, p.Price, p.Stock, p.IsActive, p.CreatedAt, p.IsDeleted,
+                                    c.Id_Category, c.Name as CategoryName, c.Description as CategoryDesc
+                             FROM Products p
+                             LEFT JOIN ProductsCategories pc ON p.Id_Product = pc.Id_Product
+                             LEFT JOIN Categories c ON pc.Id_Category = c.Id_Category
+                             WHERE p.Name = @Name 
+                               AND p.IsDeleted = 0";
+
+            await ExecuteReaderAsync(query,
+                // Usamos VarChar para ser consistentes con tu método SetParameters
+                cmd => cmd.Parameters.Add(new SqlParameter("@Name", SqlDbType.VarChar) { Value = name }),
+                reader =>
+                {
+                    // Si es la primera fila, creamos la instancia del Producto
+                    if (product == null)
+                        product = MapProduct(reader);
+
+                    // En cada fila (tenga una o varias), intentamos mapear la categoría asociada
+                    MapCategoryToProduct(reader, product);
+                });
+
+            return product;
         }
 
         // ====================== MÉTODOS PRIVADOS ======================
@@ -237,15 +267,17 @@ namespace DAL.Persistence.MicrosoftSQL
                 id: (Guid)reader["Id_Product"],
                 rawName: reader["Name"].ToString(),
                 rawDescription: reader["Description"] != DBNull.Value ? reader["Description"].ToString() : string.Empty,
-                rawPrice: reader["Price"].ToString(),
-                rawStock: reader["Stock"].ToString(),
+
+                // ✅ Convert.ToDecimal es "todoterreno" y evita el InvalidCastException
+                rawPrice: Convert.ToDecimal(reader["Price"]),
+                rawStock: Convert.ToDecimal(reader["Stock"]),
+
                 categories: new List<Category>(),
                 active: (bool)reader["IsActive"],
                 createdAt: (DateTime)reader["CreatedAt"],
                 isDeleted: reader["IsDeleted"] != DBNull.Value && (bool)reader["IsDeleted"]
             );
         }
-
         private void MapCategoryToProduct(SqlDataReader reader, Product product)
         {
             if (reader["Id_Category"] != DBNull.Value)

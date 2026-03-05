@@ -26,8 +26,9 @@ namespace Domain.Entities.Suppliers.ValueObjects
                 throw new ArgumentException("La categoría fiscal es un dato obligatorio.", nameof(taxId));
 
             // 2. Validación de Longitud (ej: "Exento" tiene 6, "Responsable Inscripto" tiene 21)
-            if (taxId.Length < 3 || taxId.Length > 50)
+            if (taxId.Length < 2 || taxId.Length > 50)
                 throw new ArgumentException("La categoría fiscal debe tener entre 3 y 50 caracteres.", nameof(taxId));
+
 
             // 3. Validación de Caracteres (Solo letras, espacios y tildes/eñe)
             if (!Regex.IsMatch(taxId, @"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"))

@@ -13,6 +13,32 @@ namespace DAL.Persistence.MicrosoftSQL
         private SqlTransaction _currentTransaction;
         private readonly IApplicationSettings _appSettings;
 
+        // Se usa string.Format para mantener la flexibilidad del nombre de la tabla (como hiciste en Employee)
+        private const string SQL_INSERT = @"INSERT INTO {0} 
+                                            (Id, CompanyName, ContactName, TaxId, Phone, Mail, Address, City, Observations, DVH, IsActive, IsDeleted) 
+                                            VALUES 
+                                            (@Id, @CompanyName, @ContactName, @TaxId, @Phone, @Mail, @Address, @City, @Observations, @DVH, @IsActive, @IsDeleted)";
+
+        private const string SQL_UPDATE = @"UPDATE {0} 
+                                            SET CompanyName = @CompanyName, 
+                                                ContactName = @ContactName, 
+                                                TaxId = @TaxId, 
+                                                Phone = @Phone, 
+                                                Mail = @Mail, 
+                                                Address = @Address,
+                                                City = @City,
+                                                Observations = @Observations,
+                                                DVH = @DVH,
+                                                IsActive = @IsActive,
+                                                IsDeleted = @IsDeleted
+                                            WHERE Id = @Id";
+
+        private const string SQL_SOFT_DELETE = "UPDATE {0} SET IsDeleted = 1, IsActive = 0 WHERE Id = @Id";
+        private const string SQL_SELECT_BY_ID = "SELECT * FROM {0} WHERE Id = @Id AND IsDeleted = 0";
+        private const string SQL_SELECT_ALL = "SELECT * FROM {0} WHERE IsDeleted = 0";
+        private const string SQL_SELECT_BY_TAXID = "SELECT * FROM {0} WHERE TaxId = @TaxId AND IsDeleted = 0";
+
+
         public SupplierRepository(IApplicationSettings appSettings)
         {
             _appSettings = appSettings;
@@ -23,46 +49,28 @@ namespace DAL.Persistence.MicrosoftSQL
             _currentTransaction = (SqlTransaction)transaction;
         }
 
-        public Task Create(Supplier entity)
+        public Task CreateAsync(Supplier entity)
         {
-            // Se agregaron DVH, Active e IsDeleted para reflejar el estado real del dominio
-            string query = @"INSERT INTO Supplier 
-                             (Id, CompanyName, ContactName, TaxId, Phone, Mail, Observations, DVH, Active, IsDeleted) 
-                             VALUES 
-                             (@Id, @CompanyName, @ContactName, @TaxId, @Phone, @Mail, @Observations, @DVH, @Active, @IsDeleted)";
-
+            string query = string.Format(SQL_INSERT, _appSettings.SupplierTableName);
             return ExecuteNonQueryAsync(query, cmd => SetParameters(cmd, entity));
         }
 
-        public Task Update(Supplier entity)
+        public Task UpdateAsync(Supplier entity)
         {
-            string query = @"UPDATE Supplier 
-                             SET CompanyName = @CompanyName, 
-                                 ContactName = @ContactName, 
-                                 TaxId = @TaxId, 
-                                 Phone = @Phone, 
-                                 Mail = @Mail, 
-                                 Observations = @Observations,
-                                 DVH = @DVH,
-                                 Active = @Active,
-                                 IsDeleted = @IsDeleted
-                             WHERE Id = @Id";
-
+            string query = string.Format(SQL_UPDATE, _appSettings.SupplierTableName);
             return ExecuteNonQueryAsync(query, cmd => SetParameters(cmd, entity));
         }
 
-        public Task Delete(Guid entityId)
+        public Task DeleteAsync(Guid entityId)
         {
-            // Como implementas ISoftDeletable, usualmente Delete hace un UPDATE (borrado lógico).
-            // Si prefieres borrado físico, puedes volver al "DELETE FROM Supplier WHERE Id = @Id".
-            string query = "UPDATE Supplier SET IsDeleted = 1, Active = 0 WHERE Id = @Id";
+            string query = string.Format(SQL_SOFT_DELETE, _appSettings.SupplierTableName);
             return ExecuteNonQueryAsync(query, cmd => cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = entityId }));
         }
 
-        public async Task<Supplier> GetById(Guid id)
+        public async Task<Supplier> GetByIdAsync(Guid id)
         {
             Supplier supplier = null;
-            string query = "SELECT Id, CompanyName, ContactName, TaxId, Phone, Mail, Observations, DVH, Active, IsDeleted FROM Supplier WHERE Id = @Id AND IsDeleted = 0";
+            string query = string.Format(SQL_SELECT_BY_ID, _appSettings.SupplierTableName);
 
             await ExecuteReaderAsync(query,
                 cmd => cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = id }),
@@ -74,8 +82,7 @@ namespace DAL.Persistence.MicrosoftSQL
         public async Task<IEnumerable<Supplier>> GetAllAsync()
         {
             var suppliers = new List<Supplier>();
-            // Solo traemos los no eliminados lógicamente
-            string query = "SELECT Id, CompanyName, ContactName, TaxId, Phone, Mail, Observations, DVH, Active, IsDeleted FROM Supplier WHERE IsDeleted = 0";
+            string query = string.Format(SQL_SELECT_ALL, _appSettings.SupplierTableName);
 
             await ExecuteReaderAsync(query, null, reader => suppliers.Add(Map(reader)));
 
@@ -85,17 +92,16 @@ namespace DAL.Persistence.MicrosoftSQL
         public async Task<Supplier> GetByTaxIdAsync(string taxId)
         {
             Supplier supplier = null;
-            string query = "SELECT Id, CompanyName, ContactName, TaxId, Phone, Mail, Observations, DVH, Active, IsDeleted FROM Supplier WHERE TaxId = @TaxId AND IsDeleted = 0";
+            string query = string.Format(SQL_SELECT_BY_TAXID, _appSettings.SupplierTableName);
 
             await ExecuteReaderAsync(query,
-                cmd => cmd.Parameters.Add(new SqlParameter("@TaxId", SqlDbType.VarChar) { Value = taxId }),
+                cmd => cmd.Parameters.Add(new SqlParameter("@TaxId", SqlDbType.NVarChar) { Value = taxId }),
                 reader => supplier = Map(reader));
 
             return supplier;
         }
 
         // --- MÉTODOS PRIVADOS DE INFRAESTRUCTURA ---
-        // (ExecuteNonQueryAsync y ExecuteReaderAsync quedan IGUAL, no los repito para no saturar)
 
         private async Task ExecuteNonQueryAsync(string query, Action<SqlCommand> parameterSetter)
         {
@@ -153,33 +159,59 @@ namespace DAL.Persistence.MicrosoftSQL
         {
             cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = entity.Id });
 
-            // Extraemos los valores primitivos (.Value) de los ValueObjects para guardarlos
-            cmd.Parameters.Add(new SqlParameter("@CompanyName", SqlDbType.VarChar) { Value = (object)entity.CompanyName?.Value ?? DBNull.Value });
-            cmd.Parameters.Add(new SqlParameter("@ContactName", SqlDbType.VarChar) { Value = (object)entity.ContactName?.Value ?? DBNull.Value });
-            cmd.Parameters.Add(new SqlParameter("@TaxId", SqlDbType.VarChar) { Value = (object)entity.TaxId?.Value ?? DBNull.Value });
-            cmd.Parameters.Add(new SqlParameter("@Phone", SqlDbType.VarChar) { Value = (object)entity.Phone?.Value ?? DBNull.Value });
-            cmd.Parameters.Add(new SqlParameter("@Mail", SqlDbType.VarChar) { Value = (object)entity.Mail?.Value ?? DBNull.Value });
+            // Extraemos los valores primitivos (.Value) de los ValueObjects para guardarlos. 
+            // Usamos NVARCHAR porque así está en la base de datos (foto)
+            cmd.Parameters.Add(new SqlParameter("@CompanyName", SqlDbType.NVarChar) { Value = (object)entity.CompanyName?.Value ?? DBNull.Value });
+            cmd.Parameters.Add(new SqlParameter("@ContactName", SqlDbType.NVarChar) { Value = (object)entity.ContactName?.Value ?? DBNull.Value });
+            cmd.Parameters.Add(new SqlParameter("@TaxId", SqlDbType.NVarChar) { Value = (object)entity.TaxId?.Value ?? DBNull.Value });
+            cmd.Parameters.Add(new SqlParameter("@Phone", SqlDbType.NVarChar) { Value = (object)entity.Phone?.Value ?? DBNull.Value });
+            cmd.Parameters.Add(new SqlParameter("@Mail", SqlDbType.NVarChar) { Value = (object)entity.Mail?.Value ?? DBNull.Value });
 
-            cmd.Parameters.Add(new SqlParameter("@Observations", SqlDbType.VarChar) { Value = (object)entity.Observations ?? DBNull.Value });
-            cmd.Parameters.Add(new SqlParameter("@DVH", SqlDbType.VarChar) { Value = (object)entity.DVH ?? DBNull.Value });
-            cmd.Parameters.Add(new SqlParameter("@Active", SqlDbType.Bit) { Value = entity.Active });
+            // Nuevas columnas de la base de datos
+            cmd.Parameters.Add(new SqlParameter("@Address", SqlDbType.NVarChar) { Value = (object)entity.Address?.Value ?? DBNull.Value });
+            cmd.Parameters.Add(new SqlParameter("@City", SqlDbType.NVarChar) { Value = (object)entity.City?.Value ?? DBNull.Value });
+
+            // Observations ahora es un VO, así que le pedimos el .Value
+            cmd.Parameters.Add(new SqlParameter("@Observations", SqlDbType.NVarChar) { Value = (object)entity.Observations?.Value ?? DBNull.Value });
+
+            cmd.Parameters.Add(new SqlParameter("@DVH", SqlDbType.NVarChar) { Value = (object)entity.DVH ?? DBNull.Value });
+            cmd.Parameters.Add(new SqlParameter("@IsActive", SqlDbType.Bit) { Value = entity.Active }); // La base dice IsActive
             cmd.Parameters.Add(new SqlParameter("@IsDeleted", SqlDbType.Bit) { Value = entity.IsDeleted });
         }
 
         private Supplier Map(SqlDataReader reader)
         {
+            // Helpers locales para lectura segura (evita excepciones de "Index was outside the bounds of the array" si la columna falta)
+            bool HasColumn(SqlDataReader r, string columnName)
+            {
+                for (int i = 0; i < r.FieldCount; i++)
+                {
+                    if (r.GetName(i).Equals(columnName, StringComparison.OrdinalIgnoreCase)) return true;
+                }
+                return false;
+            }
+
+            string GetStringSafe(SqlDataReader r, string colName) =>
+                HasColumn(r, colName) && r[colName] != DBNull.Value ? r[colName].ToString() : string.Empty;
+
+            bool GetBoolSafe(SqlDataReader r, string colName) =>
+                HasColumn(r, colName) && r[colName] != DBNull.Value && Convert.ToBoolean(r[colName]);
+
+
             // Usamos Reconstitute para instanciar la entidad a partir de la DB saltándonos validaciones de creación
             return Supplier.Reconstitute(
                 id: (Guid)reader["Id"],
-                rawCompanyName: reader["CompanyName"] != DBNull.Value ? reader["CompanyName"].ToString() : string.Empty,
-                rawContactName: reader["ContactName"] != DBNull.Value ? reader["ContactName"].ToString() : string.Empty,
-                rawTaxId: reader["TaxId"] != DBNull.Value ? reader["TaxId"].ToString() : string.Empty,
-                rawPhone: reader["Phone"] != DBNull.Value ? reader["Phone"].ToString() : string.Empty,
-                rawMail: reader["Mail"] != DBNull.Value ? reader["Mail"].ToString() : string.Empty,
-                observations: reader["Observations"] != DBNull.Value ? reader["Observations"].ToString() : string.Empty,
-                dvh: reader["DVH"] != DBNull.Value ? reader["DVH"].ToString() : string.Empty,
-                active: reader["Active"] != DBNull.Value && Convert.ToBoolean(reader["Active"]),
-                isDeleted: reader["IsDeleted"] != DBNull.Value && Convert.ToBoolean(reader["IsDeleted"])
+                rawCompanyName: GetStringSafe(reader, "CompanyName"),
+                rawContactName: GetStringSafe(reader, "ContactName"),
+                rawTaxId: GetStringSafe(reader, "TaxId"),
+                rawPhone: GetStringSafe(reader, "Phone"),
+                rawMail: GetStringSafe(reader, "Mail"),
+                rawAddress: GetStringSafe(reader, "Address"), // <-- AGREGADO
+                rawCity: GetStringSafe(reader, "City"),       // <-- AGREGADO
+                observations: GetStringSafe(reader, "Observations"), // Pasa por el VO de observations en el Reconstitute
+                dvh: GetStringSafe(reader, "DVH"),
+                active: GetBoolSafe(reader, "IsActive"), // En la DB se llama IsActive, en C# se llama Active
+                isDeleted: GetBoolSafe(reader, "IsDeleted")
             );
         }
     }

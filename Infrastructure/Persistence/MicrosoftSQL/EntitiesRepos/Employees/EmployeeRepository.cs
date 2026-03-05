@@ -33,27 +33,29 @@ namespace DAL.Persistence.MicrosoftSQL
                                             Email = @Email, Telefono = @Telefono, Activo = @Activo, DVH = @DVH, 
                                             IsDeleted = @IsDeleted, FileNumber = @FileNumber 
                                             WHERE Id_Employee = @Id_Employee";
+        
+        private const string SQL_SELECT_BY_TAXID = "SELECT * FROM {0} WHERE DNI = @DNI AND IsDeleted = 0";
 
 
         public EmployeeRepository(IApplicationSettings appSettings) => _appSettings = appSettings;
 
         public void SetTransaction(object transaction) => _currentTransaction = (SqlTransaction)transaction;
 
-        public Task Create(Employee employee)
+        public Task CreateAsync(Employee employee)
         {
             string query = string.Format(SQL_INSERT, _appSettings.EmployeeTableName);
             return ExecuteNonQueryAsync(query, cmd => SetParameters(cmd, employee));
         }
 
-        public Task Update(Employee employee)
+        public Task UpdateAsync(Employee employee)
         {
             string query = string.Format(SQL_UPDATE, _appSettings.EmployeeTableName);
             return ExecuteNonQueryAsync(query, cmd => SetParameters(cmd, employee));
         }
 
-        public async Task Delete(Guid entityId)
+        public async Task DeleteAsync(Guid entityId)
         {
-            var entity = await GetById(entityId);
+            var entity = await GetByIdAsync(entityId);
             if (entity == null) return;
 
             string query;
@@ -65,7 +67,7 @@ namespace DAL.Persistence.MicrosoftSQL
             await ExecuteNonQueryAsync(query, cmd => cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = entityId }));
         }
 
-        public async Task<Employee> GetById(Guid id)
+        public async Task<Employee> GetByIdAsync(Guid id)
         {
             Employee employee = null;
             string query = string.Format(SQL_SELECT_BY_ID, _appSettings.EmployeeTableName);
@@ -94,6 +96,23 @@ namespace DAL.Persistence.MicrosoftSQL
 
             await ExecuteReaderAsync(query,
                 cmd => cmd.Parameters.Add(new SqlParameter("@FileNumber", SqlDbType.VarChar) { Value = fileNumber }),
+                reader => employee = Map(reader));
+
+            return employee;
+        }
+
+        public async Task<Employee> GetByTaxIdAsync(string taxId)
+        {
+            Employee employee = null;
+
+            // Recordá tener declarada esta constante arriba en tu clase, algo como:
+            // private const string SQL_SELECT_BY_TAXID = "SELECT * FROM {0} WHERE NationalId = @TaxId AND IsDeleted = 0";
+            string query = string.Format(SQL_SELECT_BY_TAXID, _appSettings.EmployeeTableName);
+
+            await ExecuteReaderAsync(query,
+                // Nota: Usé VarChar para mantener el patrón de tu GetByFileNumberAsync, 
+                // pero si en tu DB es NVARCHAR, cambialo a SqlDbType.NVarChar
+                cmd => cmd.Parameters.Add(new SqlParameter("@TaxId", SqlDbType.VarChar) { Value = taxId }),
                 reader => employee = Map(reader));
 
             return employee;

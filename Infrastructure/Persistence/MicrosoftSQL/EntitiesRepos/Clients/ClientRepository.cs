@@ -19,7 +19,7 @@ namespace DAL.Persistence.MicrosoftSQL
 
         public void SetTransaction(object transaction) => _currentTransaction = (SqlTransaction)transaction;
 
-        public Task Create(Client entity)
+        public Task CreateAsync(Client entity)
         {
             string query = @"INSERT INTO Clients 
                              (Id, Name, LastName, ShipAddress, WareHouseAddress, Email, Phone, TaxId, DocNumber, IsActive, IsDeleted) 
@@ -29,7 +29,7 @@ namespace DAL.Persistence.MicrosoftSQL
             return ExecuteNonQueryAsync(query, cmd => SetParameters(cmd, entity));
         }
 
-        public Task Update(Client entity)
+        public Task UpdateAsync(Client entity)
         {
             string query = @"UPDATE Clients 
                              SET Name = @Name, 
@@ -47,7 +47,7 @@ namespace DAL.Persistence.MicrosoftSQL
             return ExecuteNonQueryAsync(query, cmd => SetParameters(cmd, entity));
         }
 
-        public async Task Delete(Guid entityId)
+        public async Task DeleteAsync(Guid entityId)
         {
             // Nota: En un Repo SQL, solemos ir directo al grano con el ID para evitar un Roundtrip (GetById) 
             // a menos que necesitemos validar algo muy específico del dominio antes de borrar.
@@ -55,7 +55,7 @@ namespace DAL.Persistence.MicrosoftSQL
             await ExecuteNonQueryAsync(query, cmd => cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = entityId }));
         }
 
-        public async Task<Client> GetById(Guid id)
+        public async Task<Client> GetByIdAsync(Guid id)
         {
             Client client = null;
             string query = @"SELECT Id, Name, LastName, ShipAddress, WareHouseAddress, Email, Phone, TaxId, DocNumber, IsActive, IsDeleted 

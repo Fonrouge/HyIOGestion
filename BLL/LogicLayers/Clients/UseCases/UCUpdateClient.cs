@@ -64,7 +64,7 @@ namespace BLL.LogicLayers.Clients //============================================
                 await _uow.BeginTransactionAsync();
 
                 // 3. Validar Permisos
-                var currentUser = await _uow.UserRepo.GetById(_sessionProvider.Current.CurrentUserId);
+                var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
                 if (!currentUser.HasPermission("CLIENT_UPDATE")) // Patente específica
                 {
                     var authError = _errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameClient);
@@ -102,7 +102,7 @@ namespace BLL.LogicLayers.Clients //============================================
            //     );
 
                 // 6. Persistencia
-                await _uow.ClientRepo.Update(clientEntityToUpdate);
+                await _uow.ClientRepo.UpdateAsync(clientEntityToUpdate);
 
                 // 7. Integridad Vertical (DVV)
                 await UpdateDVVAsync(_tableNameClient, _appSettings.EntitiesConnection);

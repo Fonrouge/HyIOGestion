@@ -15,9 +15,9 @@ using Shared.Sessions;
 using System;
 using System.Threading.Tasks;
 
-namespace BLL.LogicLayers.Suppliers
+namespace BLL.LogicLayers.Products
 {
-    public class UCDeleteSupplier : IUCDeleteSupplier
+    public class UCDeleteProduct : IUCDeleteProduct
     {
         private readonly IUnitOfWork _uow;
         private readonly IApplicationSettings _appSettings;
@@ -26,9 +26,9 @@ namespace BLL.LogicLayers.Suppliers
         private readonly IErrorsFactory _errorsFactory;
         private readonly IErrorsRepository _errorsRepository;
 
-        private readonly string _tableNameSupplier;
+        private readonly string _tableNameProduct;
 
-        public UCDeleteSupplier
+        public UCDeleteProduct
         (
             IUnitOfWork uow,
             IApplicationSettings appSettings,
@@ -45,12 +45,12 @@ namespace BLL.LogicLayers.Suppliers
             _errorsFactory = errorsFactory ?? throw new ArgumentNullException(nameof(errorsFactory));
             _errorsRepository = errorsRepository ?? throw new ArgumentNullException(nameof(errorsRepository));
 
-            _tableNameSupplier = appSettings.SupplierTableName ?? "Suppliers";
+            _tableNameProduct = appSettings.ProductTableName ?? "Products";
         }
 
-        public async Task<OperationResult<SupplierDTO>> ExecuteAsync(SupplierDTO dto)
+        public async Task<OperationResult<ProductDTO>> ExecuteAsync(ProductDTO dto)
         {
-            var result = new OperationResult<SupplierDTO>();
+            var result = new OperationResult<ProductDTO>();
 
             try
             {
@@ -62,59 +62,56 @@ namespace BLL.LogicLayers.Suppliers
                     return result;
                 }
 
-                // 2. Validar Permisos (Patente específica de Proveedores)
+                // 2. Validar Permisos (Patente específica)
                 var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
-
-                if (!currentUser.HasPermission("SUPPLIER_DELETE"))
+                if (!currentUser.HasPermission("PRODUCT_DELETE"))
                 {
-                    var authError = _errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameSupplier);
+                    var authError = _errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameProduct);
                     result.Errors.Add(ErrorMapper.ToDTO(authError));
                     return result;
                 }
 
-                // 3. Conexión a Base de Datos de Negocio
+                // 3. Conexión y Transacción
                 _uow.SetConnectionString(_appSettings.EntitiesConnection);
                 await _uow.BeginTransactionAsync();
 
+                // 4. Buscar Entidad y Validar Existencia (Patrón null | IsDeleted)
+                Product entity = await _uow.ProductRepo.GetByIdAsync(dto.Id);
 
-                // 4. Buscar Entidad a Eliminar
-                Supplier entity = await _uow.SupplierRepo.GetByIdAsync(dto.Id);
-
-                if (entity == null)
+                if (entity == null | entity.IsDeleted)
                 {
-                    result.Errors.Add(new ErrorLogDTO { InformativeMessage = "El proveedor no existe o ya fue eliminado." });
+                    var notFoundError = _errorsFactory.Create(ErrorCatalogEnum.NotFound, _tableNameProduct);
+                    result.Errors.Add(ErrorMapper.ToDTO(notFoundError));
                     await _uow.RollbackAsync();
                     return result;
                 }
 
-                // 5. Acción Principal: Eliminación (Soft Delete)
+                // 5. Eliminación (Lógica o Física)
                 if (entity is ISoftDeletable)
                 {
                     entity.MarkAsDeleted();
-                    await _uow.SupplierRepo.UpdateAsync(entity);
+                    await _uow.ProductRepo.UpdateAsync(entity);
                 }
                 else
                 {
-                    await _uow.SupplierRepo.DeleteAsync(dto.Id);
+                    await _uow.ProductRepo.DeleteAsync(dto.Id);
                 }
 
                 // 6. Integridad Vertical (DVV)
-                // Si al final decidís que Proveedores NO usa DVV, borrá esta línea y el método privado abajo:
-                await UpdateDVVAsync(_tableNameSupplier, _appSettings.EntitiesConnection);
+                await UpdateDVVAsync(_tableNameProduct, _appSettings.EntitiesConnection);
 
-                // 7. Auditoría (Bitácora)
+                // 7. Auditoría
                 var log = _bitacoraFact.Create(
                     entry: BitacoraCatalogEnum.DeleteOnBD,
                     user: currentUser.Id.ToString(),
-                    tableName: _tableNameSupplier,
-                    extraInfo: $"Se eliminó el proveedor ID: {dto.Id} (Nombre Ref: {dto.CompanyName})"
+                    tableName: _tableNameProduct,
+                    extraInfo: $"Se eliminó el producto ID: {dto.Id} (Nombre: {dto.Name})"
                 );
                 await _uow.BitacoraRepo.CreateAsync(log);
 
                 // 8. Confirmación
                 await _uow.CommitAsync();
 
-                // 9. Retorno
                 result.Value = dto;
                 return result;
             }
@@ -122,27 +119,23 @@ namespace BLL.LogicLayers.Suppliers
             {
                 if (_uow.HasActiveTransaction) await _uow.RollbackAsync();
 
-                // --- LOG TÉCNICO INTERNO ---
+                // Log técnico
                 var dbError = _errorsFactory.CreateFromException(ex);
-                dbError.Table = _tableNameSupplier;
+                dbError.Table = _tableNameProduct;
+
                 try { await _errorsRepository.CreateAsync(dbError); } catch { }
 
-                // --- MANEJO DE RESTRICCIONES ---
+                // Mapeo de error para UI
                 ErrorLog uiError;
 
                 if (ex.Message.Contains("REFERENCE constraint") || ex.Message.Contains("FK_"))
-                {
-                    uiError = _errorsFactory.Create(ErrorCatalogEnum.DeleteRestriction, _tableNameSupplier);
-                }
+                    uiError = _errorsFactory.Create(ErrorCatalogEnum.DeleteRestriction, _tableNameProduct);
                 else
-                {
-                    uiError = _errorsFactory.Create(ErrorCatalogEnum.InternalError, _tableNameSupplier);
-                }
+                    uiError = _errorsFactory.Create(ErrorCatalogEnum.InternalError, _tableNameProduct);
 
-                // --- MAPEO A DTO ---
                 var errorDto = ErrorMapper.ToDTO(uiError);
                 errorDto.LogId = dbError.Id;
-                errorDto.InformativeMessage = $"Falla técnica al eliminar proveedor. Ref ID: {dbError.Id}";
+                errorDto.InformativeMessage = $"Falla técnica al eliminar producto. Ref ID: {dbError.Id}";
 
                 result.Errors.Add(errorDto);
                 return result;

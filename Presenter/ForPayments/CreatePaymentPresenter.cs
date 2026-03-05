@@ -35,7 +35,7 @@ namespace Presenter.ForEmployee
         {
             try
             {
-                var opRes = await _useCaseCreate.Execute(data);
+                var opRes = await _useCaseCreate.ExecuteAsync(data);
                 _view.ShowOperationResult(opRes);
             }
             catch

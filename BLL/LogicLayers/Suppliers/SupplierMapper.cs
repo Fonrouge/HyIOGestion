@@ -19,7 +19,9 @@ namespace BLL.LogicLayers
                 TaxId = supplier.TaxId?.Value,
                 Phone = supplier.Phone?.Value,
                 Mail = supplier.Mail?.Value,
-                Observations = supplier.Observations // Observations quedó como string en el Entity
+                Address = supplier.Address?.Value, 
+                City = supplier.City?.Value,       
+                Observations = supplier.Observations?.Value
             };
         }
 
@@ -38,6 +40,8 @@ namespace BLL.LogicLayers
                 rawTaxId: supplierDto.TaxId,
                 rawPhone: supplierDto.Phone,
                 rawMail: supplierDto.Mail,
+                rawAddress: supplierDto.Address, 
+                rawCity: supplierDto.City,       
                 observations: supplierDto.Observations,
                 dvh: string.Empty,
                 active: true,

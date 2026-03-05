@@ -25,7 +25,7 @@ namespace DAL.Persistence.MicrosoftSQL
             _currentTransaction = (SqlTransaction)transaction;
         }
 
-        public Task Create(Usuario user)
+        public Task CreateAsync(Usuario user)
         {
             string query = @"INSERT INTO [User] (Id_User, Username, [Password], DVH, [Language], Id_Employee) 
                              VALUES (@Id, @Username, @Password, @DVH, @Language, @Id_Employee)";
@@ -33,7 +33,7 @@ namespace DAL.Persistence.MicrosoftSQL
             return ExecuteNonQueryAsync(query, cmd => SetParameters(cmd, user));
         }
 
-        public Task Update(Usuario user)
+        public Task UpdateAsync(Usuario user)
         {
             string query = @"UPDATE [User] SET Username = @Username, [Password] = @Password, 
                              DVH = @DVH, [Language] = @Language, Id_Employee = @Id_Employee 
@@ -42,13 +42,13 @@ namespace DAL.Persistence.MicrosoftSQL
             return ExecuteNonQueryAsync(query, cmd => SetParameters(cmd, user));
         }
 
-        public Task Delete(Guid id)
+        public Task DeleteAsync(Guid id)
         {
             string query = "DELETE FROM [User] WHERE Id_User = @Id";
             return ExecuteNonQueryAsync(query, cmd => cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = id }));
         }
 
-        public async Task<Usuario> GetById(Guid id)
+        public async Task<Usuario> GetByIdAsync(Guid id)
         {
             Usuario user = null;
             string query = "SELECT Id_User, Username, [Password], DVH, [Language], Id_Employee FROM [User] WHERE Id_User = @Id";

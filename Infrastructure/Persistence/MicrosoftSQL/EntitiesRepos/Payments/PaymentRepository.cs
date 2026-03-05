@@ -23,7 +23,7 @@ namespace DAL.Persistence.MicrosoftSQL
             _currentTransaction = (SqlTransaction)transaction;
         }
 
-        public Task Create(Payment entity)
+        public Task CreateAsync(Payment entity)
         {
             // Agregamos DVH
             string query = @"INSERT INTO Payments (Id, Amount, CreationDate, EffectiveDate, ClientId, Method, Reference, DVH) 
@@ -32,7 +32,7 @@ namespace DAL.Persistence.MicrosoftSQL
             return ExecuteNonQueryAsync(query, cmd => SetParameters(cmd, entity));
         }
 
-        public Task Update(Payment entity)
+        public Task UpdateAsync(Payment entity)
         {
             // Agregamos DVH
             string query = @"UPDATE Payments
@@ -48,7 +48,7 @@ namespace DAL.Persistence.MicrosoftSQL
             return ExecuteNonQueryAsync(query, cmd => SetParameters(cmd, entity));
         }
 
-        public Task Delete(Guid entityId)
+        public Task DeleteAsync(Guid entityId)
         {
             // Como discutimos, los pagos rara vez se borran físicamente. 
             // Si en tu negocio es un borrado físico, esto está bien. 
@@ -57,7 +57,7 @@ namespace DAL.Persistence.MicrosoftSQL
             return ExecuteNonQueryAsync(query, cmd => cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = entityId }));
         }
 
-        public async Task<Payment> GetById(Guid id)
+        public async Task<Payment> GetByIdAsync(Guid id)
         {
             Payment payment = null;
             string query = "SELECT Id, Amount, CreationDate, EffectiveDate, ClientId, Method, Reference, DVH FROM Payments WHERE Id = @Id";

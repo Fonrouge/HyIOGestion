@@ -115,5 +115,7 @@ namespace Domain.Entities
 
         public override string ToString()
             => $"{LastName.Value}, {Name.Value} ({DocNumber.Value})";
+
+
     }
 }

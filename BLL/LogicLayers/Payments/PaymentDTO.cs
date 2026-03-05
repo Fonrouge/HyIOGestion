@@ -8,16 +8,16 @@ namespace BLL.LogicLayers
     {
         [Browsable(false)]
         public Guid Id { get; set; } = Guid.NewGuid();
-        public string Amount { get; set; }
-        public string CreationDate { get; set; } = DateTime.UtcNow.ToString();
-        public string EffectiveDate { get; set; }
-        
+
+        public decimal Amount { get; set; }
+
+        public DateTime CreationDate { get; set; } = DateTime.UtcNow;
+        public DateTime EffectiveDate { get; set; }
+
         [Browsable(false)]
-        public string ClientId { get; set; } // Relación con el Cliente
+        public Guid ClientId { get; set; } 
 
-        public string Method { get; set; } // Método de pago (Efectivo, Transferencia, Tarjeta, etc.)
+        public string Method { get; set; } 
         public string Reference { get; set; }
-
-
     }
 }

@@ -23,24 +23,24 @@ namespace DAL.Persistence.MicrosoftSQL
             _currentTransaction = (SqlTransaction)transaction;
         }
 
-        public Task Create(SaleDetail entity) =>
+        public Task CreateAsync(SaleDetail entity) =>
             ExecuteNonQueryAsync(
                 @"INSERT INTO SaleDetails (Id, SaleId, ProductId, Quantity, UnitPrice)
                   VALUES (@Id, @SaleId, @ProductId, @Quantity, @UnitPrice)",
                 cmd => SetParameters(cmd, entity));
 
-        public Task Update(SaleDetail entity) =>
+        public Task UpdateAsync(SaleDetail entity) =>
             ExecuteNonQueryAsync(
                 @"UPDATE SaleDetails SET SaleId = @SaleId, ProductId = @ProductId,
                     Quantity = @Quantity, UnitPrice = @UnitPrice
                   WHERE Id = @Id",
                 cmd => SetParameters(cmd, entity));
 
-        public Task Delete(Guid entityId) =>
+        public Task DeleteAsync(Guid entityId) =>
             ExecuteNonQueryAsync("DELETE FROM SaleDetails WHERE Id = @Id",
                 cmd => cmd.Parameters.AddWithValue("@Id", entityId));
 
-        public async Task<SaleDetail> GetById(Guid id)
+        public async Task<SaleDetail> GetByIdAsync(Guid id)
         {
             SaleDetail detail = null;
             await ExecuteReaderAsync(

@@ -15,9 +15,9 @@ using Shared.Sessions;
 using System;
 using System.Threading.Tasks;
 
-namespace BLL.LogicLayers.Suppliers
+namespace BLL.LogicLayers.Payments
 {
-    public class UCDeleteSupplier : IUCDeleteSupplier
+    public class UCDeletePayment : IUCDeletePayment
     {
         private readonly IUnitOfWork _uow;
         private readonly IApplicationSettings _appSettings;
@@ -26,9 +26,9 @@ namespace BLL.LogicLayers.Suppliers
         private readonly IErrorsFactory _errorsFactory;
         private readonly IErrorsRepository _errorsRepository;
 
-        private readonly string _tableNameSupplier;
+        private readonly string _tableNamePayment;
 
-        public UCDeleteSupplier
+        public UCDeletePayment
         (
             IUnitOfWork uow,
             IApplicationSettings appSettings,
@@ -45,69 +45,70 @@ namespace BLL.LogicLayers.Suppliers
             _errorsFactory = errorsFactory ?? throw new ArgumentNullException(nameof(errorsFactory));
             _errorsRepository = errorsRepository ?? throw new ArgumentNullException(nameof(errorsRepository));
 
-            _tableNameSupplier = appSettings.SupplierTableName ?? "Suppliers";
+            _tableNamePayment = appSettings.PaymentTableName ?? "Payments";
         }
 
-        public async Task<OperationResult<SupplierDTO>> ExecuteAsync(SupplierDTO dto)
+        public async Task<OperationResult<PaymentDTO>> ExecuteAsync(PaymentDTO dto)
         {
-            var result = new OperationResult<SupplierDTO>();
+            var result = new OperationResult<PaymentDTO>();
 
             try
             {
                 // 1. Validar Sesión Activa
                 if (_sessionProvider.Current == null)
                 {
-                    var newError = _errorsFactory.Create(ErrorCatalogEnum.SessionExpired);
-                    result.Errors.Add(ErrorMapper.ToDTO(newError));
+                    result.Errors.Add(ErrorMapper.ToDTO(_errorsFactory.Create(ErrorCatalogEnum.SessionExpired)));
                     return result;
                 }
 
-                // 2. Validar Permisos (Patente específica de Proveedores)
-                var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
-
-                if (!currentUser.HasPermission("SUPPLIER_DELETE"))
-                {
-                    var authError = _errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameSupplier);
-                    result.Errors.Add(ErrorMapper.ToDTO(authError));
-                    return result;
-                }
-
-                // 3. Conexión a Base de Datos de Negocio
+                // Seteamos la conexión para lectura (Sin abrir transacción aún)
                 _uow.SetConnectionString(_appSettings.EntitiesConnection);
-                await _uow.BeginTransactionAsync();
 
-
-                // 4. Buscar Entidad a Eliminar
-                Supplier entity = await _uow.SupplierRepo.GetByIdAsync(dto.Id);
-
-                if (entity == null)
+                // 2. Validar Permisos
+                var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
+                if (!currentUser.HasPermission("PAYMENT_DELETE"))
                 {
-                    result.Errors.Add(new ErrorLogDTO { InformativeMessage = "El proveedor no existe o ya fue eliminado." });
+                    result.Errors.Add(ErrorMapper.ToDTO(_errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNamePayment)));
+                    return result;
+                }
+
+                // 3. Buscar Entidad a Eliminar (Para dejar registro en bitácora de qué borramos)
+                Payment entity = await _uow.PaymentRepo.GetByIdAsync(dto.Id);
+                if (entity == null | entity.IsDeleted)
+                {
+                    // Manejo elegante si no se encuentra el registro
+                    result.Errors.Add(ErrorMapper.ToDTO(_errorsFactory.Create(ErrorCatalogEnum.NotFound, _tableNamePayment)));
                     await _uow.RollbackAsync();
                     return result;
                 }
 
-                // 5. Acción Principal: Eliminación (Soft Delete)
+                // 4. ABRIR TRANSACCIÓN
+                await _uow.BeginTransactionAsync();
+
+
+                // 5. Eliminación (Hard o Soft) 
                 if (entity is ISoftDeletable)
                 {
                     entity.MarkAsDeleted();
-                    await _uow.SupplierRepo.UpdateAsync(entity);
+                    await _uow.PaymentRepo.UpdateAsync(entity); // Sin calcular DVH, directo a guardar
                 }
                 else
                 {
-                    await _uow.SupplierRepo.DeleteAsync(dto.Id);
+                    await _uow.PaymentRepo.DeleteAsync(dto.Id);
                 }
 
-                // 6. Integridad Vertical (DVV)
-                // Si al final decidís que Proveedores NO usa DVV, borrá esta línea y el método privado abajo:
-                await UpdateDVVAsync(_tableNameSupplier, _appSettings.EntitiesConnection);
+
+                // 6. Integridad Vertical (DVV) - OBLIGATORIO
+                // Al eliminar físicamente un registro de una tabla blindada, el DVV debe recalcularse.
+                await UpdateDVVAsync(_tableNamePayment, _appSettings.EntitiesConnection);
 
                 // 7. Auditoría (Bitácora)
+                // Dejamos un log muy claro de qué se voló físicamente
                 var log = _bitacoraFact.Create(
                     entry: BitacoraCatalogEnum.DeleteOnBD,
                     user: currentUser.Id.ToString(),
-                    tableName: _tableNameSupplier,
-                    extraInfo: $"Se eliminó el proveedor ID: {dto.Id} (Nombre Ref: {dto.CompanyName})"
+                    tableName: _tableNamePayment,
+                    extraInfo: $"Se eliminó FÍSICAMENTE el pago ID: {dto.Id} (Monto original: $ {entity.Amount.Value}, Cliente: {entity.ClientId})"
                 );
                 await _uow.BitacoraRepo.CreateAsync(log);
 
@@ -122,27 +123,17 @@ namespace BLL.LogicLayers.Suppliers
             {
                 if (_uow.HasActiveTransaction) await _uow.RollbackAsync();
 
-                // --- LOG TÉCNICO INTERNO ---
                 var dbError = _errorsFactory.CreateFromException(ex);
-                dbError.Table = _tableNameSupplier;
+                dbError.Table = _tableNamePayment;
                 try { await _errorsRepository.CreateAsync(dbError); } catch { }
 
-                // --- MANEJO DE RESTRICCIONES ---
-                ErrorLog uiError;
+                ErrorLog uiError = (ex.Message.Contains("REFERENCE constraint") || ex.Message.Contains("FK_"))
+                    ? _errorsFactory.Create(ErrorCatalogEnum.DeleteRestriction, _tableNamePayment)
+                    : _errorsFactory.Create(ErrorCatalogEnum.InternalError, _tableNamePayment);
 
-                if (ex.Message.Contains("REFERENCE constraint") || ex.Message.Contains("FK_"))
-                {
-                    uiError = _errorsFactory.Create(ErrorCatalogEnum.DeleteRestriction, _tableNameSupplier);
-                }
-                else
-                {
-                    uiError = _errorsFactory.Create(ErrorCatalogEnum.InternalError, _tableNameSupplier);
-                }
-
-                // --- MAPEO A DTO ---
                 var errorDto = ErrorMapper.ToDTO(uiError);
                 errorDto.LogId = dbError.Id;
-                errorDto.InformativeMessage = $"Falla técnica al eliminar proveedor. Ref ID: {dbError.Id}";
+                errorDto.InformativeMessage = $"Falla técnica al eliminar el pago. Ref ID: {dbError.Id}";
 
                 result.Errors.Add(errorDto);
                 return result;

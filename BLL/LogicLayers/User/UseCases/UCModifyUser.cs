@@ -67,7 +67,7 @@ namespace BLL.LogicLayers //====================================================
             // Para verificar permisos, abrimos la BD de Seguridad
             _uow.SetConnectionString(_appSettings.SecurityConnection);
 
-            var currentUser = await _uow.UserRepo.GetById(_sessionProvider.Current.CurrentUserId);
+            var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
 
             if (!currentUser.HasPermission("USER_UPDATE"))
             {
@@ -100,7 +100,7 @@ namespace BLL.LogicLayers //====================================================
             else
             {
                 // Si no mandan password, conservamos el actual (requiere buscarlo)
-                var oldUser = await _uow.UserRepo.GetById(userDto.Id);
+                var oldUser = await _uow.UserRepo.GetByIdAsync(userDto.Id);
                 userEntity.Password = oldUser.Password;
             }
 
@@ -119,7 +119,7 @@ namespace BLL.LogicLayers //====================================================
                 _uow.SetConnectionString(_appSettings.EntitiesConnection);
                 await _uow.BeginTransactionAsync();
 
-                await _uow.EmployeeRepo.Update(employeeEntity);
+                await _uow.EmployeeRepo.UpdateAsync(employeeEntity);
                 await UpdateDVVAsync(_tableNameEmployee, _appSettings.EntitiesConnection);
 
                 await _uow.CommitAsync();
@@ -138,7 +138,7 @@ namespace BLL.LogicLayers //====================================================
                 _uow.SetConnectionString(_appSettings.SecurityConnection);
                 await _uow.BeginTransactionAsync();
 
-                await _uow.UserRepo.Update(userEntity);
+                await _uow.UserRepo.UpdateAsync(userEntity);
                 await UpdateDVVAsync(_tableNameUser, _appSettings.SecurityConnection);
 
                 var log = _bitacoraFact.Create(

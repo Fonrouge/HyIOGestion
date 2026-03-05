@@ -32,12 +32,7 @@ namespace Domain.Entities.Suppliers.ValueObjects
             // 2. Validación de Longitud (Mínimo 2, Máximo 50 caracteres)
             if (name.Length < 2 || name.Length > 50)
                 throw new ArgumentException("El nombre de la empresa debe tener entre 2 y 50 caracteres.", nameof(name));
-
-            
-            // 3. Validación de Caracteres (Solo letras, acentos, ñ, espacios y guiones)
-            // Evita números y símbolos raros como @, !, $, etc.
-            if (!Regex.IsMatch(name, @"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\-]+$"))
-                throw new ArgumentException("El nombre de la empresa contiene caracteres inválidos. Solo se permiten letras.", nameof(name));
+           
 
             return new CompanyNameVO(name);
         }

@@ -1996,7 +1996,7 @@ namespace Winforms.Theme
                 IntPtr hdc = GetWindowDC(this.Handle);
                 if (hdc == IntPtr.Zero) return;
 
-                try // <--- AGREGAR ESTO
+                try
                 {
                     using (Graphics g = Graphics.FromHdc(hdc))// Ancho de 1px
                     using (Pen p = new Pen(BorderColor, 1))
@@ -2006,7 +2006,7 @@ namespace Winforms.Theme
                         g.DrawRectangle(p, 0, 0, _control.Width - 1, _control.Height - 1);
                     }
                 }
-                finally // <--- ESTO SALVA VIDAS
+                finally 
                 {
                     ReleaseDC(this.Handle, hdc);
                 }

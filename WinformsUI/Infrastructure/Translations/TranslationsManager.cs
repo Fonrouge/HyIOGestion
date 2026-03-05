@@ -238,11 +238,9 @@ namespace WinformsUI.Infrastructure.Translations
                 if (prop is null) continue;
 
                 var translated = _loc.Translate(baseSpanish, lang);
+                          
 
-                if (translated == "Activo")
-                    Debugger.Break();
-
-                    if (target is ISynchronizeInvoke sync && sync.InvokeRequired)
+                if (target is ISynchronizeInvoke sync && sync.InvokeRequired)
                 {
                     try { sync.BeginInvoke(new Action(() => SafeSetValue(prop, target, translated)), null); }
                     catch { /* control disposed, ignorar */ }

@@ -4,7 +4,7 @@ using System;
 
 namespace Domain.Entities
 {
-    public class Payment : EntityBase
+    public class Payment : EntityBase, ISoftDeletable
     {
         // --- PROPIEDADES DE DOMINIO ---
         public PaymentAmountVO Amount { get; private set; }
@@ -18,6 +18,8 @@ namespace Domain.Entities
 
         // --- CAMPOS TÉCNICOS ---
         public string DVH { get; private set; } // Vital para proteger la integridad del monto y la fecha
+
+        public bool IsDeleted { get; private set; }
 
         // Constructor privado para forzar el uso de Factories
         private Payment() { }
@@ -84,6 +86,12 @@ namespace Domain.Entities
                 throw new InvalidOperationException("La fecha efectiva no puede ser anterior a la fecha de creación.");
 
             EffectiveDate = effectiveDate;
+        }
+
+        public void MarkAsDeleted()
+        {
+            if (IsDeleted) return; 
+            IsDeleted = true;           
         }
 
         public void UpdateDVH(string newDvh)

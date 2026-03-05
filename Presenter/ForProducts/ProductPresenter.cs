@@ -54,7 +54,7 @@ namespace Presenter.ForProducts
         {
             if (e == null) throw new ArgumentNullException(nameof(e));
 
-            var opRes = await _ucUpdate.Execute(e);
+            var opRes = await _ucUpdate.ExecuteAsync(e);
             ShowResult(opRes);
 
             // Refrescar lista si salió bien
@@ -65,7 +65,7 @@ namespace Presenter.ForProducts
         {
             if (e == null) throw new ArgumentNullException(nameof(e));
 
-            var opRes = await _ucDelete.Execute(e);
+            var opRes = await _ucDelete.ExecuteAsync(e);
             ShowResult(opRes);
 
             if (!opRes.Errors.Any())

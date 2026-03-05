@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 
 namespace BLL.LogicLayers.Employees //=======================================================================REFACTORIZADO AL 27/02=======================================================================
 {
-    // Le quité el sufijo MOCK. Recuerda actualizar la interfaz si le cambias el nombre.
     public class UCGetAllEmployees : IUCGetAllEmployees
     {
         private readonly IUnitOfWork _uow;

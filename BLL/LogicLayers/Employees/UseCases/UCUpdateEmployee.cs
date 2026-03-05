@@ -4,18 +4,18 @@ using BLL.DTOs.Mappers;
 using BLL.Infrastructure.AuditLogs;
 using BLL.Infrastructure.Errors;
 using Domain.Exceptions;
+using Domain.Exceptions.Base;
 using Domain.Infrastructure;
 using Domain.Infrastructure.Audit;
 using Domain.Repositories;
 using Shared;
-using Shared.Services;
 using Shared.Sessions;
 using System;
 using System.Threading.Tasks;
 
-namespace BLL.LogicLayers.Employees //=======================================================================REFACTORIZADO AL 27/02=======================================================================
+namespace BLL.LogicLayers.Employees
 {
-    public class UCCreateEmployee : IUCCreateEmployee
+    public class UCUpdateEmployee : IUCUpdateEmployee
     {
         private readonly IUnitOfWork _uow;
         private readonly IApplicationSettings _appSettings;
@@ -26,13 +26,15 @@ namespace BLL.LogicLayers.Employees //==========================================
 
         private readonly string _tableNameEmployee;
 
-        public UCCreateEmployee(
+        public UCUpdateEmployee
+        (
             IUnitOfWork uow,
             IApplicationSettings appSettings,
             IBitacoraFactory bitacoraFact,
             ISessionProvider sessionProvider,
             IErrorsFactory errorsFactory,
-            IErrorsRepository errorsRepository)
+            IErrorsRepository errorsRepository
+        )
         {
             _uow = uow ?? throw new ArgumentNullException(nameof(uow));
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
@@ -41,10 +43,10 @@ namespace BLL.LogicLayers.Employees //==========================================
             _errorsFactory = errorsFactory ?? throw new ArgumentNullException(nameof(errorsFactory));
             _errorsRepository = errorsRepository ?? throw new ArgumentNullException(nameof(errorsRepository));
 
-            _tableNameEmployee = _appSettings.EmployeeTableName ?? "Employee";
+            _tableNameEmployee = appSettings.EmployeeTableName ?? "Employees";
         }
 
-        public async Task<OperationResult<EmployeeDTO>> ExecuteAsync(EmployeeDTO dto)
+        public async Task<OperationResult<EmployeeDTO>> Execute(EmployeeDTO dto)
         {
             var result = new OperationResult<EmployeeDTO>();
 
@@ -58,89 +60,82 @@ namespace BLL.LogicLayers.Employees //==========================================
                     return result;
                 }
 
-                // 2. Conexión y Transacción (Base de Datos de Negocio)
+                
+                // Seteamos la conexión para las consultas de validación (Aún SIN abrir transacción)
                 _uow.SetConnectionString(_appSettings.EntitiesConnection);
-                await _uow.BeginTransactionAsync();
 
                 // 3. Validar Permisos
                 var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
-                if (!currentUser.HasPermission("EMPLOYEE_CREATE"))
+                if (!currentUser.HasPermission("EMPLOYEE_UPDATE"))
                 {
                     var authError = _errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameEmployee);
                     result.Errors.Add(ErrorMapper.ToDTO(authError));
                     return result;
                 }
 
-                // 4. Validar Duplicados (Por Legajo/FileNumber)
-                // Nota: Asegúrate de tener GetByFileNumberAsync en el repositorio
-                var existing = await _uow.EmployeeRepo.GetByFileNumberAsync(dto.FileNumber);
-                if (existing != null)
+                // 4. Validación de Duplicados (Contra DB)
+                var existingEmployeeWithTaxId = await _uow.EmployeeRepo.GetByTaxIdAsync(dto.NationalId);
+
+                if (existingEmployeeWithTaxId != null && existingEmployeeWithTaxId.Id != dto.Id)
                 {
                     var dupError = _errorsFactory.Create(ErrorCatalogEnum.DuplicateEntry, _tableNameEmployee);
                     result.Errors.Add(ErrorMapper.ToDTO(dupError));
                     return result;
                 }
 
-                // 5. Mapeo a Entidad (Recuerda: EntityBase ya maneja el Id)
-                var newEmployee = EmployeeMapper.ToEntity(dto);
+                // 5. ABRIR TRANSACCIÓN (Solo llegamos acá si todo lo anterior es válido)
+                await _uow.BeginTransactionAsync();
 
+                // 6. Mapeo a Entidad (Fail Fast de VOs ocurre acá adentro)
+                var employeeEntityToUpdate = EmployeeMapper.ToEntity(dto);
 
-                // --- OPCIONAL: Integridad Horizontal (DVH) ---
-                // newEmployee.DVH = IntegrityService.GetIntegrityHash(
-                //    newEmployee.Id, 
-                //    newEmployee.FileNumber, 
-                //    newEmployee.NationalId);
+                // 7. Persistencia
+                await _uow.EmployeeRepo.UpdateAsync(employeeEntityToUpdate);
 
-
-                // 6. Persistencia
-                await _uow.EmployeeRepo.CreateAsync(newEmployee);
-
-                // 7. Integridad Vertical (DVV)
-                await UpdateDVVAsync(_tableNameEmployee, _appSettings.EntitiesConnection);
-
-                // 8. Auditoría
+                // 8. Auditoría (Bitácora)
                 var log = _bitacoraFact.Create(
-                    entry: BitacoraCatalogEnum.CreateOnBD,
+                    entry: BitacoraCatalogEnum.UpdateOnBD,
                     user: currentUser.Id.ToString(),
                     tableName: _tableNameEmployee,
-                    extraInfo: $"Se creó el empleado: {newEmployee.LastName}, {newEmployee.FirstName} (Legajo: {newEmployee.FileNumber})"
+                    extraInfo: $"Se actualizó el empleado ID: {employeeEntityToUpdate.Id} (Nuevo TaxId: {employeeEntityToUpdate.NationalId})"
                 );
                 await _uow.BitacoraRepo.CreateAsync(log);
 
-                // 9. Confirmar Transacción
+                // 9. Confirmación
                 await _uow.CommitAsync();
 
                 // 10. Retorno
-                result.Value = EmployeeMapper.ToDto(newEmployee);
+                result.Value = EmployeeMapper.ToDto(employeeEntityToUpdate);
                 return result;
             }
             catch (Exception ex)
             {
                 if (_uow.HasActiveTransaction) await _uow.RollbackAsync();
 
-                // Log técnico
+                // Log técnico interno
                 var dbError = _errorsFactory.CreateFromException(ex);
                 dbError.Table = _tableNameEmployee;
                 try { await _errorsRepository.CreateAsync(dbError); } catch { }
 
-                // Error UI
-                var uiError = _errorsFactory.Create(ErrorCatalogEnum.InternalError, _tableNameEmployee);
+                // Error catalogado para el usuario
+                ErrorLog uiError;
+
+                if (ex.Message.Contains("REFERENCE constraint") || ex.Message.Contains("FK_") || ex.Message.Contains("UNIQUE"))
+                {
+                    uiError = _errorsFactory.Create(ErrorCatalogEnum.DuplicateEntry, _tableNameEmployee);
+                }
+                else
+                {
+                    uiError = _errorsFactory.Create(ErrorCatalogEnum.InternalError, _tableNameEmployee);
+                }
+
                 var errorDto = ErrorMapper.ToDTO(uiError);
                 errorDto.LogId = dbError.Id;
-                errorDto.InformativeMessage = $"Falla técnica al crear empleado. Ref ID: {dbError.Id}";
+                errorDto.InformativeMessage = $"Falla técnica al actualizar el empleado. Ref ID: {dbError.Id}";
 
                 result.Errors.Add(errorDto);
                 return result;
             }
         }
-
-        private async Task UpdateDVVAsync(string nombreTabla, string connectionString)
-        {
-            var hashes = await _uow.IntegrityRepo.GetVerticalHashesAsync(nombreTabla, connectionString);
-            var dvvFinal = IntegrityService.CalculateDVV(hashes);
-            await _uow.IntegrityRepo.UpdateDVVAsync(nombreTabla, dvvFinal, connectionString);
-        }
     }
 }
-
-
