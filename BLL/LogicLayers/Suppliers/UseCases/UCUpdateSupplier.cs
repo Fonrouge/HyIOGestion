@@ -1,21 +1,21 @@
 ﻿using BLL.DTOs;
 using BLL.DTOs.Errors;
-using BLL.DTOs.Mappers;
 using BLL.Infrastructure.AuditLogs;
 using BLL.Infrastructure.Errors;
+using Domain.Entities;
 using Domain.Exceptions;
-using Domain.Exceptions.Base;
 using Domain.Infrastructure;
 using Domain.Infrastructure.Audit;
 using Domain.Repositories;
 using Shared;
+using Shared.Services;
 using Shared.Sessions;
 using System;
 using System.Threading.Tasks;
 
-namespace BLL.LogicLayers.Employees
+namespace BLL.LogicLayers.Suppliers
 {
-    public class UCUpdateEmployee : IUCUpdateEmployee
+    public class UCUpdateSupplier : IUCUpdateSupplier
     {
         private readonly IUnitOfWork _uow;
         private readonly IApplicationSettings _appSettings;
@@ -24,9 +24,9 @@ namespace BLL.LogicLayers.Employees
         private readonly IErrorsFactory _errorsFactory;
         private readonly IErrorsRepository _errorsRepository;
 
-        private readonly string _tableNameEmployee;
+        private readonly string _tableNameSupplier;
 
-        public UCUpdateEmployee
+        public UCUpdateSupplier
         (
             IUnitOfWork uow,
             IApplicationSettings appSettings,
@@ -43,12 +43,12 @@ namespace BLL.LogicLayers.Employees
             _errorsFactory = errorsFactory ?? throw new ArgumentNullException(nameof(errorsFactory));
             _errorsRepository = errorsRepository ?? throw new ArgumentNullException(nameof(errorsRepository));
 
-            _tableNameEmployee = appSettings.EmployeeTableName ?? "Employees";
+            _tableNameSupplier = appSettings.SupplierTableName ?? "Suppliers";
         }
 
-        public async Task<OperationResult<EmployeeDTO>> Execute(EmployeeDTO dto)
+        public async Task<OperationResult<SupplierDTO>> ExecuteAsync(SupplierDTO dto)
         {
-            var result = new OperationResult<EmployeeDTO>();
+            var result = new OperationResult<SupplierDTO>();
 
             try
             {
@@ -60,82 +60,78 @@ namespace BLL.LogicLayers.Employees
                     return result;
                 }
 
-                
-                // Seteamos la conexión para las consultas de validación (Aún SIN abrir transacción)
+                // 2. Conexión y Transacción
                 _uow.SetConnectionString(_appSettings.EntitiesConnection);
+                await _uow.BeginTransactionAsync();
 
                 // 3. Validar Permisos
                 var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
-                if (!currentUser.HasPermission("EMPLOYEE_UPDATE"))
+                if (!currentUser.HasPermission("SUPPLIER_UPDATE"))
                 {
-                    var authError = _errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameEmployee);
+                    var authError = _errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameSupplier);
                     result.Errors.Add(ErrorMapper.ToDTO(authError));
                     return result;
                 }
 
-                // 4. Validación de Duplicados (Contra DB)
-                var existingEmployeeWithTaxId = await _uow.EmployeeRepo.GetByNationalIdAsync(dto.NationalId);
-
-                if (existingEmployeeWithTaxId != null && existingEmployeeWithTaxId.Id != dto.Id)
+                // 5. Validación de Duplicados (Trampa del Update)
+                var existingSupplierWithTaxId = await _uow.SupplierRepo.GetByTaxIdAsync(dto.TaxId);
+                if (existingSupplierWithTaxId != null && existingSupplierWithTaxId.Id != dto.Id)
                 {
-                    var dupError = _errorsFactory.Create(ErrorCatalogEnum.DuplicateEntry, _tableNameEmployee);
+                    var dupError = _errorsFactory.Create(ErrorCatalogEnum.DuplicateEntry, _tableNameSupplier);
                     result.Errors.Add(ErrorMapper.ToDTO(dupError));
                     return result;
                 }
 
-                // 5. ABRIR TRANSACCIÓN (Solo llegamos acá si todo lo anterior es válido)
-                await _uow.BeginTransactionAsync();
-
-                // 6. Mapeo a Entidad (Fail Fast de VOs ocurre acá adentro)
-                var employeeEntityToUpdate = EmployeeMapper.ToEntity(dto);
+                // 6. Mapeo a Entidad
+                var supplierEntityToUpdate = SupplierMapper.ToEntity(dto);
 
                 // 7. Persistencia
-                await _uow.EmployeeRepo.UpdateAsync(employeeEntityToUpdate);
+                await _uow.SupplierRepo.UpdateAsync(supplierEntityToUpdate);
 
-                // 8. Auditoría (Bitácora)
+                // 8. Integridad Vertical (DVV)
+                await UpdateDVVAsync(_tableNameSupplier, _appSettings.EntitiesConnection);
+
+                // 9. Auditoría (Bitácora)
                 var log = _bitacoraFact.Create(
                     entry: BitacoraCatalogEnum.UpdateOnBD,
                     user: currentUser.Id.ToString(),
-                    tableName: _tableNameEmployee,
-                    extraInfo: $"Se actualizó el empleado ID: {employeeEntityToUpdate.Id} (Nuevo TaxId: {employeeEntityToUpdate.NationalId})"
+                    tableName: _tableNameSupplier,
+                    extraInfo: $"Se actualizó el proveedor ID: {supplierEntityToUpdate.Id} (CUIT: {supplierEntityToUpdate.TaxId})"
                 );
                 await _uow.BitacoraRepo.CreateAsync(log);
 
-                // 9. Confirmación
+                // 10. Confirmación
                 await _uow.CommitAsync();
 
-                // 10. Retorno
-                result.Value = EmployeeMapper.ToDto(employeeEntityToUpdate);
+                // 11. Retorno
+                result.Value = SupplierMapper.ToDto(supplierEntityToUpdate);
                 return result;
             }
             catch (Exception ex)
             {
                 if (_uow.HasActiveTransaction) await _uow.RollbackAsync();
 
-                // Log técnico interno
+                // Log técnico para soporte
                 var dbError = _errorsFactory.CreateFromException(ex);
-                dbError.Table = _tableNameEmployee;
+                dbError.Table = _tableNameSupplier;
                 try { await _errorsRepository.CreateAsync(dbError); } catch { }
 
-                // Error catalogado para el usuario
-                ErrorLog uiError;
-
-                if (ex.Message.Contains("REFERENCE constraint") || ex.Message.Contains("FK_") || ex.Message.Contains("UNIQUE"))
-                {
-                    uiError = _errorsFactory.Create(ErrorCatalogEnum.DuplicateEntry, _tableNameEmployee);
-                }
-                else
-                {
-                    uiError = _errorsFactory.Create(ErrorCatalogEnum.InternalError, _tableNameEmployee);
-                }
-
+                // Error amigable para la UI
+                var uiError = _errorsFactory.Create(ErrorCatalogEnum.InternalError, _tableNameSupplier);
                 var errorDto = ErrorMapper.ToDTO(uiError);
                 errorDto.LogId = dbError.Id;
-                errorDto.InformativeMessage = $"Falla técnica al actualizar el empleado. Ref ID: {dbError.Id}";
+                errorDto.InformativeMessage = $"Error técnico al actualizar proveedor. Ref ID: {dbError.Id}";
 
                 result.Errors.Add(errorDto);
                 return result;
             }
+        }
+
+        private async Task UpdateDVVAsync(string nombreTabla, string connectionString)
+        {
+            var hashes = await _uow.IntegrityRepo.GetVerticalHashesAsync(nombreTabla, connectionString);
+            var dvvFinal = IntegrityService.CalculateDVV(hashes);
+            await _uow.IntegrityRepo.UpdateDVVAsync(nombreTabla, dvvFinal, connectionString);
         }
     }
 }

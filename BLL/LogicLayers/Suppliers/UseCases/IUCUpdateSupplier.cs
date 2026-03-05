@@ -5,6 +5,6 @@ namespace BLL.LogicLayers.Suppliers
 {
     public interface IUCUpdateSupplier
     {
-        Task<OperationResult<SupplierDTO>> Execute(SupplierDTO dto);
+        Task<OperationResult<SupplierDTO>> ExecuteAsync(SupplierDTO dto);
     }
 }

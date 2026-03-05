@@ -72,6 +72,22 @@ namespace Domain.Exceptions
                          Severity = SeverityEnum.WARNING)]
         DeleteRestriction,
 
+        [ErrorDescriptor(Code = "BUSI_004",
+                         Message = "Registro no encontrado.",
+                         RecommendedAction = "Verifique si el identificador es correcto o si el registro fue eliminado por otro usuario.",
+                         InformativeMessage = "La consulta no devolvió ningún resultado para los criterios especificados.",
+                         Table = "",
+                         Severity = SeverityEnum.INFO)]
+        NotFound,
+
+        [ErrorDescriptor(Code = "BUSI_005",
+                         Message = "Datos inválidos.",
+                         RecommendedAction = "Revise los valores ingresados (formato, longitud, obligatoriedad) e intente nuevamente.",
+                         InformativeMessage = "Uno o más campos contienen valores no válidos según las reglas de negocio o formato esperado.",
+                         Table = "",
+                         Severity = SeverityEnum.INFO)]
+        InvalidData,
+
         // --- SISTEMA E INFRAESTRUCTURA (CRITICAL / WARNING) ---
         [ErrorDescriptor(Code = "SYST_001",
                          Message = "Base de datos no disponible.",
@@ -96,13 +112,5 @@ namespace Domain.Exceptions
                          Table = "",
                          Severity = SeverityEnum.WARNING)]
         DataLoadError,
-        
-        [ErrorDescriptor(Code = "BUSI_004",
-                         Message = "Registro no encontrado.",
-                         RecommendedAction = "Verifique si el identificador es correcto o si el registro fue eliminado por otro usuario.",
-                         InformativeMessage = "La consulta no devolvió ningún resultado para los criterios especificados.",
-                         Table = "",
-                         Severity = SeverityEnum.INFO)]
-        NotFound,
     }
 }

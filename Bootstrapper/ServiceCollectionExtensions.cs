@@ -164,7 +164,7 @@ namespace Bootstrapper
             //Suppliers
             services.AddTransient<IUCGetAllSuppliers, UCGetAllSuppliers>();
             services.AddTransient<IUCCreateSupplier, UCCreateSupplier>();
-            services.AddTransient<IUCUpdateSupplier, UCUpdateSupplierMOCK>();
+            services.AddTransient<IUCUpdateSupplier, UCUpdateSupplier>();
             services.AddTransient<IUCDeleteSupplier, UCDeleteSupplier>();
         }
 

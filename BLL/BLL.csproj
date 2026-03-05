@@ -111,7 +111,7 @@
     <Compile Include="LogicLayers\Suppliers\UseCases\UCCreateSupplier.cs" />
     <Compile Include="LogicLayers\Suppliers\UseCases\UCDeleteSupplier.cs" />
     <Compile Include="LogicLayers\Suppliers\UseCases\UCGetAllSuppliers.cs" />
-    <Compile Include="LogicLayers\Suppliers\UseCases\UCUpdateSale.cs" />
+    <Compile Include="LogicLayers\Suppliers\UseCases\UCUpdateSupplier.cs" />
     <Compile Include="LogicLayers\Clients\UseCases\IUCGetAllClients.cs" />
     <Compile Include="LogicLayers\User\UseCases\IUCModifyUser.cs" />
     <Compile Include="LogicLayers\Clients\UseCases\UCGetAllClients.cs" />
