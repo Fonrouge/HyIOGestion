@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace Presentation.WinForms.Services.Implementations.TextBoxes
+namespace WinformsUI.Helpers
 {
     public static class TextBoxPlaceholder  //ESTE SE USA PARA EL LOGIN
     {

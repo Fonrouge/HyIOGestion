@@ -1,5 +1,4 @@
-﻿using Presentation.WinForms.Services.Implementations.TextBoxes;
-using Shared;
+﻿using Shared;
 using Shared.Services.Searching;
 using SharedAbstractions.ArchitecturalMarkers;
 using System;
@@ -9,6 +8,7 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using Winforms.Theme;
+using WinformsUI.Helpers;
 using WinformsUI.Infrastructure.Translations;
 
 namespace WinformsUI.UserControls.SearchBar

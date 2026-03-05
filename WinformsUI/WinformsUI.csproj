@@ -65,103 +65,103 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core\Forms\Base\BaseManagementForm.cs">
+    <Compile Include="Forms\Base\BaseManagementForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Core\Forms\Base\HostForm.cs">
+    <Compile Include="Forms\Base\HostForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Core\Forms\Base\HostForm.Designer.cs">
+    <Compile Include="Forms\Base\HostForm.Designer.cs">
       <DependentUpon>HostForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Core\Forms\Main\MainForm.cs">
+    <Compile Include="Forms\Main\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Core\Forms\Main\MainForm.Designer.cs">
+    <Compile Include="Forms\Main\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Features\ClientCRUDL\ClientForm.cs">
+    <Compile Include="Forms\ClientCRUDL\ClientForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Features\ClientCRUDL\ClientForm.Designer.cs">
+    <Compile Include="Forms\ClientCRUDL\ClientForm.Designer.cs">
       <DependentUpon>ClientForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Features\ClientCRUDL\CreateClientForm.cs">
+    <Compile Include="Forms\ClientCRUDL\CreateClientForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Features\ClientCRUDL\CreateClientForm.Designer.cs">
+    <Compile Include="Forms\ClientCRUDL\CreateClientForm.Designer.cs">
       <DependentUpon>CreateClientForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Features\ConfigurationsMenu\ConfigurationsForm.cs">
+    <Compile Include="Forms\ConfigurationsMenu\ConfigurationsForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Features\ConfigurationsMenu\ConfigurationsForm.Designer.cs">
+    <Compile Include="Forms\ConfigurationsMenu\ConfigurationsForm.Designer.cs">
       <DependentUpon>ConfigurationsForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Features\EmployeeCRUDL\CreateEmployeeForm.cs">
+    <Compile Include="Forms\EmployeeCRUDL\CreateEmployeeForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Features\EmployeeCRUDL\CreateEmployeeForm.Designer.cs">
+    <Compile Include="Forms\EmployeeCRUDL\CreateEmployeeForm.Designer.cs">
       <DependentUpon>CreateEmployeeForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Features\EmployeeCRUDL\EmployeeForm.cs">
+    <Compile Include="Forms\EmployeeCRUDL\EmployeeForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Features\EmployeeCRUDL\EmployeeForm.Designer.cs">
+    <Compile Include="Forms\EmployeeCRUDL\EmployeeForm.Designer.cs">
       <DependentUpon>EmployeeForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Features\Login\LoginFrm.cs">
+    <Compile Include="Forms\Login\LoginFrm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Features\Login\LoginFrm.Designer.cs">
+    <Compile Include="Forms\Login\LoginFrm.Designer.cs">
       <DependentUpon>LoginFrm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Features\PaymentCRUDL\CreatePaymentForm.cs">
+    <Compile Include="Forms\PaymentCRUDL\CreatePaymentForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Features\PaymentCRUDL\CreatePaymentForm.Designer.cs">
+    <Compile Include="Forms\PaymentCRUDL\CreatePaymentForm.Designer.cs">
       <DependentUpon>CreatePaymentForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Features\PaymentCRUDL\PaymentForm.cs">
+    <Compile Include="Forms\PaymentCRUDL\PaymentForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Features\PaymentCRUDL\PaymentForm.Designer.cs">
+    <Compile Include="Forms\PaymentCRUDL\PaymentForm.Designer.cs">
       <DependentUpon>PaymentForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Features\ProductCRUDL\CreateProductForm.cs">
+    <Compile Include="Forms\ProductCRUDL\CreateProductForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Features\ProductCRUDL\CreateProductForm.Designer.cs">
+    <Compile Include="Forms\ProductCRUDL\CreateProductForm.Designer.cs">
       <DependentUpon>CreateProductForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Features\ProductCRUDL\ProductForm.cs">
+    <Compile Include="Forms\ProductCRUDL\ProductForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Features\ProductCRUDL\ProductForm.Designer.cs">
+    <Compile Include="Forms\ProductCRUDL\ProductForm.Designer.cs">
       <DependentUpon>ProductForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Features\SaleCRUDL\CreateSaleForm.cs">
+    <Compile Include="Forms\SaleCRUDL\CreateSaleForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Features\SaleCRUDL\CreateSaleForm.Designer.cs">
+    <Compile Include="Forms\SaleCRUDL\CreateSaleForm.Designer.cs">
       <DependentUpon>CreateSaleForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Features\SaleCRUDL\SaleForm.cs">
+    <Compile Include="Forms\SaleCRUDL\SaleForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Features\SaleCRUDL\SaleForm.Designer.cs">
+    <Compile Include="Forms\SaleCRUDL\SaleForm.Designer.cs">
       <DependentUpon>SaleForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Features\SupplierCRUDL\CreateSupplierForm.cs">
+    <Compile Include="Forms\SupplierCRUDL\CreateSupplierForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Features\SupplierCRUDL\CreateSupplierForm.Designer.cs">
+    <Compile Include="Forms\SupplierCRUDL\CreateSupplierForm.Designer.cs">
       <DependentUpon>CreateSupplierForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Features\SupplierCRUDL\SupplierForm.cs">
+    <Compile Include="Forms\SupplierCRUDL\SupplierForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Features\SupplierCRUDL\SupplierForm.Designer.cs">
+    <Compile Include="Forms\SupplierCRUDL\SupplierForm.Designer.cs">
       <DependentUpon>SupplierForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Helpers\TextBoxPlaceholder.cs" />
@@ -191,7 +191,7 @@
     <Compile Include="Infrastructure\UserInterface\Theming\ComboBoxThemer.cs" />
     <Compile Include="Infrastructure\UserInterface\Theming\DarkTheme.cs" />
     <Compile Include="Infrastructure\UserInterface\Theming\DateTimePickerThemer.cs" />
-    <Compile Include="UserControls\CollectionExtensions.cs" />
+    <Compile Include="Helpers\CollectionExtensions.cs" />
     <Compile Include="UserControls\CustomDGV\CustomDGVFactory.cs" />
     <Compile Include="UserControls\CustomDGV\CustomDGVForm.cs">
       <SubType>Form</SubType>
@@ -206,59 +206,59 @@
     <Compile Include="UserControls\CustomDGV\IICustomDGVFormII.Designer.cs">
       <DependentUpon>IICustomDGVFormII.cs</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\DoubleBuffering.cs" />
+    <Compile Include="Helpers\DoubleBuffering.cs" />
     <Compile Include="UserControls\SearchBar\SearchBehavior.cs" />
     <Compile Include="UserControls\Wizard\IWizardPanelNavigator.cs" />
     <Compile Include="UserControls\Wizard\WizardPanelNavigator.cs" />
-    <EmbeddedResource Include="Core\Forms\Base\BaseManagementForm.resx">
+    <EmbeddedResource Include="Forms\Base\BaseManagementForm.resx">
       <DependentUpon>BaseManagementForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Core\Forms\Base\HostForm.resx">
+    <EmbeddedResource Include="Forms\Base\HostForm.resx">
       <DependentUpon>HostForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Core\Forms\Main\MainForm.resx">
+    <EmbeddedResource Include="Forms\Main\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Features\ClientCRUDL\ClientForm.resx">
+    <EmbeddedResource Include="Forms\ClientCRUDL\ClientForm.resx">
       <DependentUpon>ClientForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Features\ClientCRUDL\CreateClientForm.resx">
+    <EmbeddedResource Include="Forms\ClientCRUDL\CreateClientForm.resx">
       <DependentUpon>CreateClientForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Features\ConfigurationsMenu\ConfigurationsForm.resx">
+    <EmbeddedResource Include="Forms\ConfigurationsMenu\ConfigurationsForm.resx">
       <DependentUpon>ConfigurationsForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Features\EmployeeCRUDL\CreateEmployeeForm.resx">
+    <EmbeddedResource Include="Forms\EmployeeCRUDL\CreateEmployeeForm.resx">
       <DependentUpon>CreateEmployeeForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Features\EmployeeCRUDL\EmployeeForm.resx">
+    <EmbeddedResource Include="Forms\EmployeeCRUDL\EmployeeForm.resx">
       <DependentUpon>EmployeeForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Features\Login\LoginFrm.resx">
+    <EmbeddedResource Include="Forms\Login\LoginFrm.resx">
       <DependentUpon>LoginFrm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Features\PaymentCRUDL\CreatePaymentForm.resx">
+    <EmbeddedResource Include="Forms\PaymentCRUDL\CreatePaymentForm.resx">
       <DependentUpon>CreatePaymentForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Features\PaymentCRUDL\PaymentForm.resx">
+    <EmbeddedResource Include="Forms\PaymentCRUDL\PaymentForm.resx">
       <DependentUpon>PaymentForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Features\ProductCRUDL\CreateProductForm.resx">
+    <EmbeddedResource Include="Forms\ProductCRUDL\CreateProductForm.resx">
       <DependentUpon>CreateProductForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Features\ProductCRUDL\ProductForm.resx">
+    <EmbeddedResource Include="Forms\ProductCRUDL\ProductForm.resx">
       <DependentUpon>ProductForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Features\SaleCRUDL\CreateSaleForm.resx">
+    <EmbeddedResource Include="Forms\SaleCRUDL\CreateSaleForm.resx">
       <DependentUpon>CreateSaleForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Features\SaleCRUDL\SaleForm.resx">
+    <EmbeddedResource Include="Forms\SaleCRUDL\SaleForm.resx">
       <DependentUpon>SaleForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Features\SupplierCRUDL\CreateSupplierForm.resx">
+    <EmbeddedResource Include="Forms\SupplierCRUDL\CreateSupplierForm.resx">
       <DependentUpon>CreateSupplierForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Features\SupplierCRUDL\SupplierForm.resx">
+    <EmbeddedResource Include="Forms\SupplierCRUDL\SupplierForm.resx">
       <DependentUpon>SupplierForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">

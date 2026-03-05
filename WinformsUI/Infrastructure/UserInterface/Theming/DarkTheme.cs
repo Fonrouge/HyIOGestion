@@ -312,13 +312,8 @@ namespace Winforms.Theme
 
         public static void Apply(Control root, Palette p, VisualDepth depth = VisualDepth.ThreeD)
         {
-
-            if (root == null) return;
-
-            //      root.BackColor = p.SurfaceAlt;
-
-            var form = root as Form ?? root.FindForm();
-            if (form != null) { Apply(form, p, depth); return; }
+          //  var form = root as Form ?? root.FindForm();
+          //  if (form != null) { Apply(form, p, depth); return; }
 
             ClearIconCache();
             PaintControlTree(root, p);
@@ -333,7 +328,6 @@ namespace Winforms.Theme
                     ApplyGradientBackground(pnl, p.Surface, p.SurfaceAlt, LinearGradientMode.Vertical, false);
                 }
             }
-
 
             foreach (var dgv in FindAll<DataGridView>(root)) DataGridViewThemer.StyleDgv(dgv, p, depth);
         }
@@ -362,8 +356,6 @@ namespace Winforms.Theme
                 }
 
 
-
-
                 // Estilos base por tipo
                 if (c is StatusStrip || c is ToolStrip)
                 {
@@ -377,7 +369,7 @@ namespace Winforms.Theme
                 }
 
                 else if (c is CheckBox chb)
-                {                    
+                {
                     chb.BackColor = Color.Transparent;
                     chb.ForeColor = p.TextSecondary;
                     continue;
@@ -398,6 +390,17 @@ namespace Winforms.Theme
                         c.BackColor = Darken(p.LowAccent, 0.4);
                     }
                 }
+                else if (c is PictureBox)
+                {
+                    if (c.Tag is "NonPaintable")
+                    {
+                        continue;
+                    }
+                }
+
+
+
+
                 else if (c is Button)
                 {
                     var b = (Button)c;
@@ -407,8 +410,8 @@ namespace Winforms.Theme
                         b.FlatStyle = FlatStyle.Flat;
                         b.FlatAppearance.BorderSize = 0;
                         b.BackColor = Color.Transparent;
-
                         b.ForeColor = Darken(p.TextSecondary, -0.4);
+
                         Color hoverColor = Darken(p.LowAccent, 0.2);
                         Color pressColor = p.LowAccent;
 
@@ -435,7 +438,7 @@ namespace Winforms.Theme
                         b.FlatAppearance.BorderColor = p.HighAccent;
                         b.FlatAppearance.BorderSize = 1;
                         b.BackColor = p.HighAccent;
-                        b.ForeColor = p.TextSecondary;                        
+                        b.ForeColor = p.TextSecondary;
                         continue;
                     }
 
@@ -563,6 +566,7 @@ namespace Winforms.Theme
                         // MinorGrid (si la usas)
                         ca.AxisY.MinorGrid.LineColor = Darken(p.GridLine, 0.2);
                     }
+
                     int i = 0;
                     foreach (var series in chart.Series)
                     {
@@ -622,6 +626,7 @@ namespace Winforms.Theme
                 HasChildren(c, p);
 
                 var dgv = c as DataGridView;
+
                 if (dgv != null)
                 {
                     DataGridViewThemer.AccentDgvColumns(dgv, p);
@@ -973,6 +978,7 @@ namespace Winforms.Theme
                         ApplyGradientBackground(pnl, Darken(p.LowAccent, 0.65), Darken(p.Accent, 0.65), LinearGradientMode.Vertical, false);
                 }
 
+
                 else if (pnl.Tag is "ExternalTitleBar")
                 {
                     ApplyGradientBackground(pnl, Darken(p.LowAccent, 0.8), Darken(p.Accent, 0.8), LinearGradientMode.Horizontal, false);
@@ -986,102 +992,13 @@ namespace Winforms.Theme
                 else
                 {
                     if (isDarkPalette)
-                        ApplyGradientBackground(pnl, Darken(p.SurfaceAlt, 0.7), Darken(p.Surface, 0.8), LinearGradientMode.Vertical, false);
+                        ApplyGradientBackground(pnl, Darken(p.Surface, -0.1), Darken(p.Surface, 0.3), LinearGradientMode.Vertical, false);
                     else
                         ApplyGradientBackground(pnl, p.Surface, p.SurfaceAlt, LinearGradientMode.Vertical, false);
                 }
 
-
-
-
-
-
+         
             }
-            //
-            //   foreach (var pnl in FindAll<TableLayoutPanel>(form))
-            //   {
-            //       if (IsNonPaintable(pnl.Tag))
-            //       {
-            //           RemoveGradientBackground(pnl);
-            //           continue;
-            //       }
-            //
-            //
-            //       if (IsDarkPalette(GetCurrentPalette())) //MODO CLARO
-            //       {
-            //           if (pnl.Tag is "SubPanel")
-            //           {
-            //               //             MessageBox.Show("subpanel isdarkpallete");
-            //               ApplyGradientBackground(pnl, Darken(p.Accent, 0.6), Darken(p.LowAccent, 0.6), LinearGradientMode.Horizontal, false);
-            //           }
-            //
-            //           else if (pnl.Tag is "InternalTitleBar")
-            //           {
-            //               ApplyGradientBackground(pnl, Darken(p.LowAccent, 0.55), Darken(p.Accent, 0.65), LinearGradientMode.Vertical, false);
-            //           }
-            //
-            //           else if (pnl.Tag is "ExternalTitleBar")
-            //           {
-            //               if (pnl.Name == "tlpMenu")
-            //                   ApplyGradientBackground(pnl, Darken(p.Accent, 0.8), Darken(p.LowAccent, 0.8), LinearGradientMode.Horizontal, false);
-            //
-            //               if (pnl.Name == "tableLayoutPanel1")
-            //                   ApplyGradientBackground(pnl, Darken(p.LowAccent, 0.8), Darken(p.Accent, 0.8), LinearGradientMode.Horizontal, false);
-            //
-            //           }
-            //
-            //           else if (pnl.Tag is "LowAccented")
-            //           {
-            //               ApplyGradientBackground(pnl, Darken(p.LowAccent, 0.8), Darken(p.Accent, 0.8), LinearGradientMode.Vertical, false);
-            //           }
-            //
-            //           else
-            //           {
-            //               //             if (pnl.Container != null)
-            //               //                 MessageBox.Show($"Paleta oscura - TLP + {pnl.Name} + {pnl.Container.ToString()}");
-            //               //             else
-            //               //                 MessageBox.Show($"Paleta oscura - TLP + {pnl.Name}");
-            //
-            //               ApplyGradientBackground(pnl, p.SurfaceAlt, p.Surface, LinearGradientMode.Vertical, false);
-            //           }
-            //
-            //       }
-            //
-            //       else if (!IsDarkPalette(GetCurrentPalette())) //MODO OSCURO
-            //       {
-            //
-            //
-            //           if (pnl.Tag is "SubPanel")
-            //           {
-            //               ApplyGradientBackground(pnl, Darken(p.Accent, 0.6), Darken(p.LowAccent, 0.6), LinearGradientMode.Horizontal, false);
-            //           }
-            //
-            //           else if (pnl.Tag is "InternalTitleBar")
-            //           {
-            //               ApplyGradientBackground(pnl, Darken(p.LowAccent, 0.55), Darken(p.Accent, 0.65), LinearGradientMode.Vertical, false);
-            //           }
-            //
-            //           else if (pnl.Tag is "ExternalTitleBar")
-            //           {
-            //               ApplyGradientBackground(pnl, Darken(p.LowAccent, 0.8), Darken(p.Accent, 0.8), LinearGradientMode.Horizontal, false);
-            //           }
-            //
-            //           else if (pnl.Tag is "LowAccented")
-            //           {
-            //               ApplyGradientBackground(pnl, Darken(p.LowAccent, 0.8), Darken(p.Accent, 0.8), LinearGradientMode.Vertical, false);
-            //           }
-            //           else
-            //           {
-            //               ApplyGradientBackground(pnl, p.Surface, p.SurfaceAlt, LinearGradientMode.Vertical, false);
-            //           }
-            //
-            //
-            //       }
-            //
-            //
-            //
-            //            }
-            //
         }
 
 
@@ -2006,7 +1923,7 @@ namespace Winforms.Theme
                         g.DrawRectangle(p, 0, 0, _control.Width - 1, _control.Height - 1);
                     }
                 }
-                finally 
+                finally
                 {
                     ReleaseDC(this.Handle, hdc);
                 }

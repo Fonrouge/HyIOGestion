@@ -5,7 +5,7 @@ using Presenter.LoginScreen;
 using Presenter.MainFormNavigation;
 using System;
 using System.Windows.Forms;
-using WinformsUI.Features.Login;
+using WinformsUI.Forms.Login;
 using WinformsUI.Forms.Main;
 using WinformsUI.Infrastructure.DI;
 using WinformsUI.Infrastructure.Factories;

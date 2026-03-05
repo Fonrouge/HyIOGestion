@@ -21,10 +21,9 @@
             this.mainDGV = new System.Windows.Forms.DataGridView();
             this.tableLayoutPanelSearchControls = new System.Windows.Forms.TableLayoutPanel();
             this.tbSearchBar = new System.Windows.Forms.TextBox();
-            this.cbColumnsName = new System.Windows.Forms.ComboBox();
             this.btnShowFilters = new System.Windows.Forms.Button();
+            this.cbColumnsName = new System.Windows.Forms.ComboBox();
             this.dateTimePickerUpTo = new System.Windows.Forms.DateTimePicker();
-            this.lblUpTo = new System.Windows.Forms.Label();
             this.dateTimePickerSince = new System.Windows.Forms.DateTimePicker();
             this.panelHorDivider = new System.Windows.Forms.Panel();
             this.panel1 = new System.Windows.Forms.Panel();
@@ -33,6 +32,7 @@
             this.checkedListBoxFilters = new System.Windows.Forms.CheckedListBox();
             this.btnApplyFilter = new System.Windows.Forms.Button();
             this.btnCleanFilters = new System.Windows.Forms.Button();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.rbOnlyActives = new System.Windows.Forms.RadioButton();
             this.rbOnlyDeleted = new System.Windows.Forms.RadioButton();
             this.rbAllEntities = new System.Windows.Forms.RadioButton();
@@ -43,7 +43,6 @@
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.rbAtLeastOneCategory = new System.Windows.Forms.RadioButton();
             this.rbAllCategories = new System.Windows.Forms.RadioButton();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.mainDGV)).BeginInit();
             this.tableLayoutPanelSearchControls.SuspendLayout();
@@ -77,21 +76,17 @@
             this.mainDGV.Name = "mainDGV";
             this.mainDGV.Size = new System.Drawing.Size(1125, 732);
             this.mainDGV.TabIndex = 23;
+            this.mainDGV.MouseLeave += new System.EventHandler(this.checkedListBoxFilters_SelectedIndexChanged);
             // 
             // tableLayoutPanelSearchControls
             // 
             this.tableLayoutPanelSearchControls.BackColor = System.Drawing.SystemColors.ActiveBorder;
-            this.tableLayoutPanelSearchControls.ColumnCount = 7;
+            this.tableLayoutPanelSearchControls.ColumnCount = 3;
             this.tableLayoutPanelSearchControls.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanelSearchControls.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanelSearchControls.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 54.49306F));
-            this.tableLayoutPanelSearchControls.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 7.699115F));
-            this.tableLayoutPanelSearchControls.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.81416F));
-            this.tableLayoutPanelSearchControls.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 4.690266F));
-            this.tableLayoutPanelSearchControls.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.19469F));
             this.tableLayoutPanelSearchControls.Controls.Add(this.tbSearchBar, 2, 0);
             this.tableLayoutPanelSearchControls.Controls.Add(this.btnShowFilters, 0, 0);
-            this.tableLayoutPanelSearchControls.Controls.Add(this.lblUpTo, 5, 0);
             this.tableLayoutPanelSearchControls.Controls.Add(this.cbColumnsName, 1, 0);
             this.tableLayoutPanelSearchControls.Dock = System.Windows.Forms.DockStyle.Top;
             this.tableLayoutPanelSearchControls.Location = new System.Drawing.Point(0, 11);
@@ -109,10 +104,23 @@
             this.tbSearchBar.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.tbSearchBar.Font = new System.Drawing.Font("Microsoft YaHei UI", 10F);
             this.tbSearchBar.Location = new System.Drawing.Point(258, 21);
-            this.tbSearchBar.Margin = new System.Windows.Forms.Padding(20, 3, 3, 3);
+            this.tbSearchBar.Margin = new System.Windows.Forms.Padding(20, 3, 20, 3);
             this.tbSearchBar.Name = "tbSearchBar";
-            this.tbSearchBar.Size = new System.Drawing.Size(597, 17);
+            this.tbSearchBar.Size = new System.Drawing.Size(1098, 17);
             this.tbSearchBar.TabIndex = 15;
+            // 
+            // btnShowFilters
+            // 
+            this.btnShowFilters.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnShowFilters.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnShowFilters.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnShowFilters.Image = global::WinformsUI.Properties.Resources.FiltersIcon;
+            this.btnShowFilters.Location = new System.Drawing.Point(3, 11);
+            this.btnShowFilters.Name = "btnShowFilters";
+            this.btnShowFilters.Size = new System.Drawing.Size(37, 37);
+            this.btnShowFilters.TabIndex = 12;
+            this.btnShowFilters.Tag = "IsImageColorable";
+            this.btnShowFilters.UseVisualStyleBackColor = true;
             // 
             // cbColumnsName
             // 
@@ -124,44 +132,20 @@
             this.cbColumnsName.Size = new System.Drawing.Size(189, 25);
             this.cbColumnsName.TabIndex = 13;
             // 
-            // btnShowFilters
-            // 
-            this.btnShowFilters.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnShowFilters.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnShowFilters.Image = global::WinformsUI.Properties.Resources.FiltersIcon;
-            this.btnShowFilters.Location = new System.Drawing.Point(3, 11);
-            this.btnShowFilters.Name = "btnShowFilters";
-            this.btnShowFilters.Size = new System.Drawing.Size(37, 37);
-            this.btnShowFilters.TabIndex = 12;
-            this.btnShowFilters.Tag = "IsImageColorable";
-            this.btnShowFilters.UseVisualStyleBackColor = true;
-            // 
             // dateTimePickerUpTo
             // 
             this.dateTimePickerUpTo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.dateTimePickerUpTo.Cursor = System.Windows.Forms.Cursors.Hand;
             this.dateTimePickerUpTo.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
             this.dateTimePickerUpTo.Location = new System.Drawing.Point(3, 478);
             this.dateTimePickerUpTo.Name = "dateTimePickerUpTo";
             this.dateTimePickerUpTo.Size = new System.Drawing.Size(240, 23);
             this.dateTimePickerUpTo.TabIndex = 2;
             // 
-            // lblUpTo
-            // 
-            this.lblUpTo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblUpTo.AutoSize = true;
-            this.lblUpTo.BackColor = System.Drawing.Color.Transparent;
-            this.lblUpTo.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
-            this.lblUpTo.Location = new System.Drawing.Point(1139, 21);
-            this.lblUpTo.Name = "lblUpTo";
-            this.lblUpTo.Size = new System.Drawing.Size(47, 17);
-            this.lblUpTo.TabIndex = 1;
-            this.lblUpTo.Tag = "";
-            this.lblUpTo.Text = "Hasta";
-            this.lblUpTo.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
             // dateTimePickerSince
             // 
             this.dateTimePickerSince.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.dateTimePickerSince.Cursor = System.Windows.Forms.Cursors.Hand;
             this.dateTimePickerSince.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
             this.dateTimePickerSince.Location = new System.Drawing.Point(3, 444);
             this.dateTimePickerSince.Name = "dateTimePickerSince";
@@ -246,6 +230,7 @@
             // checkedListBoxFilters
             // 
             this.checkedListBoxFilters.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.checkedListBoxFilters.Cursor = System.Windows.Forms.Cursors.Hand;
             this.checkedListBoxFilters.Dock = System.Windows.Forms.DockStyle.Fill;
             this.checkedListBoxFilters.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
             this.checkedListBoxFilters.FormattingEnabled = true;
@@ -253,9 +238,11 @@
             this.checkedListBoxFilters.Name = "checkedListBoxFilters";
             this.checkedListBoxFilters.Size = new System.Drawing.Size(240, 166);
             this.checkedListBoxFilters.TabIndex = 0;
+            this.checkedListBoxFilters.MouseLeave += new System.EventHandler(this.checkedListBoxFilters_SelectedIndexChanged);
             // 
             // btnApplyFilter
             // 
+            this.btnApplyFilter.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnApplyFilter.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnApplyFilter.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
             this.btnApplyFilter.Location = new System.Drawing.Point(3, 684);
@@ -268,6 +255,7 @@
             // 
             // btnCleanFilters
             // 
+            this.btnCleanFilters.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnCleanFilters.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnCleanFilters.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
             this.btnCleanFilters.Location = new System.Drawing.Point(3, 649);
@@ -278,11 +266,23 @@
             this.btnCleanFilters.Text = "Limpiar Filtros";
             this.btnCleanFilters.UseVisualStyleBackColor = true;
             // 
+            // comboBox1
+            // 
+            this.comboBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.comboBox1.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.comboBox1.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Location = new System.Drawing.Point(3, 406);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(240, 25);
+            this.comboBox1.TabIndex = 13;
+            // 
             // rbOnlyActives
             // 
             this.rbOnlyActives.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.rbOnlyActives.BackColor = System.Drawing.Color.Transparent;
             this.rbOnlyActives.Checked = true;
+            this.rbOnlyActives.Cursor = System.Windows.Forms.Cursors.Hand;
             this.rbOnlyActives.Font = new System.Drawing.Font("Microsoft YaHei UI", 8.25F);
             this.rbOnlyActives.Location = new System.Drawing.Point(3, 549);
             this.rbOnlyActives.Name = "rbOnlyActives";
@@ -297,6 +297,7 @@
             // 
             this.rbOnlyDeleted.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.rbOnlyDeleted.BackColor = System.Drawing.Color.Transparent;
+            this.rbOnlyDeleted.Cursor = System.Windows.Forms.Cursors.Hand;
             this.rbOnlyDeleted.Font = new System.Drawing.Font("Microsoft YaHei UI", 8.25F);
             this.rbOnlyDeleted.Location = new System.Drawing.Point(3, 581);
             this.rbOnlyDeleted.Name = "rbOnlyDeleted";
@@ -309,6 +310,7 @@
             // rbAllEntities
             // 
             this.rbAllEntities.BackColor = System.Drawing.Color.Transparent;
+            this.rbAllEntities.Cursor = System.Windows.Forms.Cursors.Hand;
             this.rbAllEntities.Font = new System.Drawing.Font("Microsoft YaHei UI", 8.25F);
             this.rbAllEntities.Location = new System.Drawing.Point(3, 615);
             this.rbAllEntities.Margin = new System.Windows.Forms.Padding(3, 9, 3, 3);
@@ -391,6 +393,7 @@
             // 
             this.rbAtLeastOneCategory.BackColor = System.Drawing.Color.Transparent;
             this.rbAtLeastOneCategory.Checked = true;
+            this.rbAtLeastOneCategory.Cursor = System.Windows.Forms.Cursors.Hand;
             this.rbAtLeastOneCategory.Dock = System.Windows.Forms.DockStyle.Fill;
             this.rbAtLeastOneCategory.Font = new System.Drawing.Font("Microsoft YaHei UI", 8.25F);
             this.rbAtLeastOneCategory.Location = new System.Drawing.Point(3, 3);
@@ -406,6 +409,7 @@
             // rbAllCategories
             // 
             this.rbAllCategories.BackColor = System.Drawing.Color.Transparent;
+            this.rbAllCategories.Cursor = System.Windows.Forms.Cursors.Hand;
             this.rbAllCategories.Dock = System.Windows.Forms.DockStyle.Fill;
             this.rbAllCategories.Font = new System.Drawing.Font("Microsoft YaHei UI", 8.25F);
             this.rbAllCategories.Location = new System.Drawing.Point(3, 35);
@@ -416,16 +420,6 @@
             this.rbAllCategories.Tag = "NonPaintable";
             this.rbAllCategories.Text = "Todas las seleccionadas";
             this.rbAllCategories.UseVisualStyleBackColor = false;
-            // 
-            // comboBox1
-            // 
-            this.comboBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.comboBox1.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(3, 406);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(240, 25);
-            this.comboBox1.TabIndex = 13;
             // 
             // label5
             // 
@@ -470,7 +464,6 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanelSearchControls;
         private System.Windows.Forms.ComboBox cbColumnsName;
         private System.Windows.Forms.Button btnShowFilters;
-        private System.Windows.Forms.Label lblUpTo;
         private System.Windows.Forms.DateTimePicker dateTimePickerUpTo;
         private System.Windows.Forms.DateTimePicker dateTimePickerSince;
         private System.Windows.Forms.Panel panelHorDivider;

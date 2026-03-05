@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Winforms.Theme;
 using WinformsUI.Infrastructure.Translations;
@@ -187,7 +188,7 @@ namespace WinformsUI.UserControls.CustomDGV
                                                       .Select(item => item.ToString())
                                                       .ToList();
 
-            _searchBehavior?.ExecuteContainsFilter(selectedValues); //ASDKFJASHDFKAJSDFHJKASDKFJASHDFKAJSDFHJKASDKFJASHDFKAJSDFHJKASDKFJASHDFKAJSDFHJKASDKFJASHDFKAJSDFHJKASDKFJASHDFKAJSDFHJK
+            _searchBehavior?.ExecuteContainsFilter(selectedValues, rbAllCategories.Checked); //ASDKFJASHDFKAJSDFHJKASDKFJASHDFKAJSDFHJKASDKFJASHDFKAJSDFHJKASDKFJASHDFKAJSDFHJKASDKFJASHDFKAJSDFHJKASDKFJASHDFKAJSDFHJK
         }
 
         private void BtnCleanFilters_Click(object sender, EventArgs e) => ClearFilters();
@@ -248,6 +249,12 @@ namespace WinformsUI.UserControls.CustomDGV
             }
 
             base.Dispose(disposing);
+        }
+
+        private void checkedListBoxFilters_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            
+            checkedListBoxFilters.SelectedIndex = -1;
         }
     }
 }

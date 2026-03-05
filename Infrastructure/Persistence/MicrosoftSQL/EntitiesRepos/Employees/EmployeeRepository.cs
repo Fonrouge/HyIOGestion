@@ -58,9 +58,11 @@ namespace DAL.Persistence.MicrosoftSQL
         {
             Employee employee = null;
             string query = string.Format(SQL_SELECT_BY_ID, _appSettings.EmployeeTableName);
+      
             await ExecuteReaderAsync(query,
                 cmd => cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = id }),
                 reader => employee = Map(reader));
+
             return employee;
         }
 
@@ -115,7 +117,7 @@ namespace DAL.Persistence.MicrosoftSQL
         {
             return Employee.Reconstitute(
                 id: (Guid)reader["Id_Employee"],
-                rawFileNumber: reader["FileNumber"]?.ToString() ?? string.Empty,
+                rawFileNumber: reader["NroLegajo"]?.ToString() ?? string.Empty,
                 rawFirstName: reader["Nombre"]?.ToString() ?? string.Empty,
                 rawLastName: reader["Apellido"]?.ToString() ?? string.Empty,
                 rawNationalId: reader["DNI"]?.ToString() ?? string.Empty,
@@ -151,36 +153,43 @@ namespace DAL.Persistence.MicrosoftSQL
 
         private async Task ExecuteReaderAsync(string query, Action<SqlCommand> parameterSetter, Action<SqlDataReader> mapAction)
         {
-            SqlConnection conn = _currentTransaction?.Connection;
-            bool isExternalConn = conn != null;
-            if (!isExternalConn) conn = new SqlConnection(_appSettings.EntitiesConnection);
+            SqlConnection conn;
+            SqlTransaction trans = _currentTransaction;
+
+            if (trans != null && trans.Connection.ConnectionString == _appSettings.EntitiesConnection)
+            {
+                conn = trans.Connection;
+            }
+            else
+            {
+                conn = new SqlConnection(_appSettings.EntitiesConnection);
+                trans = null;
+            }
+
+            bool managedExternally = (trans != null);
+
             try
             {
                 using (var cmd = new SqlCommand(query, conn))
                 {
-                    if (isExternalConn) cmd.Transaction = _currentTransaction;
+                    if (managedExternally) cmd.Transaction = trans;
                     parameterSetter?.Invoke(cmd);
-                    if (!isExternalConn) await conn.OpenAsync();
+
+                    if (conn.State != ConnectionState.Open) await conn.OpenAsync();
 
                     using (var reader = await cmd.ExecuteReaderAsync())
                     {
-                        while (await reader.ReadAsync())
-                        {
-                            mapAction(reader);
-                        }
+                        while (await reader.ReadAsync()) mapAction(reader);
                     }
                 }
             }
             finally
             {
-                if (!isExternalConn)
-                {
-                    conn.Close();
-                    conn.Dispose();
-                }
+                if (!managedExternally) conn.Dispose();
             }
         }
 
-     
+
+
     }
 }
