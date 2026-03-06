@@ -41,7 +41,7 @@ namespace Presenter.ForProducts
             // Mapeo de eventos GENÉRICOS (ICrudView<ProductDTO>)
             _view.CreateRequested += (s, e) => OnOpenCreationForm();
             _view.UpdateRequested += (s, e) => UpdateProduct(e);
-            _view.DeleteRequested += (s, e) => DeleteProddct(e);
+            _view.DeleteRequested += (s, e) => DeleteProduct(e);
 
             // Evento para listar (renombrado de CachingAll... a ListAll...)
             _view.ListAllRequested += (s, e) => GetAllProducts();
@@ -61,7 +61,7 @@ namespace Presenter.ForProducts
             if (!opRes.Errors.Any()) GetAllProducts();
         }
 
-        private async void DeleteProddct(ProductDTO e)
+        private async void DeleteProduct(ProductDTO e)
         {
             if (e == null) throw new ArgumentNullException(nameof(e));
 
@@ -84,6 +84,8 @@ namespace Presenter.ForProducts
 
 
             var categTuple = await _uCGetAllCategories.ExecuteAsync();
+
+
 
             var categories = categTuple.Item1;
 

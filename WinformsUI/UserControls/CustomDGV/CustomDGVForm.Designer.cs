@@ -22,7 +22,7 @@
             this.tableLayoutPanelSearchControls = new System.Windows.Forms.TableLayoutPanel();
             this.tbSearchBar = new System.Windows.Forms.TextBox();
             this.btnShowFilters = new System.Windows.Forms.Button();
-            this.cbColumnsName = new System.Windows.Forms.ComboBox();
+            this.cbColumnsNameSearch = new System.Windows.Forms.ComboBox();
             this.dateTimePickerUpTo = new System.Windows.Forms.DateTimePicker();
             this.dateTimePickerSince = new System.Windows.Forms.DateTimePicker();
             this.panelHorDivider = new System.Windows.Forms.Panel();
@@ -32,7 +32,7 @@
             this.checkedListBoxFilters = new System.Windows.Forms.CheckedListBox();
             this.btnApplyFilter = new System.Windows.Forms.Button();
             this.btnCleanFilters = new System.Windows.Forms.Button();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.cbColumnsNameFilterDate = new System.Windows.Forms.ComboBox();
             this.rbOnlyActives = new System.Windows.Forms.RadioButton();
             this.rbOnlyDeleted = new System.Windows.Forms.RadioButton();
             this.rbAllEntities = new System.Windows.Forms.RadioButton();
@@ -76,7 +76,6 @@
             this.mainDGV.Name = "mainDGV";
             this.mainDGV.Size = new System.Drawing.Size(1125, 732);
             this.mainDGV.TabIndex = 23;
-            this.mainDGV.MouseLeave += new System.EventHandler(this.checkedListBoxFilters_SelectedIndexChanged);
             // 
             // tableLayoutPanelSearchControls
             // 
@@ -87,7 +86,7 @@
             this.tableLayoutPanelSearchControls.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 54.49306F));
             this.tableLayoutPanelSearchControls.Controls.Add(this.tbSearchBar, 2, 0);
             this.tableLayoutPanelSearchControls.Controls.Add(this.btnShowFilters, 0, 0);
-            this.tableLayoutPanelSearchControls.Controls.Add(this.cbColumnsName, 1, 0);
+            this.tableLayoutPanelSearchControls.Controls.Add(this.cbColumnsNameSearch, 1, 0);
             this.tableLayoutPanelSearchControls.Dock = System.Windows.Forms.DockStyle.Top;
             this.tableLayoutPanelSearchControls.Location = new System.Drawing.Point(0, 11);
             this.tableLayoutPanelSearchControls.Margin = new System.Windows.Forms.Padding(0);
@@ -122,15 +121,15 @@
             this.btnShowFilters.Tag = "IsImageColorable";
             this.btnShowFilters.UseVisualStyleBackColor = true;
             // 
-            // cbColumnsName
+            // cbColumnsNameSearch
             // 
-            this.cbColumnsName.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.cbColumnsName.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
-            this.cbColumnsName.FormattingEnabled = true;
-            this.cbColumnsName.Location = new System.Drawing.Point(46, 17);
-            this.cbColumnsName.Name = "cbColumnsName";
-            this.cbColumnsName.Size = new System.Drawing.Size(189, 25);
-            this.cbColumnsName.TabIndex = 13;
+            this.cbColumnsNameSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbColumnsNameSearch.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
+            this.cbColumnsNameSearch.FormattingEnabled = true;
+            this.cbColumnsNameSearch.Location = new System.Drawing.Point(46, 17);
+            this.cbColumnsNameSearch.Name = "cbColumnsNameSearch";
+            this.cbColumnsNameSearch.Size = new System.Drawing.Size(189, 25);
+            this.cbColumnsNameSearch.TabIndex = 13;
             // 
             // dateTimePickerUpTo
             // 
@@ -191,7 +190,7 @@
             this.tableLayoutPanelFilters.Controls.Add(this.checkedListBoxFilters, 0, 4);
             this.tableLayoutPanelFilters.Controls.Add(this.btnApplyFilter, 0, 14);
             this.tableLayoutPanelFilters.Controls.Add(this.btnCleanFilters, 0, 13);
-            this.tableLayoutPanelFilters.Controls.Add(this.comboBox1, 0, 6);
+            this.tableLayoutPanelFilters.Controls.Add(this.cbColumnsNameFilterDate, 0, 6);
             this.tableLayoutPanelFilters.Controls.Add(this.dateTimePickerUpTo, 0, 8);
             this.tableLayoutPanelFilters.Controls.Add(this.rbOnlyActives, 0, 10);
             this.tableLayoutPanelFilters.Controls.Add(this.rbOnlyDeleted, 0, 11);
@@ -238,7 +237,6 @@
             this.checkedListBoxFilters.Name = "checkedListBoxFilters";
             this.checkedListBoxFilters.Size = new System.Drawing.Size(240, 166);
             this.checkedListBoxFilters.TabIndex = 0;
-            this.checkedListBoxFilters.MouseLeave += new System.EventHandler(this.checkedListBoxFilters_SelectedIndexChanged);
             // 
             // btnApplyFilter
             // 
@@ -266,16 +264,16 @@
             this.btnCleanFilters.Text = "Limpiar Filtros";
             this.btnCleanFilters.UseVisualStyleBackColor = true;
             // 
-            // comboBox1
+            // cbColumnsNameFilterDate
             // 
-            this.comboBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.comboBox1.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.comboBox1.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(3, 406);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(240, 25);
-            this.comboBox1.TabIndex = 13;
+            this.cbColumnsNameFilterDate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbColumnsNameFilterDate.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.cbColumnsNameFilterDate.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
+            this.cbColumnsNameFilterDate.FormattingEnabled = true;
+            this.cbColumnsNameFilterDate.Location = new System.Drawing.Point(3, 406);
+            this.cbColumnsNameFilterDate.Name = "cbColumnsNameFilterDate";
+            this.cbColumnsNameFilterDate.Size = new System.Drawing.Size(240, 25);
+            this.cbColumnsNameFilterDate.TabIndex = 13;
             // 
             // rbOnlyActives
             // 
@@ -462,7 +460,7 @@
 
         private System.Windows.Forms.DataGridView mainDGV;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanelSearchControls;
-        private System.Windows.Forms.ComboBox cbColumnsName;
+        private System.Windows.Forms.ComboBox cbColumnsNameSearch;
         private System.Windows.Forms.Button btnShowFilters;
         private System.Windows.Forms.DateTimePicker dateTimePickerUpTo;
         private System.Windows.Forms.DateTimePicker dateTimePickerSince;
@@ -484,7 +482,7 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.RadioButton rbAtLeastOneCategory;
         private System.Windows.Forms.RadioButton rbAllCategories;
-        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ComboBox cbColumnsNameFilterDate;
         private System.Windows.Forms.Label label5;
     }
 }

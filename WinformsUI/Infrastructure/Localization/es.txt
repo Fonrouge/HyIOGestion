@@ -25,7 +25,26 @@ Desde=Desde
 Hasta=Hasta
 Seleccionar columna=Seleccionar columna
 Buscar=Buscar
+Búsqueda avanzada=Búsqueda avanzada
+Tipo de coincidencia=Tipo de coincidencia
+Al menos una categoría=Al menos una categoría
+Todas las seleccionadas=Todas las seleccionadas
+Seleccionar categorías=Seleccionar categorías
+Elegir periodo=Elegir periodo
+Filtrar por estado=Filtrar por estado
+Ver sólo activos=Ver sólo activos
+Ver sólo borrados=Ver sólo borrados
+Ver ambos=Ver ambos
+Todas=Todas
+Limpiar Filtros=Limpiar Filtros
+Filtrar=Filtrar
 
+COLECCIONABLES=COLECCIONABLES
+MÚSICA Y ENTRETENIMIENTO=MÚSICA Y ENTRETENIMIENTO
+HARDWARE Y ACCESORIOS=HARDWARE Y ACCESORIOS
+DEPORTES Y SALUD=DEPORTES Y SALUD
+VIAJES Y LITERATURA=VIAJES Y LITERATURA
+VIDEOJUEGOS=VIDEOJUEGOS
 
 =============TÍTULOS DE UI=============
 Empleados=Empleados

@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using Winforms.Theme;
 using WinformsUI.Helpers;
 using WinformsUI.Infrastructure.Translations;
+using System.Reflection;
 
 namespace WinformsUI.UserControls.SearchBar
 {
@@ -50,6 +51,12 @@ namespace WinformsUI.UserControls.SearchBar
         // Proxy para traducir el placeholder (opcional)
         private Control _placeholderProxy;
 
+        // --- Estado de Filtro por Rango de Fechas ---
+        private DateTime? _dateFrom;
+        private DateTime? _dateTo;
+        private string _dateColumnName;
+        private List<PropertyInfo> _dateProperties; // cache para performance
+
         /// <summary>Milisegundos de debounce (default 400).</summary>
         public int DebounceMs
         {
@@ -86,8 +93,13 @@ namespace WinformsUI.UserControls.SearchBar
 
             _dgv.ColumnHeaderMouseClick -= DgvOnHeaderClick;
             _dgv.ColumnHeaderMouseClick += DgvOnHeaderClick;
-            _transMgr?.AddString("columnselector.all", _appSettings.ComboBoxPlaceholder);
+            _transMgr?.AddString("ColumnSelectorForSearchbar.all", _appSettings.ComboBoxPlaceholder); 
             SetupTranslationAndPlaceholder();
+
+            // Cache de propiedades DateTime (solo una vez)
+            _dateProperties = typeof(T).GetProperties()
+                .Where(p => p.PropertyType == typeof(DateTime) || p.PropertyType == typeof(DateTime?))
+                .ToList();
         }
 
         /// <summary>
@@ -187,6 +199,32 @@ namespace WinformsUI.UserControls.SearchBar
         }
 
         /// <summary>
+        /// Aplica filtro por rango de fechas (complementario con los demás filtros).
+        /// Si columnName es null/empty/"0" → busca en CUALQUIER propiedad DateTime del DTO (lógica OR).
+        /// </summary>
+        public void ExecuteDateRangeFilter(DateTime from, DateTime upTo, string columnName = null)
+        {
+            _dateFrom = from.Date;
+            _dateTo = upTo.Date.AddDays(1).AddTicks(-1); // inclusive hasta fin del día
+            _dateColumnName = string.IsNullOrWhiteSpace(columnName) || columnName == "0"
+                ? null
+                : columnName.Trim();
+
+            ApplyAllFilters();
+        }
+
+        /// <summary>
+        /// Limpia el filtro de fechas.
+        /// </summary>
+        public void ClearDateFilter()
+        {
+            _dateFrom = null;
+            _dateTo = null;
+            _dateColumnName = null;
+            ApplyAllFilters();
+        }
+
+        /// <summary>
         /// Dispara la tubería de filtrado (usualmente llamado por el debounce del SearchBar).
         /// </summary>
         public void ExecuteSearch()
@@ -201,7 +239,6 @@ namespace WinformsUI.UserControls.SearchBar
         {
             if (_items == null || !_items.Any()) return;
 
-            // Arrancamos con la lista original
             IEnumerable<T> query = _items;
 
             // ==========================================
@@ -233,23 +270,26 @@ namespace WinformsUI.UserControls.SearchBar
             }
 
             // ==========================================
-            // ETAPA 2: Búsqueda por Texto (SearchBar)
+            // ETAPA 2: Filtro por Rango de Fechas (NUEVO)
+            // ==========================================
+            query = ApplyDateFilter(query);
+
+            // ==========================================
+            // ETAPA 3: Búsqueda por Texto (SearchBar)
             // ==========================================
             var txt = _tb?.Text ?? string.Empty;
-
             if (!_placeholderActive && !string.IsNullOrWhiteSpace(txt) && txt != _placeholder)
             {
                 string columnName = "0";
-
                 if (_columnSelector != null && _columnSelector.SelectedIndex > 0)
                     columnName = (_columnSelector.SelectedItem as ColumnItem)?.DataPropertyName ?? "0";
 
-                // Le pasamos al presenter el query temporal, NO la lista original
+                // Le pasamos al presenter el query temporal
                 query = _searchPresenter.Filter(query.ToList(), txt, columnName);
             }
 
             // ==========================================
-            // ETAPA 3: Refrescar UI
+            // ETAPA 4: Refrescar UI
             // ==========================================
             _bs.DataSource = query.ToList();
             _dgv.DataSource = _bs;
@@ -392,7 +432,7 @@ namespace WinformsUI.UserControls.SearchBar
             _columnSelector.SelectedIndexChanged -= ColumnSelectorOnSelectionChangeCommitted;
 
             // Texto visible: traducido (no afecta la lógica)
-            string allText = _transMgr != null ? _transMgr.GetString("columnselector.all") : "Todas";
+            string allText = _transMgr != null ? _transMgr.GetString("ColumnSelectorForSearchbar.all") : "Todas";
 
             var cols = _dgv.Columns.Cast<DataGridViewColumn>().Select
             (
@@ -423,6 +463,48 @@ namespace WinformsUI.UserControls.SearchBar
                 .Select(c => $"{c.Name}|{c.DataPropertyName}|{c.HeaderText}|{c.Visible}")
                 .ToArray();
             return $"{_dgv.Columns.Count}::{string.Join("§", parts)}";
+        }
+
+        private IEnumerable<T> ApplyDateFilter(IEnumerable<T> source)
+        {
+            if (_dateFrom == null || _dateTo == null || !_dateProperties.Any())
+                return source;
+
+            return source.Where(item =>
+            {
+                if (!string.IsNullOrEmpty(_dateColumnName))
+                {
+                    // === Columna específica ===
+                    var prop = _dateProperties.FirstOrDefault(p =>
+                        string.Equals(p.Name, _dateColumnName, StringComparison.OrdinalIgnoreCase));
+
+                    return prop != null && IsInRange(prop.GetValue(item));
+                }
+                else
+                {
+                    // === Cualquier columna de fecha (OR) ===
+                    return _dateProperties.Any(prop => IsInRange(prop.GetValue(item)));
+                }
+            });
+        }
+
+        private bool IsInRange(object value)
+        {
+            if (value == null) return false;
+
+            DateTime dt;
+
+            if (value is DateTime)
+            {
+                dt = (DateTime)value;
+            }
+            else
+            {
+                DateTime? nullable = (DateTime?)value;
+                dt = nullable.Value;   // siempre tiene valor porque viene de reflexión
+            }
+
+            return dt >= _dateFrom.Value && dt <= _dateTo.Value;
         }
 
         private sealed class ColumnItem

@@ -39,13 +39,12 @@ namespace Winforms.Theme
                 ["Paper"] = PalettesLight.Paper(),
                 ["Mint"] = PalettesLight.Mint(),
                 ["Grape"] = PalettesLight.Grape(),
-
-                // Nuevas Claras
-                ["Solar"] = PalettesLight.Solar(),       // Cálido bajo contraste (tipo Solarized)
-                ["Berry"] = PalettesLight.Berry(),       // Tonos rosa/vino modernos
-
+                ["Solar"] = PalettesLight.Solar(),
+                ["Berry"] = PalettesLight.Berry(),
+                // Especiales (Accesibilidad + Descanso ocular)
                 ["HighContrast"] = PalettesLight.HighContrast(),
                 ["EyeRestLight"] = PalettesLight.EyeRest(),
+
 
                 // ============================
                 // OSCURAS
@@ -55,16 +54,12 @@ namespace Winforms.Theme
                 ["Forest"] = PalettesDark.Forest(),
                 ["Aubergine"] = PalettesDark.Aubergine(),
                 ["Obsidian"] = PalettesDark.Obsidian(),
-
-                // Nuevas Oscuras
-                ["Volcanic"] = PalettesDark.Volcanic(),  // Rojo/Cálido (Alerta/Producción)
-                ["Nordic"] = PalettesDark.Nordic(),      // Azul grisáceo desaturado (Dev style)
-                ["Cyber"] = PalettesDark.Cyber(),        // Negro profundo + Neón Magenta
-                ["DeepContrast"] = PalettesDark.DeepHighContrast(), // Negro absoluto (OLED/Ahorro)
-
+                ["Volcanic"] = PalettesDark.Volcanic(),
+                ["Nordic"] = PalettesDark.Nordic(),
+                ["Cyber"] = PalettesDark.Cyber(),
+                // Especiales (Accesibilidad + Descanso ocular)
+                ["DeepContrast"] = PalettesDark.DeepHighContrast(),
                 ["EyeRestDark"] = PalettesDark.EyeRest()
-
-
             };
         }
 
@@ -74,7 +69,8 @@ namespace Winforms.Theme
             public readonly Color TextPrimary, TextSecondary;
             public Color Accent, AccentHover, LowAccent, HighAccent, GridLine;
 
-            public Palette(
+            public Palette
+            (
                 string bg, string sf, string sfAlt, string brd,
                 string txt, string txt2, string acc, string accHover, string grid,
                 string accDark = null,
@@ -103,89 +99,12 @@ namespace Winforms.Theme
             public static Palette Forest() => new Palette("#0E1210", "#1F2620", "#2E3831", "#293128", "#E7EFE8", "#9DB3A4", "#44D18D", "#63E2A4", "#293128", "#1FA971");
             public static Palette Aubergine() => new Palette("#18151F", "#0A060D", "#1F1B2B", "#302A40", "#EEE9F8", "#B6A9D0", "#C07DFF", "#D29EFF", "#302A40", "#9B5AE6");
             public static Palette EyeRest() => new Palette("#282420", "#3A3531", "#312D2A", "#4A443E", "#D8CFC3", "#8A7F72", "#D9A265", "#EAC189", "#4A443E");
-
-            // 🔥 CALIDEZ: Ideal para dashboards de alertas o para romper la monotonía del azul.
-            // Usa un gris muy oscuro con tinte rojo de fondo y acentos naranjas/coral vivos.
-            public static Palette Volcanic() => new Palette(
-                "#120B0B", // Background: Casi negro rojizo
-                "#1F1616", // Surface: Carbón cálido
-                "#2B1E1E", // SurfaceAlt
-                "#402E2E", // Border
-                "#F0E6E6", // TextPrimary: Blanco cálido
-                "#A89292", // TextSecondary
-                "#FF5F57", // Accent: Coral Intenso (Mac close button style)
-                "#FF7B75", // AccentHover
-                "#402E2E", // Grid
-                "#D13830"  // AccentDark (Low)
-            );
-
-            // ❄️ TÉCNICO: Inspirado en el tema "Nord". Colores planos, mate, muy agradable para largas sesiones.
-            // Menos fatiga visual que el alto contraste, pero más legible que el Graphite.
-            public static Palette Nordic() => new Palette(
-                "#2E3440", // Background: Polar Night 0
-                "#3B4252", // Surface: Polar Night 1
-                "#434C5E", // SurfaceAlt: Polar Night 2
-                "#4C566A", // Border: Polar Night 3
-                "#ECEFF4", // TextPrimary: Snow Storm
-                "#D8DEE9", // TextSecondary
-                "#88C0D0", // Accent: Frost Blue
-                "#81A1C1", // AccentHover: Frost Blue Darker
-                "#4C566A", // Grid
-                "#5E81AC"  // AccentDark: Aurora
-            );
-
-            // ⚡ ACCESIBILIDAD / BATERÍA: Negro puro. Ideal para pantallas OLED y máximo contraste sin ser blanco puro.
-            public static Palette DeepHighContrast() => new Palette(
-                "#000000", // Background: Negro absoluto
-                "#000000", // Surface
-                "#121212", // SurfaceAlt: Gris muy oscuro para distinguir paneles
-                "#333333", // Border
-                "#FFFFFF", // TextPrimary
-                "#B3B3B3", // TextSecondary
-                "#00E5FF", // Accent: Cyan Eléctrico (máxima visibilidad)
-                "#69F0AE", // AccentHover: Verde neón
-                "#333333", // Grid
-                "#00B8D4"  // AccentDark
-            );
-
-            // 👾 RETRO/CYBER: Fondo violeta muy oscuro (casi negro) con acentos Magenta/Pink.
-            public static Palette Cyber() => new Palette(
-                "#0F0B14", // Background: Void
-                "#181221", // Surface
-                "#21192E", // SurfaceAlt
-                "#362947", // Border
-                "#EAE0F5", // TextPrimary
-                "#9D8BA3", // TextSecondary
-                "#F72585", // Accent: Neon Pink
-                "#B5179E", // AccentHover
-                "#362947", // Grid
-                "#7209B7"  // AccentDark: Deep Purple
-            );
-            public static Palette Obsidian() => new Palette(
-                "#09090B", // Background: Casi negro puro (Zinc 950). Elegancia y profundidad.
-                "#18181B", // Surface: Apenas más claro (Zinc 900) para separar tarjetas/paneles.
-                "#27272A", // SurfaceAlt: (Zinc 800) para headers o sidebars.
-                "#3F3F46", // Border: (Zinc 700) Sutil, fino. No invasivo.
-                "#FAFAFA", // TextPrimary: (Zinc 50) Blanco mate, nunca #FFFFFF puro (quema la retina).
-                "#A1A1AA", // TextSecondary: (Zinc 400) Gris medio para info secundaria.
-                "#6366F1", // Accent: Indigo Eléctrico. Más moderno que el azul estándar.
-                "#818CF8", // AccentHover: Indigo más brillante.
-                "#27272A", // Grid: Muy sutil, igual al SurfaceAlt para que apenas se note.
-                "#4F46E5"  // AccentDark: Indigo profundo para estados activos.
-               );
-
-            public static Palette Amber() => new Palette(
-                "#14110F", // Background: Café muy oscuro, casi negro. Aporta calidez de fondo.
-                "#1F1A16", // Surface: Chocolate amargo desaturado.
-                "#2E2621", // SurfaceAlt
-                "#453A32", // Border: Sepia oscuro.
-                "#FFF8E1", // TextPrimary: Blanco hueso (no blanco puro) para armonizar.
-                "#BCAAA4", // TextSecondary: Gris cálido.
-                "#FFC107", // Accent: Amber 500 (Dorado estándar de Material Design).
-                "#FFD54F", // AccentHover: Amber 300 (Más brillante).
-                "#453A32", // Grid
-                "#FF8F00"  // AccentDark: Amber 800 (Naranja profundo).
-            );
+            public static Palette Volcanic() => new Palette("#120B0B", "#1F1616", "#2B1E1E", "#402E2E", "#F0E6E6", "#A89292", "#FF5F57", "#FF7B75", "#402E2E", "#D13830");
+            public static Palette Nordic() => new Palette("#2E3440", "#3B4252", "#434C5E", "#4C566A", "#ECEFF4", "#D8DEE9", "#88C0D0", "#81A1C1", "#4C566A", "#5E81AC");
+            public static Palette Obsidian() => new Palette("#09090B", "#18181B", "#27272A", "#3F3F46", "#FAFAFA", "#A1A1AA", "#6366F1", "#818CF8", "#27272A", "#4F46E5");
+            public static Palette Amber() => new Palette("#14110F", "#1F1A16", "#2E2621", "#453A32", "#FFF8E1", "#BCAAA4", "#FFC107", "#FFD54F", "#453A32", "#FF8F00");
+            public static Palette Cyber() => new Palette("#0F0B14", "#181221", "#21192E", "#362947", "#EAE0F5", "#9D8BA3", "#F72585", "#B5179E", "#362947", "#7209B7");
+            public static Palette DeepHighContrast() => new Palette("#000000", "#000000", "#121212", "#333333", "#FFFFFF", "#B3B3B3", "#00E5FF", "#69F0AE", "#333333", "#00B8D4");
         }
 
         public static class PalettesLight
@@ -195,52 +114,10 @@ namespace Winforms.Theme
             public static Palette Mint() => new Palette("#F6FBF8", "#FFFFFF", "#F0FAF4", "#DAE7DF", "#111827", "#64748B", "#10B981", "#059669", "#E5E7EB", "#047857");
             public static Palette Grape() => new Palette("#F8F7FB", "#FFFFFF", "#F3F1F9", "#E2E0EA", "#1F2937", "#6B7280", "#8B5CF6", "#7C3AED", "#E5E7EB", "#5B21B6");
             public static Palette HighContrast() => new Palette("#FFFFFF", "#FFFFFF", "#F2F2F2", "#A3A3A3", "#000000", "#333333", "#0A84FF", "#0066CC", "#D9D9D9", "#0052A3");
-
-
-            public static Palette Citrine() => new Palette(
-                "#FEFCE8", // Background: Yellow 50 (Crema muy suave).
-                "#FFFFFF", // Surface: Blanco puro para tarjetas.
-                "#FFFBEB", // SurfaceAlt: Yellow 100.
-                "#EDE9D5", // Border
-                "#422006", // TextPrimary: Yellow 950 (Marrón muy oscuro). El negro puro se ve sucio sobre amarillo.
-                "#854D0E", // TextSecondary: Yellow 800 (Ocre).
-                "#D97706", // Accent: Yellow 600 (Tono Miel/Otoño). Legible con texto blanco.
-                "#B45309", // AccentHover: Yellow 700.
-                "#E5E7EB", // Grid: Gris neutro para no saturar.
-                "#92400E"  // AccentDark
-            );
+            public static Palette Citrine() => new Palette("#FEFCE8", "#FFFFFF", "#FFFBEB", "#EDE9D5", "#422006", "#854D0E", "#D97706", "#B45309", "#E5E7EB", "#92400E");
             public static Palette EyeRest() => new Palette("#F5F0E8", "#F9F7F3", "#FFFFFF", "#DCD5CB", "#4A443E", "#9E9489", "#8A9A5B", "#A0B26B", "#DCD5CB");
-            // ☀️ INTELECTUAL: Inspirado en Solarized Light. 
-            // Excelente para lectura prolongada, reduce la luz azul comparado con el blanco puro.
-            public static Palette Solar() => new Palette(
-                "#FDF6E3", // Background: Base3 (Crema)
-                "#EEE8D5", // Surface: Base2
-                "#EEE8D5", // SurfaceAlt
-                "#D3CDBC", // Border
-                "#657B83", // TextPrimary: Base00 (Gris verdoso)
-                "#93A1A1", // TextSecondary: Base1
-                "#B58900", // Accent: Yellow/Orange
-                "#CB4B16", // AccentHover: Orange
-                "#D3CDBC", // Grid
-                "#859900"  // AccentDark: Green (para variar la lógica)
-            );
-
-            // 🌸 SOFT: Un tema claro pero con acentos en tonos Berry/Rosa.
-            // Muy usado en aplicaciones modernas de lifestyle o RRHH.
-            public static Palette Berry() => new Palette(
-                "#FFF5F7", // Background: Rosa pálido casi imperceptible
-                "#FFFFFF", // Surface
-                "#FFF0F3", // SurfaceAlt
-                "#F3D9E2", // Border
-                "#4A1522", // TextPrimary: Vino oscuro
-                "#8A4D5D", // TextSecondary
-                "#D6336C", // Accent: Raspberry
-                "#C2255C", // AccentHover
-                "#F3D9E2", // Grid
-                "#A61E4D"  // AccentDark
-            );
-
-
+            public static Palette Berry() => new Palette("#FFF5F7", "#FFFFFF", "#FFF0F3", "#F3D9E2", "#4A1522", "#8A4D5D", "#D6336C", "#C2255C", "#F3D9E2", "#A61E4D");
+            public static Palette Solar() => new Palette("#FDF6E3", "#EEE8D5", "#EEE8D5", "#D3CDBC", "#657B83", "#93A1A1", "#B58900", "#CB4B16", "#D3CDBC", "#859900");
         }
 
         // ============================
@@ -263,19 +140,13 @@ namespace Winforms.Theme
         // 3) API PRINCIPAL
         // ============================
 
-        public static void SetGlobalPalette(Palette p)
-        {
-            _globalCurrent = p;
-
-        }
+        public static void SetGlobalPalette(Palette p) => _globalCurrent = p;
 
         public static void Apply(Form form, Palette p, VisualDepth depth = VisualDepth.ThreeD)
         {
-            form.SuspendLayout();
+            form.SuspendLayout(); //Evitar flickering hasta el final del ciclo. Suspensión de dibujado
 
-
-
-            if (form == null) return;
+            if (form == null) return; //Fail fast sin exception
 
             var holder = _palettesByForm.GetOrCreateValue(form);
             bool paletteChanged = !holder.Value.Equals(p);
@@ -287,8 +158,6 @@ namespace Winforms.Theme
             {
                 form.BackColor = Darken(p.LowAccent, 0.6);
             }
-
-
 
             PaintControlTree(form, p);
             StyleToolStrips(form, p, depth);
@@ -305,15 +174,15 @@ namespace Winforms.Theme
             foreach (var dgv in FindAll<DataGridView>(form))
                 DataGridViewThemer.StyleDgv(dgv, p, depth);
 
-            form.ResumeLayout();
+            form.ResumeLayout();//Reanudación de dibujado de UI.
         }
 
 
 
         public static void Apply(Control root, Palette p, VisualDepth depth = VisualDepth.ThreeD)
         {
-          //  var form = root as Form ?? root.FindForm();
-          //  if (form != null) { Apply(form, p, depth); return; }
+            //  var form = root as Form ?? root.FindForm();
+            //  if (form != null) { Apply(form, p, depth); return; }
 
             ClearIconCache();
             PaintControlTree(root, p);
@@ -346,21 +215,23 @@ namespace Winforms.Theme
             foreach (Control c in root.Controls)
             {
 
+                //Los controles NonPaintable tienen un tratado "especial". Pese a que no se deseé que se pinten, pueden alterárseles ciertos parámetros por conveniencia
+                //(por ejemplo, un botón no se pinta para ser transparentepero pero su texto sí y Hover sí lo hacen).
                 if (IsNonPaintable(c.Tag))
                 {
                     if (c is Panel || c is TableLayoutPanel)
                     {
                         HasChildren(c, p);
-                        continue;
+                        continue; //No se rompe el bucle con Break para que los hijos continúen interando.
                     }
                 }
-
 
                 // Estilos base por tipo
                 if (c is StatusStrip || c is ToolStrip)
                 {
-                    c.ForeColor = p.TextPrimary; // fondo lo maneja el renderer
+                    c.ForeColor = p.TextPrimary; // Fondo lo maneja el renderer. Especial para todo tipo de "Strips".
                 }
+
                 else if (c is CheckedListBox clb)
                 {
                     clb.BorderStyle = BorderStyle.None;
@@ -374,12 +245,14 @@ namespace Winforms.Theme
                     chb.ForeColor = p.TextSecondary;
                     continue;
                 }
+
                 else if (c is RadioButton rb)
                 {
                     rb.BackColor = Color.Transparent;
                     rb.ForeColor = p.TextSecondary;
                     continue;
                 }
+
                 else if (c is GroupBox || c is Panel)
                 {
                     c.ForeColor = p.TextPrimary;
@@ -390,6 +263,7 @@ namespace Winforms.Theme
                         c.BackColor = Darken(p.LowAccent, 0.4);
                     }
                 }
+
                 else if (c is PictureBox)
                 {
                     if (c.Tag is "NonPaintable")
@@ -397,9 +271,6 @@ namespace Winforms.Theme
                         continue;
                     }
                 }
-
-
-
 
                 else if (c is Button)
                 {
@@ -419,8 +290,8 @@ namespace Winforms.Theme
                         b.FlatAppearance.MouseDownBackColor = pressColor;
 
                         continue;
-
                     }
+
                     if (b.Tag is "ExternalTitleBar")
                     {
                         b.BackColor = Darken(p.LowAccent, 0.8);
@@ -447,7 +318,6 @@ namespace Winforms.Theme
                     b.FlatAppearance.BorderSize = 1;
                     b.BackColor = p.Surface;
                     b.ForeColor = p.TextSecondary;
-
                 }
 
                 else if (c is TextBox)
@@ -494,8 +364,6 @@ namespace Winforms.Theme
                         lbl.ForeColor = p.LowAccent;
                         continue;
                     }
-
-
                 }
                 else if (c is ComboBox)
                 {
@@ -622,7 +490,8 @@ namespace Winforms.Theme
                 if (c.ContextMenuStrip != null)
                     WireAndStyleContextMenu(c.ContextMenuStrip, p, GetCurrentDepth(c.FindForm()));
 
-                // CORRECCIÓN CRÍTICA: c, no root.
+
+                //Si el control tiene hijos
                 HasChildren(c, p);
 
                 var dgv = c as DataGridView;
@@ -756,7 +625,7 @@ namespace Winforms.Theme
             // Recolorear íconos top-level
             RecolorToolStripIconsRecursive(ts, p);
 
-            // ⚠️ SIEMPRE cablear y estilizar drop-downs (no solo en dark)
+            //SIEMPRE cablear y estilizar drop-downs (no solo en dark)
             SimpleDarkMenuPass(ts, p, depth);
         }
 
@@ -997,7 +866,7 @@ namespace Winforms.Theme
                         ApplyGradientBackground(pnl, p.Surface, p.SurfaceAlt, LinearGradientMode.Vertical, false);
                 }
 
-         
+
             }
         }
 
@@ -1018,9 +887,7 @@ namespace Winforms.Theme
             {
                 _c = c;
 
-                // --- CAMBIO CLAVE ---
-                // Solo nos suscribimos si es un botón. 
-                // Si es un Panel o Form, no necesitamos estos eventos.
+                // Solo suscribe si es un botón. De ser Panel o Form, no se necesitan estos eventos.
                 if (_c is Button)
                 {
                     _c.MouseEnter += OnMouseEnter;
@@ -1458,7 +1325,12 @@ namespace Winforms.Theme
                             byte* dpx = drow + x * 4;
 
                             byte a = spx[3];
-                            if (a == 0) { dpx[0] = dpx[1] = dpx[2] = 0; dpx[3] = 0; continue; }
+                            if (a == 0)
+                            {
+                                dpx[0] = dpx[1] = dpx[2] = 0;
+                                dpx[3] = 0;
+                                continue;
+                            }
 
                             float b = spx[0] / 255f, g = spx[1] / 255f, r = spx[2] / 255f;
                             float L = r * wr + g * wg + b * wb;
@@ -1911,6 +1783,7 @@ namespace Winforms.Theme
             {
                 // Obtenemos el contexto gráfico de toda la ventana (incluyendo bordes)
                 IntPtr hdc = GetWindowDC(this.Handle);
+
                 if (hdc == IntPtr.Zero) return;
 
                 try
@@ -1919,7 +1792,7 @@ namespace Winforms.Theme
                     using (Pen p = new Pen(BorderColor, 1))
                     {
                         // Dibujamos un rectángulo sobre el borde del control
-                        // Restam   os 1 al ancho/alto porque el dibujo es indexado en 0
+                        // Restamos 1 al ancho/alto porque el dibujo es indexado en 0
                         g.DrawRectangle(p, 0, 0, _control.Width - 1, _control.Height - 1);
                     }
                 }

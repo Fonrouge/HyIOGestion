@@ -42,16 +42,13 @@ namespace WinformsUI.Forms.ProductCRUDL
 
 
 
-        public void SetSearchFilters<T>(IEnumerable<T> categories) where T : CategoryDTO
-        {
-            _dgvForm.ConfigureFilters<CategoryDTO>(categories.ToList());
-        }
+        public void SetSearchFilters<T>(IEnumerable<T> categories) where T : CategoryDTO => _dgvForm.ConfigureFilters<CategoryDTO>(categories.ToList());
 
 
         private void WireCommonEvents()
         {
 
-
+            //For adding common events such as a Button event that is not common to all C(RUDL), in that case, go to it's parent > BaseManagementForm.
 
 
         }
@@ -72,28 +69,28 @@ namespace WinformsUI.Forms.ProductCRUDL
         }
 
         // =========================================================
-        // IMPLEMENTACIÓN DE IEmployeeView (Mapeo de Eventos)
+        // IMPLEMENTACIÓN DE IClientView (Mapeo de Eventos)
         // =========================================================
 
-        public event EventHandler CreateEmployeeRequested
+        public event EventHandler CreateProductRequested
         {
             add => CreateRequested += value;
             remove => CreateRequested -= value;
         }
 
-        public event EventHandler<ProductDTO> UpdateEmployeeRequested
+        public event EventHandler<ProductDTO> UpdateProductRequested
         {
             add => UpdateRequested += value;
             remove => UpdateRequested -= value;
         }
 
-        public event EventHandler<ProductDTO> DeleteEmployeeRequested
+        public event EventHandler<ProductDTO> DeleteProductRequested
         {
             add => DeleteRequested += value;
             remove => DeleteRequested -= value;
         }
 
-        public event EventHandler CachingAllEmployeesRequested
+        public event EventHandler CachingAllProductsRequested
         {
             add => ListAllRequested += value;
             remove => ListAllRequested -= value;

@@ -25,9 +25,31 @@ Generar Venta=Generate Sale
 =============DGVFORM=============
 Búsqueda=Search
 Desde=From
-Hasta=Since
+Hasta=To
 Seleccionar columna=Select column
 Buscar=Search
+Búsqueda avanzada=Advanced search
+Tipo de coincidencia=Match type
+Al menos una categoría=At least one category
+Todas las seleccionadas=All selected
+Seleccionar categorías=Select categories
+Elegir periodo=Select period
+Filtrar por estado=Filter by status
+Ver sólo activos=View active only
+Ver sólo borrados=View deleted only
+Ver ambos=View both
+Limpiar Filtros=Clean Filters
+Filtrar=Filter
+Limpiar Filtros=Limpiar Filtros
+Filtrar=Filtrar
+Todas=All columns
+
+COLECCIONABLES=COLLECTIBLES
+MÚSICA Y ENTRETENIMIENTO=MUSIC & ENTERTAINMENT
+HARDWARE Y ACCESORIOS=HARDWARE & ACCESSORIES
+DEPORTES Y SALUD=SPORTS & HEALTH
+VIAJES Y LITERATURA=TRAVEL & LITERATURE
+VIDEOJUEGOS=VIDEO GAMES
 
 
 =============TÍTULOS DE UI=============

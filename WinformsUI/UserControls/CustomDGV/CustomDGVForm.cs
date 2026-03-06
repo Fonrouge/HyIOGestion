@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Winforms.Theme;
 using WinformsUI.Infrastructure.Translations;
@@ -24,8 +23,13 @@ namespace WinformsUI.UserControls.CustomDGV
         private string _placeholder;
         private dynamic _searchBehavior;
         private bool _filtersConfigured = false;
+        private Type _entityType;                    // ← Nuevo: para refrescar el combo de fechas
 
-        private CheckBox _allCategories;
+        private sealed class DateColumnItem
+        {
+            public string HeaderText { get; set; }
+            public string PropertyName { get; set; }   // null = "Todas"
+        }
 
         public CustomDGVForm
         (
@@ -43,22 +47,22 @@ namespace WinformsUI.UserControls.CustomDGV
             SetFormAppearence();
             WireCommonEvents();
 
-            // Wire de botones del panel de filtros (Refactorizado sin lambdas)
             btnApplyFilter.Click += BtnApplyFilter_Click;
             btnCleanFilters.Click += BtnCleanFilters_Click;
+            btnShowFilters.Click += BtnShowFilters_Click;
 
             panelHorDivider.Visible = false;
             tableLayoutPanelFilters.Visible = false;
-
-            btnShowFilters.Click += BtnShowFilters_Click;
         }
 
         // ====================== APIS PÚBLICAS ======================
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        private static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
-        private const int LB_SETITEMHEIGHT = 0x01A0;
-
+        /// <summary>
+        /// Recibe el listado que hará de Source para un CheckedListBox en pos de que el usuario pueda elegir por cuáles categorías filtrar.
+        /// </summary>
+        /// <typeparam name="TItem"></typeparam>
+        /// <param name="items"></param>
+        /// <param name="displayMember"></param>
+        /// <param name="showPanelImmediately"></param>
         public void ConfigureFilters<TItem>
         (
             IEnumerable<TItem> items,
@@ -68,28 +72,42 @@ namespace WinformsUI.UserControls.CustomDGV
         {
             checkedListBoxFilters.Items.Clear();
             checkedListBoxFilters.DisplayMember = displayMember;
-
             foreach (var item in items ?? Enumerable.Empty<TItem>())
                 checkedListBoxFilters.Items.Add(item);
 
             _filtersConfigured = true;
+            ChooseCheckedListBoxItemsHeight(24);
+        }
 
-            // MAGIA: 30 es la nueva altura en píxeles (juega con este valor)
-            SendMessage(checkedListBoxFilters.Handle, LB_SETITEMHEIGHT, IntPtr.Zero, (IntPtr)24);
+        #region For choose CheckedListBox items height
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        private static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
+        private const int LB_SETITEMHEIGHT = 0x01A0;
+
+        private void ChooseCheckedListBoxItemsHeight(int desiredHeight)
+        {
+            SendMessage(checkedListBoxFilters.Handle, LB_SETITEMHEIGHT, IntPtr.Zero, (IntPtr)desiredHeight);
             checkedListBoxFilters.Refresh();
         }
+        #endregion
 
         public void ClearFilters()
         {
             for (int i = 0; i < checkedListBoxFilters.Items.Count; i++)
                 checkedListBoxFilters.SetItemChecked(i, false);
 
+            dateTimePickerSince.Value = DateTime.Today.AddMonths(-1);
+            dateTimePickerUpTo.Value = DateTime.Today;
+
             _searchBehavior?.ExecuteContainsFilter(new List<string>());
+            _searchBehavior?.ClearDateFilter();
         }
 
         public void FillDGV<T>(IEnumerable<T> data) where T : IDto
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
+
+            _entityType = typeof(T);                     // ← Guardamos el tipo para refrescos futuros
 
             _searchBehavior = new SearchBehavior<T>
             (
@@ -105,8 +123,63 @@ namespace WinformsUI.UserControls.CustomDGV
             mainDGV.DataSource = data;
 
             AddTranslatables();
-            ApplyTranslation();
+            ApplyTranslation();      // ← Aquí se refrescan AMBOS combos
             SetDGVAppearence();
+        }
+
+        /// <summary>
+        /// Refresca el ComboBox de filtro por fecha (headers traducidos + preserva selección)
+        /// </summary>
+        private void RefreshDateFilterComboBox()
+        {
+            if (_entityType == null) return;
+
+            // Guardar selección actual por PropertyName
+            string selectedProp = (cbColumnsNameFilterDate.SelectedItem as DateColumnItem)?.PropertyName;
+
+            cbColumnsNameFilterDate.Items.Clear();
+
+            var dateProperties = _entityType.GetProperties()
+                .Where(p => p.PropertyType == typeof(DateTime) || p.PropertyType == typeof(DateTime?))
+                .ToList();
+
+            string allText = _transMgr?.GetString("CustomDGVForm.DateFilter.All") ?? "Todas";
+
+            // Opción "Todas"
+            cbColumnsNameFilterDate.Items.Add(new DateColumnItem
+            {
+                HeaderText = allText,
+                PropertyName = null
+            });
+
+            // Propiedades DateTime
+            foreach (var prop in dateProperties)
+            {
+                string displayText = _transMgr?.GetString($"CustomDGVForm.DataGridView.Column.{prop.Name}")
+                                  ?? prop.Name;
+
+                cbColumnsNameFilterDate.Items.Add(new DateColumnItem
+                {
+                    HeaderText = displayText,
+                    PropertyName = prop.Name
+                });
+            }
+
+            cbColumnsNameFilterDate.DisplayMember = nameof(DateColumnItem.HeaderText);
+            cbColumnsNameFilterDate.ValueMember = nameof(DateColumnItem.PropertyName);
+
+            // Restaurar selección anterior (si aún existe)
+            if (!string.IsNullOrEmpty(selectedProp))
+            {
+                var match = cbColumnsNameFilterDate.Items.Cast<DateColumnItem>()
+                    .FirstOrDefault(i => i.PropertyName == selectedProp);
+                if (match != null)
+                    cbColumnsNameFilterDate.SelectedItem = match;
+                else
+                    cbColumnsNameFilterDate.SelectedIndex = 0;
+            }
+            else
+                cbColumnsNameFilterDate.SelectedIndex = 0;
         }
 
         public void EnsureDgvRowSelection()
@@ -119,17 +192,18 @@ namespace WinformsUI.UserControls.CustomDGV
         }
 
         // ====================== INTERNALS ======================
-
         private void WireCommonEvents()
         {
             mainDGV.SelectionChanged += MainDGV_SelectionChanged;
             this.FormClosed += CustomDGVForm_FormClosed;
+            checkedListBoxFilters.MouseLeave += CheckedListBoxMouseLeave;
         }
+
+        private void CheckedListBoxMouseLeave(object sender, EventArgs e) => checkedListBoxFilters.SelectedIndex = -1;
 
         private void InitializeVariables()
         {
             _placeholder = _appSettings.SearchBarPlaceHolder;
-            tbSearchBar.Text = _placeholder;
         }
 
         private void SetFormAppearence()
@@ -138,7 +212,6 @@ namespace WinformsUI.UserControls.CustomDGV
             this.DoubleBuffered = true;
             this.Dock = DockStyle.Fill;
             this.FormBorderStyle = FormBorderStyle.None;
-
             DarkTheme.RedrawBorders = true;
         }
 
@@ -152,43 +225,57 @@ namespace WinformsUI.UserControls.CustomDGV
             _transMgr.AddFormNotify(this);
 
             _transMgr.AddString("CustomDGVForm.TextBox.Placeholder", _placeholder);
+            _transMgr.AddString("CustomDGVForm.DateFilter.All", "Todas");
 
             foreach (DataGridViewColumn column in mainDGV.Columns)
             {
                 _transMgr.AddString($"CustomDGVForm.DataGridView.Column.{column.Name}", column.HeaderText);
             }
 
-            _searchBehavior.AttachColumnSelector(cbColumnsName);
+            _searchBehavior.AttachColumnSelector(cbColumnsNameSearch);
         }
 
-        public void NotifiedByTranslationManager() => ApplyTranslation(); //By reflection, DON'T DELETE. 
+        public void NotifiedByTranslationManager() => ApplyTranslation();
 
         private void ApplyTranslation()
         {
             foreach (DataGridViewColumn col in mainDGV.Columns)
             {
-                var translatedHeader = _transMgr.GetString($"CustomDGVForm.DataGridView.Column.{col.Name}");
-                col.HeaderText = translatedHeader;
+                col.HeaderText = _transMgr.GetString($"CustomDGVForm.DataGridView.Column.{col.Name}");
             }
 
             _searchBehavior.UpdatePlaceHolder(_transMgr.GetString("CustomDGVForm.TextBox.Placeholder"));
-            _searchBehavior.RefreshColumnsIfChanged();
+
+            _searchBehavior.RefreshColumnsIfChanged();  
+            RefreshDateFilterComboBox();                
+
             _transMgr.Apply();
         }
 
-        // ====================== EVENT HANDLERS (Refactorizados) ======================
-
+        // ====================== EVENT HANDLERS ======================
         private void BtnApplyFilter_Click(object sender, EventArgs e)
         {
             if (!_filtersConfigured || checkedListBoxFilters.Items.Count == 0) return;
 
-            // LINQ mágico para extraer los strings de la colección de items chequeados
             var selectedValues = checkedListBoxFilters.CheckedItems
                                                       .Cast<object>()
                                                       .Select(item => item.ToString())
                                                       .ToList();
 
-            _searchBehavior?.ExecuteContainsFilter(selectedValues, rbAllCategories.Checked); //ASDKFJASHDFKAJSDFHJKASDKFJASHDFKAJSDFHJKASDKFJASHDFKAJSDFHJKASDKFJASHDFKAJSDFHJKASDKFJASHDFKAJSDFHJKASDKFJASHDFKAJSDFHJK
+            _searchBehavior?.ExecuteContainsFilter(selectedValues, rbAllCategories.Checked);
+
+            // Filtro de fechas
+            string selectedColumn = null;
+            if (cbColumnsNameFilterDate.SelectedItem is DateColumnItem dcItem &&
+                !string.IsNullOrEmpty(dcItem.PropertyName))
+            {
+                selectedColumn = dcItem.PropertyName;
+            }
+
+            _searchBehavior?.ExecuteDateRangeFilter(
+                dateTimePickerSince.Value,
+                dateTimePickerUpTo.Value,
+                selectedColumn);
         }
 
         private void BtnCleanFilters_Click(object sender, EventArgs e) => ClearFilters();
@@ -209,52 +296,27 @@ namespace WinformsUI.UserControls.CustomDGV
 
         private void CustomDGVForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            if (_searchBehavior != null)
-            {
-                _searchBehavior.Dispose();
-            }
+            _searchBehavior?.Dispose();
         }
 
-        // ====================== DISPOSE (Seguro contra Memory Leaks) ======================
-
+        // ====================== DISPOSE ======================
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                // 1. Desuscribir todos los eventos cableados a métodos
                 btnApplyFilter.Click -= BtnApplyFilter_Click;
                 btnCleanFilters.Click -= BtnCleanFilters_Click;
                 btnShowFilters.Click -= BtnShowFilters_Click;
 
                 if (mainDGV != null)
-                {
                     mainDGV.SelectionChanged -= MainDGV_SelectionChanged;
-                }
 
                 this.FormClosed -= CustomDGVForm_FormClosed;
 
-                // 2. Liberar delegados externos
                 SelectedRowChanged = null;
-
-                // 3. Dispose de recursos dinámicos
-                if (_searchBehavior != null)
-                {
-                    _searchBehavior.Dispose();
-                    _searchBehavior = null;
-                }
-
-                // IMPORTANTE: Si ITranslatableControlsManager guarda este form, 
-                // descomenta la siguiente línea si tienes el método implementado:
-                // _transMgr?.RemoveFormNotify(this);
+                _searchBehavior?.Dispose();
             }
-
             base.Dispose(disposing);
-        }
-
-        private void checkedListBoxFilters_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            
-            checkedListBoxFilters.SelectedIndex = -1;
         }
     }
 }
