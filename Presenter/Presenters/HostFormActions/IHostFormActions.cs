@@ -23,6 +23,7 @@ namespace Shared.ArchitecturalMarkers
 
 
         void SetTitle(string Title);
+        string GetTitle();
         void Initialize(IAppEnvironment ae);
 
         void SetContent(object content); // Recibe el formulario de caso de uso (C)

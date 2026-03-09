@@ -1,4 +1,5 @@
-﻿using Shared.ArchitecturalMarkers;
+﻿using Presenter.Messaging;
+using Shared.ArchitecturalMarkers;
 using System;
 using System.Drawing;
 using System.Reflection;
@@ -19,6 +20,7 @@ namespace WinformsUI.Forms.Base
         private FlowLayoutPanel _upperMenuPanel;
         private IAppEnvironment _appEnv { get; set; }
         private readonly ITranslatableControlsManager _transMgr;
+        private readonly IMessenger _messenger;
 
         // Variables para control de estado
         private Size _previousSize;
@@ -32,12 +34,16 @@ namespace WinformsUI.Forms.Base
 
         #region === Inicialización ===
 
-        public HostForm(ITranslatableControlsManager transMgr)
+        public HostForm
+        (
+            ITranslatableControlsManager transMgr,
+            IMessenger messenger
+        )
         {
             _transMgr = transMgr;
+            _messenger = messenger;
 
             InitializeComponent();
-
         }
 
 
@@ -49,6 +55,11 @@ namespace WinformsUI.Forms.Base
 
             if (_minimizedWindowBtn != null)
                 _minimizedWindowBtn.Text = Title;
+        }
+
+        public string GetTitle()
+        {
+            return _title;
         }
 
 
@@ -383,7 +394,7 @@ namespace WinformsUI.Forms.Base
 
             SuspendLayout();
 
-            try //DEUDA TÉCNICA IMPORTANTE - BYPASSEO UN BUG EN EL CUAL SE INTENTA MINIMIZAR UN OBJETO DESECHADO Y EL PROGRAMA COLAPSA. ATENDER ---IMPORTANTE--- A EVITAR FUGAS DE MEMORIA POSIBLEMENTE PROVENINENTES DEL PRESENTER DE HOSTFORM
+            try //DEUDA TÉCNICA IMPORTANTE - BYPASSEO UN BUG (con el try-catch) EN EL CUAL SE INTENTA MINIMIZAR UN OBJETO DESECHADO Y EL PROGRAMA COLAPSA. ATENDER ---IMPORTANTE--- A EVITAR FUGAS DE MEMORIA POSIBLEMENTE PROVENINENTES DEL PRESENTER DE HOSTFORM
             {
                 _upperMenuPanel.Controls.Add(_minimizedWindowBtn);
                 this.Visible = false;
@@ -588,7 +599,7 @@ namespace WinformsUI.Forms.Base
  
         #region === WndProc (Redimensionado desde bordes) ===
 
-        protected override void WndProc(ref Message m)
+        protected override void WndProc(ref System.Windows.Forms.Message m)
         {
             if (m.Msg == WM_NCHITTEST)
             {

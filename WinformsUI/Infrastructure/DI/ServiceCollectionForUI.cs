@@ -9,20 +9,21 @@ using Presenter.ForSupplier;
 using Presenter.HostFormActions;
 using Presenter.LoginScreen;
 using Presenter.MainFormNavigation;
+using Presenter.Messaging;
 using Shared;
 using Shared.ArchitecturalMarkers;
 using Shared.Factories;
 using Shared.Services.Searching;
+using WinformsUI.Forms.Base;
 using WinformsUI.Forms.ClientCRUDL;
 using WinformsUI.Forms.ConfigurationsMenu;
 using WinformsUI.Forms.EmployeeCRUDL;
 using WinformsUI.Forms.Login;
+using WinformsUI.Forms.Main;
 using WinformsUI.Forms.PaymentCRUDL;
 using WinformsUI.Forms.ProductCRUDL;
 using WinformsUI.Forms.SaleCRUDL;
 using WinformsUI.Forms.SupplierCRUDL;
-using WinformsUI.Forms.Base;
-using WinformsUI.Forms.Main;
 using WinformsUI.Infrastructure.Culture;
 using WinformsUI.Infrastructure.Factories;
 using WinformsUI.Infrastructure.Localization;
@@ -74,6 +75,10 @@ namespace WinformsUI.Infrastructure.DI
 
         public static IServiceCollection AddFromPresenter(this IServiceCollection services)
         {
+            //Messaging
+            services.AddSingleton<IMessenger, Messenger>();
+
+
             //Infrastructure
             services.AddSingleton<MainFormNavigationPresenter>();
             services.AddSingleton<HostFormActionsPresenter>();
