@@ -4,6 +4,7 @@ using System;
 using System.Drawing;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Windows.Forms;
 using Winforms.Theme;
 using WinformsUI.Infrastructure;
@@ -209,6 +210,12 @@ namespace WinformsUI.Forms.Base
             CreateInstanceMinimizedWindow(); //Ya se deja instanciada su representación minimizada antes de asociarla a una acción que requiera su existencia en los eventos de botones.
             WireButtonsEvents();
         }
+
+
+        private readonly Guid _id = Guid.NewGuid();  // Nuevo: ID único
+        public Guid Id => _id;  // Nuevo: Exposición
+
+
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             if (_minimizedWindowBtn != null)
@@ -219,14 +226,15 @@ namespace WinformsUI.Forms.Base
                 }
                 _minimizedWindowBtn.Dispose();
             }
-
             if (_parentContainer != null)
             {
                 _parentContainer.SizeChanged -= ContainerSizeChanged;
             }
+            // Notificación vía Messenger: Usa GUID como ID (robusto, no depende de _title)
+            var closedMessage = new HostFormClosedMessage(_id, this);
+            _messenger.Send(closedMessage);
             if (e != null)
-                base.OnFormClosing(e); //entonces, ihostformactionpresenter como nueva interfaz de la que hereda hoistformactionpresenter para que pueda escuchar imainformnavigationpresenter y enterarme cuando se cierra un hostform para sacarlo de la lista de presenters añadidos cuando se abre unopa nuievo
-
+                base.OnFormClosing(e);
         }
         #endregion
 

@@ -1,11 +1,9 @@
-﻿namespace Presenter.Messaging
+﻿using System;
+
+namespace Presenter.Messaging
 {
-    public class HostFormClosedMessage : Message<string>
+    public class HostFormClosedMessage : Message<Guid>  // Cambia <string> a <Guid>
     {
-        public HostFormClosedMessage(string formIdentifier, object sender = null)
-            : base(formIdentifier, sender)
-        {
-            // Payload es el identifier (ej: _title de HostForm)
-        }
+        public HostFormClosedMessage(Guid formId, object sender = null) : base(formId, sender) { }
     }
 }

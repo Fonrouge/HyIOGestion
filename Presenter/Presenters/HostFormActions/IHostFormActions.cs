@@ -10,10 +10,10 @@ namespace Shared.ArchitecturalMarkers
         event EventHandler RestoreWindowFromMinimizedRequested;
         event EventHandler MinimizeWindowRequested;              
 
+        Guid Id { get; }
         bool IsExpanded { get; set; }
         bool IsMinimized { get; set; }
         bool IsMaximized { get; set; }
-
 
         void ContractWindow();
         void ExpandWindow();

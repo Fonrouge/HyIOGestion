@@ -43,9 +43,10 @@ namespace Presenter.MainFormNavigation
         // Nuevo: Handler para remover de la lista al cerrar un HostForm
         private void OnHostFormClosed(HostFormClosedMessage message)
         {
-            Debugger.Break();
-            var closedFormTitle = message.Payload;
-            var toRemove = _hostPresenters.FirstOrDefault(p => p.FormTitle == closedFormTitle);  // Asume que agregaste FormTitle en HostFormActionsPresenter
+             Debugger.Break();  // Comenta o quita una vez debuggeado
+            System.Diagnostics.Trace.WriteLine($"Handler llamado con ID: {message.Payload}");  // Nuevo: Log para Output Window
+            var closedFormId = message.Payload;  // Ahora Guid
+            var toRemove = _hostPresenters.FirstOrDefault(p => p.FormId == closedFormId);  // Cambia a FormId
             if (toRemove != null)
             {
                 _hostPresenters.Remove(toRemove);

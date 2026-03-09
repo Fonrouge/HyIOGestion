@@ -457,11 +457,11 @@ namespace WinformsUI.Forms.Main
             TView view = viewProvider();
             if (!(view is Form content))
                 throw new InvalidOperationException($"La vista {typeof(TView).Name} no hereda de Form");
-
-
-            // Resolves el título actual usando el manager antes de crear el host
+            
             string currentTitle = _transMgr.GetString(translationKey) ?? translationKey;
-
+            
+            System.Diagnostics.Trace.WriteLine($"Creando form con título: {currentTitle}");  // Log para debug
+            
             IAppEnvironment environment = _appEnvFactory.CreateCustom
             (
                 DashBoard: DashboardPnl,
@@ -470,22 +470,18 @@ namespace WinformsUI.Forms.Main
                 FormType: (int)fte,
                 Icon: icon
             );
-
             IHostFormActions hostFrm = _formsFactory.CreateHFA
             (
                 Title: currentTitle,
                 Environment: environment
             );
-
-            // Guardas el vínculo Form -> Llave de Traducción
+            hostFrm.SetTitle(currentTitle);  
+                                             
             _formTranslationKeys.Add(hostFrm, translationKey);
-
             InternalWindowCreated?.Invoke(this, hostFrm);
-
             hostFrm.SetContent(content);
             this.ShowForm(hostFrm);
         }
-
 
         /// <summary>Injects a form into the dashboard container and displays it.</summary>
         /// <param name="F">The form to be hosted.</param>

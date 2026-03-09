@@ -16,6 +16,8 @@ namespace Presenter.HostFormActions
         public EventHandler OnRestoringFromMinimized;
         public EventHandler OnExpandingWindow;
         public EventHandler OnContractingWindow;
+        public Guid FormId { get; }  // Nuevo: Reemplaza FormTitle, usa GUID
+        public EventHandler OnClosingHostForm { get; set; }
 
         public string FormTitle
         {
@@ -25,14 +27,13 @@ namespace Presenter.HostFormActions
             }
         }
 
-        public EventHandler OnClosingHostForm { get; set; }
 
 
 
         public HostFormActionsPresenter(IHostFormActions view)
         {
             _view = view ?? throw new ArgumentNullException(nameof(view));
-
+            FormId = _view.Id;  // Nuevo: Set desde view
 
             _view.MinimizeWindowRequested += (s, e) => MinimizeWindow();
             _view.RestoreWindowFromMinimizedRequested += (s, e) => RestoreWindowFromMinimized();
