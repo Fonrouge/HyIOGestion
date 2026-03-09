@@ -22,9 +22,9 @@ namespace DAL.Persistence.MicrosoftSQL
         public Task CreateAsync(Client entity)
         {
             string query = @"INSERT INTO Clients 
-                             (Id, Name, LastName, ShipAddress, WareHouseAddress, Email, Phone, TaxId, DocNumber, IsActive, IsDeleted) 
+                             (Id, Name, LastName, ShipAddress, Email, Phone, TaxId, DocNumber, IsActive, IsDeleted) 
                              VALUES 
-                             (@Id, @Name, @LastName, @ShipAddress, @WareHouseAddress, @Email, @Phone, @TaxId, @DocNumber, @IsActive, @IsDeleted)";
+                             (@Id, @Name, @LastName, @ShipAddress, @Email, @Phone, @TaxId, @DocNumber, @IsActive, @IsDeleted)";
 
             return ExecuteNonQueryAsync(query, cmd => SetParameters(cmd, entity));
         }
@@ -35,7 +35,6 @@ namespace DAL.Persistence.MicrosoftSQL
                              SET Name = @Name, 
                                  LastName = @LastName, 
                                  ShipAddress = @ShipAddress, 
-                                 WareHouseAddress = @WareHouseAddress, 
                                  Email = @Email, 
                                  Phone = @Phone, 
                                  TaxId = @TaxId, 
@@ -58,7 +57,7 @@ namespace DAL.Persistence.MicrosoftSQL
         public async Task<Client> GetByIdAsync(Guid id)
         {
             Client client = null;
-            string query = @"SELECT Id, Name, LastName, ShipAddress, WareHouseAddress, Email, Phone, TaxId, DocNumber, IsActive, IsDeleted 
+            string query = @"SELECT Id, Name, LastName, ShipAddress, Email, Phone, TaxId, DocNumber, IsActive, IsDeleted 
                              FROM Clients 
                              WHERE Id = @Id AND IsDeleted = 0";
 
@@ -72,7 +71,7 @@ namespace DAL.Persistence.MicrosoftSQL
         public async Task<IEnumerable<Client>> GetAllAsync()
         {
             var clients = new List<Client>();
-            string query = @"SELECT Id, Name, LastName, ShipAddress, WareHouseAddress, Email, Phone, TaxId, DocNumber, IsActive, IsDeleted 
+            string query = @"SELECT Id, Name, LastName, ShipAddress, Email, Phone, TaxId, DocNumber, IsActive, IsDeleted 
                              FROM Clients 
                              WHERE IsDeleted = 0";
 
@@ -86,7 +85,7 @@ namespace DAL.Persistence.MicrosoftSQL
 
             // Es buena práctica usar un filtro de IsDeleted = 0 para no recuperar 
             // registros que técnicamente no deberían existir para la lógica de negocio activa.
-            string query = @"SELECT Id, Name, LastName, ShipAddress, WareHouseAddress, Email, Phone, TaxId, DocNumber, IsActive, IsDeleted 
+            string query = @"SELECT Id, Name, LastName, ShipAddress, Email, Phone, TaxId, DocNumber, IsActive, IsDeleted 
                      FROM Clients 
                      WHERE TaxId = @TaxId AND IsDeleted = 0";
 
@@ -106,7 +105,6 @@ namespace DAL.Persistence.MicrosoftSQL
             cmd.Parameters.Add(new SqlParameter("@Name", SqlDbType.NVarChar) { Value = entity.Name.Value });
             cmd.Parameters.Add(new SqlParameter("@LastName", SqlDbType.NVarChar) { Value = entity.LastName.Value });
             cmd.Parameters.Add(new SqlParameter("@ShipAddress", SqlDbType.NVarChar) { Value = entity.ShipAddress.Value });
-            cmd.Parameters.Add(new SqlParameter("@WareHouseAddress", SqlDbType.NVarChar) { Value = entity.WarehouseAddress.Value });
             cmd.Parameters.Add(new SqlParameter("@Email", SqlDbType.NVarChar) { Value = entity.Email.Value });
             cmd.Parameters.Add(new SqlParameter("@Phone", SqlDbType.NVarChar) { Value = entity.Phone.Value });
             cmd.Parameters.Add(new SqlParameter("@TaxId", SqlDbType.NVarChar) { Value = entity.TaxId.Value });
@@ -125,7 +123,6 @@ namespace DAL.Persistence.MicrosoftSQL
                 reader["Name"]?.ToString(),
                 reader["LastName"]?.ToString(),
                 reader["ShipAddress"]?.ToString(),
-                reader["WareHouseAddress"]?.ToString(),
                 reader["Email"]?.ToString(),
                 reader["Phone"]?.ToString(),
                 reader["TaxId"]?.ToString(),
@@ -183,5 +180,3 @@ namespace DAL.Persistence.MicrosoftSQL
         }
     }
 }
-
-      

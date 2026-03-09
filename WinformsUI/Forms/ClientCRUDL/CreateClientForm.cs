@@ -19,14 +19,6 @@ namespace WinformsUI.Forms.ClientCRUDL
 
         public event EventHandler<ClientDTO> CreateClientRequested;
 
-        private enum AddressOption
-        {
-            OnlyShipping = 0,
-            OnlyPickUp = 1,
-            Both = 2
-        }
-        private AddressOption _chosenAddressOption;
-
         public CreateClientForm
         (
             IWizardPanelNavigator wizard,
@@ -53,6 +45,7 @@ namespace WinformsUI.Forms.ClientCRUDL
             this.FormClosed += (s, e) =>
             {
                 _transMgr.RemoveFormNotify(this);
+
             };
         }
 
@@ -61,24 +54,17 @@ namespace WinformsUI.Forms.ClientCRUDL
         {
             _transMgr.AddParentedObjects<Label>(this.Controls, "Text");
             _transMgr.AddParentedObjects<Button>(this.Controls, "Text");
-
-
-            //Para después hacer el OnClose(); ---> _transMgr.RemoveFormNotify(this);
-
-         
             _transMgr.AddFormNotify(this);
         }
 
-        public void ApplyTranslation()
-        {
-            throw new NotImplementedException();
-        }
+        public void ApplyTranslation() => _transMgr.Apply();
 
         public void ApplyGlobalPalette() => DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
 
         private void UpdateFormSize()
         {
-            this.ClientSize = _wizard.CurrentPanel.Size;
+            if (_wizard.CurrentPanel.Size != null)
+                this.ClientSize = _wizard.CurrentPanel.Size;
         }
 
         protected override void Dispose(bool disposing)
@@ -89,7 +75,6 @@ namespace WinformsUI.Forms.ClientCRUDL
 
                 if (components != null)
                     components.Dispose();
-
             }
 
             base.Dispose(disposing);
@@ -105,92 +90,30 @@ namespace WinformsUI.Forms.ClientCRUDL
             DarkTheme.RedrawBorders = true;
             DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
         }
-        private void InitializeWizard() => _wizard.Initialize(new Panel[] { pnlIdentification, pnlChooseDirections, pnlAddPickAddress, pnlShipAddress, pnlContact });
+
+        private void InitializeWizard() => _wizard.Initialize(new Panel[] { pnlIdentification, pnlShipAddress, pnlContact });
 
         private void WireFlowButtonsEvents()
         {
             // --- NAVEGACIÓN HACIA ATRÁS ---
-
-            btnBackChooseAddress.Click += (s, e) =>
-            {
-                _wizard.GoTo(0);
-                UpdateFormSize();
-            };
-
-            btnBackPickAddress.Click += (s, e) =>
-            {
-                _wizard.GoTo(1);
-                UpdateFormSize();
-            };
-
             btnBackShipAddress.Click += (s, e) =>
             {
-                if (_chosenAddressOption == AddressOption.OnlyShipping)
-                {
-                    _wizard.GoTo(1);
-                    UpdateFormSize();
-                }
-                else
-                {
-                    _wizard.Back();
-                    UpdateFormSize();
-                }
+                _wizard.Back();
+                UpdateFormSize();
             };
 
             btnBackContact.Click += (s, e) =>
             {
-                if (_chosenAddressOption == AddressOption.OnlyPickUp)
-                {
-                    _wizard.GoTo(2);
-                    UpdateFormSize();
-                }
-                else
-                {
-                    _wizard.Back();
-                    UpdateFormSize();
-                }
+                _wizard.Back();
+                UpdateFormSize();
             };
+
 
             // --- NAVEGACIÓN HACIA ADELANTE ---
             btnNextId.Click += (s, e) =>
             {
                 _wizard.Advance();
                 UpdateFormSize();
-            };
-
-            btnNextOnlyShip.Click += (s, e) =>
-            {
-                _chosenAddressOption = AddressOption.OnlyShipping;
-                _wizard.GoTo(3);
-                UpdateFormSize();
-            };
-
-            btnNextOnlyPick.Click += (s, e) =>
-            {
-                _chosenAddressOption = AddressOption.OnlyPickUp;
-                _wizard.GoTo(2);
-                UpdateFormSize();
-            };
-
-            btnBothAddresses.Click += (s, e) =>
-            {
-                _chosenAddressOption = AddressOption.Both;
-                _wizard.Advance();
-                UpdateFormSize();
-            };
-
-            btnNextPick.Click += (s, e) =>
-            {
-                if (_chosenAddressOption == AddressOption.OnlyPickUp)
-                {
-                    _wizard.GoTo(4);
-                    UpdateFormSize();
-                }
-                else
-                {
-                    _wizard.Advance();
-                    UpdateFormSize();
-                }
             };
 
             btnNextShip.Click += (s, e) =>
@@ -202,23 +125,26 @@ namespace WinformsUI.Forms.ClientCRUDL
             btnFinish.Click += (s, e) => ExecuteCreation();
         }
 
-
         private void ExecuteCreation()
         {
             var dto = new ClientDTO
             {
                 Name = txtName.Text,
                 LastName = txtLastName.Text,
+                TaxId = cbTaxId.Text,
+                DocNumber = txtDocNumber.Text,
+                ShipCountry = cbCountrySelector.Text,
+                ShipState = cbStateSelector.Text,
+                ShipAddress = txtShupAddreess.Text,
+                ShipZipCode = cbZipCode.Text,
                 Email = txtEmail.Text,
                 Phone = txtPhone.Text,
-                TaxId = cbTaxId.Text,
-                // TODO: Mapear direcciones aquí
+                Observations = txtObservations.Text
             };
 
             CreateClientRequested?.Invoke(this, dto);
 
         }
 
-    
     }
 }

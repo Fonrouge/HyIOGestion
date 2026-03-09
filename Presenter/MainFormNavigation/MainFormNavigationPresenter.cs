@@ -12,7 +12,7 @@ namespace Presenter.MainFormNavigation
     {
         private readonly IMainFormNavigation _view;
         private LayoutType _currentLayoutType;
-        private List<HostFormActionsPresenter> _hostPresenters = new List<HostFormActionsPresenter>();
+        private List<HostFormActionsPresenter> _hostPresenters;
         private readonly ISessionProvider _sessionProvider;
         private readonly ISessionManager _sessionManager;
 
@@ -29,6 +29,7 @@ namespace Presenter.MainFormNavigation
             _view = view ?? throw new ArgumentNullException(nameof(view));
             _sessionProvider = sessionProvider ?? throw new ArgumentNullException(nameof(sessionProvider));
             _sessionManager = sessionManager ?? throw new ArgumentNullException(nameof(sessionManager));
+            _hostPresenters = new List<HostFormActionsPresenter>();
             WireViewEvents();
 
 
@@ -120,15 +121,16 @@ namespace Presenter.MainFormNavigation
         private void OnOpenSuppliersModuleRequested(object sender, EventArgs e) => _view.OpenSupplierFrm();
         private void OnOpenConfigsModuleRequested(object sender, EventArgs e) => _view.OpenConfigsFrm();
 
+
         // ==========================================
         // LÓGICA DE NEGOCIO Y PRESENTACIÓN
         // ==========================================
-
         private void CreatingHostForm(object sender, IHostFormActions internalWindow)
         {
             HostFormActionsPresenter hfaPresenter = new HostFormActionsPresenter(internalWindow); // Una vez creada la lógica de ventanas internas, crear Factory para pasarle el IHostFormActions y obtener el Presenter correspondiente.
 
             _hostPresenters.Insert(0, hfaPresenter);
+            hfaPresenter.Close   //entonces, ihostformactionpresenter como nueva interfaz de la que hereda hoistformactionpresenter para que pueda escuchar imainformnavigationpresenter y enterarme cuando se cierra un hostform para sacarlo de la lista de presenters añadidos cuando se abre unopa nuievo
             ReorganizeLayout();
 
             // Nota: Las lambdas aquí están bien si HostFormActionsPresenter destruye sus 

@@ -10,7 +10,6 @@ namespace Domain.Entities
         public ClientNameVO Name { get; private set; }
         public ClientLastNameVO LastName { get; private set; }
         public ShipAddressVO ShipAddress { get; private set; }
-        public WarehouseAddressVO WarehouseAddress { get; private set; }
         public ClientEmailVO Email { get; private set; }
         public ClientPhoneVO Phone { get; private set; }
         public ClientTaxIdVO TaxId { get; private set; }
@@ -32,7 +31,6 @@ namespace Domain.Entities
             string rawName,
             string rawLastName,
             string rawShipAddress,
-            string rawWarehouseAddress,
             string rawEmail,
             string rawPhone,
             string rawTaxId,
@@ -45,7 +43,6 @@ namespace Domain.Entities
                 Name = ClientNameVO.Create(rawName?.ToUpper() ?? "N/I"),
                 LastName = ClientLastNameVO.Create(rawLastName?.ToUpper() ?? "N/I"),
                 ShipAddress = ShipAddressVO.Create(rawShipAddress?.ToUpper() ?? "N/I"),
-                WarehouseAddress = WarehouseAddressVO.Create(rawWarehouseAddress?.ToUpper() ?? "N/I"),
                 Email = ClientEmailVO.Create(rawEmail?.ToUpper() ?? "N/I"),
                 Phone = ClientPhoneVO.Create(rawPhone?.ToUpper() ?? "N/I"),
                 TaxId = ClientTaxIdVO.Create(rawTaxId?.ToUpper() ?? "N/I"),
@@ -65,7 +62,6 @@ namespace Domain.Entities
             string rawName,
             string rawLastName,
             string rawShipAddress,
-            string rawWarehouseAddress,
             string rawEmail,
             string rawPhone,
             string rawTaxId,
@@ -80,7 +76,6 @@ namespace Domain.Entities
                 Name = ClientNameVO.Create(rawName?.ToUpper() ?? "N/I"),
                 LastName = ClientLastNameVO.Create(rawLastName?.ToUpper() ?? "N/I"),
                 ShipAddress = ShipAddressVO.Create(rawShipAddress?.ToUpper() ?? "--"),
-                WarehouseAddress = WarehouseAddressVO.Create(rawWarehouseAddress?.ToUpper() ?? "--"),
                 Email = ClientEmailVO.Create(rawEmail?.ToUpper() ?? "N/I"),
                 Phone = ClientPhoneVO.Create(rawPhone?.ToUpper() ?? "N/I"),
                 TaxId = ClientTaxIdVO.Create(rawTaxId?.ToUpper() ?? "N/I"),

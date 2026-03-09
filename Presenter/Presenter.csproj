@@ -83,6 +83,7 @@
     <Compile Include="ForSupplier\ISupplierView.cs" />
     <Compile Include="ForSupplier\SupplierPresenter.cs" />
     <Compile Include="HostFormActions\HostFormActionsPresenter.cs" />
+    <Compile Include="HostFormActions\IHostFormActionPresenter.cs" />
     <Compile Include="HostFormActions\IHostFormActions.cs" />
     <Compile Include="ICrudView.cs" />
     <Compile Include="LoginScreen\ILoginView.cs" />

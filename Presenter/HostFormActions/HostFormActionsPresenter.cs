@@ -8,14 +8,19 @@ using System.Threading.Tasks;
 
 namespace Presenter.HostFormActions
 {
-    public class HostFormActionsPresenter: IPresenter
-    {
+    public class HostFormActionsPresenter: IHostFormActionPresenter, IPresenter
+    { //entonces, ihostformactionpresenter como nueva interfaz de la que hereda hoistformactionpresenter para que pueda escuchar imainformnavigationpresenter y enterarme cuando se cierra un hostform para sacarlo de la lista de presenters añadidos cuando se abre unopa nuievo
 
         private readonly IHostFormActions _view;
         public EventHandler OnMinimizingWindow;
         public EventHandler OnRestoringFromMinimized;
         public EventHandler OnExpandingWindow;
         public EventHandler OnContractingWindow;
+        
+        
+        public EventHandler OnClosingHostForm { get; set; }
+        
+
 
         public HostFormActionsPresenter(IHostFormActions view)
         {
@@ -55,6 +60,8 @@ namespace Presenter.HostFormActions
         }
 
         public bool IsMinimized => _view.IsMinimized;
+
+        
 
         public void SetMinimizeStatus(bool isMin)
         {

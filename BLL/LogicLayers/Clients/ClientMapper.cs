@@ -19,7 +19,6 @@ namespace BLL.LogicLayers
                 dto.Name,
                 dto.LastName,
                 dto.ShipAddress,
-                dto.WareHouseAddress,
                 dto.Email,
                 dto.Phone,
                 dto.TaxId,
@@ -38,7 +37,6 @@ namespace BLL.LogicLayers
                 Name = entity.Name.Value, // Accedemos a la propiedad .Value del VO
                 LastName = entity.LastName.Value,
                 ShipAddress = entity.ShipAddress.Value,
-                WareHouseAddress = entity.WarehouseAddress.Value,
                 Email = entity.Email.Value,
                 Phone = entity.Phone.Value,
                 TaxId = entity.TaxId.Value,
@@ -72,7 +70,6 @@ namespace BLL.LogicLayers
                 dto.Name,
                 dto.LastName,
                 dto.ShipAddress,
-                dto.WareHouseAddress,
                 dto.Email,
                 dto.Phone,
                 dto.TaxId,

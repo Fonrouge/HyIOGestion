@@ -16,7 +16,7 @@ namespace WinformsUI.Forms.Base
         #region === Campos y Propiedades de Configuración ===
 
         protected Panel _parentContainer;
-        private FlowLayoutPanel _rightMenuPanel;
+        private FlowLayoutPanel _upperMenuPanel;
         private IAppEnvironment _appEnv { get; set; }
         private readonly ITranslatableControlsManager _transMgr;
 
@@ -26,8 +26,8 @@ namespace WinformsUI.Forms.Base
         public bool IsExpanded { get; set; } = false;
         public bool IsMinimized { get; set; } = false;
         public bool IsMaximized { get; set; } = false;
+
         private string _title;
-        private string _titleIdForTranslation;
 
 
         #region === Inicialización ===
@@ -46,6 +46,7 @@ namespace WinformsUI.Forms.Base
             _title = Title;
             lblTitle.Text = Title;
             this.Text = _title;
+
             if (_minimizedWindowBtn != null)
                 _minimizedWindowBtn.Text = Title;
         }
@@ -199,12 +200,11 @@ namespace WinformsUI.Forms.Base
         }
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-
             if (_minimizedWindowBtn != null)
             {
-                if (_parentContainer != null && _rightMenuPanel.Controls.Contains(_minimizedWindowBtn))
+                if (_parentContainer != null && _upperMenuPanel.Controls.Contains(_minimizedWindowBtn))
                 {
-                    _rightMenuPanel.Controls.Remove(_minimizedWindowBtn);
+                    _upperMenuPanel.Controls.Remove(_minimizedWindowBtn);
                 }
                 _minimizedWindowBtn.Dispose();
             }
@@ -214,7 +214,8 @@ namespace WinformsUI.Forms.Base
                 _parentContainer.SizeChanged -= ContainerSizeChanged;
             }
             if (e != null)
-                base.OnFormClosing(e);
+                base.OnFormClosing(e); //entonces, ihostformactionpresenter como nueva interfaz de la que hereda hoistformactionpresenter para que pueda escuchar imainformnavigationpresenter y enterarme cuando se cierra un hostform para sacarlo de la lista de presenters añadidos cuando se abre unopa nuievo
+
         }
         #endregion
 
@@ -241,7 +242,7 @@ namespace WinformsUI.Forms.Base
             {
                 SuspendLayout();
                 if (IsExpanded) ContractRequested?.Invoke(this, EventArgs.Empty);
-                else ExpandRequested?.Invoke(this, EventArgs.Empty);
+                else if (!IsExpanded) ExpandRequested?.Invoke(this, EventArgs.Empty);
                 ResumeLayout();
             };
 
@@ -264,8 +265,6 @@ namespace WinformsUI.Forms.Base
         private void ApplyPalette(Palette p)
         {
             InternalPalette = p;
-
-            //DarkTheme.Apply(this, GetCurrentPalette());
             DarkTheme.Apply(this, InternalPalette);
         }
 
@@ -306,8 +305,7 @@ namespace WinformsUI.Forms.Base
             {
                 Size = new Size(_title.Length + 150, 40),
                 AutoSize = false,
-                FlatStyle = FlatStyle.Flat,
-
+                FlatStyle = FlatStyle.Flat
             };
 
             DarkTheme.ApplyGradientBackground
@@ -316,9 +314,6 @@ namespace WinformsUI.Forms.Base
                 begin: Darken(InternalPalette.Accent, 0.8),
                 end: Color.Black
             );
-
-
-            //DarkTheme.Darken(Color.FromArgb(60, 60, 60), -0.0)
 
             _minimizedWindowBtn.FlatAppearance.BorderSize = 2;
             _minimizedWindowBtn.FlatAppearance.BorderColor = Darken(InternalPalette.Accent, 0.6); //DarkTheme.Darken(InternalPalette.Accent, 0.5)
@@ -331,16 +326,13 @@ namespace WinformsUI.Forms.Base
             _minimizedWindowBtn.Padding = new Padding(10, 10, 10, 10);
             _minimizedWindowBtn.Margin = new Padding(0, 0, 0, 0);
             _minimizedWindowBtn.Font = new Font("Microsoft YaHei UI", 9f, FontStyle.Italic);
-
-
-
         }
 
 
 
         public void ContractWindow()
         {
-            if (_rightMenuPanel == null) return;
+            if (_upperMenuPanel == null) return;
             if (!IsExpanded) return;
 
             SuspendLayout();
@@ -350,18 +342,17 @@ namespace WinformsUI.Forms.Base
             ResumeLayout();
         }
 
-
         public void ExpandWindow()
         {
-            if (_rightMenuPanel == null) return;
+            if (_upperMenuPanel == null) return;
             if (IsExpanded) return;
 
             SuspendLayout();
             _previousSize = this.Size;
             _previousLocation = this.Location;
 
-            this.Size = _parentContainer.Size;
             this.Location = new Point(0, 0);
+            this.Size = _parentContainer.Size;
             IsExpanded = true;
             ResumeLayout();
         }
@@ -374,12 +365,12 @@ namespace WinformsUI.Forms.Base
 
         public void RestoreWindowFromMinimized()
         {
-            if (_rightMenuPanel == null) return;
+            if (_upperMenuPanel == null) return;
             if (!IsMinimized) return;
 
             SuspendLayout();
 
-            _rightMenuPanel.Controls.Remove(_minimizedWindowBtn);
+            _upperMenuPanel.Controls.Remove(_minimizedWindowBtn);
             this.Visible = true;
             IsMinimized = false;
 
@@ -394,21 +385,18 @@ namespace WinformsUI.Forms.Base
 
             try //DEUDA TÉCNICA IMPORTANTE - BYPASSEO UN BUG EN EL CUAL SE INTENTA MINIMIZAR UN OBJETO DESECHADO Y EL PROGRAMA COLAPSA. ATENDER ---IMPORTANTE--- A EVITAR FUGAS DE MEMORIA POSIBLEMENTE PROVENINENTES DEL PRESENTER DE HOSTFORM
             {
-                _rightMenuPanel.Controls.Add(_minimizedWindowBtn);
+                _upperMenuPanel.Controls.Add(_minimizedWindowBtn);
+                this.Visible = false;
+                IsMinimized = true;
             }
             catch { }
 
-            this.Visible = false;
-            IsMinimized = true;
             ResumeLayout();
         }
 
 
 
-        private void SetRightMenuControl(FlowLayoutPanel flp)
-        {
-            _rightMenuPanel = flp ?? throw new ArgumentNullException($"{nameof(flp)} cannot be null");
-        }
+        private void SetRightMenuControl(FlowLayoutPanel flp) => _upperMenuPanel = flp ?? throw new ArgumentNullException($"{nameof(flp)} cannot be null");
 
 
         public void WireTitleBarEvents()
@@ -448,6 +436,15 @@ namespace WinformsUI.Forms.Base
 
         }
 
+        public void EnableDoubleBuffering(Control control)
+        {
+            // Esto habilita la magia interna de Windows para que pinte en memoria antes de mostrarlo
+            typeof(Control).InvokeMember("DoubleBuffered",
+                BindingFlags.SetProperty |
+                BindingFlags.Instance |
+                BindingFlags.NonPublic,
+                null, control, new object[] { true });
+        }
 
 
         #region === Lógica de Arrastre y Doble Click ===
@@ -588,21 +585,7 @@ namespace WinformsUI.Forms.Base
         }
 
         #endregion
-
-        #region === Funcionalidad: Arrastre y Maximizado ===
-
-
-        public void EnableDoubleBuffering(Control control)
-        {
-            // Esto habilita la magia interna de Windows para que pinte en memoria antes de mostrarlo
-            typeof(Control).InvokeMember("DoubleBuffered",
-                BindingFlags.SetProperty |
-                BindingFlags.Instance |
-                BindingFlags.NonPublic,
-                null, control, new object[] { true });
-        }
-        #endregion
-
+ 
         #region === WndProc (Redimensionado desde bordes) ===
 
         protected override void WndProc(ref Message m)
