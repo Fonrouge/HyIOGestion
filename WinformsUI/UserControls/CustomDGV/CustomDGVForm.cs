@@ -112,7 +112,14 @@ namespace WinformsUI.UserControls.CustomDGV
             _searchBehavior = new SearchBehavior<T>
             (
                 dgv: mainDGV,
-                searchPresenter: _listTools,
+                listFilterSort: _listTools,
+                appSettings: _appSettings,
+                transMgr: _transMgr
+            );
+            _searchBehavior = new SearchBehavior<T>
+            (
+                dgv: mainDGV,
+                listFilterSort: _listTools,
                 appSettings: _appSettings,
                 transMgr: _transMgr
             );
@@ -123,7 +130,7 @@ namespace WinformsUI.UserControls.CustomDGV
             mainDGV.DataSource = data;
 
             AddTranslatables();
-            ApplyTranslation();      // ← Aquí se refrescan AMBOS combos
+            ApplyTranslation();     
             SetDGVAppearence();
         }
 
@@ -221,8 +228,10 @@ namespace WinformsUI.UserControls.CustomDGV
         {
             _transMgr.AddParentedObjects<Label>(this.Controls, "Text");
             _transMgr.AddParentedObjects<DateTimePicker>(this.Controls, "Text");
+            _transMgr.AddParentedObjects<RadioButton>(this.Controls, "Text");
             _transMgr.AddParentedObjects<ComboBox>(this.Controls, "");
             _transMgr.AddFormNotify(this);
+
 
             _transMgr.AddString("CustomDGVForm.TextBox.Placeholder", _placeholder);
             _transMgr.AddString("CustomDGVForm.DateFilter.All", "Todas");

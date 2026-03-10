@@ -26,20 +26,20 @@ namespace WinformsUI.Infrastructure.Factories
 
         //For Payments
         T PaymentForm<T>() where T : IPaymentView;
-        ICreatePaymentView PaymentCreationForm(IPaymentView view);
+        ICreatePaymentView PaymentCreationForm();
 
 
         //For Sales
         T SaleForm<T>() where T : ISaleView;
-        ICreateSaleView SaleCreationForm(ISaleView view);
+        ICreateSaleView SaleCreationForm();
 
 
         //For Products
         T ProductForm<T>() where T : IProductView;
-        ICreateProductView ProductCreationForm(IProductView view);
+        ICreateProductView ProductCreationForm();
 
         //For Supplier
         T SupplierForm<T>() where T : ISupplierView;
-        ICreateSupplierView SupplierCreationForm(ISupplierView view);
+        ICreateSupplierView SupplierCreationForm();
     }
 }

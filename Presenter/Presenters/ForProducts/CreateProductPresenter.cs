@@ -1,25 +1,19 @@
 ﻿using BLL.LogicLayers;
-using BLL.LogicLayers.Payments;
 using BLL.LogicLayers.Products;
 using BLL.DTOs;
-using Presenter.ForEmployee;
 using SharedAbstractions.ArchitecturalMarkers;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using BLL.LogicLayers.Products.Categories.UseCases;
 
 namespace Presenter.ForProducts
 {
-    public class CreateProductPresenter : IPresenter
+    public class CreateProductPresenter : IPresenter, IDisposable
     {
         private readonly ICreateProductView _view;
         private readonly IUCCreateProduct _useCaseCreate;
         private readonly IUCGetAllCategories _useCaseGetAllCat;
-
-        //private readonly IUCGetAllCategories _useCaseCreate;
 
         public CreateProductPresenter
         (
@@ -38,23 +32,45 @@ namespace Presenter.ForProducts
 
         private void ApplyDarkTheme() => _view.ApplyGlobalPalette();
 
-        private async Task WireViewEvents()
+        private void WireViewEvents()
         {
-            _view.CreateProductRequested += (sender, e) => OnCreateRequested(e);
-            _view.ListAllCategoriesRequested += (sender, e) => OnListAllCategoriesRequested();
+            // Suscripciones explícitas sin lambdas para permitir la desuscripción
+            _view.CreateProductRequested += HandleCreateProductRequested;
+            _view.ListAllCategoriesRequested += HandleListAllCategoriesRequested;
         }
 
+        // ===================================================================
+        // Event Handlers
+        // ===================================================================
+        private async void HandleCreateProductRequested(object sender, ProductDTO e)
+        {
+            await OnCreateRequested(e);
+        }
+
+        private async void HandleListAllCategoriesRequested(object sender, EventArgs e)
+        {
+            await OnListAllCategoriesRequested();
+        }
+
+        // ===================================================================
+        // Lógica de Casos de Uso
+        // ===================================================================
         private async Task OnListAllCategoriesRequested()
         {
-            var operationResult = await _useCaseGetAllCat.ExecuteAsync();
+            try
+            {
+                var operationResult = await _useCaseGetAllCat.ExecuteAsync();
 
-            var categories = operationResult.Item1;
-            var opResult = operationResult.Item2;
+                var categories = operationResult.Item1;
+                var opResult = operationResult.Item2;
 
-            _view.CachingCategoriesList(categories);
+                _view.CachingCategoriesList(categories);
+            }
+            catch
+            {
+                _view.CachingCategoriesList(new List<CategoryDTO>());
+            }
         }
-
-
 
         private async Task OnCreateRequested(ProductDTO data)
         {
@@ -78,6 +94,18 @@ namespace Presenter.ForProducts
                 };
 
                 _view.ShowOperationResult(inCaseOfUncoveredException);
+            }
+        }
+
+        // ===================================================================
+        // IDisposable (Prevención de Fugas de Memoria)
+        // ===================================================================
+        public void Dispose()
+        {
+            if (_view != null)
+            {
+                _view.CreateProductRequested -= HandleCreateProductRequested;
+                _view.ListAllCategoriesRequested -= HandleListAllCategoriesRequested;
             }
         }
     }

@@ -28,6 +28,7 @@ namespace BLL.DTOs.Mappers
                 HomeAddress = entity.HomeAddress?.Value,
 
                 // Tipos primitivos directos
+                IsDeleted = entity.IsDeleted,
                 Active = entity.Active,
                 DVH = entity.DVH
             };
@@ -72,7 +73,7 @@ namespace BLL.DTOs.Mappers
                     rawHomeAddress: dto.HomeAddress,
                     dvh: dto.DVH,
                     active: dto.Active,
-                    isDeleted: false // Asumimos que no viaja en el DTO, o lo agregas si lo necesitas
+                    isDeleted: dto.IsDeleted // Asumimos que no viaja en el DTO, o lo agregas si lo necesitas
                 );
             }
         }

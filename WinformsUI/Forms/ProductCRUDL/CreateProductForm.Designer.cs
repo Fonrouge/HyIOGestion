@@ -50,6 +50,8 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.btnBackPnl2 = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
             this.pnlCreation.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.pnlCategories.SuspendLayout();
@@ -89,8 +91,8 @@
             this.tableLayoutPanel1.RowCount = 6;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 71.50538F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 28.49462F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 57F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 72F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 63F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 66F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 126F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 108F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
@@ -102,7 +104,7 @@
             this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(4, 277);
+            this.label7.Location = new System.Drawing.Point(4, 280);
             this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(91, 19);
@@ -142,7 +144,7 @@
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(4, 213);
+            this.label2.Location = new System.Drawing.Point(4, 216);
             this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(91, 19);
@@ -175,7 +177,7 @@
             // 
             this.txtPrice.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.txtPrice.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F);
-            this.txtPrice.Location = new System.Drawing.Point(103, 210);
+            this.txtPrice.Location = new System.Drawing.Point(103, 213);
             this.txtPrice.Margin = new System.Windows.Forms.Padding(4);
             this.txtPrice.Name = "txtPrice";
             this.txtPrice.Size = new System.Drawing.Size(314, 24);
@@ -185,7 +187,7 @@
             // 
             this.txtStock.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.txtStock.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F);
-            this.txtStock.Location = new System.Drawing.Point(103, 275);
+            this.txtStock.Location = new System.Drawing.Point(103, 278);
             this.txtStock.Margin = new System.Windows.Forms.Padding(4);
             this.txtStock.Name = "txtStock";
             this.txtStock.Size = new System.Drawing.Size(314, 24);
@@ -234,38 +236,41 @@
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 228F));
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 44F));
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 168F));
-            this.tableLayoutPanel3.Controls.Add(this.lbSelectCategories, 0, 1);
-            this.tableLayoutPanel3.Controls.Add(this.btnFinish, 0, 5);
-            this.tableLayoutPanel3.Controls.Add(this.lbCategoriesAdded, 2, 1);
             this.tableLayoutPanel3.Controls.Add(this.btnAddCategory, 1, 2);
             this.tableLayoutPanel3.Controls.Add(this.btnRemoveCategory, 1, 3);
+            this.tableLayoutPanel3.Controls.Add(this.label5, 0, 1);
             this.tableLayoutPanel3.Controls.Add(this.panel1, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.lbCategoriesAdded, 2, 2);
+            this.tableLayoutPanel3.Controls.Add(this.lbSelectCategories, 0, 2);
+            this.tableLayoutPanel3.Controls.Add(this.label6, 2, 1);
+            this.tableLayoutPanel3.Controls.Add(this.btnFinish, 1, 5);
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel3.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel3.Margin = new System.Windows.Forms.Padding(4);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.Padding = new System.Windows.Forms.Padding(0, 5, 10, 5);
             this.tableLayoutPanel3.RowCount = 6;
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 64.0884F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 35.9116F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 71F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 103F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 73F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 93F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 101F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 12F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 108F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel3.Size = new System.Drawing.Size(508, 563);
             this.tableLayoutPanel3.TabIndex = 5;
             // 
             // lbSelectCategories
             // 
+            this.lbSelectCategories.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lbSelectCategories.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F);
             this.lbSelectCategories.FormattingEnabled = true;
             this.lbSelectCategories.ItemHeight = 19;
-            this.lbSelectCategories.Location = new System.Drawing.Point(14, 141);
+            this.lbSelectCategories.Location = new System.Drawing.Point(14, 164);
             this.lbSelectCategories.Margin = new System.Windows.Forms.Padding(14, 3, 3, 3);
             this.lbSelectCategories.Name = "lbSelectCategories";
-            this.tableLayoutPanel3.SetRowSpan(this.lbSelectCategories, 4);
-            this.lbSelectCategories.Size = new System.Drawing.Size(211, 289);
+            this.tableLayoutPanel3.SetRowSpan(this.lbSelectCategories, 3);
+            this.lbSelectCategories.Size = new System.Drawing.Size(211, 271);
             this.lbSelectCategories.TabIndex = 2;
             // 
             // btnFinish
@@ -284,13 +289,14 @@
             // 
             // lbCategoriesAdded
             // 
+            this.lbCategoriesAdded.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lbCategoriesAdded.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F);
             this.lbCategoriesAdded.FormattingEnabled = true;
             this.lbCategoriesAdded.ItemHeight = 19;
-            this.lbCategoriesAdded.Location = new System.Drawing.Point(275, 141);
+            this.lbCategoriesAdded.Location = new System.Drawing.Point(275, 164);
             this.lbCategoriesAdded.Name = "lbCategoriesAdded";
-            this.tableLayoutPanel3.SetRowSpan(this.lbCategoriesAdded, 4);
-            this.lbCategoriesAdded.Size = new System.Drawing.Size(220, 289);
+            this.tableLayoutPanel3.SetRowSpan(this.lbCategoriesAdded, 3);
+            this.lbCategoriesAdded.Size = new System.Drawing.Size(220, 271);
             this.lbCategoriesAdded.TabIndex = 2;
             // 
             // btnAddCategory
@@ -300,10 +306,10 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnAddCategory.FlatAppearance.BorderSize = 0;
             this.btnAddCategory.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnAddCategory.Location = new System.Drawing.Point(243, 227);
+            this.btnAddCategory.Location = new System.Drawing.Point(243, 176);
             this.btnAddCategory.Margin = new System.Windows.Forms.Padding(15);
             this.btnAddCategory.Name = "btnAddCategory";
-            this.btnAddCategory.Size = new System.Drawing.Size(14, 41);
+            this.btnAddCategory.Size = new System.Drawing.Size(14, 73);
             this.btnAddCategory.TabIndex = 6;
             this.btnAddCategory.Text = ">";
             this.btnAddCategory.UseVisualStyleBackColor = true;
@@ -315,7 +321,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnRemoveCategory.FlatAppearance.BorderSize = 0;
             this.btnRemoveCategory.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnRemoveCategory.Location = new System.Drawing.Point(243, 298);
+            this.btnRemoveCategory.Location = new System.Drawing.Point(243, 279);
             this.btnRemoveCategory.Margin = new System.Windows.Forms.Padding(15);
             this.btnRemoveCategory.Name = "btnRemoveCategory";
             this.btnRemoveCategory.Size = new System.Drawing.Size(14, 43);
@@ -331,16 +337,19 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(3, 8);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(492, 127);
+            this.panel1.Size = new System.Drawing.Size(492, 122);
             this.panel1.TabIndex = 8;
             // 
             // btnBackPnl2
             // 
+            this.btnBackPnl2.FlatAppearance.BorderSize = 0;
+            this.btnBackPnl2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnBackPnl2.Image = global::WinformsUI.Properties.Resources.BackArrow;
             this.btnBackPnl2.Location = new System.Drawing.Point(11, 25);
             this.btnBackPnl2.Name = "btnBackPnl2";
             this.btnBackPnl2.Size = new System.Drawing.Size(75, 74);
             this.btnBackPnl2.TabIndex = 5;
-            this.btnBackPnl2.Text = "Back";
+            this.btnBackPnl2.Tag = "IsImageColorable";
             this.btnBackPnl2.UseVisualStyleBackColor = true;
             // 
             // label4
@@ -358,11 +367,37 @@
             this.label4.Text = "Categorías";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // label5
+            // 
+            this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Microsoft YaHei UI Light", 9.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.Location = new System.Drawing.Point(4, 137);
+            this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(220, 19);
+            this.label5.TabIndex = 2;
+            this.label5.Text = "Seleccionar";
+            this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // label6
+            // 
+            this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.label6.AutoSize = true;
+            this.label6.Font = new System.Drawing.Font("Microsoft YaHei UI Light", 9.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label6.Location = new System.Drawing.Point(276, 137);
+            this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(218, 19);
+            this.label6.TabIndex = 2;
+            this.label6.Text = "Seleccionadas";
+            this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
             // CreateProductForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1268, 565);
+            this.ClientSize = new System.Drawing.Size(952, 565);
             this.Controls.Add(this.pnlCategories);
             this.Controls.Add(this.pnlCreation);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
@@ -374,6 +409,7 @@
             this.tableLayoutPanel1.PerformLayout();
             this.pnlCategories.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
+            this.tableLayoutPanel3.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.ResumeLayout(false);
@@ -404,5 +440,7 @@
         private System.Windows.Forms.Button btnRemoveCategory;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button btnBackPnl2;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label6;
     }
 }

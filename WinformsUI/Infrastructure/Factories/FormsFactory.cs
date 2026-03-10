@@ -95,7 +95,7 @@ namespace WinformsUI.Infrastructure.Factories
             return view;
         }
 
-        public ICreateSaleView SaleCreationForm(ISaleView view)
+        public ICreateSaleView SaleCreationForm()
         {
             var newCreationForm = _sp.GetRequiredService<ICreateSaleView>();
 
@@ -109,11 +109,11 @@ namespace WinformsUI.Infrastructure.Factories
         // ==============================================================
         // MÓDULO PAGOS
         // ==============================================================
-        public ICreatePaymentView PaymentCreationForm(IPaymentView view)
+        public ICreatePaymentView PaymentCreationForm()
         {
             var newCreationForm = _sp.GetRequiredService<ICreatePaymentView>();
 
-            ActivatorUtilities.CreateInstance<CreatePaymentPresenter>(_sp, view);
+            ActivatorUtilities.CreateInstance<CreatePaymentPresenter>(_sp, newCreationForm);
 
             return newCreationForm;
         }
@@ -132,7 +132,7 @@ namespace WinformsUI.Infrastructure.Factories
         // ==============================================================
         // MÓDULO PRODUCTOS
         // ==============================================================
-        public ICreateProductView ProductCreationForm(IProductView view)
+        public ICreateProductView ProductCreationForm()
         {
             var newCreationForm = _sp.GetRequiredService<ICreateProductView>();
 
@@ -164,7 +164,7 @@ namespace WinformsUI.Infrastructure.Factories
             return view;
         }
 
-        public ICreateSupplierView SupplierCreationForm(ISupplierView view)
+        public ICreateSupplierView SupplierCreationForm()
         {
             var newCreationForm = _sp.GetRequiredService<ICreateSupplierView>();
             

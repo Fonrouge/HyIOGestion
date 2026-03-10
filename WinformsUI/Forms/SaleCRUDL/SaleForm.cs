@@ -87,7 +87,7 @@ namespace WinformsUI.Forms.SaleCRUDL
         // LÓGICA ESPECÍFICA DE VENTA
         // =========================================================
 
-        public void OpenCreationForm() => ((Form)_formsFactory.SaleCreationForm(this)).Show();
+        public void OpenCreationForm() => ((Form)_formsFactory.SaleCreationForm()).Show();
 
         public void ShowOperationResult(OperationResult<SaleDTO> opRes)
         {

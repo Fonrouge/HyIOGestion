@@ -87,7 +87,7 @@ namespace WinformsUI.Forms.SupplierCRUDL
         // LÓGICA ESPECÍFICA DE PROVEEDOR
         // =========================================================
 
-        public void OpenCreationForm() => ((Form)_formsFactory.SupplierCreationForm(this)).Show(); //ASHUDFJHGASDFGHASDHJGKFAHJSKGDGHJKASDFHJKGASHGJDKFGHAJKSDFHGJKASDGKHJFAGHJKSDFHJGKASDGHJKFASHJGDKFAHGJKSDFGHJKAFASDF
+        public void OpenCreationForm() => ((Form)_formsFactory.SupplierCreationForm()).Show(); //ASHUDFJHGASDFGHASDHJGKFAHJSKGDGHJKASDFHJKGASHGJDKFGHAJKSDFHGJKASDGKHJFAGHJKSDFHJGKASDGHJKFASHJGDKFAHGJKSDFGHJKAFASDF
 
         public void ShowOperationResult(OperationResult<SupplierDTO> opRes)
         {

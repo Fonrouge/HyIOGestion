@@ -40,11 +40,6 @@ namespace WinformsUI.Forms.ProductCRUDL
             UpdateClientSize();
 
             AddTranslatables();
-
-            // Disparamos la carga inicial
-            
-
-
         }
 
         private void ConfigureListBoxes()
@@ -62,24 +57,46 @@ namespace WinformsUI.Forms.ProductCRUDL
         private void WireEvents()
         {
             // Flow del wizard
-            btnNextPnl1.Click += (_, __) =>
-            {
-                _wizard.Advance();
-                ListAllCategoriesRequested?.Invoke(this, EventArgs.Empty);
-                lbSelectCategories.DataSource = _availableCategories;
-            };
-
-            btnBackPnl2.Click += (_, __) => _wizard.Back();
-            btnFinish.Click += (_, __) => CreateProduct();
+            btnNextPnl1.Click += BtnNextPnl1_Click;
+            btnBackPnl2.Click += BtnBackPnl2_Click;
+            btnFinish.Click += BtnFinish_Click;
 
             // Categorías
-            btnAddCategory.Click += (_, __) => AddCategory();
-            btnRemoveCategory.Click += (_, __) => RemoveCategory();
+            btnAddCategory.Click += BtnAddCategory_Click;
+            btnRemoveCategory.Click += BtnRemoveCategory_Click;
 
-            lbSelectCategories.SelectedIndexChanged += (_, __) => UpdateButtonsState();
-            lbCategoriesAdded.SelectedIndexChanged += (_, __) => UpdateButtonsState();
+            lbSelectCategories.SelectedIndexChanged += LbCategories_SelectedIndexChanged;
+            lbCategoriesAdded.SelectedIndexChanged += LbCategories_SelectedIndexChanged;
         }
 
+        // ===================================================================
+        // Manejadores de Eventos (Event Handlers)
+        // ===================================================================
+        private void BtnNextPnl1_Click(object sender, EventArgs e)
+        {
+            _wizard.Advance();
+            ListAllCategoriesRequested?.Invoke(this, EventArgs.Empty);
+            lbSelectCategories.DataSource = _availableCategories;
+            UpdateClientSize();
+        }
+
+        private void BtnBackPnl2_Click(object sender, EventArgs e)
+        {
+            _wizard.Back();
+            UpdateClientSize();
+        }
+
+        private void BtnFinish_Click(object sender, EventArgs e) => CreateProduct();
+
+        private void BtnAddCategory_Click(object sender, EventArgs e) => AddCategory();
+
+        private void BtnRemoveCategory_Click(object sender, EventArgs e) => RemoveCategory();
+
+        private void LbCategories_SelectedIndexChanged(object sender, EventArgs e) => UpdateButtonsState();
+
+        // ===================================================================
+        // Lógica de UI
+        // ===================================================================
         private void UpdateButtonsState()
         {
             btnAddCategory.Enabled = lbSelectCategories.SelectedItems.Count > 0;
@@ -100,7 +117,7 @@ namespace WinformsUI.Forms.ProductCRUDL
 
             SortAvailableList();
             UpdateButtonsState();
-            lbSelectCategories.ClearSelected();   // Mejor UX
+            lbSelectCategories.ClearSelected();
         }
 
         private void RemoveCategory()
@@ -116,7 +133,7 @@ namespace WinformsUI.Forms.ProductCRUDL
 
             SortAvailableList();
             UpdateButtonsState();
-            lbCategoriesAdded.ClearSelected();    // Mejor UX
+            lbCategoriesAdded.ClearSelected();
         }
 
         private void SortAvailableList()
@@ -170,10 +187,11 @@ namespace WinformsUI.Forms.ProductCRUDL
 
         public void ShowOperationResult(OperationResult<ProductDTO> opRes)
         {
-            // ← Aquí iría tu lógica de feedback (MessageBox, label de error, cerrar form, etc.)
-            // Ejemplo rápido:
-            // if (opRes.IsSuccess) { MessageBox.Show("Producto creado correctamente"); Close(); }
-            throw new NotImplementedException();
+            if (opRes.Errors.Count > 0)
+            {
+                foreach (var error in opRes.Errors)
+                    MessageBox.Show(error.Message + " - " + error.InformativeMessage);
+            }
         }
 
         private void AddTranslatables()
@@ -184,11 +202,15 @@ namespace WinformsUI.Forms.ProductCRUDL
             _transMgr.AddFormNotify(this);
         }
 
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            _transMgr.RemoveFormNotify(this);
+            base.OnFormClosed(e);
+        }
+
         public void NotifiedByTranslationManager() => ApplyTranslation();
         public void ApplyTranslation() => _transMgr.Apply();
-
         public void ApplyGlobalPalette() => DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
-
         private void UpdateClientSize() => this.ClientSize = _wizard.GetPanelSize();
         private void InitializeWizard() => _wizard.Initialize(new Panel[] { pnlCreation, pnlCategories });
     }

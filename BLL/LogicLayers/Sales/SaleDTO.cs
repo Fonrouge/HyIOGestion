@@ -11,17 +11,19 @@ namespace BLL.LogicLayers
     {
         [Browsable(false)]
         public Guid Id { get; set; } = Guid.NewGuid();
-        public DateTime Date { get; set; } = DateTime.UtcNow;
-
+        
+        
         [Browsable(false)]
         public Guid ClientId { get; set; }
-
-        [Browsable(false)]
-        public Guid EmployeeId { get; set; }
-
-        public EmployeeDTO Employee { get; set; }
         public ClientDTO Client { get; set; }
 
+        
+        [Browsable(false)]
+        public Guid EmployeeId { get; set; } 
+        public EmployeeDTO Employee { get; set; }
+
+
+        public DateTime Date { get; set; } = DateTime.UtcNow;                
         public decimal TotalAmount { get; set; }
 
 

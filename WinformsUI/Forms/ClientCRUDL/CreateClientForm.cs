@@ -19,6 +19,7 @@ namespace WinformsUI.Forms.ClientCRUDL
 
         public event EventHandler<ClientDTO> CreateClientRequested;
 
+
         public CreateClientForm
         (
             IWizardPanelNavigator wizard,
@@ -59,8 +60,11 @@ namespace WinformsUI.Forms.ClientCRUDL
 
         public void ApplyTranslation() => _transMgr.Apply();
 
-        public void ApplyGlobalPalette() => DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
-
+        public void ApplyGlobalPalette()
+        {
+         DarkTheme.RedrawBorders = false;
+            DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
+        }
         private void UpdateFormSize()
         {
             if (_wizard.CurrentPanel.Size != null)

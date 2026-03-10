@@ -10,6 +10,7 @@ using WinformsUI.Infrastructure.Factories;
 using WinformsUI.Infrastructure.Translations;
 using WinformsUI.UserControls.CustomDGV;
 using Presenter.ForPayments;
+using Presenter.ForEmployee;
 
 namespace WinformsUI.Forms.PaymentCRUDL
 {
@@ -90,7 +91,7 @@ namespace WinformsUI.Forms.PaymentCRUDL
         // LÓGICA ESPECÍFICA DE PAGO
         // =========================================================
 
-        public void OpenCreationForm() => ((Form)_formsFactory.PaymentCreationForm(this)).ShowDialog();
+        public void OpenCreationForm() => ((Form)_formsFactory.PaymentCreationForm()).ShowDialog();
 
 
         public void ShowOperationResult(OperationResult<PaymentDTO> opRes)

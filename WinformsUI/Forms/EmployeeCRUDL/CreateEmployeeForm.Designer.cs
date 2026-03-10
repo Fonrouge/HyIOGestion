@@ -43,14 +43,14 @@
             this.pnlContact = new System.Windows.Forms.Panel();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.btnBackContact = new System.Windows.Forms.Button();
-            this.txtEmail = new System.Windows.Forms.TextBox();
-            this.txtAddress = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.txtPhone = new System.Windows.Forms.TextBox();
             this.btnFinish = new System.Windows.Forms.Button();
             this.textBox5 = new System.Windows.Forms.TextBox();
+            this.txtAddress = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.txtPhone = new System.Windows.Forms.TextBox();
+            this.txtEmail = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.txtFileNumber = new System.Windows.Forms.TextBox();
             this.pnlIdentification.SuspendLayout();
@@ -102,6 +102,7 @@
             // 
             this.btnNextId.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel1.SetColumnSpan(this.btnNextId, 2);
+            this.btnNextId.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnNextId.Location = new System.Drawing.Point(14, 453);
             this.btnNextId.Margin = new System.Windows.Forms.Padding(14, 4, 4, 4);
             this.btnNextId.Name = "btnNextId";
@@ -181,7 +182,7 @@
             // 
             this.cbTaxId.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.cbTaxId.FormattingEnabled = true;
-            this.cbTaxId.Location = new System.Drawing.Point(79, 306);
+            this.cbTaxId.Location = new System.Drawing.Point(79, 303);
             this.cbTaxId.Margin = new System.Windows.Forms.Padding(4);
             this.cbTaxId.Name = "cbTaxId";
             this.cbTaxId.Size = new System.Drawing.Size(399, 27);
@@ -252,22 +253,54 @@
             // btnBackContact
             // 
             this.btnBackContact.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnBackContact.BackColor = System.Drawing.Color.Transparent;
+            this.btnBackContact.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnBackContact.FlatAppearance.BorderSize = 0;
+            this.btnBackContact.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnBackContact.Image = global::WinformsUI.Properties.Resources.BackArrow;
             this.btnBackContact.Location = new System.Drawing.Point(4, 30);
             this.btnBackContact.Margin = new System.Windows.Forms.Padding(4);
             this.btnBackContact.Name = "btnBackContact";
             this.btnBackContact.Size = new System.Drawing.Size(73, 79);
             this.btnBackContact.TabIndex = 6;
-            this.btnBackContact.Text = "button3";
-            this.btnBackContact.UseVisualStyleBackColor = true;
+            this.btnBackContact.Tag = "IsImageColorable";
+            this.btnBackContact.UseVisualStyleBackColor = false;
             // 
-            // txtEmail
+            // label11
             // 
-            this.txtEmail.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtEmail.Location = new System.Drawing.Point(85, 233);
-            this.txtEmail.Margin = new System.Windows.Forms.Padding(4);
-            this.txtEmail.Name = "txtEmail";
-            this.txtEmail.Size = new System.Drawing.Size(393, 24);
-            this.txtEmail.TabIndex = 0;
+            this.label11.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.label11.AutoSize = true;
+            this.label11.Font = new System.Drawing.Font("Microsoft YaHei", 27.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label11.Location = new System.Drawing.Point(85, 46);
+            this.label11.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(393, 48);
+            this.label11.TabIndex = 4;
+            this.label11.Text = "Contacto";
+            this.label11.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // btnFinish
+            // 
+            this.btnFinish.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel4.SetColumnSpan(this.btnFinish, 2);
+            this.btnFinish.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnFinish.Location = new System.Drawing.Point(14, 453);
+            this.btnFinish.Margin = new System.Windows.Forms.Padding(14, 4, 4, 4);
+            this.btnFinish.Name = "btnFinish";
+            this.btnFinish.Size = new System.Drawing.Size(464, 73);
+            this.btnFinish.TabIndex = 5;
+            this.btnFinish.Tag = "Accentuable";
+            this.btnFinish.Text = "Finalizar";
+            this.btnFinish.UseVisualStyleBackColor = true;
+            // 
+            // textBox5
+            // 
+            this.textBox5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBox5.Location = new System.Drawing.Point(85, 374);
+            this.textBox5.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox5.Name = "textBox5";
+            this.textBox5.Size = new System.Drawing.Size(393, 24);
+            this.textBox5.TabIndex = 0;
             // 
             // txtAddress
             // 
@@ -293,18 +326,23 @@
             this.label4.Text = "Teléfono";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // label11
+            // txtPhone
             // 
-            this.label11.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.label11.AutoSize = true;
-            this.label11.Font = new System.Drawing.Font("Microsoft YaHei", 27.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label11.Location = new System.Drawing.Point(85, 46);
-            this.label11.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(393, 48);
-            this.label11.TabIndex = 4;
-            this.label11.Text = "Contacto";
-            this.label11.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.txtPhone.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtPhone.Location = new System.Drawing.Point(85, 305);
+            this.txtPhone.Margin = new System.Windows.Forms.Padding(4);
+            this.txtPhone.Name = "txtPhone";
+            this.txtPhone.Size = new System.Drawing.Size(393, 24);
+            this.txtPhone.TabIndex = 0;
+            // 
+            // txtEmail
+            // 
+            this.txtEmail.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtEmail.Location = new System.Drawing.Point(85, 233);
+            this.txtEmail.Margin = new System.Windows.Forms.Padding(4);
+            this.txtEmail.Name = "txtEmail";
+            this.txtEmail.Size = new System.Drawing.Size(393, 24);
+            this.txtEmail.TabIndex = 0;
             // 
             // label5
             // 
@@ -317,37 +355,6 @@
             this.label5.TabIndex = 2;
             this.label5.Text = "Email";
             this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // txtPhone
-            // 
-            this.txtPhone.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtPhone.Location = new System.Drawing.Point(85, 305);
-            this.txtPhone.Margin = new System.Windows.Forms.Padding(4);
-            this.txtPhone.Name = "txtPhone";
-            this.txtPhone.Size = new System.Drawing.Size(393, 24);
-            this.txtPhone.TabIndex = 0;
-            // 
-            // btnFinish
-            // 
-            this.btnFinish.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.tableLayoutPanel4.SetColumnSpan(this.btnFinish, 2);
-            this.btnFinish.Location = new System.Drawing.Point(14, 453);
-            this.btnFinish.Margin = new System.Windows.Forms.Padding(14, 4, 4, 4);
-            this.btnFinish.Name = "btnFinish";
-            this.btnFinish.Size = new System.Drawing.Size(464, 73);
-            this.btnFinish.TabIndex = 5;
-            this.btnFinish.Tag = "Accentuable";
-            this.btnFinish.Text = "Finalizar";
-            this.btnFinish.UseVisualStyleBackColor = true;
-            // 
-            // textBox5
-            // 
-            this.textBox5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox5.Location = new System.Drawing.Point(85, 374);
-            this.textBox5.Margin = new System.Windows.Forms.Padding(4);
-            this.textBox5.Name = "textBox5";
-            this.textBox5.Size = new System.Drawing.Size(393, 24);
-            this.textBox5.TabIndex = 0;
             // 
             // label3
             // 
@@ -374,13 +381,14 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 19F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1799, 908);
+            this.ClientSize = new System.Drawing.Size(1039, 576);
             this.Controls.Add(this.pnlContact);
             this.Controls.Add(this.pnlIdentification);
             this.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "CreateEmployeeForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "CreateClientForm";
             this.pnlIdentification.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);

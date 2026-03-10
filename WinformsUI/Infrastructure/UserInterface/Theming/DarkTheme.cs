@@ -301,6 +301,21 @@ namespace Winforms.Theme
                     if (b.Tag is "IsImageColorable")
                     {
                         MaybeRecolorControlImages(c, p, 1.6f, 0.10f);
+
+                        b.FlatStyle = FlatStyle.Flat;
+                        //b.FlatAppearance.BorderColor = p.Border;
+                        b.FlatAppearance.BorderSize = 0;
+                        b.BackColor = Color.Transparent;
+                        b.ForeColor = p.TextSecondary;
+
+
+                        Color hoverColor = p.HighAccent;
+                        Color pressColor = Color.Transparent;
+
+                        b.FlatAppearance.MouseOverBackColor = hoverColor;
+                        b.FlatAppearance.MouseDownBackColor = pressColor;
+
+                        continue;
                     }
 
                     if (b.Tag is "HighAccented")

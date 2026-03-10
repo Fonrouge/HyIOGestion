@@ -15,21 +15,100 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.pnlSelectClient = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.btnNextPnl1 = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
+            this.selectClientDGV = new System.Windows.Forms.DataGridView();
+            this.tbSearchBar = new System.Windows.Forms.TextBox();
             this.tlpAddPayment = new System.Windows.Forms.TableLayoutPanel();
             this.btnFinish = new System.Windows.Forms.Button();
-            this.label7 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.txtAmount = new System.Windows.Forms.TextBox();
             this.txtEffectiveDate = new System.Windows.Forms.TextBox();
-            this.txtClient = new System.Windows.Forms.ComboBox();
             this.label8 = new System.Windows.Forms.Label();
             this.txtMethod = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.txtReference = new System.Windows.Forms.TextBox();
+            this.btnBackContact = new System.Windows.Forms.Button();
             this.label9 = new System.Windows.Forms.Label();
+            this.pnlSelectClient.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.selectClientDGV)).BeginInit();
             this.tlpAddPayment.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // pnlSelectClient
+            // 
+            this.pnlSelectClient.Controls.Add(this.tableLayoutPanel1);
+            this.pnlSelectClient.Location = new System.Drawing.Point(0, 0);
+            this.pnlSelectClient.Name = "pnlSelectClient";
+            this.pnlSelectClient.Size = new System.Drawing.Size(977, 589);
+            this.pnlSelectClient.TabIndex = 7;
+            // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.ColumnCount = 1;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.Controls.Add(this.btnNextPnl1, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.label4, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.selectClientDGV, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.tbSearchBar, 0, 1);
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 4;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25.35971F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 74.64029F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 89F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(977, 589);
+            this.tableLayoutPanel1.TabIndex = 0;
+            // 
+            // btnNextPnl1
+            // 
+            this.btnNextPnl1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnNextPnl1.Location = new System.Drawing.Point(19, 509);
+            this.btnNextPnl1.Margin = new System.Windows.Forms.Padding(19, 6, 19, 6);
+            this.btnNextPnl1.Name = "btnNextPnl1";
+            this.btnNextPnl1.Size = new System.Drawing.Size(939, 69);
+            this.btnNextPnl1.TabIndex = 5;
+            this.btnNextPnl1.Tag = "Accentuable";
+            this.btnNextPnl1.Text = "Finalizar";
+            this.btnNextPnl1.UseVisualStyleBackColor = true;
+            // 
+            // label4
+            // 
+            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Microsoft YaHei", 27.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.Location = new System.Drawing.Point(18, 34);
+            this.label4.Margin = new System.Windows.Forms.Padding(18, 0, 5, 0);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(954, 48);
+            this.label4.TabIndex = 5;
+            this.label4.Text = "Seleccionar cliente";
+            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // selectClientDGV
+            // 
+            this.selectClientDGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.selectClientDGV.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.selectClientDGV.Location = new System.Drawing.Point(19, 159);
+            this.selectClientDGV.Margin = new System.Windows.Forms.Padding(19, 3, 19, 3);
+            this.selectClientDGV.Name = "selectClientDGV";
+            this.selectClientDGV.Size = new System.Drawing.Size(939, 337);
+            this.selectClientDGV.TabIndex = 6;
+            // 
+            // tbSearchBar
+            // 
+            this.tbSearchBar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbSearchBar.Location = new System.Drawing.Point(19, 124);
+            this.tbSearchBar.Margin = new System.Windows.Forms.Padding(19, 3, 19, 3);
+            this.tbSearchBar.Name = "tbSearchBar";
+            this.tbSearchBar.Size = new System.Drawing.Size(939, 24);
+            this.tbSearchBar.TabIndex = 7;
             // 
             // tlpAddPayment
             // 
@@ -37,18 +116,17 @@
             this.tlpAddPayment.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15.76433F));
             this.tlpAddPayment.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 84.23567F));
             this.tlpAddPayment.Controls.Add(this.btnFinish, 0, 6);
-            this.tlpAddPayment.Controls.Add(this.label7, 0, 3);
             this.tlpAddPayment.Controls.Add(this.label1, 0, 1);
             this.tlpAddPayment.Controls.Add(this.label2, 0, 2);
             this.tlpAddPayment.Controls.Add(this.txtAmount, 1, 1);
             this.tlpAddPayment.Controls.Add(this.txtEffectiveDate, 1, 2);
-            this.tlpAddPayment.Controls.Add(this.txtClient, 1, 3);
             this.tlpAddPayment.Controls.Add(this.label8, 0, 4);
             this.tlpAddPayment.Controls.Add(this.txtMethod, 1, 4);
             this.tlpAddPayment.Controls.Add(this.label3, 0, 5);
             this.tlpAddPayment.Controls.Add(this.txtReference, 1, 5);
-            this.tlpAddPayment.Controls.Add(this.label9, 0, 0);
-            this.tlpAddPayment.Location = new System.Drawing.Point(0, 0);
+            this.tlpAddPayment.Controls.Add(this.btnBackContact, 0, 0);
+            this.tlpAddPayment.Controls.Add(this.label9, 1, 0);
+            this.tlpAddPayment.Location = new System.Drawing.Point(1067, 0);
             this.tlpAddPayment.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.tlpAddPayment.Name = "tlpAddPayment";
             this.tlpAddPayment.Padding = new System.Windows.Forms.Padding(0, 7, 13, 7);
@@ -61,7 +139,7 @@
             this.tlpAddPayment.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 51F));
             this.tlpAddPayment.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 120F));
             this.tlpAddPayment.Size = new System.Drawing.Size(592, 589);
-            this.tlpAddPayment.TabIndex = 6;
+            this.tlpAddPayment.TabIndex = 8;
             // 
             // btnFinish
             // 
@@ -75,18 +153,6 @@
             this.btnFinish.Tag = "Accentuable";
             this.btnFinish.Text = "Finalizar";
             this.btnFinish.UseVisualStyleBackColor = true;
-            // 
-            // label7
-            // 
-            this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(5, 298);
-            this.label7.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(81, 19);
-            this.label7.TabIndex = 2;
-            this.label7.Text = "Cliente";
-            this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // label1
             // 
@@ -130,16 +196,6 @@
             this.txtEffectiveDate.Size = new System.Drawing.Size(478, 24);
             this.txtEffectiveDate.TabIndex = 0;
             // 
-            // txtClient
-            // 
-            this.txtClient.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtClient.FormattingEnabled = true;
-            this.txtClient.Location = new System.Drawing.Point(96, 297);
-            this.txtClient.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
-            this.txtClient.Name = "txtClient";
-            this.txtClient.Size = new System.Drawing.Size(478, 27);
-            this.txtClient.TabIndex = 1;
-            // 
             // label8
             // 
             this.label8.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
@@ -182,16 +238,31 @@
             this.txtReference.Size = new System.Drawing.Size(478, 24);
             this.txtReference.TabIndex = 0;
             // 
+            // btnBackContact
+            // 
+            this.btnBackContact.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnBackContact.BackColor = System.Drawing.Color.Transparent;
+            this.btnBackContact.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnBackContact.FlatAppearance.BorderSize = 0;
+            this.btnBackContact.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnBackContact.Image = global::WinformsUI.Properties.Resources.BackArrow;
+            this.btnBackContact.Location = new System.Drawing.Point(4, 34);
+            this.btnBackContact.Margin = new System.Windows.Forms.Padding(4);
+            this.btnBackContact.Name = "btnBackContact";
+            this.btnBackContact.Size = new System.Drawing.Size(83, 79);
+            this.btnBackContact.TabIndex = 7;
+            this.btnBackContact.Tag = "IsImageColorable";
+            this.btnBackContact.UseVisualStyleBackColor = false;
+            // 
             // label9
             // 
             this.label9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.label9.AutoSize = true;
-            this.tlpAddPayment.SetColumnSpan(this.label9, 2);
             this.label9.Font = new System.Drawing.Font("Microsoft YaHei", 27.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label9.Location = new System.Drawing.Point(18, 50);
+            this.label9.Location = new System.Drawing.Point(109, 50);
             this.label9.Margin = new System.Windows.Forms.Padding(18, 0, 5, 0);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(556, 48);
+            this.label9.Size = new System.Drawing.Size(465, 48);
             this.label9.TabIndex = 4;
             this.label9.Text = "Ingresar pago";
             this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -200,13 +271,20 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 19F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(733, 682);
+            this.ClientSize = new System.Drawing.Size(1699, 714);
             this.Controls.Add(this.tlpAddPayment);
+            this.Controls.Add(this.pnlSelectClient);
+            this.DoubleBuffered = true;
             this.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "CreatePaymentForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "CreatePaymentForm";
+            this.pnlSelectClient.ResumeLayout(false);
+            this.tableLayoutPanel1.ResumeLayout(false);
+            this.tableLayoutPanel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.selectClientDGV)).EndInit();
             this.tlpAddPayment.ResumeLayout(false);
             this.tlpAddPayment.PerformLayout();
             this.ResumeLayout(false);
@@ -214,19 +292,23 @@
         }
 
         #endregion
-
+        private System.Windows.Forms.Panel pnlSelectClient;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.Button btnNextPnl1;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.DataGridView selectClientDGV;
+        private System.Windows.Forms.TextBox tbSearchBar;
         private System.Windows.Forms.TableLayoutPanel tlpAddPayment;
         private System.Windows.Forms.Button btnFinish;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox txtAmount;
         private System.Windows.Forms.TextBox txtEffectiveDate;
-        private System.Windows.Forms.ComboBox txtClient;
-        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox txtMethod;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox txtReference;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Button btnBackContact;
     }
 }

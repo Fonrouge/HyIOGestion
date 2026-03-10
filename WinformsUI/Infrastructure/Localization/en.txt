@@ -101,6 +101,11 @@ Categories=Categories
 IsActive=Is Active
 CreatedAt=Created At
 Categoriesname=Categories
+=============ProductForm=============
+Seleccionar=Choose
+Seleccionadas=Choosen
+Siguiente=Next
+Finalizar=Finish
 
 
 =============SaleDTO=============

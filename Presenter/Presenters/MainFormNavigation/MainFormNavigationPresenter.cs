@@ -22,18 +22,19 @@ namespace Presenter.MainFormNavigation
         private bool _disposed = false;
 
         public MainFormNavigationPresenter
-              (
-                  IMainFormNavigation view,
-                  ISessionProvider sessionProvider,
-                  ISessionManager sessionManager,
-                  IMessenger messenger
-              )
+        (
+            IMainFormNavigation view,
+            ISessionProvider sessionProvider,
+            ISessionManager sessionManager,
+            IMessenger messenger
+        )
         {
             _view = view ?? throw new ArgumentNullException(nameof(view));
             _sessionProvider = sessionProvider ?? throw new ArgumentNullException(nameof(sessionProvider));
             _sessionManager = sessionManager ?? throw new ArgumentNullException(nameof(sessionManager));
             _messenger = messenger ?? throw new ArgumentNullException(nameof(messenger));
             _hostPresenters = new List<HostFormActionsPresenter>();
+            
             WireViewEvents();
             _view.Showed += (sender, e) => MainMenuFirstTimeShow();
 
@@ -43,10 +44,9 @@ namespace Presenter.MainFormNavigation
         // Nuevo: Handler para remover de la lista al cerrar un HostForm
         private void OnHostFormClosed(HostFormClosedMessage message)
         {
-             Debugger.Break();  // Comenta o quita una vez debuggeado
-            System.Diagnostics.Trace.WriteLine($"Handler llamado con ID: {message.Payload}");  // Nuevo: Log para Output Window
-            var closedFormId = message.Payload;  // Ahora Guid
-            var toRemove = _hostPresenters.FirstOrDefault(p => p.FormId == closedFormId);  // Cambia a FormId
+            var closedFormId = message.Payload;
+            var toRemove = _hostPresenters.FirstOrDefault(p => p.FormId == closedFormId);
+
             if (toRemove != null)
             {
                 _hostPresenters.Remove(toRemove);
@@ -137,28 +137,36 @@ namespace Presenter.MainFormNavigation
         private void CreatingHostForm(object sender, IHostFormActions internalWindow)
         {
             HostFormActionsPresenter hfaPresenter = new HostFormActionsPresenter(internalWindow); // Una vez creada la lógica de ventanas internas, crear Factory para pasarle el IHostFormActions y obtener el Presenter correspondiente.
+
             _hostPresenters.Insert(0, hfaPresenter);
             ReorganizeLayout();
             // Nota: Las lambdas aquí están bien si HostFormActionsPresenter destruye sus
             // propios eventos internamente, o si mueren junto con la app.
             hfaPresenter.OnMinimizingWindow += (s, e) => ReorganizeLayout();
+
             hfaPresenter.OnRestoringFromMinimized += (s, e) =>
             {
-                if (_hostPresenters.Contains(hfaPresenter))
+                if (_hostPresenters.Contains(hfaPresenter)) //Tener clara la disquisición entre Tabbed y Dashboard para que efectivamente se pueda switchear ed ventana en modo Dashboard, pero no se pierda el correcto index en Tabbed (y se minimicen las ventanas que se tienen que minimizar cuando se expande la ventana que debe tener index 0)
                 {
-                    _hostPresenters.Remove(hfaPresenter);
-                    _hostPresenters.Insert(0, hfaPresenter);
+                    if (_view.WindowManageMode == WindowManagementMode.Tabbed)
+                    {
+                        _hostPresenters.Remove(hfaPresenter);
+                        _hostPresenters.Insert(0, hfaPresenter);
+                    }
                 }
                 else
                 {
                     _hostPresenters.Insert(0, hfaPresenter);
                 }
+
                 ReorganizeLayout();
             };
+
             hfaPresenter.OnExpandingWindow += (s, e) =>
             {
                 if (_view.WindowManageMode == WindowManagementMode.Tabbed)
                     return;
+
                 MinimizeAllActiveWindows();
             };
         }
@@ -180,14 +188,17 @@ namespace Presenter.MainFormNavigation
         private void ReorganizeLayout()
         {
             var activeWindows = _view.GetActiveInternalWindows();
+
             if (_view.WindowManageMode == WindowManagementMode.Tabbed)
             {
                 if (activeWindows.ToList().Count < 1 || _hostPresenters.Count == 0) return;
                 var excepted = _hostPresenters[0];
+
                 MinimizeAllActiveWindows();
                 excepted.ExpandWindow();
                 excepted.SetMaximizeStatus(true);
             }
+
             if (_view.WindowManageMode == WindowManagementMode.Dashboard)
             {
                 foreach (var window in _hostPresenters)
@@ -238,6 +249,7 @@ namespace Presenter.MainFormNavigation
                                 disposablePresenter.Dispose();
                             }
                         }
+
                         _hostPresenters.Clear();
                     }
                 }

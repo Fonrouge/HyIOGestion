@@ -19,17 +19,6 @@ namespace Presenter.HostFormActions
         public Guid FormId { get; }  // Nuevo: Reemplaza FormTitle, usa GUID
         public EventHandler OnClosingHostForm { get; set; }
 
-        public string FormTitle
-        {
-            get
-            {
-                return _view.GetTitle();
-            }
-        }
-
-
-
-
         public HostFormActionsPresenter(IHostFormActions view)
         {
             _view = view ?? throw new ArgumentNullException(nameof(view));

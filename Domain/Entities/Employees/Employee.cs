@@ -7,10 +7,11 @@ namespace Domain.Entities
     public class Employee : EntityBase, ISoftDeletable
     {
         // --- PROPIEDADES DE DOMINIO (Rich Domain Model) ---
-        public FileNumberVO FileNumber { get; private set; }
         public FirstNameVO FirstName { get; private set; }
         public LastNameVO LastName { get; private set; }
         public NationalIdVO NationalId { get; private set; }
+        
+        public FileNumberVO FileNumber { get; private set; }
         public EmployeeEmailVO Email { get; private set; }
         public EmployeePhoneNumberVO PhoneNumber { get; private set; }
         public HomeAddressVO HomeAddress { get; private set; }

@@ -254,13 +254,18 @@
             // btnBackShipAddress
             // 
             this.btnBackShipAddress.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnBackShipAddress.BackColor = System.Drawing.Color.Transparent;
+            this.btnBackShipAddress.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnBackShipAddress.FlatAppearance.BorderSize = 0;
+            this.btnBackShipAddress.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnBackShipAddress.Image = global::WinformsUI.Properties.Resources.BackArrow;
             this.btnBackShipAddress.Location = new System.Drawing.Point(4, 30);
             this.btnBackShipAddress.Margin = new System.Windows.Forms.Padding(4);
             this.btnBackShipAddress.Name = "btnBackShipAddress";
             this.btnBackShipAddress.Size = new System.Drawing.Size(67, 79);
-            this.btnBackShipAddress.TabIndex = 6;
-            this.btnBackShipAddress.Text = "button3";
-            this.btnBackShipAddress.UseVisualStyleBackColor = true;
+            this.btnBackShipAddress.TabIndex = 7;
+            this.btnBackShipAddress.Tag = "IsImageColorable";
+            this.btnBackShipAddress.UseVisualStyleBackColor = false;
             // 
             // btnNextShip
             // 
@@ -415,13 +420,18 @@
             // btnBackContact
             // 
             this.btnBackContact.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnBackContact.BackColor = System.Drawing.Color.Transparent;
+            this.btnBackContact.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnBackContact.FlatAppearance.BorderSize = 0;
+            this.btnBackContact.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnBackContact.Image = global::WinformsUI.Properties.Resources.BackArrow;
             this.btnBackContact.Location = new System.Drawing.Point(4, 30);
             this.btnBackContact.Margin = new System.Windows.Forms.Padding(4);
             this.btnBackContact.Name = "btnBackContact";
             this.btnBackContact.Size = new System.Drawing.Size(73, 79);
-            this.btnBackContact.TabIndex = 6;
-            this.btnBackContact.Text = "button3";
-            this.btnBackContact.UseVisualStyleBackColor = true;
+            this.btnBackContact.TabIndex = 8;
+            this.btnBackContact.Tag = "IsImageColorable";
+            this.btnBackContact.UseVisualStyleBackColor = false;
             // 
             // txtEmail
             // 
@@ -558,7 +568,6 @@
         private System.Windows.Forms.Button btnNextId;
         private System.Windows.Forms.Panel pnlShipAddress;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
-        private System.Windows.Forms.Button btnBackShipAddress;
         private System.Windows.Forms.Button btnNextShip;
         private System.Windows.Forms.TextBox cbZipCode;
         private System.Windows.Forms.Label label13;
@@ -570,7 +579,6 @@
         private System.Windows.Forms.ComboBox cbCountrySelector;
         private System.Windows.Forms.Panel pnlContact;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
-        private System.Windows.Forms.Button btnBackContact;
         private System.Windows.Forms.Button btnFinish;
         private System.Windows.Forms.Label label21;
         private System.Windows.Forms.Label label4;
@@ -581,5 +589,7 @@
         private System.Windows.Forms.TextBox txtObservations;
         private System.Windows.Forms.TextBox txtDocNumber;
         private System.Windows.Forms.TextBox txtShupAddreess;
+        private System.Windows.Forms.Button btnBackShipAddress;
+        private System.Windows.Forms.Button btnBackContact;
     }
 }

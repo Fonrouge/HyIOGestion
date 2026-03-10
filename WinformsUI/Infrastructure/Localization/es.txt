@@ -138,6 +138,11 @@ Categories=Categories
 IsActive=IsActive
 CreatedAt=CreatedAt
 CategoriesName=CategoriesName
+=============ProductForm=============
+Seleccionar=Seleccionar
+Seleccionadas=Seleccionadas
+Siguiente=Siguiente
+Finalizar=Finalizar
 
 
 =============SaleDTO=============

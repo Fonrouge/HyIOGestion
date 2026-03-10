@@ -49,7 +49,11 @@ namespace WinformsUI.Forms.SaleCRUDL
 
         public void ShowOperationResult(OperationResult<SaleDTO> opRes)
         {
-            throw new NotImplementedException();
+            if (opRes.Errors.Count > 0)
+            {
+                foreach (var error in opRes.Errors)
+                    MessageBox.Show(error.Message + " - " + error.InformativeMessage);
+            }
         }
     }
 }

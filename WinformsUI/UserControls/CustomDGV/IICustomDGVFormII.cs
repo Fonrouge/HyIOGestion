@@ -56,7 +56,7 @@ namespace WinformsUI.UserControls.CustomDGV
             _searchBehavior = new SearchBehavior<T>
             (
                 dgv: mainDGV,
-                searchPresenter: _listTools,
+                listFilterSort: _listTools,
                 appSettings: _appSettings,
                 transMgr: _transMgr
             );

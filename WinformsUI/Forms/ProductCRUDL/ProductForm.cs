@@ -105,7 +105,7 @@ namespace WinformsUI.Forms.ProductCRUDL
         // LÓGICA ESPECÍFICA DE EMPLEADO
         // =========================================================
 
-        public void OpenCreationForm() => ((Form)_formsFactory.ProductCreationForm(this)).Show();
+        public void OpenCreationForm() => ((Form)_formsFactory.ProductCreationForm()).Show();
 
         public new void ApplyGlobalPalette()
         {

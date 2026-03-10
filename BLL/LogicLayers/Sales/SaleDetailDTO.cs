@@ -12,13 +12,12 @@ namespace BLL.LogicLayers
         [Browsable(false)]
         public Guid SaleId { get; set; }
 
+
         public Guid ProductId { get; set; }
-
         public decimal Quantity { get; set; }
-
         public decimal UnitPrice { get; set; }
-
         public decimal Subtotal { get; set; }
+
 
         public override string ToString()
         {

@@ -4,32 +4,65 @@ using BLL.DTOs;
 using SharedAbstractions.ArchitecturalMarkers;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Presenter.ForPayments;
+using BLL.LogicLayers.Clients;
+using System.Linq;
+using BLL.Infrastructure.Errors;
 
 namespace Presenter.ForEmployee
 {
-    public class CreatePaymentPresenter: IPresenter
+    public class CreatePaymentPresenter : IPresenter
     {
-        private readonly IPaymentView _view;
+        private readonly ICreatePaymentView _view;
         private readonly IUCCreatePayment _useCaseCreate;
-               
+        private readonly IUCGetAllClients _uCGetAllClients;
+
         public CreatePaymentPresenter
         (
-            IPaymentView view,
-            IUCCreatePayment useCaseCreate
+            ICreatePaymentView view,
+            IUCCreatePayment useCaseCreate,
+            IUCGetAllClients uCGetAllClients
         )
         {
             _view = view;
             _useCaseCreate = useCaseCreate;
+            _uCGetAllClients = uCGetAllClients;
 
             WireViewEvents();
         }
 
         private void WireViewEvents()
         {
-   //         _view.CreatePaymentRequested += (sender, e) => OnCreateRequested(e);
+            _view.CreatePaymentRequested += (sender, e) => OnCreateRequested(e);
+            _view.GetAllClientsRequested += (sender, e) => OnListAllClientsRequested();
         }
 
+        private async Task OnListAllClientsRequested()
+        {
+            OperationResult<ClientDTO> opResult;
+
+            try
+            {
+                var result = await _uCGetAllClients.ExecuteAsync();
+
+                List<ClientDTO> allClients = result.Item1.ToList();
+                opResult = result.Item2;
+
+                _view.CatchingClientList(allClients);
+            }
+
+            catch //La información de errores proviene de capas superiores
+            {
+                opResult = new OperationResult<ClientDTO>();
+
+                if (opResult.Errors.Count == 0)
+                {
+                    var newError = new ErrorLogDTO() { Message = "Error desconocido. Por favor intente nuevamente o reinicie el programa" };
+                    opResult.Errors.Add(newError);
+                    
+                    _view.ShowOperationResult(opResult);
+                }
+            }
+        }
 
         private async Task OnCreateRequested(PaymentDTO data)
         {

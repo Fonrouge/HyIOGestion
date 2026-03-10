@@ -1,5 +1,4 @@
-﻿using Domain.Entities;
-using SharedAbstractions.ArchitecturalMarkers;
+﻿using SharedAbstractions.ArchitecturalMarkers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

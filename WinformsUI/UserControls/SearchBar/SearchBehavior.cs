@@ -70,14 +70,14 @@ namespace WinformsUI.UserControls.SearchBar
         public SearchBehavior
         (
             DataGridView dgv,
-            IListFilterSortProvider searchPresenter,
+            IListFilterSortProvider listFilterSort,
             IApplicationSettings appSettings,
             ITranslatableControlsManager transMgr = null,
             int debounceMs = 400
         )
         {
             _dgv = dgv ?? throw new ArgumentNullException(nameof(dgv));
-            _searchPresenter = searchPresenter ?? throw new ArgumentNullException(nameof(searchPresenter));
+            _searchPresenter = listFilterSort ?? throw new ArgumentNullException(nameof(listFilterSort));
             _transMgr = transMgr;
             _appSettings = appSettings;
 
