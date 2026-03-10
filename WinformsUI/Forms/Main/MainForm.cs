@@ -333,8 +333,11 @@ namespace WinformsUI.Forms.Main
         public void SetTitle(string title) => this.Text = title;
 
         /// <inheritdoc/>
-        public void CloseApp() => Application.Exit(); //Lack of verifications for open/working modules (for future iterations)
-
+        public void CloseApp()
+        {
+            this.Close();
+            Application.Exit(); //Lack of verifications for open/working modules (for future iterations)
+        }
         /// <inheritdoc/>
         public void MinimizeWindow() =>
             this.WindowState = FormWindowState.Minimized;
@@ -457,11 +460,11 @@ namespace WinformsUI.Forms.Main
             TView view = viewProvider();
             if (!(view is Form content))
                 throw new InvalidOperationException($"La vista {typeof(TView).Name} no hereda de Form");
-            
+
             string currentTitle = _transMgr.GetString(translationKey) ?? translationKey;
-            
+
             System.Diagnostics.Trace.WriteLine($"Creando form con título: {currentTitle}");  // Log para debug
-            
+
             IAppEnvironment environment = _appEnvFactory.CreateCustom
             (
                 DashBoard: DashboardPnl,
@@ -475,8 +478,8 @@ namespace WinformsUI.Forms.Main
                 Title: currentTitle,
                 Environment: environment
             );
-            hostFrm.SetTitle(currentTitle);  
-                                             
+            hostFrm.SetTitle(currentTitle);
+
             _formTranslationKeys.Add(hostFrm, translationKey);
             InternalWindowCreated?.Invoke(this, hostFrm);
             hostFrm.SetContent(content);

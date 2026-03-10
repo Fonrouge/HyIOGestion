@@ -62,5 +62,7 @@ namespace WinformsUI.Infrastructure.Translations
         void Apply();
 
         void UnsubscribeTarget(ISynchronizeInvoke target, string specificId = null);
+        
+        
     }
 }

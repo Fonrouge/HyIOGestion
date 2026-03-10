@@ -110,7 +110,7 @@ namespace Presenter.ForProducts
             {
                 _view.CreateProductRequested -= HandleCreateProductRequested;
                 _view.ListAllCategoriesRequested -= HandleListAllCategoriesRequested;
-                _view.CloseRequested -= HandleCloseRequested;
+                _view.CloseRequested -= HandleCloseRequested;                
             }
         }
     }

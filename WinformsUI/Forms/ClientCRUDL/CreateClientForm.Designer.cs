@@ -7,8 +7,6 @@
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-
-
         #region Windows Form Designer generated code
 
         /// <summary>
@@ -41,7 +39,7 @@
             this.label17 = new System.Windows.Forms.Label();
             this.label18 = new System.Windows.Forms.Label();
             this.cbCountrySelector = new System.Windows.Forms.ComboBox();
-            this.txtShupAddreess = new System.Windows.Forms.TextBox();
+            this.txtShipAddreess = new System.Windows.Forms.TextBox();
             this.pnlContact = new System.Windows.Forms.Panel();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.btnBackContact = new System.Windows.Forms.Button();
@@ -235,7 +233,7 @@
             this.tableLayoutPanel3.Controls.Add(this.label17, 0, 3);
             this.tableLayoutPanel3.Controls.Add(this.label18, 0, 4);
             this.tableLayoutPanel3.Controls.Add(this.cbCountrySelector, 1, 1);
-            this.tableLayoutPanel3.Controls.Add(this.txtShupAddreess, 1, 3);
+            this.tableLayoutPanel3.Controls.Add(this.txtShipAddreess, 1, 3);
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel3.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel3.Margin = new System.Windows.Forms.Padding(4);
@@ -370,14 +368,14 @@
             this.cbCountrySelector.Size = new System.Drawing.Size(399, 27);
             this.cbCountrySelector.TabIndex = 1;
             // 
-            // txtShupAddreess
+            // txtShipAddreess
             // 
-            this.txtShupAddreess.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtShupAddreess.Location = new System.Drawing.Point(79, 305);
-            this.txtShupAddreess.Margin = new System.Windows.Forms.Padding(4);
-            this.txtShupAddreess.Name = "txtShupAddreess";
-            this.txtShupAddreess.Size = new System.Drawing.Size(399, 24);
-            this.txtShupAddreess.TabIndex = 0;
+            this.txtShipAddreess.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtShipAddreess.Location = new System.Drawing.Point(79, 305);
+            this.txtShipAddreess.Margin = new System.Windows.Forms.Padding(4);
+            this.txtShipAddreess.Name = "txtShipAddreess";
+            this.txtShipAddreess.Size = new System.Drawing.Size(399, 24);
+            this.txtShipAddreess.TabIndex = 0;
             // 
             // pnlContact
             // 
@@ -588,7 +586,7 @@
         private System.Windows.Forms.TextBox txtPhone;
         private System.Windows.Forms.TextBox txtObservations;
         private System.Windows.Forms.TextBox txtDocNumber;
-        private System.Windows.Forms.TextBox txtShupAddreess;
+        private System.Windows.Forms.TextBox txtShipAddreess;
         private System.Windows.Forms.Button btnBackShipAddress;
         private System.Windows.Forms.Button btnBackContact;
     }

@@ -542,7 +542,7 @@ namespace WinformsUI.Infrastructure.Translations
             public int GetHashCode(ObjectPropertyKey obj) =>
                 (RuntimeHelpers.GetHashCode(obj.Target) * 397) ^ (obj.PropertyName?.GetHashCode() ?? 0);
         }
-
+      
         // Método para desuscribir un objeto específico de TODOS los strings que esté escuchando,
         // o de uno específico si pasas el id.
         public void UnsubscribeTarget(ISynchronizeInvoke target, string specificId = null)
@@ -566,6 +566,7 @@ namespace WinformsUI.Infrastructure.Translations
             // Si no pasamos ID (limpieza general al cerrar form), barremos todo
             // Esto es menos performante (O(N)) pero seguro para el FormClosed
             var keys = _stringBindings.Keys.ToList();
+
             foreach (var key in keys)
             {
                 var list = _stringBindings[key];

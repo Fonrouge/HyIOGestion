@@ -45,8 +45,9 @@ namespace WinformsUI.Forms.Base
             _messenger = messenger;
 
             InitializeComponent();
-        }
 
+
+        }
 
         public void SetTitle(string Title)
         {
@@ -224,6 +225,7 @@ namespace WinformsUI.Forms.Base
                 {
                     _upperMenuPanel.Controls.Remove(_minimizedWindowBtn);
                 }
+
                 _minimizedWindowBtn.Dispose();
             }
             if (_parentContainer != null)
@@ -235,6 +237,8 @@ namespace WinformsUI.Forms.Base
             _messenger.Send(closedMessage);
             if (e != null)
                 base.OnFormClosing(e);
+
+            base.Dispose();
         }
         #endregion
 
@@ -604,7 +608,7 @@ namespace WinformsUI.Forms.Base
         }
 
         #endregion
- 
+
         #region === WndProc (Redimensionado desde bordes) ===
 
         protected override void WndProc(ref System.Windows.Forms.Message m)
@@ -671,4 +675,4 @@ namespace WinformsUI.Forms.Base
         }
     }
 }
-#endregion
+        #endregion

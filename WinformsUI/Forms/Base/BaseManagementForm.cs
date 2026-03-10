@@ -56,7 +56,7 @@ namespace WinformsUI.Forms.Base
 
             this.FormClosed += (s, e) =>
             {
-                _transMgr.RemoveFormNotify(this);
+           //     _transMgr.CleanupForm(this);
             };
         }
         public void ApplyGlobalPalette() { }

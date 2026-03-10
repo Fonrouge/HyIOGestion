@@ -36,9 +36,9 @@
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
-            this.label1 = new System.Windows.Forms.Label();
             this.lbLightPalettes = new System.Windows.Forms.ListBox();
             this.lbDarkPalettes = new System.Windows.Forms.ListBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.btnTry = new System.Windows.Forms.Button();
             this.btnApply = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
@@ -75,10 +75,11 @@
             // 
             // cbLang
             // 
+            this.cbLang.Font = new System.Drawing.Font("Microsoft YaHei UI", 12F);
             this.cbLang.FormattingEnabled = true;
             this.cbLang.Location = new System.Drawing.Point(128, 71);
             this.cbLang.Name = "cbLang";
-            this.cbLang.Size = new System.Drawing.Size(247, 21);
+            this.cbLang.Size = new System.Drawing.Size(247, 29);
             this.cbLang.TabIndex = 1;
             // 
             // label9
@@ -152,6 +153,30 @@
             this.tableLayoutPanel3.Size = new System.Drawing.Size(499, 542);
             this.tableLayoutPanel3.TabIndex = 0;
             // 
+            // lbLightPalettes
+            // 
+            this.lbLightPalettes.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.lbLightPalettes.Font = new System.Drawing.Font("Microsoft YaHei UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbLightPalettes.FormattingEnabled = true;
+            this.lbLightPalettes.ItemHeight = 21;
+            this.lbLightPalettes.Location = new System.Drawing.Point(263, 124);
+            this.lbLightPalettes.Margin = new System.Windows.Forms.Padding(15, 3, 15, 3);
+            this.lbLightPalettes.Name = "lbLightPalettes";
+            this.lbLightPalettes.Size = new System.Drawing.Size(221, 214);
+            this.lbLightPalettes.TabIndex = 21;
+            // 
+            // lbDarkPalettes
+            // 
+            this.lbDarkPalettes.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.lbDarkPalettes.Font = new System.Drawing.Font("Microsoft YaHei UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbDarkPalettes.FormattingEnabled = true;
+            this.lbDarkPalettes.ItemHeight = 21;
+            this.lbDarkPalettes.Location = new System.Drawing.Point(15, 124);
+            this.lbDarkPalettes.Margin = new System.Windows.Forms.Padding(15, 3, 15, 3);
+            this.lbDarkPalettes.Name = "lbDarkPalettes";
+            this.lbDarkPalettes.Size = new System.Drawing.Size(218, 214);
+            this.lbDarkPalettes.TabIndex = 20;
+            // 
             // label1
             // 
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
@@ -166,50 +191,30 @@
             this.label1.Text = "¿Cómo nos vemos hoy?";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // lbLightPalettes
-            // 
-            this.lbLightPalettes.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.lbLightPalettes.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbLightPalettes.FormattingEnabled = true;
-            this.lbLightPalettes.ItemHeight = 16;
-            this.lbLightPalettes.Location = new System.Drawing.Point(263, 117);
-            this.lbLightPalettes.Margin = new System.Windows.Forms.Padding(15, 3, 15, 3);
-            this.lbLightPalettes.Name = "lbLightPalettes";
-            this.lbLightPalettes.Size = new System.Drawing.Size(221, 228);
-            this.lbLightPalettes.TabIndex = 21;
-            // 
-            // lbDarkPalettes
-            // 
-            this.lbDarkPalettes.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.lbDarkPalettes.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbDarkPalettes.FormattingEnabled = true;
-            this.lbDarkPalettes.ItemHeight = 16;
-            this.lbDarkPalettes.Location = new System.Drawing.Point(15, 117);
-            this.lbDarkPalettes.Margin = new System.Windows.Forms.Padding(15, 3, 15, 3);
-            this.lbDarkPalettes.Name = "lbDarkPalettes";
-            this.lbDarkPalettes.Size = new System.Drawing.Size(218, 228);
-            this.lbDarkPalettes.TabIndex = 20;
-            // 
             // btnTry
             // 
             this.tableLayoutPanel3.SetColumnSpan(this.btnTry, 2);
             this.btnTry.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnTry.Font = new System.Drawing.Font("Microsoft YaHei UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnTry.Location = new System.Drawing.Point(3, 414);
             this.btnTry.Name = "btnTry";
             this.btnTry.Size = new System.Drawing.Size(493, 47);
             this.btnTry.TabIndex = 22;
-            this.btnTry.Text = "btnTry";
+            this.btnTry.Tag = "HighAccented";
+            this.btnTry.Text = "Probar en esta ventana";
             this.btnTry.UseVisualStyleBackColor = true;
             // 
             // btnApply
             // 
             this.tableLayoutPanel3.SetColumnSpan(this.btnApply, 2);
             this.btnApply.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnApply.Font = new System.Drawing.Font("Microsoft YaHei UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnApply.Location = new System.Drawing.Point(3, 467);
             this.btnApply.Name = "btnApply";
             this.btnApply.Size = new System.Drawing.Size(493, 72);
             this.btnApply.TabIndex = 22;
-            this.btnApply.Text = "btnApply";
+            this.btnApply.Tag = "Accentuable";
+            this.btnApply.Text = "Aplicar en todo el programa";
             this.btnApply.UseVisualStyleBackColor = true;
             // 
             // ConfigurationsForm

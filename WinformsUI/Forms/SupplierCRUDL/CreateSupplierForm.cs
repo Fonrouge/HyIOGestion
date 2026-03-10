@@ -1,6 +1,7 @@
 ﻿using BLL.DTOs;
 using BLL.LogicLayers;
 using Presenter.ForSupplier;
+using Shared;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,25 +11,71 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Winforms.Theme;
 using WinformsUI.Infrastructure.Translations;
+using WinformsUI.UserControls.Wizard;
 
 namespace WinformsUI.Forms.SupplierCRUDL
 {
     public partial class CreateSupplierForm : Form, ICreateSupplierView
     {
+        private readonly IApplicationSettings _appSettings;
         private readonly ITranslatableControlsManager _transMgr;
-        
+        private readonly IWizardPanelNavigator _wizard;
+
+        private readonly string _errorMsg;
+        private readonly string _successMsg;
+
+
+        public event EventHandler<SupplierDTO> CreateSupplierRequested;
+        public event EventHandler CloseRequested;
+
         public CreateSupplierForm
         (
-            ITranslatableControlsManager transMgr
+            ITranslatableControlsManager transMgr,
+            IApplicationSettings appSettings,
+            IWizardPanelNavigator wizard
         )
         {
-            transMgr = _transMgr;
+            _transMgr = transMgr;
+            _appSettings = appSettings;
+            _wizard = wizard;
+
+            _successMsg = _appSettings.SuccessOnOperation;
+            _errorMsg = _appSettings.ErrorOnOperation;
 
             InitializeComponent();
             AddTranslatables();
+            InitializeWizard();
+            ApplyGlobalPalette();
+
+        }
+        public void ApplyGlobalPalette() => DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
+
+        private void InitializeWizard()
+        {
+            _wizard.Initialize(new Panel[] { pnlAddSupplier, pnlAddAddress });
+            WireFlowEvents();
         }
 
+        private void WireFlowEvents()
+        {
+            btnNextPnl1.Click += WizardAdvance;
+            btnBackPnl2.Click += WizardBack;
+        }
+
+        private void WizardAdvance(object sender, EventArgs e)
+        {
+            _wizard.Advance();
+            UpdateFormSize();
+        }
+
+        private void WizardBack(object sender, EventArgs e)
+        {
+            _wizard.Back();
+            UpdateFormSize();
+        }
+        private void UpdateFormSize() => this.ClientSize = _wizard.GetPanelSize();
 
         private void AddTranslatables()
         {
@@ -42,11 +89,31 @@ namespace WinformsUI.Forms.SupplierCRUDL
 
         public void NotifiedByTranslationManager() => ApplyTranslation();
         public void ApplyTranslation() => _transMgr.Apply();
-        public event EventHandler<SupplierDTO> CreateSupplierRequested;
 
         public void ShowOperationResult(OperationResult<SupplierDTO> opRes)
         {
-            throw new NotImplementedException();
+            MessageBox.Show(opRes.Success ? $"{_successMsg}" : $"{_errorMsg}. Errors: {string.Join(", ", opRes.Errors)}");
+            this.Close();
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            CloseRequested?.Invoke(this, EventArgs.Empty);
+
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+
+            btnNextPnl1.Click -= WizardAdvance;
+            btnBackPnl2.Click -= WizardBack;
+            _transMgr.RemoveFormNotify(this);
+        //    _transMgr.UnsubscribeTarget(this);
+
+            base.Dispose(disposing);
+
+            this.Close();
+        }
+
     }
 }

@@ -53,6 +53,8 @@ namespace WinformsUI.Forms.ConfigurationsMenu
             this.FormClosed += (s, e) =>
             {
                 _transMgr.RemoveFormNotify(this);
+                lbDarkPalettes.SelectedIndexChanged -= LbDarkPalettes_SelectedIndexChanged;
+                lbLightPalettes.SelectedIndexChanged -= LbLightPalettes_SelectedIndexChanged;
             };
 
             btnApply.Click += (s, e) =>
@@ -72,6 +74,8 @@ namespace WinformsUI.Forms.ConfigurationsMenu
             };
 
         }
+
+
 
         private void AddTranslatables()  //Se desuscribe en la clase padre BaseManagementForm FormClosed() => _transMgr.RemoveFormNotify(this);
         {

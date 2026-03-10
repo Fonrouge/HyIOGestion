@@ -36,20 +36,34 @@ namespace WinformsUI.Forms.ClientCRUDL
 
             InitializeComponent();
 
-            ApplyDarkTheme();
             InitializeWizard();
             WireFlowButtonsEvents();
             UpdateFormSize();
             ApplyGlobalPalette();
             AddTranslatables();
 
-            this.FormClosed += (s, e) =>
-            {
-                _transMgr.RemoveFormNotify(this);
 
-            };
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                btnBackShipAddress.Click -= BackWizard;
+                btnBackContact.Click -= BackWizard;
+                btnNextId.Click -= AdvanceWizard;
+                btnNextShip.Click -= AdvanceWizard;
+                btnFinish.Click -= ExecuteCreation;
+
+                _transMgr.RemoveFormNotify(this);
+                CreateClientRequested = null;
+
+                if (components != null)
+                    components.Dispose();
+            }
+
+            base.Dispose(disposing);
+        }
 
         private void AddTranslatables()
         {
@@ -62,7 +76,7 @@ namespace WinformsUI.Forms.ClientCRUDL
 
         public void ApplyGlobalPalette()
         {
-         DarkTheme.RedrawBorders = false;
+            DarkTheme.RedrawBorders = false;
             DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
         }
         private void UpdateFormSize()
@@ -71,28 +85,21 @@ namespace WinformsUI.Forms.ClientCRUDL
                 this.ClientSize = _wizard.CurrentPanel.Size;
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                CreateClientRequested = null;
-
-                if (components != null)
-                    components.Dispose();
-            }
-
-            base.Dispose(disposing);
-        }
-
         public void ShowOperationResult(OperationResult<ClientDTO> opRes)
         {
-            MessageBox.Show(opRes.Success ? $"{_successMsg}" : $"{_errorMsg}. Errors: {string.Join(", ", opRes.Errors)}");
-            this.Close();
-        }
-        private void ApplyDarkTheme()
-        {
-            DarkTheme.RedrawBorders = true;
-            DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
+            this.Cursor = Cursors.Default;
+            btnFinish.Enabled = !opRes.Success;
+
+            if (opRes.Success)
+            {
+                MessageBox.Show(_successMsg, "Operación Exitosa", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                this.Close();
+            }
+            else
+            {
+                string errors = string.Join(Environment.NewLine, opRes.Errors);
+                MessageBox.Show($"{_errorMsg}{Environment.NewLine}{errors}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void InitializeWizard() => _wizard.Initialize(new Panel[] { pnlIdentification, pnlShipAddress, pnlContact });
@@ -100,36 +107,30 @@ namespace WinformsUI.Forms.ClientCRUDL
         private void WireFlowButtonsEvents()
         {
             // --- NAVEGACIÓN HACIA ATRÁS ---
-            btnBackShipAddress.Click += (s, e) =>
-            {
-                _wizard.Back();
-                UpdateFormSize();
-            };
-
-            btnBackContact.Click += (s, e) =>
-            {
-                _wizard.Back();
-                UpdateFormSize();
-            };
-
+            btnBackShipAddress.Click += BackWizard;
+            btnBackContact.Click += BackWizard;
 
             // --- NAVEGACIÓN HACIA ADELANTE ---
-            btnNextId.Click += (s, e) =>
-            {
-                _wizard.Advance();
-                UpdateFormSize();
-            };
+            btnNextId.Click += AdvanceWizard;
+            btnNextShip.Click += AdvanceWizard;
 
-            btnNextShip.Click += (s, e) =>
-            {
-                _wizard.Advance();
-                UpdateFormSize();
-            };
-
-            btnFinish.Click += (s, e) => ExecuteCreation();
+            // --------- PASO FINAL ---------
+            btnFinish.Click += ExecuteCreation;
         }
 
-        private void ExecuteCreation()
+        private void AdvanceWizard(object sender, EventArgs e)
+        {
+            _wizard.Advance();
+            UpdateFormSize();
+        }
+
+        private void BackWizard(object sender, EventArgs e)
+        {
+            _wizard.Back();
+            UpdateFormSize();
+        }
+
+        private void ExecuteCreation(object sender, EventArgs e)
         {
             var dto = new ClientDTO
             {
@@ -139,12 +140,15 @@ namespace WinformsUI.Forms.ClientCRUDL
                 DocNumber = txtDocNumber.Text,
                 ShipCountry = cbCountrySelector.Text,
                 ShipState = cbStateSelector.Text,
-                ShipAddress = txtShupAddreess.Text,
+                ShipAddress = txtShipAddreess.Text,
                 ShipZipCode = cbZipCode.Text,
                 Email = txtEmail.Text,
                 Phone = txtPhone.Text,
                 Observations = txtObservations.Text
             };
+
+            btnFinish.Enabled = false;
+            this.Cursor = Cursors.WaitCursor;
 
             CreateClientRequested?.Invoke(this, dto);
 
