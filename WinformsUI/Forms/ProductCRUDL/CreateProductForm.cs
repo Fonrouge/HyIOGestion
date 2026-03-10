@@ -16,6 +16,7 @@ namespace WinformsUI.Forms.ProductCRUDL
     {
         public event EventHandler<ProductDTO> CreateProductRequested;
         public event EventHandler ListAllCategoriesRequested;
+        public event EventHandler CloseRequested;
 
         private readonly ITranslatableControlsManager _transMgr;
         private readonly IWizardPanelNavigator _wizard;
@@ -187,10 +188,18 @@ namespace WinformsUI.Forms.ProductCRUDL
 
         public void ShowOperationResult(OperationResult<ProductDTO> opRes)
         {
-            if (opRes.Errors.Count > 0)
+            if (opRes.Errors != null && opRes.Errors.Count > 0)
             {
-                foreach (var error in opRes.Errors)
-                    MessageBox.Show(error.Message + " - " + error.InformativeMessage);
+                // Concatenamos todos los errores en un solo string
+                var errorMessages = opRes.Errors.Select(e => $"{e.Message} - {e.InformativeMessage}");
+                var finalMessage = string.Join(Environment.NewLine, errorMessages);
+
+                MessageBox.Show(finalMessage, "Error en la operación", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            else
+            {
+                MessageBox.Show("El producto se creó correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                this.Close();
             }
         }
 
@@ -205,6 +214,7 @@ namespace WinformsUI.Forms.ProductCRUDL
         protected override void OnFormClosed(FormClosedEventArgs e)
         {
             _transMgr.RemoveFormNotify(this);
+            CloseRequested?.Invoke(this, EventArgs.Empty);
             base.OnFormClosed(e);
         }
 

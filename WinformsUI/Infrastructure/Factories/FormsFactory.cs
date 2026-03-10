@@ -51,7 +51,7 @@ namespace WinformsUI.Infrastructure.Factories
         }
 
 
-        public T ClientCreationForm<T>(IClientView parentView) where T : ICreateClientView
+        public T ClientCreationForm<T>() where T : ICreateClientView
         {
             var creationView = _sp.GetRequiredService<T>();
 

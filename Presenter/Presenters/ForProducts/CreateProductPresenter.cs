@@ -37,6 +37,7 @@ namespace Presenter.ForProducts
             // Suscripciones explícitas sin lambdas para permitir la desuscripción
             _view.CreateProductRequested += HandleCreateProductRequested;
             _view.ListAllCategoriesRequested += HandleListAllCategoriesRequested;
+            _view.CloseRequested += HandleCloseRequested;
         }
 
         // ===================================================================
@@ -51,7 +52,10 @@ namespace Presenter.ForProducts
         {
             await OnListAllCategoriesRequested();
         }
-
+        private void HandleCloseRequested(object sender, EventArgs e)
+        {
+            Dispose();
+        }
         // ===================================================================
         // Lógica de Casos de Uso
         // ===================================================================
@@ -106,6 +110,7 @@ namespace Presenter.ForProducts
             {
                 _view.CreateProductRequested -= HandleCreateProductRequested;
                 _view.ListAllCategoriesRequested -= HandleListAllCategoriesRequested;
+                _view.CloseRequested -= HandleCloseRequested;
             }
         }
     }

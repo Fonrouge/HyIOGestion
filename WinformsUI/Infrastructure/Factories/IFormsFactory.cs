@@ -16,7 +16,7 @@ namespace WinformsUI.Infrastructure.Factories
 
         //For client
         T ClientForm<T>() where T : IClientView;
-        T ClientCreationForm<T>(IClientView view) where T : ICreateClientView;
+        T ClientCreationForm<T>() where T : ICreateClientView;
 
 
         //For employees

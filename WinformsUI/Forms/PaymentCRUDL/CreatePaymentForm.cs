@@ -178,21 +178,3 @@ namespace WinformsUI.Forms.PaymentCRUDL
         }
     }
 }
-/*
- 
- 
- Guid Id { get; set; } = Guid.NewGuid();
- 
- decimal Amount { get; set; }
- 
- DateTime CreationDate { get; set; } = DateTime.UtcNow;
- DateTime EffectiveDate { get; set; }
- 
- Guid ClientId { get; set; } 
- 
- string Method { get; set; } 
- string Reference { get; set; }
- 
- 
- 
- */

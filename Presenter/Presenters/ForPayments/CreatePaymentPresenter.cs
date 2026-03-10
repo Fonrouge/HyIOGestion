@@ -34,6 +34,7 @@ namespace Presenter.ForEmployee
         {
             _view.CreatePaymentRequested += (sender, e) => OnCreateRequested(e);
             _view.GetAllClientsRequested += (sender, e) => OnListAllClientsRequested();
+            
         }
 
         private async Task OnListAllClientsRequested()

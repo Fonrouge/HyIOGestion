@@ -21,9 +21,6 @@ namespace WinformsUI.Infrastructure.Translations
         private readonly Dictionary<ObjectPropertyKey, string> _baseES =
             new Dictionary<ObjectPropertyKey, string>(new ObjectPropertyKeyComparer());
 
-        // =======================
-        // *** NUEVO: STRINGS ***
-        // =======================
         /// id -> texto base ES
         private readonly Dictionary<string, string> _baseStrings =
             new Dictionary<string, string>(StringComparer.Ordinal);
@@ -31,9 +28,7 @@ namespace WinformsUI.Infrastructure.Translations
         /// id -> lista de destinos (setter) donde aplicar la traducción al hacer Apply()
         private readonly Dictionary<string, List<(ISynchronizeInvoke sync, Action<string> setter)>> _stringBindings =
             new Dictionary<string, List<(ISynchronizeInvoke, Action<string>)>>(StringComparer.Ordinal);
-        // =======================
-
-
+        
         // ===== ListBox support =====
         private sealed class ListBoxSnapshot
         {
@@ -54,19 +49,17 @@ namespace WinformsUI.Infrastructure.Translations
             public int GetHashCode(T obj) => RuntimeHelpers.GetHashCode(obj);
         }
 
-
         public TranslationsManager(ILocalizationService loc, ICultureSwitcher culture)
         {
             _loc = loc ?? throw new ArgumentNullException(nameof(loc));
             _culture = culture ?? throw new ArgumentNullException(nameof(culture));
         }
 
-        // ---------- Registro de objetos/propiedades ----------
 
+        // ---------- Registro de objetos/propiedades ----------
 
         private readonly List<Form> _registeredForms = new List<Form>();
 
-        // cache por tipo: qué hacer cuando hay que notificar
         private readonly Dictionary<Type, Action<Form>> _notifyCache
             = new Dictionary<Type, Action<Form>>();
 
@@ -164,9 +157,7 @@ namespace WinformsUI.Infrastructure.Translations
             _baseES[key] = baseSpanishValue ?? string.Empty;
         }
 
-        // ================
-        // *** NUEVO ***
-        // ================
+
         /// <summary>Registra/actualiza un string base por id (ES).</summary>
         public void AddString(string id, string baseSpanishValue, bool overwrite = true)
         {
@@ -219,7 +210,8 @@ namespace WinformsUI.Infrastructure.Translations
             _baseStrings.Clear();
             _stringBindings.Clear();
         }
-        // ================
+        
+
 
         // ---------- Aplicación de traducciones ----------
 
@@ -251,15 +243,12 @@ namespace WinformsUI.Infrastructure.Translations
                 }
             }
 
-            // 2) *** NUEVO ***: Strings sueltos con bindings
+            // 2) Strings sueltos con bindings
             foreach (var kv in new List<KeyValuePair<string, List<(ISynchronizeInvoke sync, Action<string> setter)>>>(_stringBindings))
             {
                 var id = kv.Key;
                 var setters = kv.Value;
                 var text = GetString(id); // ya pasa por _loc
-
-                if (id == "Name")
-                    Debugger.Break();
 
                 foreach (var (sync, setter) in setters)
                 {
@@ -311,6 +300,7 @@ namespace WinformsUI.Infrastructure.Translations
                             {
                                 // Data-bound: generamos pares (Display, Value) y rebind
                                 var pairs = new List<DisplayValuePair>(translated.Count);
+
                                 for (int i = 0; i < translated.Count; i++)
                                     pairs.Add(new DisplayValuePair { Display = translated[i], Value = snap.Values[i] });
 
@@ -320,7 +310,7 @@ namespace WinformsUI.Infrastructure.Translations
                                 lb.DataSource = pairs;
                             }
 
-                            // restaurar selección si es posible
+                            // restaurar selección de ser posible (índice de donde el usuario estaba parado en el listbox)
                             if (selectedIndex >= 0 && selectedIndex < lb.Items.Count)
                                 lb.SelectedIndex = selectedIndex;
                             else if (lb.Items.Count > 0)
@@ -339,11 +329,6 @@ namespace WinformsUI.Infrastructure.Translations
                     }
                 }
             }
-
-            //  if (_registeredForms != null && _registeredForms.Count > 0)
-            //  {
-            //      Notify();
-            //  }
         }
 
         private sealed class DisplayValuePair
@@ -351,6 +336,7 @@ namespace WinformsUI.Infrastructure.Translations
             public string Display { get; set; }
             public object Value { get; set; }
         }
+
 
         // ---------- Helpers de registro masivo ----------
 
@@ -379,8 +365,6 @@ namespace WinformsUI.Infrastructure.Translations
 
             foreach (DataGridViewColumn col in dgv.Columns)
                 AddSingleObject(col, nameof(DataGridViewColumn.HeaderText));
-
-            //AddSingleObject(col, nameof(DataGridViewColumn.HeaderText));
         }
 
         public void RefreshDataGridViewColumns(DataGridView dgv)
@@ -401,6 +385,9 @@ namespace WinformsUI.Infrastructure.Translations
 
             AddDataGridViewColumns(dgv);
         }
+
+
+
 
         // ---------- Internals ----------
 
@@ -453,7 +440,7 @@ namespace WinformsUI.Infrastructure.Translations
 
             if (!snap.IsDataBound)
             {
-                // Ítems sueltos (se asume string.ToString() como ES base)
+                // Ítems sueltos (se asume string.ToString() como ES base; tener en cuenta que la app está por default en español)
                 foreach (var it in lb.Items)
                 {
                     var es = it?.ToString() ?? string.Empty;
@@ -505,6 +492,7 @@ namespace WinformsUI.Infrastructure.Translations
 
             var t = obj.GetType();
             var pi = t.GetProperty(memberName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase);
+
             if (pi != null)
             {
                 var v = pi.GetValue(obj);

@@ -13,6 +13,7 @@ namespace Presenter.ForProducts
         // ==========================================================
         event EventHandler<ProductDTO> CreateProductRequested;
         event EventHandler ListAllCategoriesRequested;
+        event EventHandler CloseRequested;
 
 
         // ==========================================================

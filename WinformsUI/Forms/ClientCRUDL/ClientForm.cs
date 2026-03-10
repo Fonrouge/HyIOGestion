@@ -101,12 +101,7 @@ namespace WinformsUI.Forms.ClientCRUDL
         // LÓGICA ESPECÍFICA DE CLIENTE
         // =========================================================
 
-        public void OpenCreationForm()
-        {
-            // Lógica específica: Usar el Factory de Clientes
-            var form = _formsFact.ClientCreationForm<ICreateClientView>(this as IClientView);
-            ((Form)form).Show();
-        }
+        public void OpenCreationForm() => ((Form)_formsFact.ClientCreationForm<ICreateClientView>()).ShowDialog();
 
 
         protected override void OnEntitySelected(ClientDTO entity)
@@ -122,8 +117,6 @@ namespace WinformsUI.Forms.ClientCRUDL
             btnUpdate.Click += (s, e) => OnUpdateRequest();
             btnDelete.Click += (s, e) => OnDeleteRequest();
             btnRefresh.Click += (s, e) => OnListAllRequest();
-
-
         }
 
 
