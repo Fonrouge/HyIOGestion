@@ -34,7 +34,8 @@ namespace Presenter.ForEmployee
         {
             _view.CreatePaymentRequested += (sender, e) => OnCreateRequested(e);
             _view.GetAllClientsRequested += (sender, e) => OnListAllClientsRequested();
-            
+            _view.CloseRequested += (sender, e) => OnCloseRequested();
+
         }
 
         private async Task OnListAllClientsRequested()
@@ -48,7 +49,8 @@ namespace Presenter.ForEmployee
                 List<ClientDTO> allClients = result.Item1.ToList();
                 opResult = result.Item2;
 
-                _view.CatchingClientList(allClients);
+                _view.CachingClientList(allClients);
+
             }
 
             catch //La información de errores proviene de capas superiores
@@ -59,11 +61,14 @@ namespace Presenter.ForEmployee
                 {
                     var newError = new ErrorLogDTO() { Message = "Error desconocido. Por favor intente nuevamente o reinicie el programa" };
                     opResult.Errors.Add(newError);
-                    
+
                     _view.ShowOperationResult(opResult);
                 }
             }
         }
+
+        private void OnCloseRequested() => _view.Dispose();
+
 
         private async Task OnCreateRequested(PaymentDTO data)
         {

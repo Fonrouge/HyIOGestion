@@ -119,6 +119,8 @@ ClientId=ClientId
 Method=Method
 Reference=Reference
 
+Seleccionar cliente=Seleccionar cliente
+
 
 =============ProductDTO=============
 Name=Nombre

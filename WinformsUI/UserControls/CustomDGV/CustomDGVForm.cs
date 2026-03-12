@@ -79,6 +79,7 @@ namespace WinformsUI.UserControls.CustomDGV
             ChooseCheckedListBoxItemsHeight(24);
         }
 
+
         #region For choose CheckedListBox items height
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         private static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
@@ -107,15 +108,8 @@ namespace WinformsUI.UserControls.CustomDGV
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
 
-            _entityType = typeof(T);                     // ← Guardamos el tipo para refrescos futuros
+            _entityType = typeof(T);
 
-            _searchBehavior = new SearchBehavior<T>
-            (
-                dgv: mainDGV,
-                listFilterSort: _listTools,
-                appSettings: _appSettings,
-                transMgr: _transMgr
-            );
             _searchBehavior = new SearchBehavior<T>
             (
                 dgv: mainDGV,
@@ -130,7 +124,7 @@ namespace WinformsUI.UserControls.CustomDGV
             mainDGV.DataSource = data;
 
             AddTranslatables();
-            ApplyTranslation();     
+            ApplyTranslation();
             SetDGVAppearence();
         }
 
@@ -255,8 +249,8 @@ namespace WinformsUI.UserControls.CustomDGV
 
             _searchBehavior.UpdatePlaceHolder(_transMgr.GetString("CustomDGVForm.TextBox.Placeholder"));
 
-            _searchBehavior.RefreshColumnsIfChanged();  
-            RefreshDateFilterComboBox();                
+            _searchBehavior.RefreshColumnsIfChanged();
+            RefreshDateFilterComboBox();
 
             _transMgr.Apply();
         }

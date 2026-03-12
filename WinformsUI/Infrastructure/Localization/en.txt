@@ -90,6 +90,8 @@ CreationDate=Creation Date
 EffectiveDate=Effective Date
 Method=Payment Method
 Reference=Reference Code
+Seleccionar cliente=Choose client
+
 
 
 =============ProductDTO=============

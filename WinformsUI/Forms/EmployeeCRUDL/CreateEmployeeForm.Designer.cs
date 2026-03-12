@@ -182,7 +182,7 @@
             // 
             this.cbTaxId.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.cbTaxId.FormattingEnabled = true;
-            this.cbTaxId.Location = new System.Drawing.Point(79, 303);
+            this.cbTaxId.Location = new System.Drawing.Point(79, 306);
             this.cbTaxId.Margin = new System.Windows.Forms.Padding(4);
             this.cbTaxId.Name = "cbTaxId";
             this.cbTaxId.Size = new System.Drawing.Size(399, 27);

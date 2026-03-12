@@ -43,19 +43,13 @@ namespace Presenter.ForProducts
         // ===================================================================
         // Event Handlers
         // ===================================================================
-        private async void HandleCreateProductRequested(object sender, ProductDTO e)
-        {
-            await OnCreateRequested(e);
-        }
+        private async void HandleCreateProductRequested(object sender, ProductDTO e) => await OnCreateRequested(e);
 
-        private async void HandleListAllCategoriesRequested(object sender, EventArgs e)
-        {
-            await OnListAllCategoriesRequested();
-        }
-        private void HandleCloseRequested(object sender, EventArgs e)
-        {
-            Dispose();
-        }
+        private async void HandleListAllCategoriesRequested(object sender, EventArgs e) => await OnListAllCategoriesRequested();
+
+        private void HandleCloseRequested(object sender, EventArgs e) => Dispose();
+
+
         // ===================================================================
         // Lógica de Casos de Uso
         // ===================================================================

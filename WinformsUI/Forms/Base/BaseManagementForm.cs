@@ -168,6 +168,7 @@ namespace WinformsUI.Forms.Base
             _dgvForm.SelectedRowChanged += (s, entity) =>
             {
                 _dgvForm.EnsureDgvRowSelection();
+
                 if (entity != null && entity is TEntity typedEntity)
                 {
                     _currentSelectedEntity = typedEntity;

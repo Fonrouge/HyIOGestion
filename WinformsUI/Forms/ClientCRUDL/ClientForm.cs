@@ -84,6 +84,8 @@ namespace WinformsUI.Forms.ClientCRUDL
             _transMgr.AddSingleObject(btnRefresh, "Text");
             _transMgr.AddSingleObject(btnUpdate, "Text");
 
+            
+
             _transMgr.AddFormNotify(this);
 
             base.ApplyTranslation();

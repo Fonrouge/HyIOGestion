@@ -10,9 +10,11 @@ namespace Presenter.ForEmployee
     {
         event EventHandler<PaymentDTO> CreatePaymentRequested;
         event EventHandler GetAllClientsRequested;
+        event EventHandler CloseRequested;
 
         void ShowOperationResult(OperationResult<PaymentDTO> opRes);
         void ShowOperationResult(OperationResult<ClientDTO> opRes);
-        void CatchingClientList(List<ClientDTO> allClientsList);
+        void CachingClientList(List<ClientDTO> allClientsList);
+        void Dispose();
     }
 }

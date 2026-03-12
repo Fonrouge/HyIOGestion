@@ -34,12 +34,10 @@ namespace WinformsUI.Forms.ProductCRUDL
             _wizard = wizard;
 
             InitializeComponent();
-
             ConfigureListBoxes();
             WireEvents();
             InitializeWizard();
             UpdateClientSize();
-
             AddTranslatables();
         }
 
@@ -66,6 +64,7 @@ namespace WinformsUI.Forms.ProductCRUDL
             btnAddCategory.Click += BtnAddCategory_Click;
             btnRemoveCategory.Click += BtnRemoveCategory_Click;
 
+            // Listboxes communication
             lbSelectCategories.SelectedIndexChanged += LbCategories_SelectedIndexChanged;
             lbCategoriesAdded.SelectedIndexChanged += LbCategories_SelectedIndexChanged;
         }
@@ -169,6 +168,39 @@ namespace WinformsUI.Forms.ProductCRUDL
             CreateProductRequested?.Invoke(this, newProduct);
         }
 
+
+
+        // ===================================================================
+        // Cuidado de memoria - Memory Care
+        // ===================================================================
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                _transMgr.RemoveFormNotify(this);
+                CloseRequested?.Invoke(this, EventArgs.Empty);
+                btnNextPnl1.Click -= BtnNextPnl1_Click;
+                btnBackPnl2.Click -= BtnBackPnl2_Click;
+                btnFinish.Click -= BtnFinish_Click;
+                btnAddCategory.Click -= BtnAddCategory_Click;
+                btnRemoveCategory.Click -= BtnRemoveCategory_Click;
+                lbSelectCategories.SelectedIndexChanged -= LbCategories_SelectedIndexChanged;
+                lbCategoriesAdded.SelectedIndexChanged -= LbCategories_SelectedIndexChanged;
+
+                CreateProductRequested = null;
+                ListAllCategoriesRequested = null;
+                CloseRequested = null;
+
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+
         // ===================================================================
         // Métodos de la interfaz ICreateProductView
         // ===================================================================
@@ -209,13 +241,6 @@ namespace WinformsUI.Forms.ProductCRUDL
             _transMgr.AddParentedObjects<Button>(this.Controls, "Text");
             ApplyTranslation();
             _transMgr.AddFormNotify(this);
-        }
-
-        protected override void OnFormClosed(FormClosedEventArgs e)
-        {
-            _transMgr.RemoveFormNotify(this);
-            CloseRequested?.Invoke(this, EventArgs.Empty);
-            base.OnFormClosed(e);
         }
 
         public void NotifiedByTranslationManager() => ApplyTranslation();
