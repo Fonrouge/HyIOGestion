@@ -31,7 +31,7 @@ namespace DAL.Persistence.MicrosoftSQL
             // 1. Insertar el Producto (Agregado DVH)
             string query = @"
                 INSERT INTO Products 
-                    (Id_Product, Name, Description, Price, Stock, IsActive, CreatedAt, IsDeleted, DVH)
+                    (Id_, Name, Description, Price, Stock, IsActive, CreatedAt, IsDeleted, DVH)
                 VALUES 
                     (@Id, @Name, @Description, @Price, @Stock, @IsActive, @CreatedAt, @IsDeleted, @DVH)";
 
@@ -53,12 +53,12 @@ namespace DAL.Persistence.MicrosoftSQL
                     CreatedAt = @CreatedAt,
                     IsDeleted = @IsDeleted,
                     DVH = @DVH
-                WHERE Id_Product = @Id";
+                WHERE Id = @Id";
 
             await ExecuteNonQueryAsync(query, cmd => SetParameters(cmd, entity));
 
             // 2. Sincronizar categorías (Borrado y re-inserción simple para consistencia)
-            string deleteRelations = "DELETE FROM ProductsCategories WHERE Id_Product = @Id";
+            string deleteRelations = "DELETE FROM ProductsCategories WHERE Id = @Id";
             await ExecuteNonQueryAsync(deleteRelations, cmd =>
                 cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = entity.Id }));
 
@@ -70,7 +70,7 @@ namespace DAL.Persistence.MicrosoftSQL
         /// </summary>
         public async Task DeleteAsync(Guid entityId)
         {
-            string query = "DELETE FROM Products WHERE Id_Product = @Id";
+            string query = "DELETE FROM Products WHERE Id = @Id";
 
             await ExecuteNonQueryAsync(query, cmd =>
                 cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = entityId }));
@@ -81,12 +81,12 @@ namespace DAL.Persistence.MicrosoftSQL
             Product product = null;
             // Se quita filtro de IsDeleted para permitir "Recycle Bin"
             string query = @"
-                SELECT p.Id_Product, p.Name, p.Description, p.Price, p.Stock, p.IsActive, p.CreatedAt, p.IsDeleted, p.DVH,
-                       c.Id_Category, c.Name as CategoryName, c.Description as CategoryDesc
+                SELECT p.Id, p.Name, p.Description, p.Price, p.Stock, p.IsActive, p.CreatedAt, p.IsDeleted, p.DVH,
+                       c.Id, c.Name as CategoryName, c.Description as CategoryDesc
                 FROM Products p
-                LEFT JOIN ProductsCategories pc ON p.Id_Product = pc.Id_Product
-                LEFT JOIN Categories c ON pc.Id_Category = c.Id_Category
-                WHERE p.Id_Product = @Id";
+                LEFT JOIN ProductsCategories pc ON p.Id = pc.Id_Product
+                LEFT JOIN Categories c ON pc.Id_Category = c.Id
+                WHERE p.Id = @Id";
 
             await ExecuteReaderAsync(query,
                 cmd => cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = id }),
@@ -102,16 +102,16 @@ namespace DAL.Persistence.MicrosoftSQL
         {
             var productDictionary = new Dictionary<Guid, Product>();
             string query = @"
-                SELECT p.Id_Product, p.Name, p.Description, p.Price, p.Stock, p.IsActive, p.CreatedAt, p.IsDeleted, p.DVH,
-                       c.Id_Category, c.Name as CategoryName, c.Description as CategoryDesc
+                SELECT p.Id, p.Name, p.Description, p.Price, p.Stock, p.IsActive, p.CreatedAt, p.IsDeleted, p.DVH,
+                       c.Id, c.Name as CategoryName, c.Description as CategoryDesc
                 FROM Products p
-                LEFT JOIN ProductsCategories pc ON p.Id_Product = pc.Id_Product
-                LEFT JOIN Categories c ON pc.Id_Category = c.Id_Category
+                LEFT JOIN ProductsCategories pc ON p.Id = pc.Id_Product
+                LEFT JOIN Categories c ON pc.Id_Category = c.Id
                 ORDER BY p.Name";
 
             await ExecuteReaderAsync(query, null, reader =>
             {
-                Guid productId = (Guid)reader["Id_Product"];
+                Guid productId = (Guid)reader["Id"];
                 if (!productDictionary.TryGetValue(productId, out Product product))
                 {
                     product = MapProduct(reader);
@@ -127,32 +127,30 @@ namespace DAL.Persistence.MicrosoftSQL
         {
             Product product = null;
 
-            // Reutilizamos la query de GetById pero filtrando por Name
+            // Eliminamos 'AND p.IsDeleted = 0' para permitir que la BLL gestione la papelera.
+            // Aseguramos que traemos la columna DVH para la integridad horizontal.
             string query = @"
-                             SELECT p.Id_Product, p.Name, p.Description, p.Price, p.Stock, p.IsActive, p.CreatedAt, p.IsDeleted,
-                                    c.Id_Category, c.Name as CategoryName, c.Description as CategoryDesc
-                             FROM Products p
-                             LEFT JOIN ProductsCategories pc ON p.Id_Product = pc.Id_Product
-                             LEFT JOIN Categories c ON pc.Id_Category = c.Id_Category
-                             WHERE p.Name = @Name 
-                               AND p.IsDeleted = 0";
+                            SELECT p.Id, p.Name, p.Description, p.Price, p.Stock, p.IsActive, p.CreatedAt, p.IsDeleted, p.DVH,
+                                   c.Id, c.Name as CategoryName, c.Description as CategoryDesc
+                            FROM Products p
+                            LEFT JOIN ProductsCategories pc ON p.Id = pc.Id_Product
+                            LEFT JOIN Categories c ON pc.Id_Category = c.Id
+                            WHERE p.Name = @Name";
 
             await ExecuteReaderAsync(query,
-                // Usamos VarChar para ser consistentes con tu método SetParameters
-                cmd => cmd.Parameters.Add(new SqlParameter("@Name", SqlDbType.VarChar) { Value = name }),
+                cmd => cmd.Parameters.Add(new SqlParameter("@Name", SqlDbType.VarChar) { Value = name ?? (object)DBNull.Value }),
                 reader =>
                 {
-                    // Si es la primera fila, creamos la instancia del Producto
+                    // Si es la primera fila del set de resultados, hidratamos la raíz del agregado (Product)
                     if (product == null)
                         product = MapProduct(reader);
 
-                    // En cada fila (tenga una o varias), intentamos mapear la categoría asociada
+                    // En cada iteración (una por cada categoría vinculada), agregamos el hijo a la colección
                     MapCategoryToProduct(reader, product);
                 });
 
             return product;
         }
-
         // ====================== MÉTODOS PRIVADOS ======================
 
         private async Task ExecuteNonQueryAsync(string query, Action<SqlCommand> parameterSetter)
@@ -240,7 +238,7 @@ namespace DAL.Persistence.MicrosoftSQL
         {
             // CORREGIDO: Se incluyen los 10 parámetros requeridos por Reconstitute
             return Product.Reconstitute(
-                id: (Guid)reader["Id_Product"],
+                id: (Guid)reader["Id"],
                 rawName: reader["Name"].ToString(),
                 rawDescription: reader["Description"] != DBNull.Value ? reader["Description"].ToString() : string.Empty,
                 rawPrice: Convert.ToDecimal(reader["Price"]),
@@ -255,16 +253,14 @@ namespace DAL.Persistence.MicrosoftSQL
 
         private void MapCategoryToProduct(SqlDataReader reader, Product product)
         {
-            if (reader["Id_Category"] != DBNull.Value)
+            if (reader["Id"] != DBNull.Value)
             {
-                var category = new Category
-                {
-                    Id = (Guid)reader["Id_Category"],
-                    Name = reader["CategoryName"].ToString(),
-                    Description = reader["CategoryDesc"] != DBNull.Value ? reader["CategoryDesc"].ToString() : string.Empty
-                };
+                var category = Category.Create
+                (
+                    name: reader["CategoryName"].ToString(),
+                    description: reader["CategoryDesc"] != DBNull.Value ? reader["CategoryDesc"].ToString() : string.Empty
+                );
 
-                // Agregamos a la colección interna del dominio
                 var list = (List<Category>)product.Categories;
                 if (!list.Any(c => c.Id == category.Id))
                 {

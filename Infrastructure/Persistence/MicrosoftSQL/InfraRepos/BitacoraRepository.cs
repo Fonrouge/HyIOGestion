@@ -28,11 +28,11 @@ namespace DAL.Persistence.MicrosoftSQL
 
         public Task CreateAsync(Bitacora logEntry)
         {
-            // Usamos corchetes [] para User y Timestamp por si el motor de SQL los toma como palabras reservadas
+            // Agregamos el campo DVH a la query de inserción
             string query = @"INSERT INTO Bitacora 
-                             ([Timestamp], [User], Message, ExceptionType, TableName, StackTrace, BitacoraType, Severity, Success) 
+                             ([Timestamp], [User], Message, ExceptionType, TableName, StackTrace, BitacoraType, Severity, Success, DVH) 
                              VALUES 
-                             (@Timestamp, @User, @Message, @ExceptionType, @TableName, @StackTrace, @BitacoraType, @Severity, @Success)";
+                             (@Timestamp, @User, @Message, @ExceptionType, @TableName, @StackTrace, @BitacoraType, @Severity, @Success, @DVH)";
 
             return ExecuteNonQueryAsync(query, cmd => SetParameters(cmd, logEntry));
         }
@@ -40,8 +40,9 @@ namespace DAL.Persistence.MicrosoftSQL
         public async Task<IEnumerable<Bitacora>> GetAllAsync()
         {
             var logs = new List<Bitacora>();
-            string query = @"SELECT [Timestamp], [User], Message, ExceptionType, TableName, StackTrace, BitacoraType, Severity, Success 
-                             FROM Bitacora";
+            // Incluimos Id y DVH en la lectura
+            string query = @"SELECT Id, [Timestamp], [User], Message, ExceptionType, TableName, StackTrace, BitacoraType, Severity, Success, DVH 
+                             FROM Bitacora ORDER BY [Timestamp] DESC";
 
             await ExecuteReaderAsync(query, null, reader => logs.Add(Map(reader)));
 
@@ -109,38 +110,38 @@ namespace DAL.Persistence.MicrosoftSQL
         }
 
         // --- MAPEO Y PARÁMETROS ---
-
         private void SetParameters(SqlCommand cmd, Bitacora logEntry)
         {
-            // Mapeo explícito de tipos para optimizar el rendimiento en SQL Server
             cmd.Parameters.Add(new SqlParameter("@Timestamp", SqlDbType.DateTime2) { Value = logEntry.Timestamp });
-            cmd.Parameters.Add(new SqlParameter("@User", SqlDbType.VarChar) { Value = (object)logEntry.User ?? DBNull.Value });
-            cmd.Parameters.Add(new SqlParameter("@Message", SqlDbType.VarChar) { Value = (object)logEntry.Message ?? DBNull.Value });
-            cmd.Parameters.Add(new SqlParameter("@ExceptionType", SqlDbType.VarChar) { Value = (object)logEntry.ExceptionType ?? DBNull.Value });
-            cmd.Parameters.Add(new SqlParameter("@TableName", SqlDbType.VarChar) { Value = (object)logEntry.TableName ?? DBNull.Value });
-            cmd.Parameters.Add(new SqlParameter("@StackTrace", SqlDbType.VarChar) { Value = (object)logEntry.StackTrace ?? DBNull.Value });
+            cmd.Parameters.Add(new SqlParameter("@User", SqlDbType.NVarChar, 256) { Value = (object)logEntry.User ?? DBNull.Value });
+            cmd.Parameters.Add(new SqlParameter("@Message", SqlDbType.NVarChar, -1) { Value = (object)logEntry.Message ?? DBNull.Value });
+            cmd.Parameters.Add(new SqlParameter("@ExceptionType", SqlDbType.NVarChar, 500) { Value = (object)logEntry.ExceptionType ?? DBNull.Value });
+            cmd.Parameters.Add(new SqlParameter("@TableName", SqlDbType.NVarChar, 128) { Value = (object)logEntry.TableName ?? DBNull.Value });
+            cmd.Parameters.Add(new SqlParameter("@StackTrace", SqlDbType.NVarChar, -1) { Value = (object)logEntry.StackTrace ?? DBNull.Value });
             cmd.Parameters.Add(new SqlParameter("@BitacoraType", SqlDbType.Int) { Value = (int)logEntry.BitacoraType });
             cmd.Parameters.Add(new SqlParameter("@Severity", SqlDbType.Int) { Value = (int)logEntry.Severity });
             cmd.Parameters.Add(new SqlParameter("@Success", SqlDbType.Bit) { Value = logEntry.Success });
+
+            // CORREGIDO: Acceso al .Value del Value Object DVH
+            cmd.Parameters.Add(new SqlParameter("@DVH", SqlDbType.Char, 64) { Value = (object)logEntry.DVH?.Value ?? DBNull.Value });
         }
 
         private Bitacora Map(SqlDataReader reader)
         {
-            return new Bitacora
-            {
-                Timestamp = (DateTime)reader["Timestamp"],
-                User = reader["User"] != DBNull.Value ? reader["User"].ToString() : null,
-                Message = reader["Message"] != DBNull.Value ? reader["Message"].ToString() : null,
-                ExceptionType = reader["ExceptionType"] != DBNull.Value ? reader["ExceptionType"].ToString() : null,
-                TableName = reader["TableName"] != DBNull.Value ? reader["TableName"].ToString() : null,
-                StackTrace = reader["StackTrace"] != DBNull.Value ? reader["StackTrace"].ToString() : null,
-
-                // Mapeo seguro de enteros a Enums
-                BitacoraType = (BitacoraTypeEnum)Convert.ToInt32(reader["BitacoraType"]),
-                Severity = (SeverityEnum)Convert.ToInt32(reader["Severity"]),
-
-                Success = (bool)reader["Success"]
-            };
+            // Usamos Reconstitute para instanciar la entidad con sus propiedades privadas
+            return Bitacora.Reconstitute(
+                id: (int)reader["Id"],
+                timestamp: (DateTime)reader["Timestamp"],
+                user: reader["User"]?.ToString(),
+                message: reader["Message"]?.ToString(),
+                type: (int)reader["BitacoraType"],
+                severity: (int)reader["Severity"],
+                success: (bool)reader["Success"],
+                tableName: reader["TableName"]?.ToString(),
+                exceptionType: reader["ExceptionType"]?.ToString(),
+                stackTrace: reader["StackTrace"]?.ToString(),
+                dvh: reader["DVH"]?.ToString()
+            );
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using BLL.LogicLayers;
+﻿using BLL.DTOs;
+using BLL.LogicLayers;
 using SharedAbstractions.Interfaces;
 
 namespace Presenter.ForPayments

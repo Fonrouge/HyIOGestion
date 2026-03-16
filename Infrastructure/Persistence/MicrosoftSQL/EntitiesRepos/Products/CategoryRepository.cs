@@ -29,7 +29,7 @@ namespace DAL.Persistence.MicrosoftSQL
         public async Task CreateAsync(Category entity)
         {
             // Agregamos el campo DVH a la persistencia
-            string query = @"INSERT INTO Categories (Id_Category, Name, Description, DVH) 
+            string query = @"INSERT INTO Categories (Id, Name, Description, DVH) 
                              VALUES (@Id, @Name, @Description, @DVH)";
 
             await ExecuteNonQueryAsync(query, cmd => SetParameters(cmd, entity));
@@ -40,7 +40,7 @@ namespace DAL.Persistence.MicrosoftSQL
             // Agregamos el campo DVH al update
             string query = @"UPDATE Categories 
                              SET Name = @Name, Description = @Description, DVH = @DVH
-                             WHERE Id_Category = @Id";
+                             WHERE Id = @Id";
 
             await ExecuteNonQueryAsync(query, cmd => SetParameters(cmd, entity));
         }
@@ -49,7 +49,7 @@ namespace DAL.Persistence.MicrosoftSQL
         {
             // Borrado Físico (La BLL decide si llama a este o al Update)
             string deleteRelations = "DELETE FROM ProductsCategories WHERE Id_Category = @Id";
-            string deleteCategory = "DELETE FROM Categories WHERE Id_Category = @Id";
+            string deleteCategory = "DELETE FROM Categories WHERE Id = @Id";
 
             await ExecuteNonQueryAsync(deleteRelations, cmd =>
                 cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = entityId }));
@@ -61,7 +61,7 @@ namespace DAL.Persistence.MicrosoftSQL
         public async Task<Category> GetByIdAsync(Guid id)
         {
             Category category = null;
-            string query = "SELECT Id_Category, Name, Description, DVH FROM Categories WHERE Id_Category = @Id";
+            string query = "SELECT Id, Name, Description, DVH FROM Categories WHERE Id = @Id";
 
             await ExecuteReaderAsync(query,
                 cmd => cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = id }),
@@ -73,7 +73,7 @@ namespace DAL.Persistence.MicrosoftSQL
         public async Task<IEnumerable<Category>> GetAllAsync()
         {
             var categories = new List<Category>();
-            string query = "SELECT Id_Category, Name, Description, DVH FROM Categories";
+            string query = "SELECT Id, Name, Description, DVH FROM Categories";
 
             await ExecuteReaderAsync(query, null, reader => categories.Add(Map(reader)));
 
@@ -83,7 +83,7 @@ namespace DAL.Persistence.MicrosoftSQL
         public async Task<Category> GetByNameAsync(string name)
         {
             Category category = null;
-            string query = "SELECT Id_Category, Name, Description, DVH FROM Categories WHERE Name = @Name";
+            string query = "SELECT Id, Name, Description, DVH FROM Categories WHERE Name = @Name";
 
             await ExecuteReaderAsync(query,
                 cmd => cmd.Parameters.Add(new SqlParameter("@Name", SqlDbType.VarChar) { Value = (object)name ?? DBNull.Value }),
@@ -173,8 +173,9 @@ namespace DAL.Persistence.MicrosoftSQL
         private Category Map(SqlDataReader reader)
         {
             // Usamos el Factory Method Reconstitute para respetar los setters privados
-            return Category.Reconstitute(
-                id: (Guid)reader["Id_Category"],
+            return Category.Reconstitute
+            (
+                id: (Guid)reader["Id"],
                 name: reader["Name"]?.ToString() ?? string.Empty,
                 description: reader["Description"]?.ToString() ?? string.Empty,
                 dvh: reader["DVH"]?.ToString() ?? string.Empty

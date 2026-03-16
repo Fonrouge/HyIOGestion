@@ -1,7 +1,9 @@
-﻿using Domain.Entities.Permisos.Concrete;
+﻿using BLL.DTOs;
+using Domain.Entities.Permisos.Concrete;
 using System;
+using System.Linq;
 
-namespace BLL.DTOs.Mappers
+namespace BLL.LogicLayers
 {
     public static class UsuarioMapper
     {
@@ -9,35 +11,42 @@ namespace BLL.DTOs.Mappers
         {
             if (entity == null) return null;
 
-            return new UsuarioDTO()
+            var dto = new UsuarioDTO
             {
                 Id = entity.Id,
                 Username = entity.Username,
                 Password = entity.Password,
                 Language = entity.Language,
-                DVH = entity.DVH,
-
-                EmployeeDTO = new EmployeeDTO { Id = entity.EmployeeId },
-
-                Permisos = entity.Permisos
+                DVH = entity.DVH?.Value ?? string.Empty,
+                IsDeleted = entity.IsDeleted,
+                // Aquí podrías inyectar el EmployeeDTO si lo tienes
             };
+
+            // Aplanamos los permisos para el DTO
+            dto.Permisos = entity.Permisos.Select(p => p.Permiso).ToList();
+
+            return dto;
         }
 
         public static Usuario ToEntity(UsuarioDTO dto)
         {
             if (dto == null) return null;
 
-            return new Usuario()
+            if (dto.Id == Guid.Empty)
             {
-                Id = dto.Id,
-                Username = dto.Username,
-                Password = dto.Password,
-                Language = dto.Language,
-                DVH = dto.DVH,
-                EmployeeId = dto.EmployeeDTO != null ? dto.EmployeeDTO.Id : Guid.Empty,
+                return Usuario.Create(dto.Username, dto.Password, dto.Language, dto.EmployeeId);
+            }
 
-                Permisos = dto.Permisos
-            };
+            return Usuario.Reconstitute
+            (
+                dto.Id,
+                dto.Username,
+                dto.Password,
+                dto.Language,
+                dto.DVH,
+                dto.EmployeeId,
+                dto.IsDeleted
+            );
         }
     }
 }

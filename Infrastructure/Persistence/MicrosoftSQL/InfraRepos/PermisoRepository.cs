@@ -1,4 +1,5 @@
-﻿using Domain.Entities.Permisos.Abstracts;
+﻿using Domain.Entities;
+using Domain.Entities.Permisos.Abstracts;
 using Domain.Entities.Permisos.Concrete;
 using Domain.Repositories;
 using Shared;
@@ -20,78 +21,68 @@ namespace DAL.Persistence.MicrosoftSQL
             _appSettings = appSettings;
         }
 
-        public void SetTransaction(object transaction)
-        {
-            _currentTransaction = (SqlTransaction)transaction;
-        }
+        public void SetTransaction(object transaction) => _currentTransaction = (SqlTransaction)transaction;
 
-        // Renombrado para cumplir la convención asíncrona (Asegúrate de actualizar la interfaz IPermisoRepository)
         public async Task<List<PermisoComponente>> GetPermissionsByUserAsync(Guid userId)
         {
             var lista = new List<PermisoComponente>();
-
-            // 1. Determinar conexión (propia o de la transacción compartida)
-            SqlConnection conn = _currentTransaction?.Connection;
-            bool isExternalConn = conn != null;
-
-            if (!isExternalConn)
-                conn = new SqlConnection(_appSettings.SecurityConnection);
+            SqlConnection conn = _currentTransaction?.Connection ?? new SqlConnection(_appSettings.SecurityConnection);
+            bool isExternalConn = _currentTransaction?.Connection != null;
 
             try
             {
-                string query = @"SELECT p.Id_Permiso, p.Nombre, p.Permiso, p.EsFamilia 
+                // Sincronizado con la imagen: Id, Nombre, Permiso, EsFamilia, DVH
+                string query = @"SELECT p.Id, p.Nombre, p.Permiso, p.EsFamilia, p.DVH
                                  FROM Permiso p 
-                                 INNER JOIN Usuario_Permiso up ON p.Id_Permiso = up.Id_Permiso 
+                                 INNER JOIN Usuario_Permiso up ON p.Id = up.Id_Permiso 
                                  WHERE up.Id_User = @userId";
 
                 using (var cmd = new SqlCommand(query, conn))
                 {
                     if (isExternalConn) cmd.Transaction = _currentTransaction;
-
-                    // Mejor práctica: Tipo de dato explícito
                     cmd.Parameters.Add(new SqlParameter("@userId", SqlDbType.UniqueIdentifier) { Value = userId });
 
-                    if (!isExternalConn) await conn.OpenAsync(); // Asíncrono
+                    if (!isExternalConn) await conn.OpenAsync();
 
-                    var tempRows = new List<(Guid Id, string Nombre, string Codigo, bool EsFamilia)>();
+                    var tempRows = new List<(Guid Id, string Nombre, string Codigo, bool EsFamilia, string Dvh)>();
 
-                    using (var reader = await cmd.ExecuteReaderAsync()) // Asíncrono
+                    using (var reader = await cmd.ExecuteReaderAsync())
                     {
-                        while (await reader.ReadAsync()) // Asíncrono
+                        while (await reader.ReadAsync())
                         {
                             tempRows.Add((
-                                Id: (Guid)reader["Id_Permiso"],
+                                Id: (Guid)reader["Id"],
                                 Nombre: reader["Nombre"].ToString(),
                                 Codigo: reader["Permiso"].ToString(),
-                                EsFamilia: (bool)reader["EsFamilia"]
+                                EsFamilia: (bool)reader["EsFamilia"],
+                                Dvh: reader["DVH"].ToString()
                             ));
                         }
-                    } // El Reader se cierra aquí, liberando la conexión
+                    }
 
-                    // 2. Procesamos la lista y disparamos la recursividad del Composite
                     foreach (var row in tempRows)
                     {
                         PermisoComponente c;
-
                         if (row.EsFamilia)
                         {
                             c = new Familia { Id = row.Id, Nombre = row.Nombre, Permiso = row.Codigo };
-                            // Llamada al método recursivo asíncrono
-                            await FillFamilyChildrenAsync(c, conn);
                         }
                         else
                         {
                             c = new Patente { Id = row.Id, Nombre = row.Nombre, Permiso = row.Codigo };
                         }
 
+                        // Asignamos el VO del DVH
+                        c.DVH = !string.IsNullOrEmpty(row.Dvh) ? DvhVo.Create(row.Dvh) : null;
+
+                        if (row.EsFamilia)
+                        {
+                            await FillFamilyChildrenAsync(c, conn);
+                        }
+
                         lista.Add(c);
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                //    Debugger.Break(); // debug para leer la excepción
-                throw;
             }
             finally
             {
@@ -103,47 +94,51 @@ namespace DAL.Persistence.MicrosoftSQL
 
         private async Task FillFamilyChildrenAsync(PermisoComponente padre, SqlConnection conn)
         {
-            string query = @"SELECT p.Id_Permiso, p.Nombre, p.Permiso, p.EsFamilia 
+            // Sincronizado con la imagen: Relación en Permiso_Permiso
+            string query = @"SELECT p.Id, p.Nombre, p.Permiso, p.EsFamilia, p.DVH 
                              FROM Permiso p 
-                             INNER JOIN Permiso_Permiso pp ON p.Id_Permiso = pp.Id_Hijo 
+                             INNER JOIN Permiso_Permiso pp ON p.Id = pp.Id_Hijo 
                              WHERE pp.Id_Padre = @padreId";
 
-            var tempChildren = new List<(Guid Id, string Nombre, string Codigo, bool EsFamilia)>();
+            var tempChildren = new List<(Guid Id, string Nombre, string Codigo, bool EsFamilia, string Dvh)>();
 
             using (var cmd = new SqlCommand(query, conn))
             {
                 if (_currentTransaction != null) cmd.Transaction = _currentTransaction;
-
-                // Mejor práctica: Tipo de dato explícito
                 cmd.Parameters.Add(new SqlParameter("@padreId", SqlDbType.UniqueIdentifier) { Value = padre.Id });
 
-                using (var reader = await cmd.ExecuteReaderAsync()) // Asíncrono
+                using (var reader = await cmd.ExecuteReaderAsync())
                 {
-                    while (await reader.ReadAsync()) // Asíncrono
+                    while (await reader.ReadAsync())
                     {
                         tempChildren.Add((
-                            Id: (Guid)reader["Id_Permiso"],
+                            Id: (Guid)reader["Id"],
                             Nombre: reader["Nombre"].ToString(),
                             Codigo: reader["Permiso"].ToString(),
-                            EsFamilia: (bool)reader["EsFamilia"]
+                            EsFamilia: (bool)reader["EsFamilia"],
+                            Dvh: reader["DVH"].ToString()
                         ));
                     }
-                } // El Reader se cierra aquí, liberando la conexión para la recursión
+                }
             }
 
             foreach (var childRow in tempChildren)
             {
                 PermisoComponente hijo;
-
                 if (childRow.EsFamilia)
                 {
                     hijo = new Familia { Id = childRow.Id, Nombre = childRow.Nombre, Permiso = childRow.Codigo };
-                    // RECURSIÓN ASÍNCRONA: Esperamos a que los hijos de esta familia se carguen
-                    await FillFamilyChildrenAsync(hijo, conn);
                 }
                 else
                 {
                     hijo = new Patente { Id = childRow.Id, Nombre = childRow.Nombre, Permiso = childRow.Codigo };
+                }
+
+                hijo.DVH = !string.IsNullOrEmpty(childRow.Dvh) ? DvhVo.Create(childRow.Dvh) : null;
+
+                if (childRow.EsFamilia)
+                {
+                    await FillFamilyChildrenAsync(hijo, conn); // Recursión
                 }
 
                 padre.AgregarHijo(hijo);

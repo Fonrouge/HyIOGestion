@@ -55,6 +55,7 @@ namespace Shared.Services
 
             // Comparación en tiempo constante
             uint diff = (uint)hashBytes.Length ^ (uint)(SaltSize + HashSize);
+
             for (int i = 0; i < HashSize; i++)
             {
                 diff |= (uint)(hashBytes[i + SaltSize] ^ hash[i]);

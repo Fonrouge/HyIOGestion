@@ -111,7 +111,7 @@ namespace Bootstrapper
             services.AddTransient<IVerifyDVH, VerifyDVH>();
 
             //INFRA - Registers
-            services.AddSingleton<IBitacoraMapper, BitacoraMapper>();
+//            services.AddSingleton<IBitacoraMapper, BitacoraMapper>();
             services.AddSingleton<IBitacoraFactory, BitacoraFactory>();
 
             //Login (User) 

@@ -3,6 +3,7 @@ using BLL.DTOs.Errors;
 using BLL.DTOs.Mappers;
 using BLL.Infrastructure.AuditLogs;
 using BLL.Infrastructure.Errors;
+using BLL.LogicLayers;
 using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Infrastructure;
@@ -92,9 +93,9 @@ namespace BLL.UseCases
                 // 3. Preparación de Entidades
                 var employeeEntity = EmployeeMapper.ToEntity(userDto.EmployeeDTO);
                 var userEntity = UsuarioMapper.ToEntity(userDto);
-
-                userEntity.EmployeeId = employeeEntity.Id;
-                userEntity.Password = _encryptionSvc.Hash(userDto.Password);
+                
+                userEntity.UpdateEmployeeId(employeeEntity.Id);
+                userEntity.UpdatePassword(_encryptionSvc.Hash(userDto.Password));
 
                 // 4. FASE 1: GUARDAR EMPLEADO (Entities)
                 try

@@ -1,12 +1,12 @@
 ﻿using Domain.Entities.Permisos.Concrete;
-using Domain.Entities;
+using Domain.Repositories;
+using Shared;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
-using Shared;
-using Domain.Repositories;
 using System.Data;
+using System.Data.SqlClient;
 using System.Threading.Tasks;
+
 
 namespace DAL.Persistence.MicrosoftSQL
 {
@@ -20,42 +20,49 @@ namespace DAL.Persistence.MicrosoftSQL
             _appSettings = appSettings;
         }
 
-        public void SetTransaction(object transaction)
+        public void SetTransaction(object transaction) => _currentTransaction = (SqlTransaction)transaction;
+
+        // --- MÉTODOS PÚBLICOS ---
+
+        public async Task CreateAsync(Usuario user)
         {
-            _currentTransaction = (SqlTransaction)transaction;
+            string query = @"INSERT INTO [User] 
+                (Id, Username, [Password], DVH, [Language], Id_Employee, IsDeleted) 
+                VALUES 
+                (@Id, @Username, @Password, @DVH, @Language, @Id_Employee, @IsDeleted)";
+
+            await ExecuteNonQueryAsync(query, cmd => SetParameters(cmd, user));
         }
 
-        public Task CreateAsync(Usuario user)
+        public async Task UpdateAsync(Usuario user)
         {
-            string query = @"INSERT INTO [User] (Id_User, Username, [Password], DVH, [Language], Id_Employee) 
-                             VALUES (@Id, @Username, @Password, @DVH, @Language, @Id_Employee)";
+            string query = @"UPDATE [User] 
+                SET Username = @Username, [Password] = @Password, DVH = @DVH, 
+                    [Language] = @Language, Id_Employee = @Id_Employee, 
+                    IsDeleted = @IsDeleted
+                WHERE Id = @Id";
 
-            return ExecuteNonQueryAsync(query, cmd => SetParameters(cmd, user));
+            await ExecuteNonQueryAsync(query, cmd => SetParameters(cmd, user));
         }
 
-        public Task UpdateAsync(Usuario user)
+        public async Task DeleteAsync(Guid id)
         {
-            string query = @"UPDATE [User] SET Username = @Username, [Password] = @Password, 
-                             DVH = @DVH, [Language] = @Language, Id_Employee = @Id_Employee 
-                             WHERE Id_User = @Id";
-
-            return ExecuteNonQueryAsync(query, cmd => SetParameters(cmd, user));
-        }
-
-        public Task DeleteAsync(Guid id)
-        {
-            string query = "DELETE FROM [User] WHERE Id_User = @Id";
-            return ExecuteNonQueryAsync(query, cmd => cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = id }));
+            // Borrado FÍSICO. La BLL usará Update para el borrado lógico.
+            string query = "DELETE FROM [User] WHERE Id = @Id";
+            await ExecuteNonQueryAsync(query, cmd =>
+                cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = id }));
         }
 
         public async Task<Usuario> GetByIdAsync(Guid id)
         {
             Usuario user = null;
-            string query = "SELECT Id_User, Username, [Password], DVH, [Language], Id_Employee FROM [User] WHERE Id_User = @Id";
+            // Quitamos el filtro IsDeleted = 0 para permitir que la BLL gestione la papelera
+            string query = @"SELECT Id, Username, [Password], DVH, [Language], Id_Employee, IsDeleted 
+                             FROM [User] WHERE Id = @Id";
 
             await ExecuteReaderAsync(query,
                 cmd => cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = id }),
-                reader => user = Map(reader)); // Si encuentra uno, lo asigna
+                reader => user = Map(reader));
 
             return user;
         }
@@ -63,18 +70,17 @@ namespace DAL.Persistence.MicrosoftSQL
         public async Task<IEnumerable<Usuario>> GetAllAsync()
         {
             var users = new List<Usuario>();
-            string query = "SELECT Id_User, Username, [Password], DVH, [Language], Id_Employee FROM [User]";
+            string query = "SELECT Id, Username, [Password], DVH, [Language], Id_Employee, IsDeleted FROM [User]";
 
-            // Como no hay parámetros, pasamos null. Por cada fila, añade a la lista.
             await ExecuteReaderAsync(query, null, reader => users.Add(Map(reader)));
-
             return users;
         }
 
         public async Task<IEnumerable<Usuario>> GetByUsernameAsync(string username)
         {
             var users = new List<Usuario>();
-            string query = "SELECT Id_User, Username, [Password], DVH, [Language], Id_Employee FROM [User] WHERE Username = @Username";
+            string query = @"SELECT Id, Username, [Password], DVH, [Language], Id_Employee, IsDeleted 
+                             FROM [User] WHERE Username = @Username";
 
             await ExecuteReaderAsync(query,
                 cmd => cmd.Parameters.Add(new SqlParameter("@Username", SqlDbType.VarChar) { Value = username }),
@@ -83,7 +89,43 @@ namespace DAL.Persistence.MicrosoftSQL
             return users;
         }
 
-        // --- MÉTODOS PRIVADOS DE INFRAESTRUCTURA (EL MOTOR) ---
+        // --- MAPEO Y PARÁMETROS ---
+
+        private void SetParameters(SqlCommand cmd, Usuario user)
+        {
+            cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = user.Id });
+            cmd.Parameters.Add(new SqlParameter("@Username", SqlDbType.VarChar) { Value = user.Username });
+            cmd.Parameters.Add(new SqlParameter("@Password", SqlDbType.VarChar) { Value = user.Password });
+
+            // Accedemos al .Value del Value Object DVH
+            cmd.Parameters.Add(new SqlParameter("@DVH", SqlDbType.VarChar) { Value = (object)user.DVH?.Value ?? DBNull.Value });
+
+            cmd.Parameters.Add(new SqlParameter("@Language", SqlDbType.VarChar)
+            {
+                Value = string.IsNullOrEmpty(user.Language) ? DBNull.Value : (object)user.Language
+            });
+
+            cmd.Parameters.Add(new SqlParameter("@Id_Employee", SqlDbType.UniqueIdentifier) { Value = user.EmployeeId });
+
+            // Nuevos campos de estado
+            cmd.Parameters.Add(new SqlParameter("@IsDeleted", SqlDbType.Bit) { Value = user.IsDeleted });
+        }
+
+        private Usuario Map(SqlDataReader reader)
+        {
+            // Usamos Reconstitute para respetar los setters privados y la lógica de dominio
+            return Usuario.Reconstitute(
+                id: (Guid)reader["Id"],
+                username: reader["Username"].ToString(),
+                password: reader["Password"].ToString(),
+                language: reader["Language"] != DBNull.Value ? reader["Language"].ToString() : null,
+                dvh: reader["DVH"]?.ToString(),
+                employeeId: (Guid)reader["Id_Employee"],
+                isDeleted: (bool)reader["IsDeleted"]
+            );
+        }
+
+        // --- MOTOR ASÍNCRONO ---
 
         private async Task ExecuteNonQueryAsync(string query, Action<SqlCommand> parameterSetter)
         {
@@ -142,31 +184,17 @@ namespace DAL.Persistence.MicrosoftSQL
                 if (!isExternalConn) conn.Dispose();
             }
         }
-
-        private void SetParameters(SqlCommand cmd, Usuario user)
-        {
-            cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = user.Id });
-            cmd.Parameters.Add(new SqlParameter("@Username", SqlDbType.VarChar) { Value = user.Username });
-            cmd.Parameters.Add(new SqlParameter("@Password", SqlDbType.VarChar) { Value = user.Password });
-            cmd.Parameters.Add(new SqlParameter("@DVH", SqlDbType.VarChar) { Value = user.DVH });
-
-            object languageValue = string.IsNullOrEmpty(user.Language) ? DBNull.Value : (object)user.Language;
-            cmd.Parameters.Add(new SqlParameter("@Language", SqlDbType.VarChar) { Value = languageValue });
-
-            cmd.Parameters.Add(new SqlParameter("@Id_Employee", SqlDbType.UniqueIdentifier) { Value = user.EmployeeId });
-        }
-
-        private Usuario Map(SqlDataReader reader)
-        {
-            return new Usuario
-            {
-                Id = (Guid)reader["Id_User"],
-                Username = reader["Username"].ToString(),
-                Password = reader["Password"].ToString(),
-                DVH = reader["DVH"].ToString(),
-                Language = reader["Language"] != DBNull.Value ? reader["Language"].ToString() : null,
-                EmployeeId = (Guid)reader["Id_Employee"]
-            };
-        }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+

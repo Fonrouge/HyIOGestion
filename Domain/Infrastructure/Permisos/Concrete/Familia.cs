@@ -1,11 +1,12 @@
 ﻿using Domain.Entities.Permisos.Abstracts;
+using System;
 using System.Collections.Generic;
 
 namespace Domain.Entities.Permisos.Concrete
 {
     public class Familia : PermisoComponente
     {
-        private IList<PermisoComponente> _hijos;
+        private readonly IList<PermisoComponente> _hijos;
 
         public Familia()
         {
@@ -14,7 +15,11 @@ namespace Domain.Entities.Permisos.Concrete
 
         public override IList<PermisoComponente> Hijos => _hijos;
 
-        public override void AgregarHijo(PermisoComponente c) => _hijos.Add(c);
+        public override void AgregarHijo(PermisoComponente c)
+        {
+            if (c != null && !_hijos.Contains(c))
+                _hijos.Add(c);
+        }
 
         public override void VaciarHijos() => _hijos.Clear();
     }

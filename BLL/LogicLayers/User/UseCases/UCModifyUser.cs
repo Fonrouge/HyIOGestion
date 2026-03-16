@@ -90,18 +90,18 @@ namespace BLL.LogicLayers //====================================================
             // 2. Mapeo a Entidades
             var userEntity = UsuarioMapper.ToEntity(userDto);
             var employeeEntity = EmployeeMapper.ToEntity(userDto.EmployeeDTO);
-            userEntity.EmployeeId = employeeEntity.Id;
+            userEntity.UpdateEmployeeId(employeeEntity.Id);
 
             // Encriptar password solo si viene uno nuevo (lógica típica de updates)
             if (!string.IsNullOrWhiteSpace(userDto.Password))
             {
-                userEntity.Password = _encryptionSvc.Hash(userDto.Password);
+                userEntity.UpdatePassword(_encryptionSvc.Hash(userDto.Password));
             }
             else
             {
                 // Si no mandan password, conservamos el actual (requiere buscarlo)
                 var oldUser = await _uow.UserRepo.GetByIdAsync(userDto.Id);
-                userEntity.Password = oldUser.Password;
+                userEntity.UpdatePassword(oldUser.Password);
             }
 
             // OPCIONAL SI CRECE: Integridad Horizontal (DVH)

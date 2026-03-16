@@ -3,7 +3,9 @@ using BLL.DTOs.Errors;
 using BLL.DTOs.Mappers;
 using BLL.Infrastructure.AuditLogs;
 using BLL.Infrastructure.Errors;
-using Domain.Entities.Permisos.Concrete;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Domain.Exceptions;
 using Domain.Exceptions.Base;
 using Domain.Infrastructure;
@@ -12,31 +14,30 @@ using Domain.Repositories;
 using Shared;
 using Shared.Services;
 using Shared.Sessions;
-using System;
-using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
+using Domain.Entities.Permisos.Concrete;
+using BLL.LogicLayers;
 
-namespace BLL.UseCases //=======================================================================REFACTORIZADO AL 27/02=======================================================================
+namespace BLL.UseCases
 {
     public class UCLogin : IUCLogin
     {
         //Unit of work
         private readonly IUnitOfWork _uow;
-        
+
         //Cross-Cutting ('Shared' project)
         private readonly IHashEncryptionService _encryptionSvc;
         private readonly IApplicationSettings _appSettings;
 
         //Security / Audit
         private readonly ISessionManager _sessionMgr;
-        private readonly IErrorsRepository _errorsRepo;        
+        private readonly IErrorsRepository _errorsRepo;
         private readonly ISessionFactory _sessionFact;
         private readonly ISessionProvider _sessionProvider;
-        private readonly IBitacoraFactory _bitacoraFact;               
+        private readonly IBitacoraFactory _bitacoraFact;
         private readonly IErrorsFactory _errorsFactory;
-        
-        
+
+
 
         public UCLogin
         (
@@ -63,7 +64,7 @@ namespace BLL.UseCases //=======================================================
         }
 
 
-          public async Task<OperationResult<UsuarioDTO>> ExecuteAsync(string userName, string pass)
+        public async Task<OperationResult<UsuarioDTO>> ExecuteAsync(string userName, string pass)
         {
             var result = new OperationResult<UsuarioDTO>();
 
@@ -72,7 +73,9 @@ namespace BLL.UseCases //=======================================================
                 // 1. FASE DE LECTURA (Seguridad): Buscamos al usuario
                 _uow.SetConnectionString(_appSettings.SecurityConnection);
                 var user = await GetValidatedUserAsync(userName, result);
-                if (user == null) return result;
+
+                if (user == null)
+                    return result;
 
                 // 2. FASE DE LECTURA CRUZADA (Negocio): Buscamos al empleado asociado
                 // Cambiamos el connection string ANTES de abrir cualquier transacción
@@ -90,7 +93,8 @@ namespace BLL.UseCases //=======================================================
                 _uow.SetConnectionString(_appSettings.SecurityConnection);
 
                 // Pasamos el empleado a la validación para verificar si está Activo
-                if (!await ValidateCredentialsAsync(user, employee, pass, result)) return result;
+                if (!await ValidateCredentialsAsync(user, employee, pass, result)) 
+                    return result;
 
                 // AHORA SÍ abrimos la transacción de Seguridad (seguros de que no leeremos de Negocio)
                 await _uow.BeginTransactionAsync();
@@ -103,8 +107,16 @@ namespace BLL.UseCases //=======================================================
 
                 // 4. Orquestación de Sesión y DTOs
                 var userDto = UsuarioMapper.ToDto(user);
-                // Mapeamos el empleado que ya habíamos ido a buscar en la Fase 2
+                // Mapeamos el empleado que ya habíamos ido a buscar en la Fase 2 AOSUIKHIUASDFHUISADFHUIASFDIHUASFDHUISFAD HAY QUE AGREGARLOS A SESSION
                 userDto.EmployeeDTO = EmployeeMapper.ToDto(employee);
+
+                var permissionsDtosCode = new List<string>();
+
+                foreach (var p in user.Permisos)
+                {
+                    permissionsDtosCode.Add(p.Nombre);
+                }
+
 
                 var currentSession = _sessionFact.Create(userDto.Id);
 
@@ -113,19 +125,18 @@ namespace BLL.UseCases //=======================================================
                 result.SessionID = currentSession.Id;
 
                 // 5. Auditoría
-                await AuditLoginAsync(currentSession)                var permissionsDtosCode = new List<string>();
-w.CommitAsync();
+                await AuditLoginAsync(currentSession);
 
-                result.Value = userDto;
-        
-                    permissionsDtosCode.Add(p.Nombre);tch (Exception ex)
-           {
+         
                 if (_uow.HasActiveTransaction)
-         permissionsDtosCode           await _uow.RollbackAsync();
-                }
+                    await _uow.RollbackAsync();
 
+            }
+            catch (Exception ex)
+            {
                 // 1. Guardar el error técnico en la base de datos (vital para el soporte)
                 await LogSystemErrorAsync(ex);
+
 
                 // 2. Usar tu fábrica de OperationResult para devolver el error a la UI
                 //    Le pasás la excepción y, si la sesión llegó a crearse, se la pasás también.
@@ -162,20 +173,15 @@ w.CommitAsync();
 
         private async Task<bool> ValidateCredentialsAsync(Usuario user, Domain.Entities.Employee employee, string providedPass, OperationResult<UsuarioDTO> result)
         {
-            if (!_encryptionSvc.Verify(providedPass, user.Password))
+
+            if (_encryptionSvc.Verify(providedPass, user.Password))
             {
                 var error = await CreateErrorByEnumAsync(ErrorCatalogEnum.InvalidCredentials);
                 result.Errors.Add(ErrorMapper.ToDTO(error));
                 return false;
             }
 
-            // Validamos contra el objeto 'employee' que pasamos por parámetro
-            if (!employee.Active)
-            {
-                var error = await CreateErrorByEnumAsync(ErrorCatalogEnum.EntityInactive);
-                result.Errors.Add(ErrorMapper.ToDTO(error));
-                return false;
-            }
+          
 
             return true;
         }
@@ -184,7 +190,10 @@ w.CommitAsync();
         {
             try
             {
-                user.Permisos = await _uow.PermisoRepo.GetPermissionsByUserAsync(user.Id);
+                var permissionsList = await _uow.PermisoRepo.GetPermissionsByUserAsync(user.Id);
+
+                foreach (var p in permissionsList)
+                    user.Permisos.Add(p);
 
                 if (user.Permisos == null || !user.Permisos.Any())
                 {
@@ -204,13 +213,14 @@ w.CommitAsync();
 
         private async Task AuditLoginAsync(ISession session)
         {
-            var log = _bitacoraFact.Create(
+            var log = _bitacoraFact.Create
+            (
                 entry: BitacoraCatalogEnum.LoginAttempt,
                 user: $"User ID: {session.CurrentUserId}",
                 tableName: _appSettings.UserTableName,
                 extraInfo: $"Session ID: {session.Id}"
             );
-           
+
             await _uow.BitacoraRepo.CreateAsync(log);
         }
 

@@ -85,17 +85,17 @@ namespace BLL.UseCases
         /// </summary>
         private async Task ValidateUsersDVHAsync(List<Usuario> allUsers)
         {
-            foreach (var u in allUsers)
-            {
-                // El cálculo de hash es de CPU (memoria pura), así que se mantiene síncrono.
-                var calculatedDVH = IntegrityService.GetIntegrityHash(u.Id, u.Username, u.Language, u.EmployeeId);
-
-                if (u.DVH != calculatedDVH)
-                {
-                    // Si falla, el registro de error es asíncrono (I/O)
-                    await HandleIntegrityErrorAsync(_tableUser, "Violación externa de registro individual (DVH).", ErrorCatalogEnum.InconsistentRowIntegrity);
-                }
-            }
+  //        foreach (var u in allUsers)
+  //        {
+  //            // El cálculo de hash es de CPU (memoria pura), así que se mantiene síncrono.
+  //            var calculatedDVH = IntegrityService.GetIntegrityHash(u.Id, u.Username, u.Language, u.EmployeeId);
+  //
+  //            if (u.DVH != calculatedDVH)
+  //            {
+  //                // Si falla, el registro de error es asíncrono (I/O)
+  //                await HandleIntegrityErrorAsync(_tableUser, "Violación externa de registro individual (DVH).", ErrorCatalogEnum.InconsistentRowIntegrity);
+  //            }
+  //        }
         }
 
         /// <summary>
@@ -103,15 +103,15 @@ namespace BLL.UseCases
         /// </summary>
         private async Task ValidateEmployeesDVHAsync(List<Employee> allEmployees)
         {
-            foreach (var e in allEmployees)
-            {
-                var calculatedDVH = IntegrityService.GetIntegrityHash(e.Id, e.FirstName, e.LastName, e.NationalId);
-
-                if (e.DVH != calculatedDVH)
-                {
-                    await HandleIntegrityErrorAsync(_tableEmployee, "Violación externa de registro individual (DVH).", ErrorCatalogEnum.InconsistentRowIntegrity);
-                }
-            }
+       //     foreach (var e in allEmployees)
+       //     {
+       //         var calculatedDVH = IntegrityService.GetIntegrityHash(e.Id, e.FirstName, e.LastName, e.NationalId);
+       //
+       //         if (e.DVH != calculatedDVH)
+       //         {
+       //             await HandleIntegrityErrorAsync(_tableEmployee, "Violación externa de registro individual (DVH).", ErrorCatalogEnum.InconsistentRowIntegrity);
+       //         }
+       //     }
         }
 
         /// <summary>

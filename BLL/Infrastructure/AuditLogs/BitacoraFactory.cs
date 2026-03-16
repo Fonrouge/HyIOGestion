@@ -8,7 +8,7 @@ using System.Reflection;
 
 namespace BLL.AuditLogs
 {
-    public class BitacoraFactory: IBitacoraFactory
+    public class BitacoraFactory : IBitacoraFactory
     {
         private readonly IApplicationSettings _appSettings;
 
@@ -19,26 +19,32 @@ namespace BLL.AuditLogs
 
         public Bitacora Create(BitacoraCatalogEnum entry, string user, string tableName, string extraInfo = null, Exception ex = null)
         {
+            // 1. Extraemos los metadatos del Enum usando Reflection
             var fieldInfo = entry.GetType().GetField(entry.ToString());
             var config = fieldInfo.GetCustomAttribute<BitacoraAttributes>();
 
-            return new Bitacora
+            if (config == null)
             {
-                Timestamp = DateTime.UtcNow,
-                User = user ?? "System",
-                Message = string.IsNullOrEmpty(extraInfo)
-                          ? config.DefaultMessage
-                          : $"{config.DefaultMessage} - Detalle: {extraInfo}",
+                throw new InvalidOperationException($"El evento {entry} no tiene definidos los atributos de Bitacora.");
+            }
 
-                BitacoraType = config.Type,
-                Severity = ex != null ? SeverityEnum.CRITICAL : config.DefaultSeverity,
+            // 2. Lógica de construcción del mensaje
+            string finalMessage = string.IsNullOrEmpty(extraInfo) ? config.DefaultMessage : $"{config.DefaultMessage} - Detalle: {extraInfo}";
 
-                TableName = tableName,
-                Success = (ex == null),
-                ExceptionType = ex?.GetType().Name ?? "N/A",
-                StackTrace = ex?.StackTrace ?? "N/A"
-            };
+            
+            SeverityEnum finalSeverity = (ex != null) ? SeverityEnum.CRITICAL : config.DefaultSeverity;
+
+            return Bitacora.Create
+            (
+                user: user ?? "System",
+                message: finalMessage,
+                type: config.Type,
+                severity: finalSeverity,
+                success: (ex == null),
+                tableName: tableName,
+                exceptionType: ex?.GetType().Name,
+                stackTrace: ex?.StackTrace
+            );
         }
-
     }
 }
