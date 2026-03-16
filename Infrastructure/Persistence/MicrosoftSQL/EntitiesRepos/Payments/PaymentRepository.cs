@@ -34,33 +34,32 @@ namespace DAL.Persistence.MicrosoftSQL
 
         public Task UpdateAsync(Payment entity)
         {
-            // Agregamos DVH
             string query = @"UPDATE Payments
-                             SET Amount = @Amount, 
-                                 CreationDate = @CreationDate, 
-                                 EffectiveDate = @EffectiveDate, 
-                                 ClientId = @ClientId, 
-                                 Method = @Method, 
-                                 Reference = @Reference,
-                                 DVH = @DVH
-                             WHERE Id = @Id";
+                     SET Amount = @Amount, 
+                         CreationDate = @CreationDate, 
+                         EffectiveDate = @EffectiveDate, 
+                         ClientId = @ClientId, 
+                         Method = @Method, 
+                         Reference = @Reference,
+                         DVH = @DVH,
+                         IsDeleted = @IsDeleted
+                     WHERE Id = @Id";
 
             return ExecuteNonQueryAsync(query, cmd => SetParameters(cmd, entity));
         }
 
         public Task DeleteAsync(Guid entityId)
         {
-            // Como discutimos, los pagos rara vez se borran físicamente. 
-            // Si en tu negocio es un borrado físico, esto está bien. 
-            // Si decidís usar borrado lógico más adelante, tendrás que cambiar esto a un UPDATE.
+            // Borrado físico directo. La BLL decide cuándo invocarlo.
             string query = "DELETE FROM Payments WHERE Id = @Id";
-            return ExecuteNonQueryAsync(query, cmd => cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = entityId }));
+            return ExecuteNonQueryAsync(query, cmd =>
+                cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = entityId }));
         }
 
         public async Task<Payment> GetByIdAsync(Guid id)
         {
             Payment payment = null;
-            string query = "SELECT Id, Amount, CreationDate, EffectiveDate, ClientId, Method, Reference, DVH FROM Payments WHERE Id = @Id";
+            string query = "SELECT Id, Amount, CreationDate, EffectiveDate, ClientId, Method, Reference, DVH, IsDeleted FROM Payments WHERE Id = @Id";
 
             await ExecuteReaderAsync(query,
                 cmd => cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = id }),
@@ -72,7 +71,7 @@ namespace DAL.Persistence.MicrosoftSQL
         public async Task<IEnumerable<Payment>> GetAllAsync()
         {
             var payments = new List<Payment>();
-            string query = "SELECT Id, Amount, CreationDate, EffectiveDate, ClientId, Method, Reference, DVH FROM Payments";
+            string query = "SELECT Id, Amount, CreationDate, EffectiveDate, ClientId, Method, Reference, DVH, IsDeleted FROM Payments";
 
             await ExecuteReaderAsync(query, null, reader => payments.Add(Map(reader)));
 
@@ -137,30 +136,32 @@ namespace DAL.Persistence.MicrosoftSQL
         private void SetParameters(SqlCommand cmd, Payment entity)
         {
             cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = entity.Id });
-
-            // Extraemos .Value de los Value Objects
             cmd.Parameters.Add(new SqlParameter("@Amount", SqlDbType.Decimal) { Value = entity.Amount?.Value ?? 0m });
-            cmd.Parameters.Add(new SqlParameter("@CreationDate", SqlDbType.DateTime2) { Value = entity.CreationDate }); // DateTime2 es más preciso y seguro en SQL Server moderno
+            cmd.Parameters.Add(new SqlParameter("@CreationDate", SqlDbType.DateTime2) { Value = entity.CreationDate });
             cmd.Parameters.Add(new SqlParameter("@EffectiveDate", SqlDbType.DateTime2) { Value = entity.EffectiveDate });
             cmd.Parameters.Add(new SqlParameter("@ClientId", SqlDbType.UniqueIdentifier) { Value = entity.ClientId });
 
+            // Acceso correcto a los Value Objects
             cmd.Parameters.Add(new SqlParameter("@Method", SqlDbType.VarChar) { Value = (object)entity.Method?.Value ?? DBNull.Value });
             cmd.Parameters.Add(new SqlParameter("@Reference", SqlDbType.VarChar) { Value = (object)entity.Reference?.Value ?? DBNull.Value });
-            cmd.Parameters.Add(new SqlParameter("@DVH", SqlDbType.VarChar) { Value = (object)entity.DVH ?? DBNull.Value });
+            cmd.Parameters.Add(new SqlParameter("@DVH", SqlDbType.VarChar) { Value = (object)entity.DVH?.Value ?? DBNull.Value });
+
+            // La DAL simplemente persiste lo que la BLL mande en esta propiedad
+            cmd.Parameters.Add(new SqlParameter("@IsDeleted", SqlDbType.Bit) { Value = entity.IsDeleted });
         }
 
         private Payment Map(SqlDataReader reader)
         {
-            // Usamos el Factory Method Reconstitute para crear la entidad saltándonos las validaciones de "nuevo ingreso"
             return Payment.Reconstitute(
                 id: (Guid)reader["Id"],
                 rawAmount: (decimal)reader["Amount"],
                 creationDate: (DateTime)reader["CreationDate"],
                 effectiveDate: (DateTime)reader["EffectiveDate"],
                 clientId: (Guid)reader["ClientId"],
-                rawMethod: reader["Method"] != DBNull.Value ? reader["Method"].ToString() : string.Empty,
-                rawReference: reader["Reference"] != DBNull.Value ? reader["Reference"].ToString() : string.Empty,
-                dvh: reader["DVH"] != DBNull.Value ? reader["DVH"].ToString() : string.Empty
+                rawMethod: reader["Method"]?.ToString(),
+                rawReference: reader["Reference"]?.ToString(),
+                dvh: reader["DVH"]?.ToString(),
+                isDeleted: (bool)reader["IsDeleted"]
             );
         }
     }

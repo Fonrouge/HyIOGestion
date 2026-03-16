@@ -7,16 +7,28 @@ namespace BLL.LogicLayers
     public class SupplierDTO : IDto
     {
         [Browsable(false)]
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public Guid Id { get; set; } = Guid.Empty;
+
         public string CompanyName { get; set; } = string.Empty;
         public string ContactName { get; set; }
-        public string TaxId { get; set; } // CUIT/cuil/
+        public string TaxId { get; set; } // CUIT/CUIL
         public string Mail { get; set; }
         public string Phone { get; set; }
-
         public string Address { get; set; }
         public string City { get; set; }
         public string Observations { get; set; }
 
+        // --- CAMPOS DE ESTADO (Sincronizados con la Entidad) ---
+        public bool Active { get; set; } = true;
+
+
+        // --- CAMPOS TÉCNICOS (Integridad y Auditoría) ---
+        [Browsable(false)]
+        public bool IsDeleted { get; set; }
+
+        [Browsable(false)]
+        public string DVH { get; set; }
+
+        public override string ToString() => CompanyName;
     }
 }

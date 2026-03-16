@@ -19,6 +19,7 @@ namespace Domain.Entities
         public bool Active { get; private set; }
         public DateTime CreatedAt { get; private set; }
         public bool IsDeleted { get; private set; }
+        public DvhVo DVH { get; private set; }
 
         // Constructor privado para forzar el uso de Factories
         private Sale() { }
@@ -31,7 +32,8 @@ namespace Domain.Entities
         (
             Guid clientId,
             Guid employeeId,
-            IEnumerable<SaleDetail> items
+            IEnumerable<SaleDetail> items,
+            string DVH = null
         )
         {
             if (items == null || !items.Any())
@@ -46,7 +48,8 @@ namespace Domain.Entities
                 Items = new List<SaleDetail>(items),
                 Active = true,
                 CreatedAt = DateTime.UtcNow,
-                IsDeleted = false
+                IsDeleted = false,
+                DVH = null
             };
 
 
@@ -73,7 +76,8 @@ namespace Domain.Entities
             IEnumerable<SaleDetail> items,
             bool active,
             DateTime createdAt,
-            bool isDeleted
+            bool isDeleted,
+            string dvh = null
         )
         {
             return new Sale
@@ -86,7 +90,8 @@ namespace Domain.Entities
                 Items = items != null ? new List<SaleDetail>(items) : new List<SaleDetail>(),
                 Active = active,
                 CreatedAt = createdAt,
-                IsDeleted = isDeleted
+                IsDeleted = isDeleted,
+                DVH = !string.IsNullOrEmpty(dvh) ? DvhVo.Create(dvh) : null
             };
         }
 
@@ -111,6 +116,7 @@ namespace Domain.Entities
             Items = list;
             CalculateTotal();
         }
+        public void UpdateDVH(string dvh) => DVH = DvhVo.Create(dvh ?? string.Empty);
 
         public void MarkAsDeleted()
         {
@@ -126,12 +132,8 @@ namespace Domain.Entities
             Active = true;
         }
 
-        public void Deactivate()
-        {
-            Active = false;
-        }
+        public void Deactivate() => Active = false;
 
-        public override string ToString()
-            => $"Venta #{Id} - {Date.Value:dd/MM/yyyy} - Cliente: {ClientId} - Total: {TotalAmount.Value:C2}";
+        public override string ToString() => $"Venta #{Id} - {Date.Value:dd/MM/yyyy} - Cliente: {ClientId} - Total: {TotalAmount.Value:C2}";
     }
 }

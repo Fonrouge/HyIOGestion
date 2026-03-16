@@ -1,12 +1,11 @@
 ﻿using Domain.BaseContracts;
-using Domain.Entities.Clients.ValueObjects; // Asegurate de crear este namespace
+using Domain.Entities.Clients.ValueObjects;
 using System;
 
 namespace Domain.Entities
 {
     public class Client : EntityBase, ISoftDeletable
     {
-        // --- PROPIEDADES DE DOMINIO (Rich Domain Model) ---
         public ClientNameVO Name { get; private set; }
         public ClientLastNameVO LastName { get; private set; }
         public ShipAddressVO ShipAddress { get; private set; }
@@ -14,18 +13,13 @@ namespace Domain.Entities
         public ClientPhoneVO Phone { get; private set; }
         public ClientTaxIdVO TaxId { get; private set; }
         public DocNumberVO DocNumber { get; private set; }
+        public DvhVo DVH { get; private set; }
 
-        // --- CAMPOS TÉCNICOS Y DE ESTADO ---
         public bool IsActive { get; private set; }
         public bool IsDeleted { get; private set; }
 
-        // Constructor privado para forzar el uso de Factories
         private Client() { }
 
-        /// <summary>
-        /// ÚNICO punto de creación para un NUEVO Client.
-        /// El Domain se defiende desde la primera línea (Fail Fast).
-        /// </summary>
         public static Client Create
         (
             string rawName,
@@ -34,28 +28,24 @@ namespace Domain.Entities
             string rawEmail,
             string rawPhone,
             string rawTaxId,
-            string rawDocNumber
-        )
+            string rawDocNumber)
         {
-            return new Client
-            {
-                // EntityBase asigna automáticamente el ID
-                Name = ClientNameVO.Create(rawName?.ToUpper() ?? "N/I"),
-                LastName = ClientLastNameVO.Create(rawLastName?.ToUpper() ?? "N/I"),
-                ShipAddress = ShipAddressVO.Create(rawShipAddress?.ToUpper() ?? "N/I"),
-                Email = ClientEmailVO.Create(rawEmail?.ToUpper() ?? "N/I"),
-                Phone = ClientPhoneVO.Create(rawPhone?.ToUpper() ?? "N/I"),
-                TaxId = ClientTaxIdVO.Create(rawTaxId?.ToUpper() ?? "N/I"),
-                DocNumber = DocNumberVO.Create(rawDocNumber?.ToUpper() ?? "N/I"),
+            var client = new Client();
 
-                IsActive = true,
-                IsDeleted = false
-            };
+            client.Name = ClientNameVO.Create(rawName?.ToUpper() ?? "N/I");
+            client.LastName = ClientLastNameVO.Create(rawLastName?.ToUpper() ?? "N/I");
+            client.ShipAddress = ShipAddressVO.Create(rawShipAddress?.ToUpper() ?? "N/I");
+            client.Email = ClientEmailVO.Create(rawEmail?.ToUpper() ?? "N/I");
+            client.Phone = ClientPhoneVO.Create(rawPhone?.ToUpper() ?? "N/I");
+            client.TaxId = ClientTaxIdVO.Create(rawTaxId?.ToUpper() ?? "N/I");
+            client.DocNumber = DocNumberVO.Create(rawDocNumber?.ToUpper() ?? "N/I");
+
+            client.IsActive = true;
+            client.IsDeleted = false;
+
+            return client;
         }
 
-        /// <summary>
-        /// Reconstruye un Client EXISTENTE desde la persistencia (DB).
-        /// </summary>
         public static Client Reconstitute
         (
             Guid id,
@@ -67,32 +57,31 @@ namespace Domain.Entities
             string rawTaxId,
             string rawDocNumber,
             bool isActive,
-            bool isDeleted
+            bool isDeleted,
+            string dvh
         )
         {
-            return new Client
+            return new Client()
             {
-                Id = Guid.Parse(id.ToString().ToUpper()),
-                Name = ClientNameVO.Create(rawName?.ToUpper() ?? "N/I"),
-                LastName = ClientLastNameVO.Create(rawLastName?.ToUpper() ?? "N/I"),
-                ShipAddress = ShipAddressVO.Create(rawShipAddress?.ToUpper() ?? "--"),
-                Email = ClientEmailVO.Create(rawEmail?.ToUpper() ?? "N/I"),
-                Phone = ClientPhoneVO.Create(rawPhone?.ToUpper() ?? "N/I"),
-                TaxId = ClientTaxIdVO.Create(rawTaxId?.ToUpper() ?? "N/I"),
-                DocNumber = DocNumberVO.Create(rawDocNumber?.ToUpper() ?? "N/I"),
-
+                Id = id,
+                Name = ClientNameVO.Create(rawName?.ToUpper() ?? string.Empty),
+                LastName = ClientLastNameVO.Create(rawLastName?.ToUpper() ?? string.Empty),
+                ShipAddress = ShipAddressVO.Create(rawShipAddress?.ToUpper() ?? string.Empty),
+                Email = ClientEmailVO.Create(rawEmail?.ToUpper() ?? string.Empty),
+                Phone = ClientPhoneVO.Create(rawPhone?.ToUpper() ?? string.Empty),
+                TaxId = ClientTaxIdVO.Create(rawTaxId?.ToUpper() ?? string.Empty),
+                DocNumber = DocNumberVO.Create(rawDocNumber?.ToUpper() ?? string.Empty),
                 IsActive = isActive,
-                IsDeleted = isDeleted
+                IsDeleted = isDeleted,
+                DVH = !string.IsNullOrEmpty(dvh) ? DvhVo.Create(dvh) : null
             };
         }
 
-        // --- COMPORTAMIENTO (Transiciones de Estado Seguras) ---
-
         public void MarkAsDeleted()
         {
-            if (IsDeleted) return; // Idempotencia
+            if (IsDeleted) return;
             IsDeleted = true;
-            IsActive = false; // Regla de negocio: un cliente borrado lógicamente no puede estar activo
+            IsActive = false;
         }
 
         public void Activate()
@@ -103,14 +92,10 @@ namespace Domain.Entities
             IsActive = true;
         }
 
-        public void Deactivate()
-        {
-            IsActive = false;
-        }
+        public void Deactivate() => IsActive = false;
 
-        public override string ToString()
-            => $"{LastName.Value}, {Name.Value} ({DocNumber.Value})";
-
-
+        public override string ToString() => string.Format($"{LastName.Value}, {Name.Value} ({DocNumber.Value})");
+       
+        public void UpdateDvh(string dvh) => this.DVH = DvhVo.Create(dvh);
     }
 }

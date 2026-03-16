@@ -19,9 +19,13 @@ namespace BLL.LogicLayers.Sales
                 Id = detail.Id,
                 SaleId = detail.SaleId,
                 ProductId = detail.ProductId,
-                Quantity = detail.Quantity.Value,    // QuantityVO → decimal
-                UnitPrice = detail.UnitPrice.Value,  // UnitPriceVO → decimal
-                Subtotal = detail.Subtotal           // Ya es primitivo (decimal)
+                Quantity = detail.Quantity.Value,
+                UnitPrice = detail.UnitPrice.Value,
+                Subtotal = detail.Subtotal,
+
+                // --- CAMPOS TÉCNICOS SINCRONIZADOS ---
+                IsDeleted = detail.IsDeleted,
+                DVH = detail.DVH?.Value ?? string.Empty
             };
         }
 
@@ -32,6 +36,7 @@ namespace BLL.LogicLayers.Sales
         {
             if (dto == null) return null;
 
+            // Usamos Reconstitute pasando el estado técnico completo
             return SaleDetail.Reconstitute
             (
                 id: dto.Id,
@@ -39,7 +44,9 @@ namespace BLL.LogicLayers.Sales
                 productId: dto.ProductId,
                 quantityRaw: dto.Quantity,
                 unitPriceRaw: dto.UnitPrice,
-                subtotal: dto.Subtotal
+                subtotal: dto.Subtotal,
+                isDeleted: dto.IsDeleted, // Parámetro agregado
+                dvh: dto.DVH              // Parámetro agregado
             );
         }
 

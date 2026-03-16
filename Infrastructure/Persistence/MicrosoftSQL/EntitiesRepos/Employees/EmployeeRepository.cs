@@ -15,50 +15,51 @@ namespace DAL.Persistence.MicrosoftSQL
         private SqlTransaction _currentTransaction;
         private readonly IApplicationSettings _appSettings;
 
-        private const string SQL_INSERT = @"INSERT INTO {0} (Id_Employee, DNI, Nombre, Apellido, Email, Telefono, Direccion, Activo, DVH, IsDeleted, FileNumber)
-                                            VALUES (@Id_Employee, @DNI, @Nombre, @Apellido, @Email, @Telefono, @Direccion, @Activo, @DVH, @IsDeleted, @FileNumber)";
-
-        private const string SQL_SOFT_DELETE = "UPDATE {0} SET IsDeleted = 1 WHERE Id_Employee = @Id";
-        private const string SQL_HARD_DELETE = "DELETE FROM {0} WHERE Id_Employee = @Id";
-        private const string SQL_SELECT_BY_ID = "SELECT * FROM {0} WHERE Id_Employee = @Id AND IsDeleted = 0";
-        private const string SQL_SELECT_ALL = "SELECT * FROM {0} WHERE IsDeleted = 0";
-        private const string SQL_SELECT_BY_FILE_NUMBER = "SELECT * FROM {0} WHERE FileNumber = @FileNumber AND IsDeleted = 0";
-        private const string SQL_SELECT_BY_NATIONALID = "SELECT * FROM {0} WHERE DNI = @DNI AND IsDeleted = 0";
-
-        private const string SQL_UPDATE = @"UPDATE {0} SET DNI = @DNI, Nombre = @Nombre, Apellido = @Apellido,
-                                            Email = @Email, Telefono = @Telefono, Direccion = @Direccion,
-                                            Activo = @Activo, DVH = @DVH, IsDeleted = @IsDeleted, 
-                                            FileNumber = @FileNumber
-                                            WHERE Id_Employee = @Id_Employee";
+        // Queries optimizadas y sincronizadas con los nombres de columna
+        private const string SQL_SELECT_BY_ID = "SELECT Id, FileNumber, FirstName, LastName, NationalId, Email, PhoneNumber, HomeAddress, Active, IsDeleted, DVH FROM {0} WHERE Id = @Id";
+        private const string SQL_SELECT_ALL = "SELECT Id, FileNumber, FirstName, LastName, NationalId, Email, PhoneNumber, HomeAddress, Active, IsDeleted, DVH FROM {0}";
+        private const string SQL_SELECT_BY_FILE_NUMBER = "SELECT Id, FileNumber, FirstName, LastName, NationalId, Email, PhoneNumber, HomeAddress, Active, IsDeleted, DVH FROM {0} WHERE FileNumber = @FileNumber";
+        private const string SQL_SELECT_BY_NATIONALID = "SELECT Id, FileNumber, FirstName, LastName, NationalId, Email, PhoneNumber, HomeAddress, Active, IsDeleted, DVH FROM {0} WHERE NationalId = @NationalId";
 
         public EmployeeRepository(IApplicationSettings appSettings) => _appSettings = appSettings;
 
         public void SetTransaction(object transaction) => _currentTransaction = (SqlTransaction)transaction;
 
-        public Task CreateAsync(Employee employee)
+        public Task CreateAsync(Employee entity)
         {
-            string query = string.Format(SQL_INSERT, _appSettings.EmployeeTableName);
-            return ExecuteNonQueryAsync(query, cmd => SetParameters(cmd, employee));
+            string query = string.Format(@"INSERT INTO {0} 
+                (Id, FileNumber, FirstName, LastName, NationalId, Email, PhoneNumber, HomeAddress, Active, IsDeleted, DVH) 
+                VALUES 
+                (@Id, @FileNumber, @FirstName, @LastName, @NationalId, @Email, @PhoneNumber, @HomeAddress, @Active, @IsDeleted, @DVH)",
+                _appSettings.EmployeeTableName);
+
+            return ExecuteNonQueryAsync(query, cmd => SetParameters(cmd, entity));
         }
 
-        public Task UpdateAsync(Employee employee)
+        public Task UpdateAsync(Employee entity)
         {
-            string query = string.Format(SQL_UPDATE, _appSettings.EmployeeTableName);
-            return ExecuteNonQueryAsync(query, cmd => SetParameters(cmd, employee));
+            string query = string.Format(@"UPDATE {0} SET 
+                FileNumber = @FileNumber, FirstName = @FirstName, LastName = @LastName, 
+                NationalId = @NationalId, Email = @Email, PhoneNumber = @PhoneNumber, 
+                HomeAddress = @HomeAddress, Active = @Active, IsDeleted = @IsDeleted, DVH = @DVH 
+                WHERE Id = @Id",
+                _appSettings.EmployeeTableName);
+
+            return ExecuteNonQueryAsync(query, cmd => SetParameters(cmd, entity));
         }
 
-        public async Task DeleteAsync(Guid entityId)
+        public Task DeleteAsync(Guid id)
         {
-            string query = string.Format(SQL_SOFT_DELETE, _appSettings.EmployeeTableName);
-            await ExecuteNonQueryAsync(query, cmd =>
-                cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = entityId }));
+            // HARD DELETE: Eliminación física del registro
+            string query = string.Format("DELETE FROM {0} WHERE Id = @Id", _appSettings.EmployeeTableName);
+            return ExecuteNonQueryAsync(query, cmd => cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = id }));
         }
 
         public async Task<Employee> GetByIdAsync(Guid id)
         {
             Employee employee = null;
             string query = string.Format(SQL_SELECT_BY_ID, _appSettings.EmployeeTableName);
-      
+
             await ExecuteReaderAsync(query,
                 cmd => cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = id }),
                 reader => employee = Map(reader));
@@ -70,6 +71,7 @@ namespace DAL.Persistence.MicrosoftSQL
         {
             var employees = new List<Employee>();
             string query = string.Format(SQL_SELECT_ALL, _appSettings.EmployeeTableName);
+
             await ExecuteReaderAsync(query, null, reader => employees.Add(Map(reader)));
             return employees;
         }
@@ -78,9 +80,11 @@ namespace DAL.Persistence.MicrosoftSQL
         {
             Employee employee = null;
             string query = string.Format(SQL_SELECT_BY_FILE_NUMBER, _appSettings.EmployeeTableName);
+
             await ExecuteReaderAsync(query,
-                cmd => cmd.Parameters.Add(new SqlParameter("@FileNumber", SqlDbType.VarChar) { Value = fileNumber }),
+                cmd => cmd.Parameters.Add(new SqlParameter("@FileNumber", SqlDbType.NVarChar) { Value = fileNumber ?? string.Empty }),
                 reader => employee = Map(reader));
+
             return employee;
         }
 
@@ -88,45 +92,45 @@ namespace DAL.Persistence.MicrosoftSQL
         {
             Employee employee = null;
             string query = string.Format(SQL_SELECT_BY_NATIONALID, _appSettings.EmployeeTableName);
+
             await ExecuteReaderAsync(query,
-                cmd => cmd.Parameters.Add(new SqlParameter("@DNI", SqlDbType.VarChar) { Value = nationalId }),
+                cmd => cmd.Parameters.Add(new SqlParameter("@NationalId", SqlDbType.NVarChar) { Value = nationalId ?? string.Empty }),
                 reader => employee = Map(reader));
+
             return employee;
         }
 
+        // --- MÉTODOS PRIVADOS ---
 
-
-        // --- MÉTODOS PRIVADOS DE INFRAESTRUCTURA ---
-
-        private void SetParameters(SqlCommand cmd, Employee employee)
+        private void SetParameters(SqlCommand cmd, Employee entity)
         {
-            cmd.Parameters.Add(new SqlParameter("@Id_Employee", SqlDbType.UniqueIdentifier) { Value = employee.Id });
-            cmd.Parameters.Add(new SqlParameter("@DNI", SqlDbType.VarChar) { Value = (object)employee.NationalId?.Value ?? DBNull.Value });
-            cmd.Parameters.Add(new SqlParameter("@Nombre", SqlDbType.VarChar) { Value = (object)employee.FirstName?.Value ?? DBNull.Value });
-            cmd.Parameters.Add(new SqlParameter("@Apellido", SqlDbType.VarChar) { Value = (object)employee.LastName?.Value ?? DBNull.Value });
-            cmd.Parameters.Add(new SqlParameter("@Email", SqlDbType.VarChar) { Value = (object)employee.Email?.Value ?? DBNull.Value });
-            cmd.Parameters.Add(new SqlParameter("@Telefono", SqlDbType.VarChar) { Value = (object)employee.PhoneNumber?.Value ?? DBNull.Value });
-            cmd.Parameters.Add(new SqlParameter("@Direccion", SqlDbType.VarChar) { Value = (object)employee.HomeAddress?.Value ?? DBNull.Value });
-            cmd.Parameters.Add(new SqlParameter("@Activo", SqlDbType.Bit) { Value = employee.Active });
-            cmd.Parameters.Add(new SqlParameter("@DVH", SqlDbType.VarChar) { Value = (object)employee.DVH ?? DBNull.Value });
-            cmd.Parameters.Add(new SqlParameter("@IsDeleted", SqlDbType.Bit) { Value = employee.IsDeleted });
-            cmd.Parameters.Add(new SqlParameter("@FileNumber", SqlDbType.VarChar) { Value = (object)employee.FileNumber?.Value ?? DBNull.Value });
+            cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = entity.Id });
+            cmd.Parameters.Add(new SqlParameter("@FileNumber", SqlDbType.NVarChar) { Value = entity.FileNumber?.Value ?? string.Empty });
+            cmd.Parameters.Add(new SqlParameter("@FirstName", SqlDbType.NVarChar) { Value = entity.FirstName?.Value ?? string.Empty });
+            cmd.Parameters.Add(new SqlParameter("@LastName", SqlDbType.NVarChar) { Value = entity.LastName?.Value ?? string.Empty });
+            cmd.Parameters.Add(new SqlParameter("@NationalId", SqlDbType.NVarChar) { Value = entity.NationalId?.Value ?? string.Empty });
+            cmd.Parameters.Add(new SqlParameter("@Email", SqlDbType.NVarChar) { Value = entity.Email?.Value ?? string.Empty });
+            cmd.Parameters.Add(new SqlParameter("@PhoneNumber", SqlDbType.NVarChar) { Value = entity.PhoneNumber?.Value ?? string.Empty });
+            cmd.Parameters.Add(new SqlParameter("@HomeAddress", SqlDbType.NVarChar) { Value = entity.HomeAddress?.Value ?? string.Empty });
+            cmd.Parameters.Add(new SqlParameter("@Active", SqlDbType.Bit) { Value = entity.Active });
+            cmd.Parameters.Add(new SqlParameter("@IsDeleted", SqlDbType.Bit) { Value = entity.IsDeleted });
+            cmd.Parameters.Add(new SqlParameter("@DVH", SqlDbType.NVarChar) { Value = (object)entity.DVH?.Value ?? DBNull.Value });
         }
 
         private Employee Map(SqlDataReader reader)
         {
             return Employee.Reconstitute(
-                id: (Guid)reader["Id_Employee"],
-                rawFileNumber: reader["NroLegajo"]?.ToString() ?? string.Empty,
-                rawFirstName: reader["Nombre"]?.ToString() ?? string.Empty,
-                rawLastName: reader["Apellido"]?.ToString() ?? string.Empty,
-                rawNationalId: reader["DNI"]?.ToString() ?? string.Empty,
-                rawEmail: reader["Email"]?.ToString() ?? string.Empty,
-                rawPhoneNumber: reader["Telefono"]?.ToString() ?? string.Empty,
-                rawHomeAddress: reader["Direccion"]?.ToString() ?? string.Empty,
-                dvh: reader["DVH"]?.ToString() ?? string.Empty,
-                active: (bool)reader["Activo"],
-                isDeleted: (bool)reader["IsDeleted"]
+                (Guid)reader["Id"],
+                reader["FileNumber"].ToString(),
+                reader["FirstName"].ToString(),
+                reader["LastName"].ToString(),
+                reader["NationalId"].ToString(),
+                reader["Email"].ToString(),
+                reader["PhoneNumber"].ToString(),
+                reader["HomeAddress"].ToString(),
+                reader["DVH"] == DBNull.Value ? string.Empty : reader["DVH"].ToString(),
+                (bool)reader["Active"],
+                (bool)reader["IsDeleted"]
             );
         }
 
@@ -135,6 +139,7 @@ namespace DAL.Persistence.MicrosoftSQL
             SqlConnection conn = _currentTransaction?.Connection;
             bool isExternalConn = conn != null;
             if (!isExternalConn) conn = new SqlConnection(_appSettings.EntitiesConnection);
+
             try
             {
                 using (var cmd = new SqlCommand(query, conn))
@@ -153,43 +158,31 @@ namespace DAL.Persistence.MicrosoftSQL
 
         private async Task ExecuteReaderAsync(string query, Action<SqlCommand> parameterSetter, Action<SqlDataReader> mapAction)
         {
-            SqlConnection conn;
-            SqlTransaction trans = _currentTransaction;
-
-            if (trans != null && trans.Connection.ConnectionString == _appSettings.EntitiesConnection)
-            {
-                conn = trans.Connection;
-            }
-            else
-            {
-                conn = new SqlConnection(_appSettings.EntitiesConnection);
-                trans = null;
-            }
-
-            bool managedExternally = (trans != null);
+            SqlConnection conn = _currentTransaction?.Connection;
+            bool isExternalConn = conn != null;
+            if (!isExternalConn) conn = new SqlConnection(_appSettings.EntitiesConnection);
 
             try
             {
                 using (var cmd = new SqlCommand(query, conn))
                 {
-                    if (managedExternally) cmd.Transaction = trans;
+                    if (isExternalConn) cmd.Transaction = _currentTransaction;
                     parameterSetter?.Invoke(cmd);
-
-                    if (conn.State != ConnectionState.Open) await conn.OpenAsync();
+                    if (!isExternalConn) await conn.OpenAsync();
 
                     using (var reader = await cmd.ExecuteReaderAsync())
                     {
-                        while (await reader.ReadAsync()) mapAction(reader);
+                        while (await reader.ReadAsync())
+                        {
+                            mapAction(reader);
+                        }
                     }
                 }
             }
             finally
             {
-                if (!managedExternally) conn.Dispose();
+                if (!isExternalConn) conn.Dispose();
             }
         }
-
-
-
     }
 }

@@ -12,13 +12,13 @@ namespace Domain.Entities
         public SupplierEmailVO Mail { get; private set; }
         public SupplierPhoneVO Phone { get; private set; }
         public SupplierTaxIdVO TaxId { get; private set; }
-        public SupplierAddressVO Address { get; private set; } 
-        public SupplierCityVO City { get; private set; }        
-        public SupplierObservationsVO Observations { get; private set; } 
+        public SupplierAddressVO Address { get; private set; }
+        public SupplierCityVO City { get; private set; }
+        public SupplierObservationsVO Observations { get; private set; }
 
 
         // --- CAMPOS TÉCNICOS Y DE ESTADO ---
-        public string DVH { get; private set; }
+        public DvhVo DVH { get; private set; }
         public bool Active { get; private set; }
         public bool IsDeleted { get; private set; }
 
@@ -39,21 +39,21 @@ namespace Domain.Entities
             string rawPhone,
             string rawMail,
             string rawAddress,
-            string rawCity,   
+            string rawCity,
             string observations = ""
         )
         {
             return new Supplier
             {
-                CompanyName = CompanyNameVO.Create(rawCompanyName), 
+                CompanyName = CompanyNameVO.Create(rawCompanyName),
                 ContactName = ContactNameVO.Create(rawContactName),
                 TaxId = SupplierTaxIdVO.Create(rawTaxId),
                 Phone = SupplierPhoneVO.Create(rawPhone),
                 Mail = SupplierEmailVO.Create(rawMail),
-                Address = SupplierAddressVO.Create(rawAddress), 
-                City = SupplierCityVO.Create(rawCity),          
+                Address = SupplierAddressVO.Create(rawAddress),
+                City = SupplierCityVO.Create(rawCity),
                 Observations = SupplierObservationsVO.Create(observations),
-                DVH = string.Empty,
+                DVH = null,
                 Active = true,
                 IsDeleted = false
             };
@@ -70,8 +70,8 @@ namespace Domain.Entities
             string rawTaxId,
             string rawPhone,
             string rawMail,
-            string rawAddress, 
-            string rawCity,    
+            string rawAddress,
+            string rawCity,
             string observations,
             string dvh,
             bool active,
@@ -87,9 +87,9 @@ namespace Domain.Entities
                 Phone = SupplierPhoneVO.Create(rawPhone),
                 Mail = SupplierEmailVO.Create(rawMail),
                 Address = SupplierAddressVO.Create(rawAddress),
-                City = SupplierCityVO.Create(rawCity),         
+                City = SupplierCityVO.Create(rawCity),
                 Observations = SupplierObservationsVO.Create(observations),
-                DVH = dvh ?? string.Empty,
+                DVH = !string.IsNullOrEmpty(dvh) ? DvhVo.Create(dvh) : null,
                 Active = active,
                 IsDeleted = isDeleted
             };
@@ -105,6 +105,8 @@ namespace Domain.Entities
             Active = false;
         }
 
+        public void UpdateDVH(string dvh) => DVH = DvhVo.Create(dvh);
+
         public void Activate()
         {
             if (IsDeleted)
@@ -112,13 +114,9 @@ namespace Domain.Entities
             Active = true;
         }
 
-        public void Deactivate()
-        {
-            Active = false;
-        }
+        public void Deactivate() => Active = false;
 
-    
-        public override string ToString()
-            => $"{CompanyName.Value} (TaxId: {TaxId.Value})";
+
+        public override string ToString() => $"{CompanyName.Value} (TaxId: {TaxId.Value})";
     }
 }

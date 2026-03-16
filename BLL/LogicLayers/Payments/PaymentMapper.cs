@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using BLL.DTOs;
+using Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,51 +8,71 @@ namespace BLL.LogicLayers
 {
     public static class PaymentMapper
     {
-        public static PaymentDTO ToDto(Payment payment)
+        /// <summary>
+        /// Entidad -> DTO
+        /// </summary>
+        public static PaymentDTO ToDto(Payment entity)
         {
-            if (payment == null) return null;
+            if (entity == null) return null;
 
             return new PaymentDTO
             {
-                Id = payment.Id,
-                // Extraemos el valor primitivo (decimal) del VO
-                Amount = payment.Amount?.Value ?? 0m,
-                CreationDate = payment.CreationDate,
-                EffectiveDate = payment.EffectiveDate,
-                ClientId = payment.ClientId,
-                Method = payment.Method?.Value,
-                Reference = payment.Reference?.Value
+                Id = entity.Id,
+                Amount = entity.Amount != null ? entity.Amount.Value : 0m,
+                CreationDate = entity.CreationDate,
+                EffectiveDate = entity.EffectiveDate,
+                ClientId = entity.ClientId,
+                Method = entity.Method != null ? entity.Method.Value : string.Empty,
+                Reference = entity.Reference != null ? entity.Reference.Value : string.Empty,
+                IsDeleted = entity.IsDeleted,
+                DVH = entity.DVH != null ? entity.DVH.Value : string.Empty
             };
         }
 
-        public static Payment ToEntity(PaymentDTO paymentDto)
+        /// <summary>
+        /// DTO -> Entidad (Con disquisición según Id)
+        /// </summary>
+        public static Payment ToEntity(PaymentDTO dto)
         {
-            if (paymentDto == null) return null;
+            if (dto == null) return null;
 
-            // Reconstituimos usando los tipos nativos que ahora tiene el DTO
-            return Payment.Reconstitute
-            (
-                id: paymentDto.Id,
-                rawAmount: paymentDto.Amount,
-                creationDate: paymentDto.CreationDate,
-                effectiveDate: paymentDto.EffectiveDate,
-                clientId: paymentDto.ClientId,
-                rawMethod: paymentDto.Method,
-                rawReference: paymentDto.Reference,
-                dvh: string.Empty // Se calcula en la BLL
-            );
+            // DISQUISICIÓN: Si el Id es Empty, es un pago nuevo (Alta)
+            if (dto.Id == Guid.Empty)
+            {
+                return Payment.Create(
+                    dto.Amount,
+                    dto.ClientId,
+                    dto.Method ?? string.Empty,
+                    dto.Reference ?? string.Empty
+                );
+            }
+            else
+            {
+                // Si tiene Id, es persistencia (Reconstitución)
+                return Payment.Reconstitute(
+                    dto.Id,
+                    dto.Amount,
+                    dto.CreationDate,
+                    dto.EffectiveDate,
+                    dto.ClientId,
+                    dto.Method ?? string.Empty,
+                    dto.Reference ?? string.Empty,
+                    dto.DVH ?? string.Empty,
+                    dto.IsDeleted
+                );
+            }
         }
 
-        public static IEnumerable<PaymentDTO> ToListDto(IEnumerable<Payment> payments)
+        // --- Mapeos de Colecciones ---
+
+        public static IEnumerable<PaymentDTO> ToDtoList(IEnumerable<Payment> entities)
         {
-            if (payments == null) return Enumerable.Empty<PaymentDTO>();
-            return payments.Select(ToDto).ToList();
+            return entities?.Select(e => ToDto(e)).ToList() ?? new List<PaymentDTO>();
         }
 
-        public static IEnumerable<Payment> ToListEntity(IEnumerable<PaymentDTO> paymentDtos)
+        public static IEnumerable<Payment> ToEntityList(IEnumerable<PaymentDTO> dtos)
         {
-            if (paymentDtos == null) return Enumerable.Empty<Payment>();
-            return paymentDtos.Select(ToEntity).ToList();
+            return dtos?.Select(d => ToEntity(d)).ToList() ?? new List<Payment>();
         }
     }
 }

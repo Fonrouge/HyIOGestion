@@ -4,7 +4,7 @@ using System;
 
 namespace Domain.Entities
 {
-    public class SaleDetail : EntityBase
+    public class SaleDetail : EntityBase, ISoftDeletable
     {
         // --- PROPIEDADES DE DOMINIO (Rich Domain Model) ---
         public Guid SaleId { get; private set; }
@@ -12,6 +12,13 @@ namespace Domain.Entities
         public QuantityVO Quantity { get; private set; }
         public UnitPriceVO UnitPrice { get; private set; }
         public decimal Subtotal { get; private set; }   // Calculado automáticamente
+
+        // --- CAMPOS TÉCNICOS Y DE ESTADO ---
+        public bool IsDeleted { get; private set; }
+        public DvhVo DVH { get; private set; }
+
+
+
 
         // Constructor privado para forzar el uso de Factories
         private SaleDetail()
@@ -51,7 +58,9 @@ namespace Domain.Entities
             Guid productId,
             decimal quantityRaw,
             decimal unitPriceRaw,
-            decimal subtotal
+            decimal subtotal,
+            bool isDeleted,
+            string dvh = null
         )
         {
             return new SaleDetail
@@ -60,17 +69,17 @@ namespace Domain.Entities
                 SaleId = saleId,
                 ProductId = productId,
                 Quantity = QuantityVO.Create(quantityRaw),
-
                 UnitPrice = UnitPriceVO.Create(unitPriceRaw),
-                Subtotal = subtotal
+                Subtotal = subtotal,
+                IsDeleted = isDeleted,
+                DVH = !string.IsNullOrEmpty(dvh) ? DvhVo.Create(dvh) : null,
             };
         }
 
         // --- COMPORTAMIENTO ---
-        private void CalculateSubtotal()
-        {
-            Subtotal = Quantity.Value * UnitPrice.Value;
-        }
+        private void CalculateSubtotal() => Subtotal = Quantity.Value * UnitPrice.Value;
+
+        public void UpdateDVH(string dvh) => DVH = DvhVo.Create(dvh ?? string.Empty);
 
         /// <summary>
         /// Solo el agregado raíz (Sale) puede asignar el SaleId (protección DDD).
@@ -86,7 +95,6 @@ namespace Domain.Entities
             SaleId = saleId;
         }
 
-        public override string ToString()
-            => $"{Quantity.Value} x {UnitPrice.Value:C2} = {Subtotal:C2} (Producto: {ProductId})";
+        public override string ToString() => $"{Quantity.Value} x {UnitPrice.Value:C2} = {Subtotal:C2} (Producto: {ProductId})";
     }
 }

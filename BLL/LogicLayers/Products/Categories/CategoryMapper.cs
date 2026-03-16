@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -15,6 +16,7 @@ namespace BLL.LogicLayers
                 Id = entity.Id,
                 Name = entity.Name,
                 Description = entity.Description,
+                DVH = entity.DVH?.Value ?? string.Empty
             };
         }
 
@@ -22,12 +24,12 @@ namespace BLL.LogicLayers
         {
             if (dto == null) return null;
 
-            return new Category()
+            if (dto.Id == Guid.Empty)
             {
-                Id = dto.Id,
-                Name = dto.Name,
-                Description = dto.Description,
-            };
+                return Category.Create(dto.Name, dto.Description);
+            }
+
+            return Category.Reconstitute(dto.Id, dto.Name, dto.Description, dto.DVH);
         }
 
         public static IEnumerable<CategoryDTO> ToListDTO(IEnumerable<Category> entities)

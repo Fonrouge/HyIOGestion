@@ -8,8 +8,7 @@ namespace BLL.DTOs.Mappers
     public static class EmployeeMapper
     {
         /// <summary>
-        /// Convierte una Entidad de Dominio rica en un DTO plano (para la vista o API).
-        /// Desempaqueta los Value Objects obteniendo su .Value
+        /// Entidad -> DTO
         /// </summary>
         public static EmployeeDTO ToDto(Employee entity)
         {
@@ -18,84 +17,68 @@ namespace BLL.DTOs.Mappers
             return new EmployeeDTO()
             {
                 Id = entity.Id,
-                // Se extraemos el valor primitivo de cada Value Object
-                FileNumber = entity.FileNumber?.Value,
-                FirstName = entity.FirstName?.Value,
-                LastName = entity.LastName?.Value,
-                NationalId = entity.NationalId?.Value,
-                Email = entity.Email?.Value,
-                PhoneNumber = entity.PhoneNumber?.Value,
-                HomeAddress = entity.HomeAddress?.Value,
+                FileNumber = entity.FileNumber != null ? entity.FileNumber.Value : string.Empty,
+                FirstName = entity.FirstName != null ? entity.FirstName.Value : string.Empty,
+                LastName = entity.LastName != null ? entity.LastName.Value : string.Empty,
+                NationalId = entity.NationalId != null ? entity.NationalId.Value : string.Empty,
+                Email = entity.Email != null ? entity.Email.Value : string.Empty,
+                PhoneNumber = entity.PhoneNumber != null ? entity.PhoneNumber.Value : string.Empty,
+                HomeAddress = entity.HomeAddress != null ? entity.HomeAddress.Value : string.Empty,
 
-                // Tipos primitivos directos
                 IsDeleted = entity.IsDeleted,
                 Active = entity.Active,
-                DVH = entity.DVH
+                DVH = entity.DVH != null ? entity.DVH.Value : string.Empty
             };
         }
 
         /// <summary>
-        /// Convierte un DTO plano en una Entidad de Dominio.
-        /// Los strings crudos pasarán por el validador de los Value Objects automáticamente.
+        /// DTO -> Entidad (Con disquisición Create vs Reconstitute)
         /// </summary>
         public static Employee ToEntity(EmployeeDTO dto)
         {
             if (dto == null) return null;
 
-            // Dependiendo de si el DTO trae un ID válido o no, decidimos si estamos
-            // creando un Empleado NUEVO o reconstituyendo uno EXISTENTE.
+            // DISQUISICIÓN: ¿Es nuevo o viene de la DB?
             if (dto.Id == Guid.Empty)
             {
-                // Es un empleado nuevo (no tiene ID asignado desde el frontend)
-                return Employee.Create
-                (
-                    rawFileNumber: dto.FileNumber,
-                    rawFirstName: dto.FirstName,
-                    rawLastName: dto.LastName,
-                    rawNationalId: dto.NationalId,
-                    rawEmail: dto.Email,
-                    rawPhoneNumber: dto.PhoneNumber,
-                    rawHomeAddress: dto.HomeAddress
+                // Lógica de CREACIÓN (Nueva Entidad)
+                return Employee.Create(
+                    dto.FileNumber,
+                    dto.FirstName,
+                    dto.LastName,
+                    dto.NationalId,
+                    dto.Email,
+                    dto.PhoneNumber,
+                    dto.HomeAddress
                 );
             }
             else
             {
-                // Es un empleado existente (viene con ID para una actualización, por ejemplo)
-                return Employee.Reconstitute
-                (
-                    id: dto.Id,
-                    rawFileNumber: dto.FileNumber,
-                    rawFirstName: dto.FirstName,
-                    rawLastName: dto.LastName,
-                    rawNationalId: dto.NationalId,
-                    rawEmail: dto.Email,
-                    rawPhoneNumber: dto.PhoneNumber,
-                    rawHomeAddress: dto.HomeAddress,
-                    dvh: dto.DVH,
-                    active: dto.Active,
-                    isDeleted: dto.IsDeleted // Asumimos que no viaja en el DTO, o lo agregas si lo necesitas
+                // Lógica de RECONSTITUCIÓN (Entidad Existente)
+                return Employee.Reconstitute(
+                    dto.Id,
+                    dto.FileNumber,
+                    dto.FirstName,
+                    dto.LastName,
+                    dto.NationalId,
+                    dto.Email,
+                    dto.PhoneNumber,
+                    dto.HomeAddress,
+                    dto.DVH,
+                    dto.Active,
+                    dto.IsDeleted
                 );
             }
         }
 
-        /// <summary>
-        /// Convierte una lista de Entidades a una lista de DTOs.
-        /// </summary>
         public static IEnumerable<EmployeeDTO> ToListDTO(IEnumerable<Employee> entities)
         {
-            if (entities == null) return Enumerable.Empty<EmployeeDTO>();
-
-            return entities.Select(ToDto).ToList();
+            return entities?.Select(e => ToDto(e)).ToList() ?? new List<EmployeeDTO>();
         }
 
-        /// <summary>
-        /// Convierte una lista de DTOs a una lista de Entidades.
-        /// </summary>
         public static IEnumerable<Employee> ToListEntity(IEnumerable<EmployeeDTO> dtos)
         {
-            if (dtos == null) return Enumerable.Empty<Employee>();
-
-            return dtos.Select(ToEntity).ToList();
+            return dtos?.Select(d => ToEntity(d)).ToList() ?? new List<Employee>();
         }
     }
 }

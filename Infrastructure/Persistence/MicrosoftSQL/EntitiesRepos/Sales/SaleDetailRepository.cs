@@ -18,21 +18,21 @@ namespace DAL.Persistence.MicrosoftSQL
             _appSettings = appSettings;
         }
 
-        public void SetTransaction(object transaction)
-        {
-            _currentTransaction = (SqlTransaction)transaction;
-        }
+        public void SetTransaction(object transaction) => _currentTransaction = (SqlTransaction)transaction;
+
+        // --- ACCIONES DE PERSISTENCIA ---
 
         public Task CreateAsync(SaleDetail entity) =>
             ExecuteNonQueryAsync(
-                @"INSERT INTO SaleDetails (Id, SaleId, ProductId, Quantity, UnitPrice)
-                  VALUES (@Id, @SaleId, @ProductId, @Quantity, @UnitPrice)",
+                @"INSERT INTO SaleDetails (Id, SaleId, ProductId, Quantity, UnitPrice, IsDeleted, DVH)
+                  VALUES (@Id, @SaleId, @ProductId, @Quantity, @UnitPrice, @IsDeleted, @DVH)",
                 cmd => SetParameters(cmd, entity));
 
         public Task UpdateAsync(SaleDetail entity) =>
             ExecuteNonQueryAsync(
-                @"UPDATE SaleDetails SET SaleId = @SaleId, ProductId = @ProductId,
-                    Quantity = @Quantity, UnitPrice = @UnitPrice
+                @"UPDATE SaleDetails 
+                  SET SaleId = @SaleId, ProductId = @ProductId, Quantity = @Quantity, 
+                      UnitPrice = @UnitPrice, IsDeleted = @IsDeleted, DVH = @DVH
                   WHERE Id = @Id",
                 cmd => SetParameters(cmd, entity));
 
@@ -40,11 +40,15 @@ namespace DAL.Persistence.MicrosoftSQL
             ExecuteNonQueryAsync("DELETE FROM SaleDetails WHERE Id = @Id",
                 cmd => cmd.Parameters.AddWithValue("@Id", entityId));
 
+        // --- MÉTODOS DE LECTURA ---
+
         public async Task<SaleDetail> GetByIdAsync(Guid id)
         {
             SaleDetail detail = null;
-            await ExecuteReaderAsync(
-                "SELECT Id, SaleId, ProductId, Quantity, UnitPrice FROM SaleDetails WHERE Id = @Id",
+            string query = @"SELECT Id, SaleId, ProductId, Quantity, UnitPrice, SubTotal, IsDeleted, DVH 
+                             FROM SaleDetails WHERE Id = @Id";
+
+            await ExecuteReaderAsync(query,
                 cmd => cmd.Parameters.AddWithValue("@Id", id),
                 reader => detail = Map(reader));
             return detail;
@@ -53,11 +57,48 @@ namespace DAL.Persistence.MicrosoftSQL
         public async Task<IEnumerable<SaleDetail>> GetAllAsync()
         {
             var details = new List<SaleDetail>();
-            await ExecuteReaderAsync(
-                "SELECT Id, SaleId, ProductId, Quantity, UnitPrice FROM SaleDetails",
-                null,
-                reader => details.Add(Map(reader)));
+            string query = @"SELECT Id, SaleId, ProductId, Quantity, UnitPrice, SubTotal, IsDeleted, DVH 
+                             FROM SaleDetails";
+
+            await ExecuteReaderAsync(query, null, reader => details.Add(Map(reader)));
             return details;
+        }
+
+        // --- MAPEO Y PARÁMETROS ---
+
+        private void SetParameters(SqlCommand cmd, SaleDetail entity)
+        {
+            cmd.Parameters.AddWithValue("@Id", entity.Id);
+            cmd.Parameters.AddWithValue("@SaleId", entity.SaleId);
+            cmd.Parameters.AddWithValue("@ProductId", entity.ProductId);
+
+            // Usamos .Value (decimal) para soportar fracciones
+            cmd.Parameters.AddWithValue("@Quantity", entity.Quantity.Value);
+            cmd.Parameters.AddWithValue("@UnitPrice", entity.UnitPrice.Value);
+
+            // Campos de control
+            cmd.Parameters.AddWithValue("@IsDeleted", entity.IsDeleted);
+            cmd.Parameters.AddWithValue("@DVH", (object)entity.DVH?.Value ?? DBNull.Value);
+        }
+
+        private SaleDetail Map(SqlDataReader r)
+        {
+            // Recuperamos como decimal para mantener precisión
+            decimal qty = Convert.ToDecimal(r["Quantity"]);
+            decimal price = Convert.ToDecimal(r["UnitPrice"]);
+            decimal subtotal = Convert.ToDecimal(r["SubTotal"]);
+
+            // Reconstitución con los 8 parámetros sincronizados
+            return SaleDetail.Reconstitute(
+                id: (Guid)r["Id"],
+                saleId: (Guid)r["SaleId"],
+                productId: (Guid)r["ProductId"],
+                quantityRaw: qty,
+                unitPriceRaw: price,
+                subtotal: subtotal,
+                isDeleted: (bool)r["IsDeleted"],
+                dvh: r["DVH"]?.ToString() ?? string.Empty
+            );
         }
 
         // --- INFRAESTRUCTURA ---
@@ -107,28 +148,6 @@ namespace DAL.Persistence.MicrosoftSQL
             }
         }
 
-        private void SetParameters(SqlCommand cmd, SaleDetail entity)
-        {
-            cmd.Parameters.AddWithValue("@Id", entity.Id);
-            cmd.Parameters.AddWithValue("@SaleId", entity.SaleId);
-            cmd.Parameters.AddWithValue("@ProductId", entity.ProductId);
-            cmd.Parameters.AddWithValue("@Quantity", entity.Quantity.Value);
-            cmd.Parameters.AddWithValue("@UnitPrice", entity.UnitPrice.Value);
-        }
-
-        private SaleDetail Map(SqlDataReader r)
-        {
-            int qty = (int)r["Quantity"];
-            decimal price = (decimal)r["UnitPrice"];
-
-            return SaleDetail.Reconstitute(
-                id: (Guid)r["Id"],
-                saleId: (Guid)r["SaleId"],
-                productId: (Guid)r["ProductId"],
-                quantityRaw: qty,
-                unitPriceRaw: price,
-                subtotal: qty * price
-            );
-        }
+    
     }
 }

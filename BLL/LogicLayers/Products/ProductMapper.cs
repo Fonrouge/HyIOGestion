@@ -1,10 +1,9 @@
-﻿using BLL.LogicLayers;
-using Domain.Entities;
+﻿using Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BLL.LogicLayers // Ajusta el namespace según tu proyecto
+namespace BLL.LogicLayers 
 {
     public static class ProductMapper
     {
@@ -16,12 +15,14 @@ namespace BLL.LogicLayers // Ajusta el namespace según tu proyecto
             {
                 Id = entity.Id,
                 Name = entity.Name.Value,
-                Description = entity.Description.Value,              
+                Description = entity.Description.Value,
                 Price = entity.Price.Value,
-                Stock = (int)entity.Stock.Value,
+                Stock = entity.Stock.Value, // Sin casteo, mantenemos precisión
                 Categories = CategoryMapper.ToListDTO(entity.Categories).ToList(),
-                IsActive = entity.Active,     
-                CreatedAt = entity.CreatedAt
+                IsActive = entity.Active,
+                CreatedAt = entity.CreatedAt,
+                IsDeleted = entity.IsDeleted,
+                DVH = entity.DVH?.Value ?? string.Empty // Mapeamos el Value Object a string
             };
         }
 
@@ -34,8 +35,8 @@ namespace BLL.LogicLayers // Ajusta el namespace según tu proyecto
                 return Product.Create(
                     dto.Name,
                     dto.Description,
-                    dto.Price, 
-                    dto.Stock, 
+                    dto.Price,
+                    dto.Stock,
                     CategoryMapper.ToListEntity(dto.Categories)
                 );
             }
@@ -49,18 +50,12 @@ namespace BLL.LogicLayers // Ajusta el namespace según tu proyecto
                 CategoryMapper.ToListEntity(dto.Categories),
                 dto.IsActive,
                 dto.CreatedAt,
-                false 
+                dto.IsDeleted,
+                dto.DVH
             );
         }
+        public static IEnumerable<ProductDTO> ToListDTO(IEnumerable<Product> entities) => entities?.Select(ToDto) ?? Enumerable.Empty<ProductDTO>();
 
-        public static IEnumerable<ProductDTO> ToListDTO(IEnumerable<Product> entities)
-        {
-            return entities?.Select(ToDto) ?? Enumerable.Empty<ProductDTO>();
-        }
-
-        public static IEnumerable<Product> ToListEntity(IEnumerable<ProductDTO> dtos)
-        {
-            return dtos?.Select(ToEntity) ?? Enumerable.Empty<Product>();
-        }
+        public static IEnumerable<Product> ToListEntity(IEnumerable<ProductDTO> dtos) => dtos?.Select(ToEntity) ?? Enumerable.Empty<Product>();
     }
 }

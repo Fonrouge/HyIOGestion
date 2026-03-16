@@ -11,7 +11,7 @@ namespace BLL.DTOs
     public class UsuarioDTO : IDto
     {
         // 1. Propiedad plana. El Factory/Entidad es quien crea los IDs nuevos, no el DTO.
-        public Guid Id { get; set; }
+        public Guid Id { get; set; } = Guid.Empty;
 
         public string Username { get; set; }
         public string Password { get; set; }

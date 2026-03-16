@@ -113,19 +113,15 @@ namespace BLL.UseCases //=======================================================
                 result.SessionID = currentSession.Id;
 
                 // 5. Auditoría
-                await AuditLoginAsync(currentSession);
-
-                // Commit final
-                await _uow.CommitAsync();
+                await AuditLoginAsync(currentSession)                var permissionsDtosCode = new List<string>();
+w.CommitAsync();
 
                 result.Value = userDto;
-            }
-            // ... (el catch queda igual) ...
-            catch (Exception ex)
-            {
+        
+                    permissionsDtosCode.Add(p.Nombre);tch (Exception ex)
+           {
                 if (_uow.HasActiveTransaction)
-                {
-                    await _uow.RollbackAsync();
+         permissionsDtosCode           await _uow.RollbackAsync();
                 }
 
                 // 1. Guardar el error técnico en la base de datos (vital para el soporte)

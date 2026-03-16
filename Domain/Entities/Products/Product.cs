@@ -18,6 +18,7 @@ namespace Domain.Entities
         public bool Active { get; private set; }
         public DateTime CreatedAt { get; private set; }
         public bool IsDeleted { get; private set; }
+        public DvhVo DVH { get; private set; }
 
 
         // Constructor privado para forzar el uso de Factories
@@ -34,7 +35,8 @@ namespace Domain.Entities
             string rawDescription,
             decimal rawPrice,
             decimal rawStock,
-            IEnumerable<Category> categories = null
+            IEnumerable<Category> categories = null,
+            string dvh = null
         )
         {
             return new Product
@@ -47,7 +49,8 @@ namespace Domain.Entities
                 Categories = categories != null ? new List<Category>(categories) : new List<Category>(),
                 Active = true,
                 CreatedAt = DateTime.UtcNow,
-                IsDeleted = false
+                IsDeleted = false,
+                DVH = null
             };
         }
 
@@ -64,7 +67,8 @@ namespace Domain.Entities
             IEnumerable<Category> categories,
             bool active,
             DateTime createdAt,
-            bool isDeleted
+            bool isDeleted,
+            string dvh
         )
         {
             return new Product
@@ -77,7 +81,8 @@ namespace Domain.Entities
                 Categories = categories != null ? new List<Category>(categories) : new List<Category>(),
                 Active = active,
                 CreatedAt = createdAt,
-                IsDeleted = isDeleted
+                IsDeleted = isDeleted,
+                DVH = !string.IsNullOrEmpty(dvh) ? DvhVo.Create(dvh) : null,
             };
         }
 
@@ -97,10 +102,10 @@ namespace Domain.Entities
             Active = true;
         }
 
-        public void Deactivate()
-        {
-            Active = false;
-        }
+        public void Deactivate() => Active = false;
+
+        public void UpdateDVH(string dvh) => DVH = DvhVo.Create(dvh);
+
         /// <summary>
         /// Reduce la cantidad de stock disponible. 
         /// Valida que no se intente reducir una cantidad negativa y que haya stock suficiente.

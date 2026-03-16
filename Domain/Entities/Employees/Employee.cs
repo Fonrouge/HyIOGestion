@@ -10,19 +10,19 @@ namespace Domain.Entities
         public FirstNameVO FirstName { get; private set; }
         public LastNameVO LastName { get; private set; }
         public NationalIdVO NationalId { get; private set; }
-        
+
         public FileNumberVO FileNumber { get; private set; }
         public EmployeeEmailVO Email { get; private set; }
         public EmployeePhoneNumberVO PhoneNumber { get; private set; }
         public HomeAddressVO HomeAddress { get; private set; }
 
-        
+
         // --- CAMPOS TÉCNICOS Y DE ESTADO ---
-        public string DVH { get; private set; }
+        public DvhVo DVH { get; private set; }
         public bool Active { get; private set; }
         public bool IsDeleted { get; private set; }
 
-        
+
         // Constructor privado para forzar el uso de Factories
         private Employee() { }
 
@@ -52,7 +52,7 @@ namespace Domain.Entities
                 Email = EmployeeEmailVO.Create(rawEmail.ToUpper()),
                 PhoneNumber = EmployeePhoneNumberVO.Create(rawPhoneNumber.ToUpper()),
                 HomeAddress = HomeAddressVO.Create(rawHomeAddress.ToUpper()),
-                DVH = string.Empty, // Se calculará después de instanciarlo
+                DVH = null, // Se calculará después de instanciarlo
                 Active = true,
                 IsDeleted = false
             };
@@ -73,24 +73,24 @@ namespace Domain.Entities
             string rawHomeAddress,
             string dvh,
             bool active,
-            bool isDeleted
-        )
+            bool isDeleted)
         {
-            return new Employee
+            var emp = new Employee()
             {
-                Id = Guid.Parse(id.ToString().ToUpper()),
-                FileNumber = FileNumberVO.Create(rawFileNumber.ToUpper()),
-                FirstName = FirstNameVO.Create(rawFirstName.ToUpper()),
-                LastName = LastNameVO.Create(rawLastName.ToUpper()),
-                NationalId = NationalIdVO.Create(rawNationalId.ToUpper()),
-                Email = EmployeeEmailVO.Create(rawEmail.ToUpper()),
-                PhoneNumber = EmployeePhoneNumberVO.Create(rawPhoneNumber.ToUpper()),
-                HomeAddress = HomeAddressVO.Create(rawHomeAddress.ToUpper()),
-                
-                DVH = dvh ?? string.Empty,
+                Id = id,
+                FileNumber = FileNumberVO.Create(rawFileNumber?.ToUpper() ?? string.Empty),
+                FirstName = FirstNameVO.Create(rawFirstName?.ToUpper() ?? string.Empty),
+                LastName = LastNameVO.Create(rawLastName?.ToUpper() ?? string.Empty),
+                NationalId = NationalIdVO.Create(rawNationalId?.ToUpper() ?? string.Empty),
+                Email = EmployeeEmailVO.Create(rawEmail?.ToUpper() ?? string.Empty),
+                PhoneNumber = EmployeePhoneNumberVO.Create(rawPhoneNumber?.ToUpper() ?? string.Empty),
+                HomeAddress = HomeAddressVO.Create(rawHomeAddress?.ToUpper() ?? string.Empty),
+                DVH = !string.IsNullOrEmpty(dvh) ? DvhVo.Create(dvh) : null,
                 Active = active,
                 IsDeleted = isDeleted
             };
+
+            return emp;
         }
 
         // --- COMPORTAMIENTO (Transiciones de Estado Seguras) ---
@@ -120,7 +120,7 @@ namespace Domain.Entities
             if (string.IsNullOrWhiteSpace(newDvh))
                 throw new ArgumentException("El DVH no puede estar vacío.", nameof(newDvh));
 
-            DVH = newDvh;
+            DVH = DvhVo.Create(newDvh);
         }
 
         public override string ToString()

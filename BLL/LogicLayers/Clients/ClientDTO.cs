@@ -1,6 +1,4 @@
-﻿using BLL.Infrastructure;
-using Domain.Entities.Employees.ValueObjects;
-using SharedAbstractions.ArchitecturalMarkers;
+﻿using SharedAbstractions.ArchitecturalMarkers;
 using System;
 using System.ComponentModel;
 
@@ -9,33 +7,54 @@ namespace BLL.DTOs
     public class ClientDTO : IDto
     {
         [Browsable(false)]
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public Guid Id { get; set; } = Guid.Empty;
 
-        public string Name { get; set; } = "N/I"; //Not Initialized / Not Implemented
-        public string LastName { get; set; } = "N/I";
+        public string Name { get; set; }
+        public string LastName { get; set; }
+
+        public string TaxId { get; set; }
+        public string DocNumber { get; set; }
+
+        public string ShipAddress { get; set; }
+
+        public string ShipCountry { get; set; }
+        public string ShipState { get; set; }
+        public string ShipZipCode { get; set; }
+
+        public string Email { get; set; }
+        public string Phone { get; set; }
+        public string Observations { get; set; }
+
+        // --- CAMPOS DE ESTADO Y CONTROL ---
+        public bool IsActive { get; set; }
+        public bool IsDeleted { get; set; }
+
+        [Browsable(false)]
+        public string DVH { get; set; }
 
 
-        public string TaxId { get; set; } = "N/I";// Documento de identidad (DNI, CUIT, etc.)
-        public string DocNumber { get; set; } = "N/I";// Documento de identidad (DNI, CUIT, etc.)
+        public ClientDTO()
+        {
+            Id = Guid.NewGuid();
+            Name = "N/I";
+            LastName = "N/I";
+            TaxId = "N/I";
+            DocNumber = "N/I";
+            ShipAddress = "N/I";
+            ShipCountry = "N/I";
+            ShipState = "N/I";
+            ShipZipCode = "N/I";
+            Email = "N/I";
+            Phone = "N/I";
+            Observations = "N/I";
+            IsActive = true;
+            IsDeleted = false;
+            DVH = "";
+        }
 
-
-        public string ShipCountry { get; set; } = "N/I";
-        public string ShipState { get; set; } = "N/I"; //Provincia        
-        public string ShipAddress { get; set; } = "N/I"; //De más
-        public string ShipZipCode { get; set; } = "N/I"; //De más
-
-
-
-        public string Email { get; set; } = "N/I";
-
-        public string Phone { get; set; } = "N/I";
-        public string Observations { get; set; } = "N/I";
-
-
-        public bool IsActive { get; set; } = true;
-
-
-        public override string ToString() => $"{LastName}, {Name} Mail: ({Email})";
-
+        public override string ToString()
+        {
+            return string.Format($"{LastName}, {Name} Mail: ({Email})");
+        }
     }
 }

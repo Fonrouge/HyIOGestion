@@ -1,58 +1,44 @@
 ﻿using Domain.BaseContracts;
-using Domain.Entities.Payments.ValueObjects; // Asegúrate de crear este namespace
+using Domain.Entities.Payments.ValueObjects;
 using System;
 
 namespace Domain.Entities
 {
     public class Payment : EntityBase, ISoftDeletable
     {
-        // --- PROPIEDADES DE DOMINIO ---
         public PaymentAmountVO Amount { get; private set; }
         public DateTime CreationDate { get; private set; }
         public DateTime EffectiveDate { get; private set; }
-
-        public Guid ClientId { get; private set; } // Identificador de relación
-
+        public Guid ClientId { get; private set; }
         public PaymentMethodVO Method { get; private set; }
         public PaymentReferenceVO Reference { get; private set; }
-
-        // --- CAMPOS TÉCNICOS ---
-        public string DVH { get; private set; } // Vital para proteger la integridad del monto y la fecha
-
+        public DvhVo DVH { get; private set; }
         public bool IsDeleted { get; private set; }
 
-        // Constructor privado para forzar el uso de Factories
         private Payment() { }
 
-        /// <summary>
-        /// ÚNICO punto de creación para un NUEVO Payment.
-        /// Asume que la fecha de creación y efectividad son el momento actual por defecto.
-        /// </summary>
         public static Payment Create(
             decimal rawAmount,
             Guid clientId,
             string rawMethod,
-            string rawReference = "")
+            string rawReference)
         {
+            var payment = new Payment();
             var now = DateTime.UtcNow;
 
-            return new Payment
-            {
-                // El Id se genera en EntityBase
-                Amount = PaymentAmountVO.Create(rawAmount),
-                CreationDate = now,
-                EffectiveDate = now,
-                ClientId = clientId,
-                Method = PaymentMethodVO.Create(rawMethod?.Trim()),
-                Reference = PaymentReferenceVO.Create(rawReference?.Trim()),
-                DVH = string.Empty
-            };
+            payment.Amount = PaymentAmountVO.Create(rawAmount);
+            payment.CreationDate = now;
+            payment.EffectiveDate = now;
+            payment.ClientId = clientId;
+            payment.Method = PaymentMethodVO.Create(rawMethod?.Trim() ?? string.Empty);
+            payment.Reference = PaymentReferenceVO.Create(rawReference?.Trim() ?? string.Empty);
+            payment.IsDeleted = false;
+            // DVH se calculará antes de persistir
+            return payment;
         }
 
-        /// <summary>
-        /// Reconstruye un Payment EXISTENTE desde la base de datos.
-        /// </summary>
-        public static Payment Reconstitute(
+        public static Payment Reconstitute
+        (
             Guid id,
             decimal rawAmount,
             DateTime creationDate,
@@ -60,45 +46,40 @@ namespace Domain.Entities
             Guid clientId,
             string rawMethod,
             string rawReference,
-            string dvh)
+            string dvh,
+            bool isDeleted)
         {
-            return new Payment
+            return new Payment()
             {
                 Id = id,
                 Amount = PaymentAmountVO.Create(rawAmount),
                 CreationDate = creationDate,
                 EffectiveDate = effectiveDate,
                 ClientId = clientId,
-                Method = PaymentMethodVO.Create(rawMethod),
-                Reference = PaymentReferenceVO.Create(rawReference),
-                DVH = dvh ?? string.Empty
+                Method = PaymentMethodVO.Create(rawMethod ?? string.Empty),
+                Reference = PaymentReferenceVO.Create(rawReference ?? string.Empty),
+                DVH = !string.IsNullOrEmpty(dvh) ? DvhVo.Create(dvh) : null,
+                IsDeleted = isDeleted
             };
         }
 
-        // --- COMPORTAMIENTO ---
-
-        /// <summary>
-        /// Permite actualizar la fecha efectiva si el pago se acredita en diferido (ej: Cheques o Transferencias que demoran).
-        /// </summary>
         public void MarkAsEffective(DateTime effectiveDate)
         {
             if (effectiveDate < CreationDate)
-                throw new InvalidOperationException("La fecha efectiva no puede ser anterior a la fecha de creación.");
+                throw new InvalidOperationException("La fecha efectiva no puede ser anterior a la de creación.");
 
             EffectiveDate = effectiveDate;
         }
 
         public void MarkAsDeleted()
         {
-            if (IsDeleted) return; 
-            IsDeleted = true;           
+            if (IsDeleted) return;
+            IsDeleted = true;
         }
 
         public void UpdateDVH(string newDvh)
         {
-            if (string.IsNullOrWhiteSpace(newDvh))
-                throw new ArgumentException("El DVH no puede estar vacío.", nameof(newDvh));
-            DVH = newDvh;
+            DVH = DvhVo.Create(newDvh ?? string.Empty);
         }
     }
 }

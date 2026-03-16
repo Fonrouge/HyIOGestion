@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseContracts\ISoftDeletable.cs" />
+    <Compile Include="Entities\DvhVo.cs" />
     <Compile Include="Entities\Clients\ValueObjects\ClientLastNameVO.cs" />
     <Compile Include="Entities\Clients\ValueObjects\ClientNameVO.cs" />
     <Compile Include="Entities\Clients\ValueObjects\DocNumberVO.cs" />

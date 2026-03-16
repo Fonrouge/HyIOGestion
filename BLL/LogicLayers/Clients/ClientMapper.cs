@@ -9,74 +9,79 @@ namespace BLL.LogicLayers
     public static class ClientMapper
     {
         /// <summary>
-        /// Mapea un DTO a una Entidad nueva (usando lógica de creación).
-        /// </summary>
-        public static Client ToEntity(ClientDTO dto)
-        {
-            // Usamos el método Create que definimos en la Entidad.
-            // Esto dispara todas las validaciones de los Value Objects.
-            return Client.Create(
-                dto.Name,
-                dto.LastName,
-                dto.ShipAddress,
-                dto.Email,
-                dto.Phone,
-                dto.TaxId,
-                dto.DocNumber
-            );
-        }
-
-        /// <summary>
-        /// Mapea una Entidad a un DTO para transporte de datos.
+        /// Entidad -> DTO
         /// </summary>
         public static ClientDTO ToDto(Client entity)
         {
+            if (entity == null) return null;
+
             return new ClientDTO
             {
                 Id = entity.Id,
-                Name = entity.Name.Value, // Accedemos a la propiedad .Value del VO
-                LastName = entity.LastName.Value,
-                ShipAddress = entity.ShipAddress.Value,
-                Email = entity.Email.Value,
-                Phone = entity.Phone.Value,
-                TaxId = entity.TaxId.Value,
-                DocNumber = entity.DocNumber.Value,
-                IsActive = entity.IsActive
+                // Extraemos valores de los Value Objects con chequeo de nulos
+                Name = entity.Name != null ? entity.Name.Value : string.Empty,
+                LastName = entity.LastName != null ? entity.LastName.Value : string.Empty,
+                ShipAddress = entity.ShipAddress != null ? entity.ShipAddress.Value : string.Empty,
+                Email = entity.Email != null ? entity.Email.Value : string.Empty,
+                Phone = entity.Phone != null ? entity.Phone.Value : string.Empty,
+                TaxId = entity.TaxId != null ? entity.TaxId.Value : string.Empty,
+                DocNumber = entity.DocNumber != null ? entity.DocNumber.Value : string.Empty,
+
+                IsActive = entity.IsActive,
+                IsDeleted = entity.IsDeleted,
+                DVH = entity.DVH != null ? entity.DVH.Value : string.Empty
             };
+        }
+
+        /// <summary>
+        /// DTO -> Entidad (Con disquisición Create vs Reconstitute)
+        /// </summary>
+        public static Client ToEntity(ClientDTO dto)
+        {
+            if (dto == null) return null;
+
+            // DISQUISICIÓN: Si el Id es Empty, es un cliente nuevo.
+            if (dto.Id == Guid.Empty)
+            {
+                return Client.Create(
+                    dto.Name,
+                    dto.LastName,
+                    dto.ShipAddress,
+                    dto.Email,
+                    dto.Phone,
+                    dto.TaxId,
+                    dto.DocNumber
+                );
+            }
+            else
+            {
+                // Si tiene Id, viene de la base de datos (Reconstitución)
+                return Client.Reconstitute(
+                    dto.Id,
+                    dto.Name,
+                    dto.LastName,
+                    dto.ShipAddress,
+                    dto.Email,
+                    dto.Phone,
+                    dto.TaxId,
+                    dto.DocNumber,
+                    dto.IsActive,
+                    dto.IsDeleted,
+                    dto.DVH
+                );
+            }
         }
 
         // --- Mapeos de Colecciones ---
 
-        public static IEnumerable<Client> ToEntityList(IEnumerable<ClientDTO> dtos)
-        {
-            if (dtos == null) return Enumerable.Empty<Client>();
-            return dtos.Select(ToEntity);
-        }
-
         public static IEnumerable<ClientDTO> ToDtoList(IEnumerable<Client> entities)
         {
-            if (entities == null) return Enumerable.Empty<ClientDTO>();
-            return entities.Select(ToDto);
+            return entities?.Select(e => ToDto(e)).ToList() ?? new List<ClientDTO>();
         }
 
-        /// <summary>
-        /// Caso especial: Si necesitas reconstruir entidades desde persistencia (DB/Json)
-        /// sin disparar las reglas de validación de "Nuevo Cliente".
-        /// </summary>
-        public static Client ToEntityFromStorage(ClientDTO dto, bool isDeleted)
+        public static IEnumerable<Client> ToEntityList(IEnumerable<ClientDTO> dtos)
         {
-            return Client.Reconstitute(
-                dto.Id,
-                dto.Name,
-                dto.LastName,
-                dto.ShipAddress,
-                dto.Email,
-                dto.Phone,
-                dto.TaxId,
-                dto.DocNumber,
-                dto.IsActive,
-                isDeleted
-            );
+            return dtos?.Select(d => ToEntity(d)).ToList() ?? new List<Client>();
         }
     }
 }

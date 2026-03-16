@@ -25,24 +25,24 @@ namespace DAL.Persistence.MicrosoftSQL
             _currentTransaction = (SqlTransaction)transaction;
         }
 
+
         public async Task CreateAsync(Product entity)
         {
-            // 1. Insertar el Producto
+            // 1. Insertar el Producto (Agregado DVH)
             string query = @"
                 INSERT INTO Products 
-                    (Id_Product, Name, Description, Price, Stock, IsActive, CreatedAt, IsDeleted)
+                    (Id_Product, Name, Description, Price, Stock, IsActive, CreatedAt, IsDeleted, DVH)
                 VALUES 
-                    (@Id, @Name, @Description, @Price, @Stock, @IsActive, @CreatedAt, @IsDeleted)";
+                    (@Id, @Name, @Description, @Price, @Stock, @IsActive, @CreatedAt, @IsDeleted, @DVH)";
 
             await ExecuteNonQueryAsync(query, cmd => SetParameters(cmd, entity));
 
-            // 2. Insertar las relaciones en ProductsCategories
+            // 2. Insertar las relaciones
             await SyncCategories(entity.Id, entity.Categories);
         }
-
         public async Task UpdateAsync(Product entity)
         {
-            // 1. Actualizar el Producto
+            // 1. Actualizar el Producto (Agregado DVH e IsDeleted)
             string query = @"
                 UPDATE Products
                 SET Name = @Name, 
@@ -51,12 +51,13 @@ namespace DAL.Persistence.MicrosoftSQL
                     Stock = @Stock, 
                     IsActive = @IsActive, 
                     CreatedAt = @CreatedAt,
-                    IsDeleted = @IsDeleted
+                    IsDeleted = @IsDeleted,
+                    DVH = @DVH
                 WHERE Id_Product = @Id";
 
             await ExecuteNonQueryAsync(query, cmd => SetParameters(cmd, entity));
 
-            // 2. Limpiar las relaciones viejas y guardar las nuevas
+            // 2. Sincronizar categorías (Borrado y re-inserción simple para consistencia)
             string deleteRelations = "DELETE FROM ProductsCategories WHERE Id_Product = @Id";
             await ExecuteNonQueryAsync(deleteRelations, cmd =>
                 cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = entity.Id }));
@@ -65,15 +66,11 @@ namespace DAL.Persistence.MicrosoftSQL
         }
 
         /// <summary>
-        /// Soft Delete (consistente con ISoftDeletable y la clase Employee)
+        /// Borrado FÍSICO. La BLL decidirá si llama a este o al Update para Soft Delete.
         /// </summary>
         public async Task DeleteAsync(Guid entityId)
         {
-            string query = @"
-                UPDATE Products 
-                SET IsDeleted = 1, 
-                    IsActive = 0 
-                WHERE Id_Product = @Id";
+            string query = "DELETE FROM Products WHERE Id_Product = @Id";
 
             await ExecuteNonQueryAsync(query, cmd =>
                 cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = entityId }));
@@ -82,52 +79,44 @@ namespace DAL.Persistence.MicrosoftSQL
         public async Task<Product> GetByIdAsync(Guid id)
         {
             Product product = null;
-
+            // Se quita filtro de IsDeleted para permitir "Recycle Bin"
             string query = @"
-                SELECT p.Id_Product, p.Name, p.Description, p.Price, p.Stock, p.IsActive, p.CreatedAt, p.IsDeleted,
+                SELECT p.Id_Product, p.Name, p.Description, p.Price, p.Stock, p.IsActive, p.CreatedAt, p.IsDeleted, p.DVH,
                        c.Id_Category, c.Name as CategoryName, c.Description as CategoryDesc
                 FROM Products p
                 LEFT JOIN ProductsCategories pc ON p.Id_Product = pc.Id_Product
                 LEFT JOIN Categories c ON pc.Id_Category = c.Id_Category
-                WHERE p.Id_Product = @Id 
-                  AND p.IsDeleted = 0";
+                WHERE p.Id_Product = @Id";
 
             await ExecuteReaderAsync(query,
                 cmd => cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = id }),
                 reader =>
                 {
-                    if (product == null)
-                        product = MapProduct(reader);
-
+                    if (product == null) product = MapProduct(reader);
                     MapCategoryToProduct(reader, product);
                 });
 
             return product;
         }
-
         public async Task<IEnumerable<Product>> GetAllAsync()
         {
             var productDictionary = new Dictionary<Guid, Product>();
-
             string query = @"
-                SELECT p.Id_Product, p.Name, p.Description, p.Price, p.Stock, p.IsActive, p.CreatedAt, p.IsDeleted,
+                SELECT p.Id_Product, p.Name, p.Description, p.Price, p.Stock, p.IsActive, p.CreatedAt, p.IsDeleted, p.DVH,
                        c.Id_Category, c.Name as CategoryName, c.Description as CategoryDesc
                 FROM Products p
                 LEFT JOIN ProductsCategories pc ON p.Id_Product = pc.Id_Product
                 LEFT JOIN Categories c ON pc.Id_Category = c.Id_Category
-                WHERE p.IsDeleted = 0
                 ORDER BY p.Name";
 
             await ExecuteReaderAsync(query, null, reader =>
             {
                 Guid productId = (Guid)reader["Id_Product"];
-
                 if (!productDictionary.TryGetValue(productId, out Product product))
                 {
                     product = MapProduct(reader);
                     productDictionary.Add(productId, product);
                 }
-
                 MapCategoryToProduct(reader, product);
             });
 
@@ -219,27 +208,13 @@ namespace DAL.Persistence.MicrosoftSQL
         {
             cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = entity.Id });
             cmd.Parameters.Add(new SqlParameter("@Name", SqlDbType.VarChar) { Value = entity.Name.Value });
-
-            if (string.IsNullOrEmpty(entity.Description?.Value))
-            {
-                cmd.Parameters.Add(new SqlParameter("@Description", SqlDbType.VarChar)
-                {
-                    Value = DBNull.Value
-                });
-            }
-            else
-            {
-                cmd.Parameters.Add(new SqlParameter("@Description", SqlDbType.VarChar)
-                {
-                    Value = entity.Description.Value
-                });
-            }
-
+            cmd.Parameters.Add(new SqlParameter("@Description", SqlDbType.VarChar) { Value = (object)entity.Description?.Value ?? DBNull.Value });
             cmd.Parameters.Add(new SqlParameter("@Price", SqlDbType.Decimal) { Value = entity.Price.Value });
-            cmd.Parameters.Add(new SqlParameter("@Stock", SqlDbType.Int) { Value = entity.Stock.Value });
+            cmd.Parameters.Add(new SqlParameter("@Stock", SqlDbType.Decimal) { Value = entity.Stock.Value });
             cmd.Parameters.Add(new SqlParameter("@IsActive", SqlDbType.Bit) { Value = entity.Active });
             cmd.Parameters.Add(new SqlParameter("@CreatedAt", SqlDbType.DateTime2) { Value = entity.CreatedAt });
             cmd.Parameters.Add(new SqlParameter("@IsDeleted", SqlDbType.Bit) { Value = entity.IsDeleted });
+            cmd.Parameters.Add(new SqlParameter("@DVH", SqlDbType.VarChar) { Value = (object)entity.DVH?.Value ?? DBNull.Value });
         }
 
         private async Task SyncCategories(Guid productId, IEnumerable<Category> categories)
@@ -263,21 +238,21 @@ namespace DAL.Persistence.MicrosoftSQL
         /// </summary>
         private Product MapProduct(SqlDataReader reader)
         {
+            // CORREGIDO: Se incluyen los 10 parámetros requeridos por Reconstitute
             return Product.Reconstitute(
                 id: (Guid)reader["Id_Product"],
                 rawName: reader["Name"].ToString(),
                 rawDescription: reader["Description"] != DBNull.Value ? reader["Description"].ToString() : string.Empty,
-
-                // ✅ Convert.ToDecimal es "todoterreno" y evita el InvalidCastException
                 rawPrice: Convert.ToDecimal(reader["Price"]),
                 rawStock: Convert.ToDecimal(reader["Stock"]),
-
-                categories: new List<Category>(),
+                categories: new List<Category>(), // Se llena luego en MapCategoryToProduct
                 active: (bool)reader["IsActive"],
                 createdAt: (DateTime)reader["CreatedAt"],
-                isDeleted: reader["IsDeleted"] != DBNull.Value && (bool)reader["IsDeleted"]
+                isDeleted: (bool)reader["IsDeleted"],
+                dvh: reader["DVH"] != DBNull.Value ? reader["DVH"].ToString() : string.Empty
             );
         }
+
         private void MapCategoryToProduct(SqlDataReader reader, Product product)
         {
             if (reader["Id_Category"] != DBNull.Value)
@@ -286,13 +261,15 @@ namespace DAL.Persistence.MicrosoftSQL
                 {
                     Id = (Guid)reader["Id_Category"],
                     Name = reader["CategoryName"].ToString(),
-                    Description = reader["CategoryDesc"] != DBNull.Value
-                        ? reader["CategoryDesc"].ToString()
-                        : string.Empty
+                    Description = reader["CategoryDesc"] != DBNull.Value ? reader["CategoryDesc"].ToString() : string.Empty
                 };
 
-                // Cast seguro porque sabemos que Categories es List<Category> internamente
-                ((List<Category>)product.Categories).Add(category);
+                // Agregamos a la colección interna del dominio
+                var list = (List<Category>)product.Categories;
+                if (!list.Any(c => c.Id == category.Id))
+                {
+                    list.Add(category);
+                }
             }
         }
     }
