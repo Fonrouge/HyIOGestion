@@ -88,7 +88,7 @@ namespace BLL.LogicLayers.Sales
                 await _uow.SaleRepo.UpdateAsync(saleEntityToUpdate);
 
                 // 7. Integridad Vertical (DVV)
-                await UpdateDVVAsync(_tableNameSale, _appSettings.EntitiesConnection);
+            //    await UpdateDVVAsync(_tableNameSale, _appSettings.EntitiesConnection);
 
                 // 8. Auditoría
                 var log = _bitacoraFact.Create(

@@ -27,9 +27,8 @@ namespace BLL.LogicLayers
                 TaxId = entity.TaxId != null ? entity.TaxId.Value : string.Empty,
                 DocNumber = entity.DocNumber != null ? entity.DocNumber.Value : string.Empty,
 
-                IsActive = entity.IsActive,
                 IsDeleted = entity.IsDeleted,
-                DVH = entity.DVH != null ? entity.DVH.Value : string.Empty
+                DVH = entity.DVH?.Value ?? string.Empty
             };
         }
 
@@ -65,7 +64,6 @@ namespace BLL.LogicLayers
                     dto.Phone,
                     dto.TaxId,
                     dto.DocNumber,
-                    dto.IsActive,
                     dto.IsDeleted,
                     dto.DVH
                 );

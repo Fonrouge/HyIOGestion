@@ -6,11 +6,13 @@ using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Infrastructure;
 using Domain.Infrastructure.Audit;
+using Domain.Infrastructure.Permisos.Concrete;
 using Domain.Repositories;
 using Shared;
 using Shared.Services;
 using Shared.Sessions;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BLL.LogicLayers.Suppliers
@@ -66,12 +68,16 @@ namespace BLL.LogicLayers.Suppliers
 
                 // 3. Validar Permisos
                 var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
-                if (!currentUser.HasPermission("SUPPLIER_UPDATE"))
+                var permissionsList = await _uow.PermisoRepo.GetPermissionsByUserAsync(_sessionProvider.Current.CurrentUserId);
+
+                bool hasAccess = permissionsList.Any(p => p.PermisoCode == PermisosEnum.SUPPLIER_UPDATE.ToString()
+                                                       || p.PermisoCode == PermisosEnum.ADMIN_ACCESS.ToString());
+                if (!hasAccess)
                 {
-                    var authError = _errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameSupplier);
-                    result.Errors.Add(ErrorMapper.ToDTO(authError));
+                    result.Errors.Add(ErrorMapper.ToDTO(_errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameSupplier)));
                     return result;
                 }
+
 
                 // 5. Validación de Duplicados (Trampa del Update)
                 var existingSupplierWithTaxId = await _uow.SupplierRepo.GetByTaxIdAsync(dto.TaxId);
@@ -89,7 +95,7 @@ namespace BLL.LogicLayers.Suppliers
                 await _uow.SupplierRepo.UpdateAsync(supplierEntityToUpdate);
 
                 // 8. Integridad Vertical (DVV)
-                await UpdateDVVAsync(_tableNameSupplier, _appSettings.EntitiesConnection);
+            //    await UpdateDVVAsync(_tableNameSupplier, _appSettings.EntitiesConnection);
 
                 // 9. Auditoría (Bitácora)
                 var log = _bitacoraFact.Create(

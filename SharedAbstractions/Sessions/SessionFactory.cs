@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 
 namespace Shared.Sessions
 {
@@ -13,11 +14,11 @@ namespace Shared.Sessions
             _sp = sp;
         }
 
-        public ISession Create(Guid userDtoId)
+        public ISession Create(Guid userDtoId, List<string> permissionsCodes)
         {
             if (userDtoId == Guid.Empty) throw new NullReferenceException("User ID -Guid- cannot be empty/null");
 
-            return ActivatorUtilities.CreateInstance<Session>(_sp, userDtoId);
+            return ActivatorUtilities.CreateInstance<Session>(_sp, userDtoId, permissionsCodes);
         }
     }
 }

@@ -29,16 +29,16 @@
             this.btnNextPnl1 = new System.Windows.Forms.Button();
             this.pnlCategories = new System.Windows.Forms.Panel();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
-            this.lbSelectCategories = new System.Windows.Forms.ListBox();
-            this.btnFinish = new System.Windows.Forms.Button();
-            this.lbCategoriesAdded = new System.Windows.Forms.ListBox();
             this.btnAddCategory = new System.Windows.Forms.Button();
             this.btnRemoveCategory = new System.Windows.Forms.Button();
+            this.label5 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.btnBackPnl2 = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
+            this.lbCategoriesAdded = new System.Windows.Forms.ListBox();
+            this.lbSelectCategories = new System.Windows.Forms.ListBox();
             this.label6 = new System.Windows.Forms.Label();
+            this.btnFinish = new System.Windows.Forms.Button();
             this.pnlCreation.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.pnlCategories.SuspendLayout();
@@ -222,7 +222,7 @@
             this.tableLayoutPanel3.ColumnCount = 3;
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 228F));
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 44F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 168F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 226F));
             this.tableLayoutPanel3.Controls.Add(this.btnAddCategory, 1, 2);
             this.tableLayoutPanel3.Controls.Add(this.btnRemoveCategory, 1, 3);
             this.tableLayoutPanel3.Controls.Add(this.label5, 0, 1);
@@ -238,83 +238,53 @@
             this.tableLayoutPanel3.Padding = new System.Windows.Forms.Padding(0, 5, 10, 5);
             this.tableLayoutPanel3.RowCount = 6;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 103F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 73F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 101F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 33F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 124F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 113F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 12F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 108F));
             this.tableLayoutPanel3.Size = new System.Drawing.Size(508, 563);
             this.tableLayoutPanel3.TabIndex = 5;
             // 
-            // lbSelectCategories
-            // 
-            this.lbSelectCategories.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lbSelectCategories.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F);
-            this.lbSelectCategories.FormattingEnabled = true;
-            this.lbSelectCategories.ItemHeight = 19;
-            this.lbSelectCategories.Location = new System.Drawing.Point(14, 164);
-            this.lbSelectCategories.Margin = new System.Windows.Forms.Padding(14, 3, 3, 3);
-            this.lbSelectCategories.Name = "lbSelectCategories";
-            this.tableLayoutPanel3.SetRowSpan(this.lbSelectCategories, 3);
-            this.lbSelectCategories.Size = new System.Drawing.Size(211, 271);
-            this.lbSelectCategories.TabIndex = 2;
-            // 
-            // btnFinish
-            // 
-            this.btnFinish.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.tableLayoutPanel3.SetColumnSpan(this.btnFinish, 3);
-            this.btnFinish.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnFinish.Location = new System.Drawing.Point(14, 467);
-            this.btnFinish.Margin = new System.Windows.Forms.Padding(14, 4, 4, 4);
-            this.btnFinish.Name = "btnFinish";
-            this.btnFinish.Size = new System.Drawing.Size(480, 73);
-            this.btnFinish.TabIndex = 5;
-            this.btnFinish.Tag = "Accentuable";
-            this.btnFinish.Text = "Finalizar";
-            this.btnFinish.UseVisualStyleBackColor = true;
-            // 
-            // lbCategoriesAdded
-            // 
-            this.lbCategoriesAdded.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lbCategoriesAdded.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F);
-            this.lbCategoriesAdded.FormattingEnabled = true;
-            this.lbCategoriesAdded.ItemHeight = 19;
-            this.lbCategoriesAdded.Location = new System.Drawing.Point(275, 164);
-            this.lbCategoriesAdded.Name = "lbCategoriesAdded";
-            this.tableLayoutPanel3.SetRowSpan(this.lbCategoriesAdded, 3);
-            this.lbCategoriesAdded.Size = new System.Drawing.Size(220, 271);
-            this.lbCategoriesAdded.TabIndex = 2;
-            // 
             // btnAddCategory
             // 
-            this.btnAddCategory.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnAddCategory.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnAddCategory.FlatAppearance.BorderSize = 0;
             this.btnAddCategory.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnAddCategory.Location = new System.Drawing.Point(243, 176);
-            this.btnAddCategory.Margin = new System.Windows.Forms.Padding(15);
+            this.btnAddCategory.Location = new System.Drawing.Point(231, 191);
+            this.btnAddCategory.Margin = new System.Windows.Forms.Padding(3, 25, 3, 15);
             this.btnAddCategory.Name = "btnAddCategory";
-            this.btnAddCategory.Size = new System.Drawing.Size(14, 73);
+            this.btnAddCategory.Size = new System.Drawing.Size(38, 84);
             this.btnAddCategory.TabIndex = 6;
             this.btnAddCategory.Text = ">";
             this.btnAddCategory.UseVisualStyleBackColor = true;
             // 
             // btnRemoveCategory
             // 
-            this.btnRemoveCategory.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnRemoveCategory.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnRemoveCategory.FlatAppearance.BorderSize = 0;
             this.btnRemoveCategory.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnRemoveCategory.Location = new System.Drawing.Point(243, 279);
-            this.btnRemoveCategory.Margin = new System.Windows.Forms.Padding(15);
+            this.btnRemoveCategory.Location = new System.Drawing.Point(231, 305);
+            this.btnRemoveCategory.Margin = new System.Windows.Forms.Padding(3, 15, 3, 15);
             this.btnRemoveCategory.Name = "btnRemoveCategory";
-            this.btnRemoveCategory.Size = new System.Drawing.Size(14, 43);
+            this.btnRemoveCategory.Size = new System.Drawing.Size(38, 83);
             this.btnRemoveCategory.TabIndex = 7;
             this.btnRemoveCategory.Text = "<";
             this.btnRemoveCategory.UseVisualStyleBackColor = true;
+            // 
+            // label5
+            // 
+            this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Microsoft YaHei UI Light", 9.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.Location = new System.Drawing.Point(4, 140);
+            this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(220, 19);
+            this.label5.TabIndex = 2;
+            this.label5.Text = "Seleccionar";
+            this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // panel1
             // 
@@ -354,31 +324,57 @@
             this.label4.Text = "Categorías";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // label5
+            // lbCategoriesAdded
             // 
-            this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Microsoft YaHei UI Light", 9.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(4, 137);
-            this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(220, 19);
-            this.label5.TabIndex = 2;
-            this.label5.Text = "Seleccionar";
-            this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lbCategoriesAdded.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lbCategoriesAdded.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F);
+            this.lbCategoriesAdded.FormattingEnabled = true;
+            this.lbCategoriesAdded.ItemHeight = 19;
+            this.lbCategoriesAdded.Location = new System.Drawing.Point(275, 169);
+            this.lbCategoriesAdded.Name = "lbCategoriesAdded";
+            this.tableLayoutPanel3.SetRowSpan(this.lbCategoriesAdded, 3);
+            this.lbCategoriesAdded.Size = new System.Drawing.Size(220, 266);
+            this.lbCategoriesAdded.TabIndex = 2;
+            // 
+            // lbSelectCategories
+            // 
+            this.lbSelectCategories.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lbSelectCategories.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F);
+            this.lbSelectCategories.FormattingEnabled = true;
+            this.lbSelectCategories.ItemHeight = 19;
+            this.lbSelectCategories.Location = new System.Drawing.Point(14, 169);
+            this.lbSelectCategories.Margin = new System.Windows.Forms.Padding(14, 3, 3, 3);
+            this.lbSelectCategories.Name = "lbSelectCategories";
+            this.tableLayoutPanel3.SetRowSpan(this.lbSelectCategories, 3);
+            this.lbSelectCategories.Size = new System.Drawing.Size(211, 266);
+            this.lbSelectCategories.TabIndex = 2;
             // 
             // label6
             // 
             this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Microsoft YaHei UI Light", 9.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(276, 137);
+            this.label6.Location = new System.Drawing.Point(276, 140);
             this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(218, 19);
             this.label6.TabIndex = 2;
             this.label6.Text = "Seleccionadas";
             this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // btnFinish
+            // 
+            this.btnFinish.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel3.SetColumnSpan(this.btnFinish, 3);
+            this.btnFinish.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnFinish.Location = new System.Drawing.Point(14, 467);
+            this.btnFinish.Margin = new System.Windows.Forms.Padding(14, 4, 4, 4);
+            this.btnFinish.Name = "btnFinish";
+            this.btnFinish.Size = new System.Drawing.Size(480, 73);
+            this.btnFinish.TabIndex = 5;
+            this.btnFinish.Tag = "Accentuable";
+            this.btnFinish.Text = "Finalizar";
+            this.btnFinish.UseVisualStyleBackColor = true;
             // 
             // CreateProductForm
             // 

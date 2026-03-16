@@ -66,7 +66,7 @@ namespace Domain.Entities.Permisos.Concrete
 
         private bool CheckRecursivo(PermisoComponente componente, string codigo)
         {
-            if (componente.Permiso == codigo) return true;
+            if (componente.PermisoCode == codigo) return true;
             return componente.Hijos.Any(hijo => CheckRecursivo(hijo, codigo));
         }
 

@@ -7,11 +7,13 @@ using Domain.Exceptions;
 using Domain.Exceptions.Base;
 using Domain.Infrastructure;
 using Domain.Infrastructure.Audit;
+using Domain.Infrastructure.Permisos.Concrete;
 using Domain.Repositories;
 using Shared;
 using Shared.Services;
 using Shared.Sessions;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BLL.LogicLayers.Payments
@@ -65,11 +67,17 @@ namespace BLL.LogicLayers.Payments
 
                 // 2. Validar Permisos
                 var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
-                if (!currentUser.HasPermission("PAYMENT_UPDATE"))
+                var permissionsList = await _uow.PermisoRepo.GetPermissionsByUserAsync(_sessionProvider.Current.CurrentUserId);
+
+                bool hasAccess = permissionsList.Any(p => p.PermisoCode == PermisosEnum.PAYMENT_UPDATE.ToString()
+                                                       || p.PermisoCode == PermisosEnum.ADMIN_ACCESS.ToString());
+                if (!hasAccess)
                 {
                     result.Errors.Add(ErrorMapper.ToDTO(_errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNamePayment)));
                     return result;
                 }
+
+
 
                 // 3. Buscar Entidad Existente y Validar Nulidad
                 Payment existingPayment = await _uow.PaymentRepo.GetByIdAsync(dto.Id);

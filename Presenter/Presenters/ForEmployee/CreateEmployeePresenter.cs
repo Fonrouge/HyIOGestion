@@ -1,7 +1,10 @@
-﻿using BLL.LogicLayers.Employees;
-using BLL.DTOs;
+﻿using BLL.DTOs;
+using BLL.LogicLayers.Employees;
 using SharedAbstractions.ArchitecturalMarkers;
+using SharedAbstractions.Enums;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Presenter.ForEmployee
@@ -22,6 +25,16 @@ namespace Presenter.ForEmployee
             _useCaseCreate = useCaseCreate;
 
             WireViewEvents();
+            FillDropDownData();
+        }
+        
+        private void FillDropDownData()
+        {
+            var datasourceDocs = Enum.GetValues(typeof(DocTypes))
+            .Cast<DocTypes>()
+            .Select(d => new { Id = d.GetDocInfo().Id, Display = d.GetDocInfo().Description }).ToList();
+
+            _view.FillCountries(datasourceDocs);
         }
 
         private void WireViewEvents()

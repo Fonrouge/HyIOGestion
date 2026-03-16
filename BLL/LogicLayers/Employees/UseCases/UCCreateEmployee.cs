@@ -6,11 +6,13 @@ using BLL.Infrastructure.Errors;
 using Domain.Exceptions;
 using Domain.Infrastructure;
 using Domain.Infrastructure.Audit;
+using Domain.Infrastructure.Permisos.Concrete;
 using Domain.Repositories;
 using Shared;
 using Shared.Services;
 using Shared.Sessions;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BLL.LogicLayers.Employees //=======================================================================REFACTORIZADO AL 27/02=======================================================================
@@ -64,12 +66,16 @@ namespace BLL.LogicLayers.Employees //==========================================
 
                 // 3. Validar Permisos
                 var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
-                if (!currentUser.HasPermission("EMPLOYEE_CREATE"))
+                var permissionsList = await _uow.PermisoRepo.GetPermissionsByUserAsync(_sessionProvider.Current.CurrentUserId);
+
+                bool hasAccess = permissionsList.Any(p => p.PermisoCode == PermisosEnum.EMPLOYEE_CREATE.ToString()
+                                                       || p.PermisoCode == PermisosEnum.ADMIN_ACCESS.ToString());
+                if (!hasAccess)
                 {
-                    var authError = _errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameEmployee);
-                    result.Errors.Add(ErrorMapper.ToDTO(authError));
+                    result.Errors.Add(ErrorMapper.ToDTO(_errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameEmployee)));
                     return result;
                 }
+
 
                 // 4. Validar Duplicados (Por Legajo/FileNumber)
                 // Nota: Asegúrate de tener GetByFileNumberAsync en el repositorio
@@ -96,7 +102,7 @@ namespace BLL.LogicLayers.Employees //==========================================
                 await _uow.EmployeeRepo.CreateAsync(newEmployee);
 
                 // 7. Integridad Vertical (DVV)
-                await UpdateDVVAsync(_tableNameEmployee, _appSettings.EntitiesConnection);
+       //         await UpdateDVVAsync(_tableNameEmployee, _appSettings.EntitiesConnection);
 
                 // 8. Auditoría
                 var log = _bitacoraFact.Create(

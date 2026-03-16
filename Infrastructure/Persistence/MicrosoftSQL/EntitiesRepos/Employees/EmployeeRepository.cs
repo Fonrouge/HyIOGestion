@@ -17,7 +17,7 @@ namespace DAL.Persistence.MicrosoftSQL
 
         // Queries optimizadas y sincronizadas con los nombres de columna
         private const string SQL_SELECT_BY_ID = "SELECT Id, FileNumber, FirstName, LastName, NationalId, Email, PhoneNumber, HomeAddress, Active, IsDeleted, DVH FROM {0} WHERE Id = @Id";
-        private const string SQL_SELECT_ALL = "SELECT Id, FileNumber, FirstName, LastName, NationalId, Email, PhoneNumber, HomeAddress, Active, IsDeleted, DVH FROM {0}";
+        private const string SQL_SELECT_ALL = "SELECT Id, FileNumber, FirstName, LastName, NationalId, Email, PhoneNumber, HomeAddress, Active, IsDeleted, DVH FROM {0} WHERE IsDeleted = 0";
         private const string SQL_SELECT_BY_FILE_NUMBER = "SELECT Id, FileNumber, FirstName, LastName, NationalId, Email, PhoneNumber, HomeAddress, Active, IsDeleted, DVH FROM {0} WHERE FileNumber = @FileNumber";
         private const string SQL_SELECT_BY_NATIONALID = "SELECT Id, FileNumber, FirstName, LastName, NationalId, Email, PhoneNumber, HomeAddress, Active, IsDeleted, DVH FROM {0} WHERE NationalId = @NationalId";
 
@@ -114,8 +114,12 @@ namespace DAL.Persistence.MicrosoftSQL
             cmd.Parameters.Add(new SqlParameter("@HomeAddress", SqlDbType.NVarChar) { Value = entity.HomeAddress?.Value ?? string.Empty });
             cmd.Parameters.Add(new SqlParameter("@Active", SqlDbType.Bit) { Value = entity.Active });
             cmd.Parameters.Add(new SqlParameter("@IsDeleted", SqlDbType.Bit) { Value = entity.IsDeleted });
-            cmd.Parameters.Add(new SqlParameter("@DVH", SqlDbType.NVarChar) { Value = (object)entity.DVH?.Value ?? DBNull.Value });
+            cmd.Parameters.Add(new SqlParameter("@DVH", SqlDbType.VarChar)
+            {
+                Value = (object)entity.DVH?.Value ?? string.Empty
+            });
         }
+        
 
         private Employee Map(SqlDataReader reader)
         {
@@ -128,7 +132,7 @@ namespace DAL.Persistence.MicrosoftSQL
                 reader["Email"].ToString(),
                 reader["PhoneNumber"].ToString(),
                 reader["HomeAddress"].ToString(),
-                reader["DVH"] == DBNull.Value ? string.Empty : reader["DVH"].ToString(),
+                reader["DVH"].ToString(),
                 (bool)reader["Active"],
                 (bool)reader["IsDeleted"]
             );

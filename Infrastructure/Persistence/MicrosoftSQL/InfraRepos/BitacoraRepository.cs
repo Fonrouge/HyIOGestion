@@ -29,10 +29,10 @@ namespace DAL.Persistence.MicrosoftSQL
         public Task CreateAsync(Bitacora logEntry)
         {
             // Agregamos el campo DVH a la query de inserción
-            string query = @"INSERT INTO Bitacora 
-                             ([Timestamp], [User], Message, ExceptionType, TableName, StackTrace, BitacoraType, Severity, Success, DVH) 
-                             VALUES 
-                             (@Timestamp, @User, @Message, @ExceptionType, @TableName, @StackTrace, @BitacoraType, @Severity, @Success, @DVH)";
+            string query = @"INSERT INTO [HSecurity].[dbo].[Bitacora] 
+                                ([Timestamp], [User], Message, ExceptionType, TableName, StackTrace, BitacoraType, Severity, Success, DVH) 
+                            VALUES 
+                                (@Timestamp, @User, @Message, @ExceptionType, @TableName, @StackTrace, @BitacoraType, @Severity, @Success, @DVH)";
 
             return ExecuteNonQueryAsync(query, cmd => SetParameters(cmd, logEntry));
         }
@@ -42,7 +42,8 @@ namespace DAL.Persistence.MicrosoftSQL
             var logs = new List<Bitacora>();
             // Incluimos Id y DVH en la lectura
             string query = @"SELECT Id, [Timestamp], [User], Message, ExceptionType, TableName, StackTrace, BitacoraType, Severity, Success, DVH 
-                             FROM Bitacora ORDER BY [Timestamp] DESC";
+                             FROM [HSecurity].[dbo].[Bitacora] 
+                             ORDER BY [Timestamp] DESC";
 
             await ExecuteReaderAsync(query, null, reader => logs.Add(Map(reader)));
 

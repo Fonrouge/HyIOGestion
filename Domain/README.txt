@@ -6,14 +6,13 @@ ESTRATEGIA ARQUITECTÓNICA:
 --------------------------
 Organización: Vertical Slicing (Segmentación Vertical). 
 Justificación: Se agrupa por Agregado/Entidad con todas sus interfaces y objetos 
-relacionados (Value Objects, Repositories). Esto maximiza la Cohesión Vertical, 
-respeta la "Cercanía Conceptual" y facilita el descubrimiento de código al 
-localizar el impacto de los cambios.
+relacionados (Value Objects, Repositories). Facilita enormemente el buscado
+y encontrado de una clase y sus relacionados directos. 
 
 PATRONES DE DISEÑO IMPLEMENTADOS:
 ---------------------------------
 1. Rich Domain Model: Las entidades contienen lógica y estado, evitando modelos 
-   anémicos. La entidad es la única dueña de sus procesos de negocio.
+   anémicos/primitvos. La entidad es la única dueña de sus procesos de negocio.
 2. Value Objects (VO): Tipado fuerte e inmutabilidad para datos descriptivos. 
    Elimina la "Obsesión por Primitivos".
 3. Repository Pattern (Interfaces): Definición de contratos de persistencia 

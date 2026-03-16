@@ -202,10 +202,7 @@ namespace WinformsUI.UserControls.CustomDGV
 
         private void CheckedListBoxMouseLeave(object sender, EventArgs e) => checkedListBoxFilters.SelectedIndex = -1;
 
-        private void InitializeVariables()
-        {
-            _placeholder = _appSettings.SearchBarPlaceHolder;
-        }
+        private void InitializeVariables() =>_placeholder = _appSettings.SearchBarPlaceHolder;
 
         private void SetFormAppearence()
         {
@@ -260,25 +257,33 @@ namespace WinformsUI.UserControls.CustomDGV
         {
             if (!_filtersConfigured || checkedListBoxFilters.Items.Count == 0) return;
 
+            // Categorías (usando GetItemText para que funcione siempre)
             var selectedValues = checkedListBoxFilters.CheckedItems
-                                                      .Cast<object>()
-                                                      .Select(item => item.ToString())
-                                                      .ToList();
+                .Cast<object>()
+                .Select(item => checkedListBoxFilters.GetItemText(item))
+                .ToList();
 
-            _searchBehavior?.ExecuteContainsFilter(selectedValues, rbAllCategories.Checked);
+            _searchBehavior.ExecuteContainsFilter(selectedValues, rbAllCategories.Checked);
 
-            // Filtro de fechas
-            string selectedColumn = null;
-            if (cbColumnsNameFilterDate.SelectedItem is DateColumnItem dcItem &&
-                !string.IsNullOrEmpty(dcItem.PropertyName))
+            // Filtro de fechas: SOLO se aplica si el panel está visible
+            // (esto es clave para que la primera vez no filtre por fecha)
+            if (tableLayoutPanelFilters.Visible)
             {
-                selectedColumn = dcItem.PropertyName;
+                string selectedColumn = null;
+                if (cbColumnsNameFilterDate.SelectedItem is DateColumnItem dcItem &&
+                    !string.IsNullOrEmpty(dcItem.PropertyName))
+                {
+                    selectedColumn = dcItem.PropertyName;
+                }
+                _searchBehavior.ExecuteDateRangeFilter(
+                    dateTimePickerSince.Value,
+                    dateTimePickerUpTo.Value,
+                    selectedColumn);
             }
-
-            _searchBehavior?.ExecuteDateRangeFilter(
-                dateTimePickerSince.Value,
-                dateTimePickerUpTo.Value,
-                selectedColumn);
+            else
+            {
+                _searchBehavior.ClearDateFilter();   // asegura lista completa cuando el panel está oculto
+            }
         }
 
         private void BtnCleanFilters_Click(object sender, EventArgs e) => ClearFilters();

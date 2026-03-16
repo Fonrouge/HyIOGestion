@@ -1,11 +1,14 @@
 ﻿using BLL.DTOs;
 using Presenter.ForClient;
 using Shared;
+using SharedAbstractions.Enums;
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
+using System.Xml.Linq;
 using Winforms.Theme;
-using WinformsUI.UserControls.Wizard;
 using WinformsUI.Infrastructure.Translations;
+using WinformsUI.UserControls.Wizard;
 
 namespace WinformsUI.Forms.ClientCRUDL
 {
@@ -18,6 +21,7 @@ namespace WinformsUI.Forms.ClientCRUDL
         private readonly string _successMsg;
 
         public event EventHandler<ClientDTO> CreateClientRequested;
+
 
 
         public CreateClientForm
@@ -64,6 +68,23 @@ namespace WinformsUI.Forms.ClientCRUDL
 
             base.Dispose(disposing);
         }
+
+        public void FillClientDocTypes(IEnumerable<object> docTypes)
+        {
+            cbTaxId.ValueMember = "Id";
+            cbTaxId.DisplayMember = "Display";
+
+            cbTaxId.DataSource = docTypes;
+        }
+        public void FillCountries(IEnumerable<object> countries)
+        {
+            cbCountrySelector.ValueMember = "Id";
+            cbCountrySelector.DisplayMember = "Display";
+
+            cbCountrySelector.DataSource = countries;
+        }
+
+
 
         private void AddTranslatables()
         {
@@ -139,7 +160,7 @@ namespace WinformsUI.Forms.ClientCRUDL
                 TaxId = cbTaxId.Text,
                 DocNumber = txtDocNumber.Text,
                 ShipCountry = cbCountrySelector.Text,
-                ShipState = cbStateSelector.Text,
+                ShipState = tbState.Text,
                 ShipAddress = txtShipAddreess.Text,
                 ShipZipCode = cbZipCode.Text,
                 Email = txtEmail.Text,
@@ -149,9 +170,7 @@ namespace WinformsUI.Forms.ClientCRUDL
 
             btnFinish.Enabled = false;
             this.Cursor = Cursors.WaitCursor;
-
             CreateClientRequested?.Invoke(this, dto);
-
         }
 
     }

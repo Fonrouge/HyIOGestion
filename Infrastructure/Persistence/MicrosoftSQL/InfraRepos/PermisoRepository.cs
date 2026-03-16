@@ -33,9 +33,9 @@ namespace DAL.Persistence.MicrosoftSQL
             {
                 // Sincronizado con la imagen: Id, Nombre, Permiso, EsFamilia, DVH
                 string query = @"SELECT p.Id, p.Nombre, p.Permiso, p.EsFamilia, p.DVH
-                                 FROM Permiso p 
-                                 INNER JOIN Usuario_Permiso up ON p.Id = up.Id_Permiso 
-                                 WHERE up.Id_User = @userId";
+                 FROM [HSecurity].[dbo].[Permiso] p 
+                 INNER JOIN [HSecurity].[dbo].[Usuario_Permiso] up ON p.Id = up.Id_Permiso 
+                 WHERE up.Id_User = @userId";
 
                 using (var cmd = new SqlCommand(query, conn))
                 {
@@ -65,11 +65,11 @@ namespace DAL.Persistence.MicrosoftSQL
                         PermisoComponente c;
                         if (row.EsFamilia)
                         {
-                            c = new Familia { Id = row.Id, Nombre = row.Nombre, Permiso = row.Codigo };
+                            c = new Familia { Id = row.Id, Nombre = row.Nombre, PermisoCode = row.Codigo };
                         }
                         else
                         {
-                            c = new Patente { Id = row.Id, Nombre = row.Nombre, Permiso = row.Codigo };
+                            c = new Patente { Id = row.Id, Nombre = row.Nombre, PermisoCode = row.Codigo };
                         }
 
                         // Asignamos el VO del DVH
@@ -96,9 +96,9 @@ namespace DAL.Persistence.MicrosoftSQL
         {
             // Sincronizado con la imagen: Relación en Permiso_Permiso
             string query = @"SELECT p.Id, p.Nombre, p.Permiso, p.EsFamilia, p.DVH 
-                             FROM Permiso p 
-                             INNER JOIN Permiso_Permiso pp ON p.Id = pp.Id_Hijo 
-                             WHERE pp.Id_Padre = @padreId";
+                      FROM [HSecurity].[dbo].[Permiso] p 
+                      INNER JOIN [HSecurity].[dbo].[Permiso_Permiso] pp ON p.Id = pp.Id_Hijo 
+                      WHERE pp.Id_Padre = @padreId";
 
             var tempChildren = new List<(Guid Id, string Nombre, string Codigo, bool EsFamilia, string Dvh)>();
 
@@ -127,11 +127,11 @@ namespace DAL.Persistence.MicrosoftSQL
                 PermisoComponente hijo;
                 if (childRow.EsFamilia)
                 {
-                    hijo = new Familia { Id = childRow.Id, Nombre = childRow.Nombre, Permiso = childRow.Codigo };
+                    hijo = new Familia { Id = childRow.Id, Nombre = childRow.Nombre, PermisoCode = childRow.Codigo };
                 }
                 else
                 {
-                    hijo = new Patente { Id = childRow.Id, Nombre = childRow.Nombre, Permiso = childRow.Codigo };
+                    hijo = new Patente { Id = childRow.Id, Nombre = childRow.Nombre, PermisoCode = childRow.Codigo };
                 }
 
                 hijo.DVH = !string.IsNullOrEmpty(childRow.Dvh) ? DvhVo.Create(childRow.Dvh) : null;

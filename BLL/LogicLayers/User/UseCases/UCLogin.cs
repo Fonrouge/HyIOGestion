@@ -117,8 +117,7 @@ namespace BLL.UseCases
                     permissionsDtosCode.Add(p.Nombre);
                 }
 
-
-                var currentSession = _sessionFact.Create(userDto.Id);
+                var currentSession = _sessionFact.Create(userDto.Id, permissionsDtosCode);
 
                 _sessionMgr.AddSession(currentSession);
                 _sessionProvider.Current = currentSession;

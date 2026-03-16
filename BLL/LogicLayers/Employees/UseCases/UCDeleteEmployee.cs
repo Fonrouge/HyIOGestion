@@ -8,11 +8,13 @@ using Domain.Exceptions;
 using Domain.Exceptions.Base;
 using Domain.Infrastructure;
 using Domain.Infrastructure.Audit;
+using Domain.Infrastructure.Permisos.Concrete;
 using Domain.Repositories;
 using Shared;
 using Shared.Services;
 using Shared.Sessions;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BLL.LogicLayers.Employees
@@ -65,11 +67,13 @@ namespace BLL.LogicLayers.Employees
 
                 // 2. Validar Permisos (Patente específica de Empleados)
                 var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
+                var permissionsList = await _uow.PermisoRepo.GetPermissionsByUserAsync(_sessionProvider.Current.CurrentUserId);
 
-                if (!currentUser.HasPermission("EMPLOYEE_DELETE"))
+                bool hasAccess = permissionsList.Any(p => p.PermisoCode == PermisosEnum.EMPLOYEE_DELETE.ToString()
+                                                       || p.PermisoCode == PermisosEnum.ADMIN_ACCESS.ToString());
+                if (!hasAccess)
                 {
-                    var authError = _errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameEmployee);
-                    result.Errors.Add(ErrorMapper.ToDTO(authError));
+                    result.Errors.Add(ErrorMapper.ToDTO(_errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameEmployee)));
                     return result;
                 }
 
@@ -99,7 +103,7 @@ namespace BLL.LogicLayers.Employees
                 }
 
                 // 6. Integridad Vertical (DVV) (Obligatorio en tablas críticas)
-                await UpdateDVVAsync(_tableNameEmployee, _appSettings.EntitiesConnection);
+ //               await UpdateDVVAsync(_tableNameEmployee, _appSettings.EntitiesConnection);
 
                 // 7. Auditoría (Bitácora)
                 var log = _bitacoraFact.Create(

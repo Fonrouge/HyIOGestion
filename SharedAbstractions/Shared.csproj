@@ -63,6 +63,11 @@
     <Compile Include="ArchitecturalMarkers\IHostInternalForm.cs" />
     <Compile Include="ArchitecturalMarkers\IPresenter.cs" />
     <Compile Include="ArchitecturalMarkers\IView.cs" />
+    <Compile Include="Enums\Attributes\CountryInfoAttribute.cs" />
+    <Compile Include="Enums\Attributes\DocTypeInfoAttribute.cs" />
+    <Compile Include="Enums\Countries.cs" />
+    <Compile Include="Enums\DocTypes.cs" />
+    <Compile Include="Enums\EnumExtensions.cs" />
     <Compile Include="Enums\LayoutType.cs" />
     <Compile Include="Enums\WindowManagementMode.cs" />
     <Compile Include="Factories\IAppEnvironmentFactory.cs" />

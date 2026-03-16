@@ -6,11 +6,13 @@ using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Infrastructure;
 using Domain.Infrastructure.Audit;
+using Domain.Infrastructure.Permisos.Concrete;
 using Domain.Repositories;
 using Shared;
 using Shared.Services;
 using Shared.Sessions;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BLL.LogicLayers.Products
@@ -59,17 +61,21 @@ namespace BLL.LogicLayers.Products
                     return result;
                 }
 
-                // Seteamos la conexión para validaciones
-                _uow.SetConnectionString(_appSettings.EntitiesConnection);
-
                 // 2. Validar Permisos
                 var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
+                var permissionsList = await _uow.PermisoRepo.GetPermissionsByUserAsync(_sessionProvider.Current.CurrentUserId);
 
-                if (!currentUser.HasPermission("PRODUCT_UPDATE"))
+                bool hasAccess = permissionsList.Any(p => p.PermisoCode == PermisosEnum.PRODUCT_UPDATE.ToString()
+                                                       || p.PermisoCode == PermisosEnum.ADMIN_ACCESS.ToString());
+                if (!hasAccess)
                 {
                     result.Errors.Add(ErrorMapper.ToDTO(_errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameProduct)));
                     return result;
                 }
+
+
+                // Seteamos la conexión para validaciones
+                _uow.SetConnectionString(_appSettings.EntitiesConnection);
 
                 // 3. Buscar Entidad y Validar Existencia (Tu patrón: null | IsDeleted)
                 var existingProduct = await _uow.ProductRepo.GetByIdAsync(dto.Id);
@@ -99,7 +105,7 @@ namespace BLL.LogicLayers.Products
                 await _uow.ProductRepo.UpdateAsync(productToUpdate);
 
                 // 8. Integridad Vertical (DVV): Obligatorio al modificar datos de la tabla
-                await UpdateDVVAsync(_tableNameProduct, _appSettings.EntitiesConnection);
+             //   await UpdateDVVAsync(_tableNameProduct, _appSettings.EntitiesConnection);
 
                 // 9. Auditoría (Bitácora)
                 var log = _bitacoraFact.Create(

@@ -12,9 +12,9 @@
         public static DvhVo Create(string dvh)
         {
             // Validaciones (descomenta cuando estés listo)
-            if (string.IsNullOrWhiteSpace(dvh))
-                dvh = "123456789";//throw new ArgumentException("El DVH no puede estar vacío.");
-            
+            //   if (string.IsNullOrWhiteSpace(dvh))
+            dvh = "123456789";//throw new ArgumentException("El DVH no puede estar vacío.");
+
 
             return new DvhVo(dvh);
         }

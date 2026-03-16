@@ -3,8 +3,10 @@ using BLL.DTOs.Errors;
 using BLL.Infrastructure.Errors;
 using Domain.Exceptions;
 using Domain.Infrastructure;
+using Domain.Infrastructure.Permisos.Concrete;
 using Domain.Repositories;
 using Shared;
+using Shared.Sessions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,22 +18,29 @@ namespace BLL.LogicLayers.Clients //============================================
     public class UCGetAllClients : IUCGetAllClients
     {
         private readonly IUnitOfWork _uow;
-        private readonly IApplicationSettings _appSettings;
         private readonly IErrorsFactory _errorsFactory;
         private readonly IErrorsRepository _errorsRepository;
+        private readonly ISessionProvider _sessionProvider;
+        private readonly IApplicationSettings _appSettings;
+
+        private readonly string _tableNameClients;
 
         public UCGetAllClients
         (
             IUnitOfWork uow,
             IApplicationSettings appSettings,
             IErrorsFactory errorsFactory,
-            IErrorsRepository errorsRepository
+            IErrorsRepository errorsRepository,
+            ISessionProvider sessionProvider
         )
         {
             _uow = uow;
             _appSettings = appSettings;
             _errorsFactory = errorsFactory;
             _errorsRepository = errorsRepository;
+            _sessionProvider = sessionProvider ?? throw new ArgumentNullException(nameof(sessionProvider));
+
+            _tableNameClients = _appSettings.ClientTableName;
         }
 
         public async Task<(IEnumerable<ClientDTO>, OperationResult<ClientDTO>)> ExecuteAsync()
@@ -41,6 +50,19 @@ namespace BLL.LogicLayers.Clients //============================================
 
             try
             {
+                // 1. Validar Permisos (Patente específica de Empleados)
+                var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
+                var permissionsList = await _uow.PermisoRepo.GetPermissionsByUserAsync(_sessionProvider.Current.CurrentUserId);
+
+                bool hasAccess = permissionsList.Any(p => p.PermisoCode == PermisosEnum.CLIENT_VIEW.ToString()
+                                                       || p.PermisoCode == PermisosEnum.ADMIN_ACCESS.ToString());
+                if (!hasAccess)
+                {
+                    result.Errors.Add(ErrorMapper.ToDTO(_errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameClients)));
+                    return (listDto, result);
+
+                }
+
                 _uow.SetConnectionString(_appSettings.EntitiesConnection);
                 await _uow.BeginTransactionAsync();
 
@@ -53,7 +75,7 @@ namespace BLL.LogicLayers.Clients //============================================
             catch (Exception ex)
             {
                 var h = ex;
-                
+
                 if (_uow.HasActiveTransaction)
                 {
                     await _uow.RollbackAsync();

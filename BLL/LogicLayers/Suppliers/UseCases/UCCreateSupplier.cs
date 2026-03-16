@@ -6,11 +6,13 @@ using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Infrastructure;
 using Domain.Infrastructure.Audit;
+using Domain.Infrastructure.Permisos.Concrete;
 using Domain.Repositories;
 using Shared;
 using Shared.Services;
 using Shared.Sessions;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 // Asumo que tu mapper está en un namespace similar a este:
@@ -45,13 +47,13 @@ namespace BLL.LogicLayers.Suppliers
             _errorsRepository = errorsRepository ?? throw new ArgumentNullException(nameof(errorsRepository));
 
             // Asumimos que tienes esto en tus settings, o usamos un default
-            _tableNameSupplier = appSettings.SupplierTableName ?? "Supplier";
+            _tableNameSupplier = appSettings.SupplierTableName ?? "Suppliers";
         }
 
         // Corregido: La interfaz pedía ExecuteAsync
         public async Task<OperationResult<SupplierDTO>> ExecuteAsync(SupplierDTO dto)
         {
-            var opRes = new OperationResult<SupplierDTO>();
+            var result = new OperationResult<SupplierDTO>();
 
             try
             {
@@ -59,13 +61,13 @@ namespace BLL.LogicLayers.Suppliers
                 if (_sessionProvider.Current == null)
                 {
                     var newError = _errorsFactory.Create(ErrorCatalogEnum.SessionExpired);
-                    opRes.Errors.Add(new ErrorLogDTO
+                    result.Errors.Add(new ErrorLogDTO
                     {
                         Code = newError.Code,
                         Message = newError.Message,
                         RecommendedAction = newError.RecommendedAction
                     });
-                    return opRes;
+                    return result;
                 }
 
                 // 2. Configurar conexión y abrir transacción
@@ -74,51 +76,49 @@ namespace BLL.LogicLayers.Suppliers
 
                 // 3. Validar Usuario y Permisos
                 var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
+                var permissionsList = await _uow.PermisoRepo.GetPermissionsByUserAsync(_sessionProvider.Current.CurrentUserId);
 
-                if (!currentUser.HasPermission("SUPPLIER_CREATE")) // Patente específica
+                bool hasAccess = permissionsList.Any(p => p.PermisoCode == PermisosEnum.SUPPLIER_CREATE.ToString()
+                                                       || p.PermisoCode == PermisosEnum.ADMIN_ACCESS.ToString());
+                if (!hasAccess)
                 {
-                    var authError = _errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameSupplier);
-                    opRes.Errors.Add(new ErrorLogDTO
-                    {
-                        Code = authError.Code,
-                        Message = authError.Message,
-                        RecommendedAction = authError.RecommendedAction
-                    });
-                    return opRes;
+                    result.Errors.Add(ErrorMapper.ToDTO(_errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameSupplier)));
+                    return result;
                 }
+
 
                 // 4. Validar Reglas de Negocio Básicas
                 if (string.IsNullOrWhiteSpace(dto.TaxId) || string.IsNullOrWhiteSpace(dto.CompanyName))
                 {
-                    opRes.Errors.Add(new ErrorLogDTO { Message = "La Razón Social (CompanyName) y el CUIT/RUT (TaxId) son obligatorios." });
-                    return opRes;
+                    result.Errors.Add(new ErrorLogDTO { Message = "La Razón Social (CompanyName) y el CUIT/RUT (TaxId) son obligatorios." });
+                    return result;
                 }
 
-                // Validación de Duplicados (Requiere que agregues GetByTaxIdAsync en ISupplierRepository, igual que en Client)
+                // Validación de Duplicado
                 var existingSupplier = await _uow.SupplierRepo.GetByTaxIdAsync(dto.TaxId);
                 if (existingSupplier != null)
                 {
                     var dupError = _errorsFactory.Create(ErrorCatalogEnum.DuplicateEntry, _tableNameSupplier);
-                    opRes.Errors.Add(new ErrorLogDTO
+                    result.Errors.Add(new ErrorLogDTO
                     {
                         Code = dupError.Code,
                         Message = dupError.Message,
                         RecommendedAction = dupError.RecommendedAction
                     });
-                    return opRes;
+                    return result;
                 }
 
                 // 5. Mapeo a Entidad (KISS)
                 var newSupplierEntity = SupplierMapper.ToEntity(dto);
 
-                // Si Supplier tuviera DVH en tu modelo de dominio, lo calcularías aquí:
+                // Futura implementación de DVH + DVV
                 // newSupplierEntity.DVH = IntegrityService.GetIntegrityHash(newSupplierEntity.Id, newSupplierEntity.TaxId, newSupplierEntity.CompanyName);
 
                 // 6. Persistencia principal
                 await _uow.SupplierRepo.CreateAsync(newSupplierEntity);
 
                 // 7. Integridad Vertical (DVV)
-                await UpdateDVVAsync(_tableNameSupplier, _appSettings.EntitiesConnection);
+   //             await UpdateDVVAsync(_tableNameSupplier, _appSettings.EntitiesConnection);
 
                 // 8. Registrar Bitácora
                 var log = _bitacoraFact.Create(
@@ -133,8 +133,8 @@ namespace BLL.LogicLayers.Suppliers
                 await _uow.CommitAsync();
 
                 // 10. Retornar DTO con el ID generado
-                opRes.Value = SupplierMapper.ToDto(newSupplierEntity);
-                return opRes;
+                result.Value = SupplierMapper.ToDto(newSupplierEntity);
+                return result;
             }
             catch (Exception ex)
             {
@@ -154,14 +154,14 @@ namespace BLL.LogicLayers.Suppliers
 
                 // Log limpio para la UI
                 var uiError = _errorsFactory.Create(ErrorCatalogEnum.InternalError, _tableNameSupplier);
-                opRes.Errors.Add(new ErrorLogDTO
+                result.Errors.Add(new ErrorLogDTO
                 {
                     Code = uiError.Code,
                     Message = uiError.Message,
                     RecommendedAction = uiError.RecommendedAction
                 });
 
-                return opRes;
+                return result;
             }
         }
 

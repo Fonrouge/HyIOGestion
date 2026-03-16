@@ -5,11 +5,13 @@ using BLL.Infrastructure.Errors;
 using Domain.Exceptions;
 using Domain.Infrastructure;
 using Domain.Infrastructure.Audit;
+using Domain.Infrastructure.Permisos.Concrete;
 using Domain.Repositories;
 using Shared;
 using Shared.Services;
 using Shared.Sessions;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BLL.LogicLayers.Clients //=======================================================================REFACTORIZADO AL 27/02=======================================================================
@@ -42,7 +44,7 @@ namespace BLL.LogicLayers.Clients //============================================
             _errorsFactory = errorsFactory ?? throw new ArgumentNullException(nameof(errorsFactory));
             _errorsRepository = errorsRepository ?? throw new ArgumentNullException(nameof(errorsRepository));
 
-            _tableNameClient = appSettings.ClientTableName ?? "Client";
+            _tableNameClient = appSettings.ClientTableName ?? "Clients";
         }
 
         public async Task<OperationResult<ClientDTO>> ExecuteAsync(ClientDTO dto)
@@ -59,16 +61,15 @@ namespace BLL.LogicLayers.Clients //============================================
                     return result;
                 }
 
-                // 2. Conexión a Base de Datos de Negocio
-                _uow.SetConnectionString(_appSettings.EntitiesConnection);
-                await _uow.BeginTransactionAsync();
-
-                // 3. Validar Permisos
+                // 2. Validar Permisos
                 var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
-                if (!currentUser.HasPermission("CLIENT_UPDATE")) // Patente específica
+                var permissionsList = await _uow.PermisoRepo.GetPermissionsByUserAsync(_sessionProvider.Current.CurrentUserId);
+
+                bool hasAccess = permissionsList.Any(p => p.PermisoCode == PermisosEnum.CLIENT_VIEW.ToString()
+                                                       || p.PermisoCode == PermisosEnum.ADMIN_ACCESS.ToString());
+                if (!hasAccess)
                 {
-                    var authError = _errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameClient);
-                    result.Errors.Add(ErrorMapper.ToDTO(authError));
+                    result.Errors.Add(ErrorMapper.ToDTO(_errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameClient)));
                     return result;
                 }
 

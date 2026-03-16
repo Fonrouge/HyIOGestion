@@ -248,5 +248,7 @@ namespace WinformsUI.Forms.ProductCRUDL
         public void ApplyGlobalPalette() => DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
         private void UpdateClientSize() => this.ClientSize = _wizard.GetPanelSize();
         private void InitializeWizard() => _wizard.Initialize(new Panel[] { pnlCreation, pnlCategories });
+
+    
     }
 }

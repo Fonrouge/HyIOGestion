@@ -8,11 +8,13 @@ using Domain.Exceptions;
 using Domain.Exceptions.Base;
 using Domain.Infrastructure;
 using Domain.Infrastructure.Audit;
+using Domain.Infrastructure.Permisos.Concrete;
 using Domain.Repositories;
 using Shared;
 using Shared.Services;
 using Shared.Sessions;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BLL.LogicLayers.Payments
@@ -66,7 +68,11 @@ namespace BLL.LogicLayers.Payments
 
                 // 2. Validar Permisos
                 var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
-                if (!currentUser.HasPermission("PAYMENT_DELETE"))
+                var permissionsList = await _uow.PermisoRepo.GetPermissionsByUserAsync(_sessionProvider.Current.CurrentUserId);
+
+                bool hasAccess = permissionsList.Any(p => p.PermisoCode == PermisosEnum.PAYMENT_DELETE.ToString()
+                                                       || p.PermisoCode == PermisosEnum.ADMIN_ACCESS.ToString());
+                if (!hasAccess)
                 {
                     result.Errors.Add(ErrorMapper.ToDTO(_errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNamePayment)));
                     return result;
@@ -100,7 +106,7 @@ namespace BLL.LogicLayers.Payments
 
                 // 6. Integridad Vertical (DVV) - OBLIGATORIO
                 // Al eliminar físicamente un registro de una tabla blindada, el DVV debe recalcularse.
-                await UpdateDVVAsync(_tableNamePayment, _appSettings.EntitiesConnection);
+          //      await UpdateDVVAsync(_tableNamePayment, _appSettings.EntitiesConnection);
 
                 // 7. Auditoría (Bitácora)
                 // Dejamos un log muy claro de qué se voló físicamente

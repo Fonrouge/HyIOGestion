@@ -6,6 +6,7 @@ using Domain.Exceptions;
 using Domain.Exceptions.Base;
 using Domain.Infrastructure;
 using Domain.Infrastructure.Audit;
+using Domain.Infrastructure.Permisos.Concrete;
 using Domain.Repositories;
 using Shared;
 using Shared.Services;
@@ -59,24 +60,29 @@ namespace BLL.LogicLayers.Sales
                     return result;
                 }
 
-                // 2. Conexión y Transacción
-                _uow.SetConnectionString(_appSettings.EntitiesConnection);
-                await _uow.BeginTransactionAsync();
 
-                // 3. Validar Permisos
+                // 2. Validar Permisos
                 var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
-                if (!currentUser.HasPermission("SALE_DELETE"))
+                var permissionsList = await _uow.PermisoRepo.GetPermissionsByUserAsync(_sessionProvider.Current.CurrentUserId);
+
+                bool hasAccess = permissionsList.Any(p => p.PermisoCode == PermisosEnum.SALE_DELETE.ToString()
+                                                       || p.PermisoCode == PermisosEnum.ADMIN_ACCESS.ToString());
+                if (!hasAccess)
                 {
-                    var authError = _errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameSale);
-                    result.Errors.Add(ErrorMapper.ToDTO(authError));
+                    result.Errors.Add(ErrorMapper.ToDTO(_errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameSale)));
                     return result;
+
                 }
+
+                // Conexión y Transacción
+                _uow.SetConnectionString(_appSettings.EntitiesConnection);
+                await _uow.BeginTransactionAsync();            
 
                 // 4. Acción Principal: Eliminación (Soft Delete - el repositorio ya lo maneja)
                 await _uow.SaleRepo.DeleteAsync(dto.Id);
 
                 // 5. Integridad Vertical (DVV)
-                await UpdateDVVAsync(_tableNameSale, _appSettings.EntitiesConnection);
+       //         await UpdateDVVAsync(_tableNameSale, _appSettings.EntitiesConnection);
 
                 // 6. Auditoría
                 var log = _bitacoraFact.Create(
@@ -101,7 +107,7 @@ namespace BLL.LogicLayers.Sales
                 // Log técnico interno
                 var dbError = _errorsFactory.CreateFromException(ex);
                 dbError.Table = _tableNameSale;
-              
+
                 try { await _errorsRepository.CreateAsync(dbError); } catch { }
 
                 // Manejo especial de restricciones (FK) - muy común en ventas

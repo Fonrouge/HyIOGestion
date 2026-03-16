@@ -40,6 +40,7 @@ namespace WinformsUI.UserControls.SearchBar
         // --- Estado de Filtros Avanzados ---
         private List<string> _advancedFilterValues = new List<string>();
         private bool _advancedMatchAll = false;
+        private bool _dateFilterEnabled = false;   
 
         // --- Timer (debounce) ---
         private readonly Timer _debounce = new Timer();
@@ -56,6 +57,7 @@ namespace WinformsUI.UserControls.SearchBar
         private DateTime? _dateTo;
         private string _dateColumnName;
         private List<PropertyInfo> _dateProperties; // cache para performance
+        private readonly List<PropertyInfo> _stringPropertiesCache;
 
         /// <summary>Milisegundos de debounce (default 400).</summary>
         public int DebounceMs
@@ -99,6 +101,10 @@ namespace WinformsUI.UserControls.SearchBar
             // Cache de propiedades DateTime (solo una vez)
             _dateProperties = typeof(T).GetProperties()
                 .Where(p => p.PropertyType == typeof(DateTime) || p.PropertyType == typeof(DateTime?))
+                .ToList();
+
+            _stringPropertiesCache = typeof(T).GetProperties()
+                .Where(p => p.PropertyType == typeof(string) && p.CanRead)
                 .ToList();
         }
 
@@ -205,11 +211,12 @@ namespace WinformsUI.UserControls.SearchBar
         public void ExecuteDateRangeFilter(DateTime from, DateTime upTo, string columnName = null)
         {
             _dateFrom = from.Date;
-            _dateTo = upTo.Date.AddDays(1).AddTicks(-1); // inclusive hasta fin del día
+            _dateTo = upTo.Date.AddDays(1).AddTicks(-1);
             _dateColumnName = string.IsNullOrWhiteSpace(columnName) || columnName == "0"
                 ? null
                 : columnName.Trim();
 
+            _dateFilterEnabled = true;       
             ApplyAllFilters();
         }
 
@@ -221,6 +228,7 @@ namespace WinformsUI.UserControls.SearchBar
             _dateFrom = null;
             _dateTo = null;
             _dateColumnName = null;
+            _dateFilterEnabled = false;           
             ApplyAllFilters();
         }
 
@@ -246,9 +254,7 @@ namespace WinformsUI.UserControls.SearchBar
             // ==========================================
             if (_advancedFilterValues != null && _advancedFilterValues.Count > 0)
             {
-                var stringProperties = typeof(T).GetProperties()
-                                                .Where(p => p.PropertyType == typeof(string) && p.CanRead)
-                                                .ToList();
+                var stringProperties = _stringPropertiesCache;
 
                 query = query.Where(item =>
                 {
@@ -373,8 +379,8 @@ namespace WinformsUI.UserControls.SearchBar
         }
 
         private void Tb_Enter(object sender, EventArgs e)
-        {
-            if (_placeholderActive) RemovePlaceholder();
+        {            
+            if (_placeholderActive) RemovePlaceholder();            
         }
 
         private void Tb_Leave(object sender, EventArgs e)
@@ -467,7 +473,7 @@ namespace WinformsUI.UserControls.SearchBar
 
         private IEnumerable<T> ApplyDateFilter(IEnumerable<T> source)
         {
-            if (_dateFrom == null || _dateTo == null || !_dateProperties.Any())
+            if (!_dateFilterEnabled || _dateFrom == null || _dateTo == null || !_dateProperties.Any())
                 return source;
 
             return source.Where(item =>

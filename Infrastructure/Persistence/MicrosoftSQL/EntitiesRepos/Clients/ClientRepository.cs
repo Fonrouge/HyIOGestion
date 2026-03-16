@@ -23,9 +23,9 @@ namespace DAL.Persistence.MicrosoftSQL
         {
             // Agregado el campo DVH
             string query = @"INSERT INTO Clients 
-                             (Id, Name, LastName, ShipAddress, Email, Phone, TaxId, DocNumber, IsActive, IsDeleted, DVH) 
+                             (Id, Name, LastName, ShipAddress, Email, Phone, TaxId, DocNumber, IsDeleted, DVH) 
                              VALUES 
-                             (@Id, @Name, @LastName, @ShipAddress, @Email, @Phone, @TaxId, @DocNumber, @IsActive, @IsDeleted, @DVH)";
+                             (@Id, @Name, @LastName, @ShipAddress, @Email, @Phone, @TaxId, @DocNumber, @IsDeleted, @DVH)";
 
             return ExecuteNonQueryAsync(query, cmd => SetParameters(cmd, entity));
         }
@@ -41,7 +41,6 @@ namespace DAL.Persistence.MicrosoftSQL
                                  Phone = @Phone, 
                                  TaxId = @TaxId, 
                                  DocNumber = @DocNumber, 
-                                 IsActive = @IsActive, 
                                  IsDeleted = @IsDeleted,
                                  DVH = @DVH
                              WHERE Id = @Id";
@@ -54,7 +53,7 @@ namespace DAL.Persistence.MicrosoftSQL
             // El borrado lógico se mantiene igual. 
             // OJO: Si calculás DVH de forma global (Digito Verificador Vertical), 
             // a veces es necesario recalcular el DVH del registro borrado para mantener la consistencia.
-            string query = "UPDATE Clients SET IsDeleted = 1, IsActive = 0 WHERE Id = @Id";
+            string query = "UPDATE Clients SET IsDeleted = 1 = 0 WHERE Id = @Id";
             await ExecuteNonQueryAsync(query, cmd => cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = entityId }));
         }
 
@@ -62,7 +61,7 @@ namespace DAL.Persistence.MicrosoftSQL
         {
             Client client = null;
             // Agregado el campo DVH al SELECT
-            string query = @"SELECT Id, Name, LastName, ShipAddress, Email, Phone, TaxId, DocNumber, IsActive, IsDeleted, DVH 
+            string query = @"SELECT Id, Name, LastName, ShipAddress, Email, Phone, TaxId, DocNumber, IsDeleted, DVH 
                              FROM Clients 
                              WHERE Id = @Id AND IsDeleted = 0";
 
@@ -77,9 +76,9 @@ namespace DAL.Persistence.MicrosoftSQL
         {
             var clients = new List<Client>();
             // Agregado el campo DVH al SELECT
-            string query = @"SELECT Id, Name, LastName, ShipAddress, Email, Phone, TaxId, DocNumber, IsActive, IsDeleted, DVH 
-                             FROM Clients 
-                             WHERE IsDeleted = 0";
+            string query = @"SELECT Id, Name, LastName, ShipAddress, Email, Phone, TaxId, DocNumber, IsDeleted, DVH 
+                             FROM Clients c
+                             WHERE c.IsDeleted = 0";
 
             await ExecuteReaderAsync(query, null, reader => clients.Add(Map(reader)));
             return clients;
@@ -90,9 +89,9 @@ namespace DAL.Persistence.MicrosoftSQL
             Client client = null;
 
             // Agregado el campo DVH al SELECT
-            string query = @"SELECT Id, Name, LastName, ShipAddress, Email, Phone, TaxId, DocNumber, IsActive, IsDeleted, DVH 
+            string query = @"SELECT Id, Name, LastName, ShipAddress, Email, Phone, TaxId, DocNumber, IsDeleted, DVH 
                              FROM Clients 
-                             WHERE TaxId = @TaxId AND IsDeleted = 0";
+                             WHERE TaxId = @TaxId";
 
             await ExecuteReaderAsync(query,
                 cmd => cmd.Parameters.Add(new SqlParameter("@TaxId", SqlDbType.NVarChar) { Value = taxId }),
@@ -113,18 +112,20 @@ namespace DAL.Persistence.MicrosoftSQL
             cmd.Parameters.Add(new SqlParameter("@Phone", SqlDbType.NVarChar) { Value = entity.Phone.Value });
             cmd.Parameters.Add(new SqlParameter("@TaxId", SqlDbType.NVarChar) { Value = entity.TaxId.Value });
             cmd.Parameters.Add(new SqlParameter("@DocNumber", SqlDbType.NVarChar) { Value = entity.DocNumber.Value });
-
-            cmd.Parameters.Add(new SqlParameter("@IsActive", SqlDbType.Bit) { Value = entity.IsActive });
             cmd.Parameters.Add(new SqlParameter("@IsDeleted", SqlDbType.Bit) { Value = entity.IsDeleted });
 
             // Agregado el parámetro del DVH validando si es null por las dudas
-            cmd.Parameters.Add(new SqlParameter("@DVH", SqlDbType.NVarChar) { Value = entity.DVH != null ? (object)entity.DVH.Value : DBNull.Value });
+            cmd.Parameters.Add(new SqlParameter("@DVH", SqlDbType.VarChar)
+            {
+                Value = (object)entity.DVH?.Value ?? string.Empty
+            });
         }
 
         private Client Map(SqlDataReader reader)
         {
             // Agregado el reader["DVH"] como último parámetro para que coincida con la firma de Reconstitute
-            return Client.Reconstitute(
+            return Client.Reconstitute
+            (
                 (Guid)reader["Id"],
                 reader["Name"]?.ToString(),
                 reader["LastName"]?.ToString(),
@@ -133,9 +134,8 @@ namespace DAL.Persistence.MicrosoftSQL
                 reader["Phone"]?.ToString(),
                 reader["TaxId"]?.ToString(),
                 reader["DocNumber"]?.ToString(),
-                (bool)reader["IsActive"],
                 (bool)reader["IsDeleted"],
-                reader["DVH"] != DBNull.Value ? reader["DVH"].ToString() : string.Empty
+                reader["DVH"].ToString()
             );
         }
 

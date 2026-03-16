@@ -3,6 +3,7 @@ using BLL.DTOs.Errors;
 using BLL.Infrastructure.Errors;
 using Domain.Exceptions;
 using Domain.Infrastructure;
+using Domain.Infrastructure.Permisos.Concrete;
 using Domain.Repositories;
 using Shared;
 using Shared.Sessions;
@@ -21,6 +22,9 @@ namespace BLL.LogicLayers.Products
         private readonly IErrorsFactory _errorsFactory;
         private readonly ISessionProvider _sessionProvider;
 
+
+        private readonly string _tableNameProduct;
+
         public UCGetAllProducts
         (
             IUnitOfWork uow,
@@ -35,6 +39,8 @@ namespace BLL.LogicLayers.Products
             _errorsRepository = errorsRepository;
             _errorsFactory = errorsFactory;
             _sessionProvider = sessionProvider;
+
+            _tableNameProduct = _appSettings.ProductTableName;
         }
 
         public async Task<(IEnumerable<ProductDTO>, OperationResult<ProductDTO>)> ExecuteAsync()
@@ -58,6 +64,18 @@ namespace BLL.LogicLayers.Products
 
             }
 
+
+            // 2. Validar Permisos
+            var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
+            var permissionsList = await _uow.PermisoRepo.GetPermissionsByUserAsync(_sessionProvider.Current.CurrentUserId);
+
+            bool hasAccess = permissionsList.Any(p => p.PermisoCode == PermisosEnum.PRODUCT_VIEW.ToString()
+                                                   || p.PermisoCode == PermisosEnum.ADMIN_ACCESS.ToString());
+            if (!hasAccess)
+            {
+                result.Errors.Add(ErrorMapper.ToDTO(_errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameProduct)));
+                return (listDto, result);
+            }
 
 
             _uow.SetConnectionString(_appSettings.EntitiesConnection);

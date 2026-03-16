@@ -1,6 +1,7 @@
 ﻿using BLL.DTOs;
 using SharedAbstractions.ArchitecturalMarkers;
 using System;
+using System.Collections.Generic;
 
 namespace Presenter.ForClient
 {
@@ -8,7 +9,10 @@ namespace Presenter.ForClient
     {
         event EventHandler<ClientDTO> CreateClientRequested;
         void ShowOperationResult(OperationResult<ClientDTO> opRes);
+        void FillClientDocTypes(IEnumerable<object> docTypes);
+        void FillCountries(IEnumerable<object> countries);
 
-      
+
+
     }
 }

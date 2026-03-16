@@ -7,10 +7,12 @@ using Domain.Exceptions;
 using Domain.Exceptions.Base;
 using Domain.Infrastructure;
 using Domain.Infrastructure.Audit;
+using Domain.Infrastructure.Permisos.Concrete;
 using Domain.Repositories;
 using Shared;
 using Shared.Sessions;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BLL.LogicLayers.Employees
@@ -60,18 +62,22 @@ namespace BLL.LogicLayers.Employees
                     return result;
                 }
 
-                
-                // Seteamos la conexión para las consultas de validación (Aún SIN abrir transacción)
-                _uow.SetConnectionString(_appSettings.EntitiesConnection);
-
-                // 3. Validar Permisos
+                // 2. Validar Permisos
                 var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
-                if (!currentUser.HasPermission("EMPLOYEE_UPDATE"))
+                var permissionsList = await _uow.PermisoRepo.GetPermissionsByUserAsync(_sessionProvider.Current.CurrentUserId);
+
+                bool hasAccess = permissionsList.Any(p => p.PermisoCode == PermisosEnum.EMPLOYEE_UPDATE.ToString()
+                                                       || p.PermisoCode == PermisosEnum.ADMIN_ACCESS.ToString());
+                if (!hasAccess)
                 {
-                    var authError = _errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameEmployee);
-                    result.Errors.Add(ErrorMapper.ToDTO(authError));
+                    result.Errors.Add(ErrorMapper.ToDTO(_errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameEmployee)));
                     return result;
                 }
+
+
+                // 3. Seteamos la conexión para las consultas de validación (Aún SIN abrir transacción)
+                _uow.SetConnectionString(_appSettings.EntitiesConnection);
+
 
                 // 4. Validación de Duplicados (Contra DB)
                 var existingEmployeeWithTaxId = await _uow.EmployeeRepo.GetByNationalIdAsync(dto.NationalId);

@@ -2,11 +2,11 @@
 using Presenter.ForEmployee;
 using Shared;
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using Winforms.Theme;
 using WinformsUI.Infrastructure.Translations;
 using WinformsUI.UserControls.Wizard;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
 namespace WinformsUI.Forms.EmployeeCRUDL
 {
@@ -38,6 +38,7 @@ namespace WinformsUI.Forms.EmployeeCRUDL
             AddTranslatables();
             ApplyGlobalPalette();
             UpdateClientSize();
+
         }
 
         private void AddTranslatables()
@@ -48,6 +49,13 @@ namespace WinformsUI.Forms.EmployeeCRUDL
             ApplyTranslation();
 
             _transMgr.AddFormNotify(this);
+        }
+        public void FillCountries(IEnumerable<object> countries)
+        {
+            cbTaxId.ValueMember = "Id";
+            cbTaxId.DisplayMember = "Display";
+
+            cbTaxId.DataSource = countries;
         }
 
         private void InitializeWizard() => _wizard.Initialize(new Panel[] { pnlIdentification, pnlContact });

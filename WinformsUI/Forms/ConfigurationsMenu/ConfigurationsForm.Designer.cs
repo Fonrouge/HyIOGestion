@@ -51,9 +51,10 @@
             // panel1
             // 
             this.panel1.Controls.Add(this.tableLayoutPanel1);
-            this.panel1.Location = new System.Drawing.Point(134, 0);
+            this.panel1.Location = new System.Drawing.Point(156, 0);
+            this.panel1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(499, 542);
+            this.panel1.Size = new System.Drawing.Size(582, 667);
             this.panel1.TabIndex = 0;
             // 
             // tableLayoutPanel1
@@ -65,21 +66,23 @@
             this.tableLayoutPanel1.Controls.Add(this.label9, 0, 0);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12.54613F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 87.45387F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(499, 542);
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(582, 667);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // cbLang
             // 
             this.cbLang.Font = new System.Drawing.Font("Microsoft YaHei UI", 12F);
             this.cbLang.FormattingEnabled = true;
-            this.cbLang.Location = new System.Drawing.Point(128, 71);
+            this.cbLang.Location = new System.Drawing.Point(150, 87);
+            this.cbLang.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.cbLang.Name = "cbLang";
-            this.cbLang.Size = new System.Drawing.Size(247, 29);
+            this.cbLang.Size = new System.Drawing.Size(288, 29);
             this.cbLang.TabIndex = 1;
             // 
             // label9
@@ -88,10 +91,10 @@
             this.label9.AutoSize = true;
             this.tableLayoutPanel1.SetColumnSpan(this.label9, 2);
             this.label9.Font = new System.Drawing.Font("Microsoft YaHei", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label9.Location = new System.Drawing.Point(4, 13);
-            this.label9.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label9.Location = new System.Drawing.Point(5, 21);
+            this.label9.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(491, 41);
+            this.label9.Size = new System.Drawing.Size(572, 41);
             this.label9.TabIndex = 5;
             this.label9.Text = "¿En qué idioma nos hablamos?";
             this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -100,8 +103,9 @@
             // 
             this.panel3.Controls.Add(this.tableLayoutPanel2);
             this.panel3.Location = new System.Drawing.Point(0, 0);
+            this.panel3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(134, 542);
+            this.panel3.Size = new System.Drawing.Size(156, 667);
             this.panel3.TabIndex = 0;
             // 
             // tableLayoutPanel2
@@ -111,23 +115,25 @@
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 66.41791F));
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 6;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 45F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 45F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 45F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 45F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 45F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(134, 542);
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 55F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 55F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 55F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 55F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 55F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 31F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(156, 667);
             this.tableLayoutPanel2.TabIndex = 0;
             // 
             // panel2
             // 
             this.panel2.Controls.Add(this.tableLayoutPanel3);
-            this.panel2.Location = new System.Drawing.Point(665, 0);
+            this.panel2.Location = new System.Drawing.Point(776, 0);
+            this.panel2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(499, 542);
+            this.panel2.Size = new System.Drawing.Size(582, 667);
             this.panel2.TabIndex = 0;
             // 
             // tableLayoutPanel3
@@ -142,15 +148,16 @@
             this.tableLayoutPanel3.Controls.Add(this.btnApply, 0, 3);
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel3.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.RowCount = 4;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12.54613F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 87.45387F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 53F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 77F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(499, 542);
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 65F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 95F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(582, 667);
             this.tableLayoutPanel3.TabIndex = 0;
             // 
             // lbLightPalettes
@@ -159,10 +166,10 @@
             this.lbLightPalettes.Font = new System.Drawing.Font("Microsoft YaHei UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbLightPalettes.FormattingEnabled = true;
             this.lbLightPalettes.ItemHeight = 21;
-            this.lbLightPalettes.Location = new System.Drawing.Point(263, 124);
-            this.lbLightPalettes.Margin = new System.Windows.Forms.Padding(15, 3, 15, 3);
+            this.lbLightPalettes.Location = new System.Drawing.Point(307, 156);
+            this.lbLightPalettes.Margin = new System.Windows.Forms.Padding(18, 4, 18, 4);
             this.lbLightPalettes.Name = "lbLightPalettes";
-            this.lbLightPalettes.Size = new System.Drawing.Size(221, 214);
+            this.lbLightPalettes.Size = new System.Drawing.Size(257, 256);
             this.lbLightPalettes.TabIndex = 21;
             // 
             // lbDarkPalettes
@@ -171,10 +178,10 @@
             this.lbDarkPalettes.Font = new System.Drawing.Font("Microsoft YaHei UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbDarkPalettes.FormattingEnabled = true;
             this.lbDarkPalettes.ItemHeight = 21;
-            this.lbDarkPalettes.Location = new System.Drawing.Point(15, 124);
-            this.lbDarkPalettes.Margin = new System.Windows.Forms.Padding(15, 3, 15, 3);
+            this.lbDarkPalettes.Location = new System.Drawing.Point(18, 156);
+            this.lbDarkPalettes.Margin = new System.Windows.Forms.Padding(18, 4, 18, 4);
             this.lbDarkPalettes.Name = "lbDarkPalettes";
-            this.lbDarkPalettes.Size = new System.Drawing.Size(218, 214);
+            this.lbDarkPalettes.Size = new System.Drawing.Size(253, 256);
             this.lbDarkPalettes.TabIndex = 20;
             // 
             // label1
@@ -183,10 +190,10 @@
             this.label1.AutoSize = true;
             this.tableLayoutPanel3.SetColumnSpan(this.label1, 2);
             this.label1.Font = new System.Drawing.Font("Microsoft YaHei", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(4, 5);
-            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label1.Location = new System.Drawing.Point(5, 11);
+            this.label1.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(491, 41);
+            this.label1.Size = new System.Drawing.Size(572, 41);
             this.label1.TabIndex = 5;
             this.label1.Text = "¿Cómo nos vemos hoy?";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -196,9 +203,10 @@
             this.tableLayoutPanel3.SetColumnSpan(this.btnTry, 2);
             this.btnTry.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnTry.Font = new System.Drawing.Font("Microsoft YaHei UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnTry.Location = new System.Drawing.Point(3, 414);
+            this.btnTry.Location = new System.Drawing.Point(4, 510);
+            this.btnTry.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnTry.Name = "btnTry";
-            this.btnTry.Size = new System.Drawing.Size(493, 47);
+            this.btnTry.Size = new System.Drawing.Size(574, 57);
             this.btnTry.TabIndex = 22;
             this.btnTry.Tag = "HighAccented";
             this.btnTry.Text = "Probar en esta ventana";
@@ -209,9 +217,10 @@
             this.tableLayoutPanel3.SetColumnSpan(this.btnApply, 2);
             this.btnApply.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnApply.Font = new System.Drawing.Font("Microsoft YaHei UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnApply.Location = new System.Drawing.Point(3, 467);
+            this.btnApply.Location = new System.Drawing.Point(4, 575);
+            this.btnApply.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnApply.Name = "btnApply";
-            this.btnApply.Size = new System.Drawing.Size(493, 72);
+            this.btnApply.Size = new System.Drawing.Size(574, 88);
             this.btnApply.TabIndex = 22;
             this.btnApply.Tag = "Accentuable";
             this.btnApply.Text = "Aplicar en todo el programa";
@@ -219,12 +228,14 @@
             // 
             // ConfigurationsForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1169, 550);
+            this.ClientSize = new System.Drawing.Size(2050, 677);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
+            this.Font = new System.Drawing.Font("Microsoft YaHei", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "ConfigurationsForm";
             this.Text = "ConfigurationsForm";
             this.panel1.ResumeLayout(false);

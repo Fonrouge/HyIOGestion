@@ -15,7 +15,6 @@ namespace Domain.Entities
         public DocNumberVO DocNumber { get; private set; }
         public DvhVo DVH { get; private set; }
 
-        public bool IsActive { get; private set; }
         public bool IsDeleted { get; private set; }
 
         private Client() { }
@@ -28,7 +27,8 @@ namespace Domain.Entities
             string rawEmail,
             string rawPhone,
             string rawTaxId,
-            string rawDocNumber)
+            string rawDocNumber,
+            string dvh = null)
         {
             var client = new Client();
 
@@ -40,8 +40,8 @@ namespace Domain.Entities
             client.TaxId = ClientTaxIdVO.Create(rawTaxId?.ToUpper() ?? "N/I");
             client.DocNumber = DocNumberVO.Create(rawDocNumber?.ToUpper() ?? "N/I");
 
-            client.IsActive = true;
             client.IsDeleted = false;
+            client.DVH = null;
 
             return client;
         }
@@ -56,7 +56,6 @@ namespace Domain.Entities
             string rawPhone,
             string rawTaxId,
             string rawDocNumber,
-            bool isActive,
             bool isDeleted,
             string dvh
         )
@@ -71,7 +70,6 @@ namespace Domain.Entities
                 Phone = ClientPhoneVO.Create(rawPhone?.ToUpper() ?? string.Empty),
                 TaxId = ClientTaxIdVO.Create(rawTaxId?.ToUpper() ?? string.Empty),
                 DocNumber = DocNumberVO.Create(rawDocNumber?.ToUpper() ?? string.Empty),
-                IsActive = isActive,
                 IsDeleted = isDeleted,
                 DVH = !string.IsNullOrEmpty(dvh) ? DvhVo.Create(dvh) : null
             };
@@ -81,18 +79,7 @@ namespace Domain.Entities
         {
             if (IsDeleted) return;
             IsDeleted = true;
-            IsActive = false;
         }
-
-        public void Activate()
-        {
-            if (IsDeleted)
-                throw new InvalidOperationException("No se puede activar un cliente que ha sido eliminado.");
-
-            IsActive = true;
-        }
-
-        public void Deactivate() => IsActive = false;
 
         public override string ToString() => string.Format($"{LastName.Value}, {Name.Value} ({DocNumber.Value})");
        

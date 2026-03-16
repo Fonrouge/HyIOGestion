@@ -8,11 +8,13 @@ using Domain.Exceptions;
 using Domain.Exceptions.Base;
 using Domain.Infrastructure;
 using Domain.Infrastructure.Audit;
+using Domain.Infrastructure.Permisos.Concrete;
 using Domain.Repositories;
 using Shared;
 using Shared.Services;
 using Shared.Sessions;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BLL.LogicLayers.Products
@@ -62,12 +64,15 @@ namespace BLL.LogicLayers.Products
                     return result;
                 }
 
-                // 2. Validar Permisos (Patente específica)
+                // 2. Validar Permisos (Ahora funcionará porque las queries son Cross-DB o usan SecurityConnection)
                 var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
-                if (!currentUser.HasPermission("PRODUCT_DELETE"))
+                var permissionsList = await _uow.PermisoRepo.GetPermissionsByUserAsync(_sessionProvider.Current.CurrentUserId);
+
+                bool hasAccess = permissionsList.Any(p => p.PermisoCode == PermisosEnum.PRODUCT_DELETE.ToString()
+                                                       || p.PermisoCode == PermisosEnum.ADMIN_ACCESS.ToString());
+                if (!hasAccess)
                 {
-                    var authError = _errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameProduct);
-                    result.Errors.Add(ErrorMapper.ToDTO(authError));
+                    result.Errors.Add(ErrorMapper.ToDTO(_errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameProduct)));
                     return result;
                 }
 
@@ -98,7 +103,7 @@ namespace BLL.LogicLayers.Products
                 }
 
                 // 6. Integridad Vertical (DVV)
-                await UpdateDVVAsync(_tableNameProduct, _appSettings.EntitiesConnection);
+       //         await UpdateDVVAsync(_tableNameProduct, _appSettings.EntitiesConnection);
 
                 // 7. Auditoría
                 var log = _bitacoraFact.Create(

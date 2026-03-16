@@ -1,12 +1,16 @@
-﻿using BLL.LogicLayers.Clients;
-using BLL.DTOs;
+﻿using BLL.DTOs;
+using BLL.LogicLayers.Clients;
 using SharedAbstractions.ArchitecturalMarkers;
+using SharedAbstractions.Enums;
+using System;
 using System.Collections.Generic;
+using System.Drawing.Design;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Presenter.ForClient
 {
-    public class CreateClientPresenter: IPresenter
+    public class CreateClientPresenter : IPresenter
     {
 
         private readonly ICreateClientView _view;
@@ -23,11 +27,28 @@ namespace Presenter.ForClient
 
             WireViewEvents();
             ApplyDarkTheme();
+            FillDropDownData();
         }
 
         private void WireViewEvents()
         {
             _view.CreateClientRequested += (sender, e) => OnCreateClientRequested(e);
+        }
+
+        private void FillDropDownData()
+        {
+            var datasourceDocs = Enum.GetValues(typeof(DocTypes))
+            .Cast<DocTypes>()
+            .Select(d => new {Id = d.GetDocInfo().Id, Display = d.GetDocInfo().Description }).ToList();
+
+            _view.FillClientDocTypes(datasourceDocs);
+
+
+            var datasourceCountries = Enum.GetValues(typeof(Countries))
+            .Cast<Countries>()
+            .Select(d => new { Id = d.GetCountriesInfo().Id, Display = d.GetCountriesInfo().Description }).ToList();
+            
+            _view.FillCountries(datasourceCountries);
         }
 
         private void ApplyDarkTheme() => _view.ApplyGlobalPalette();

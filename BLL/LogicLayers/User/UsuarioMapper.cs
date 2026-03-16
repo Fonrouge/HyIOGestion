@@ -23,7 +23,7 @@ namespace BLL.LogicLayers
             };
 
             // Aplanamos los permisos para el DTO
-            dto.Permisos = entity.Permisos.Select(p => p.Permiso).ToList();
+            dto.Permisos = entity.Permisos.Select(p => p.PermisoCode).ToList();
 
             return dto;
         }

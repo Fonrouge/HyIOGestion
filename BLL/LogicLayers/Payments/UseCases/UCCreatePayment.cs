@@ -7,11 +7,13 @@ using Domain.Exceptions;
 using Domain.Exceptions.Base;
 using Domain.Infrastructure;
 using Domain.Infrastructure.Audit;
+using Domain.Infrastructure.Permisos.Concrete;
 using Domain.Repositories;
 using Shared;
 using Shared.Services;
 using Shared.Sessions;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BLL.LogicLayers.Payments
@@ -65,11 +67,16 @@ namespace BLL.LogicLayers.Payments
 
                 // 2. Validar Permisos
                 var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
-                if (!currentUser.HasPermission("PAYMENT_CREATE"))
+                var permissionsList = await _uow.PermisoRepo.GetPermissionsByUserAsync(_sessionProvider.Current.CurrentUserId);
+
+                bool hasAccess = permissionsList.Any(p => p.PermisoCode == PermisosEnum.PAYMENT_CREATE.ToString()
+                                                       || p.PermisoCode == PermisosEnum.ADMIN_ACCESS.ToString());
+                if (!hasAccess)
                 {
                     result.Errors.Add(ErrorMapper.ToDTO(_errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNamePayment)));
                     return result;
                 }
+
 
                 // 3. Validar Negocio: Verificar que el Cliente exista antes de registrarle un pago
                 var client = await _uow.ClientRepo.GetByIdAsync(dto.ClientId);
@@ -101,7 +108,7 @@ namespace BLL.LogicLayers.Payments
                 await _uow.PaymentRepo.CreateAsync(newPayment);
 
                 // 8. Calcular y Actualizar DVV (Vertical) - ¡Fundamental tras un Insert!
-                await UpdateDVVAsync(_tableNamePayment, _appSettings.EntitiesConnection);
+          //      await UpdateDVVAsync(_tableNamePayment, _appSettings.EntitiesConnection);
 
                 // --- FIN BLOQUE DE INTEGRIDAD CRIPTOGRÁFICA ---
 

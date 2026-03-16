@@ -1,0 +1,34 @@
+﻿namespace Domain.Infrastructure.Permisos.Concrete
+{
+    public enum PermisosEnum
+    {
+        ADMIN_ACCESS,
+        CLIENT_VIEW,
+        CLIENT_CREATE,
+        CLIENT_UPDATE,
+        CLIENT_DELETE,
+        EMPLOYEE_VIEW,
+        EMPLOYEE_CREATE,
+        EMPLOYEE_UPDATE,
+        EMPLOYEE_DELETE,
+        PAYMENT_VIEW,
+        PAYMENT_CREATE,
+        PAYMENT_UPDATE,
+        PAYMENT_DELETE,
+        PRODUCT_VIEW,
+        PRODUCT_CREATE,
+        PRODUCT_UPDATE,
+        PRODUCT_DELETE,
+        SALE_VIEW,
+        SALE_CREATE,
+        SALE_UPDATE,
+        SALE_DELETE,
+        SUPPLIER_VIEW,
+        SUPPLIER_CREATE,
+        SUPPLIER_UPDATE,
+        SUPPLIER_DELETE,
+        USER_MANAGEMENT,
+        PERMISSION_MANAGEMENT,
+        RECALCULATE_INTEGRITY
+    }
+}

@@ -68,10 +68,9 @@ namespace Presenter.ForProducts
             var opRes = await _ucDelete.ExecuteAsync(e);
             ShowResult(opRes);
 
-            if (!opRes.Errors.Any())
+            if (opRes.Success)
             {
                 GetAllProducts();
-                Debugger.Break();
             }
         }
 
@@ -82,10 +81,7 @@ namespace Presenter.ForProducts
             var productList = tuple.Item1;
             var opResult = tuple.Item2;
 
-
             var categTuple = await _uCGetAllCategories.ExecuteAsync();
-
-
 
             var categories = categTuple.Item1;
 

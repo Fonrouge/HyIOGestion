@@ -33,13 +33,13 @@
             this.btnNextShip = new System.Windows.Forms.Button();
             this.cbZipCode = new System.Windows.Forms.TextBox();
             this.label13 = new System.Windows.Forms.Label();
-            this.cbStateSelector = new System.Windows.Forms.ComboBox();
             this.label15 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
             this.label18 = new System.Windows.Forms.Label();
             this.cbCountrySelector = new System.Windows.Forms.ComboBox();
             this.txtShipAddreess = new System.Windows.Forms.TextBox();
+            this.tbState = new System.Windows.Forms.TextBox();
             this.pnlContact = new System.Windows.Forms.Panel();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.btnBackContact = new System.Windows.Forms.Button();
@@ -181,7 +181,7 @@
             // 
             this.cbTaxId.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.cbTaxId.FormattingEnabled = true;
-            this.cbTaxId.Location = new System.Drawing.Point(79, 306);
+            this.cbTaxId.Location = new System.Drawing.Point(79, 303);
             this.cbTaxId.Margin = new System.Windows.Forms.Padding(4);
             this.cbTaxId.Name = "cbTaxId";
             this.cbTaxId.Size = new System.Drawing.Size(399, 27);
@@ -227,13 +227,13 @@
             this.tableLayoutPanel3.Controls.Add(this.btnNextShip, 0, 5);
             this.tableLayoutPanel3.Controls.Add(this.cbZipCode, 1, 4);
             this.tableLayoutPanel3.Controls.Add(this.label13, 1, 0);
-            this.tableLayoutPanel3.Controls.Add(this.cbStateSelector, 1, 2);
             this.tableLayoutPanel3.Controls.Add(this.label15, 0, 1);
             this.tableLayoutPanel3.Controls.Add(this.label16, 0, 2);
             this.tableLayoutPanel3.Controls.Add(this.label17, 0, 3);
             this.tableLayoutPanel3.Controls.Add(this.label18, 0, 4);
             this.tableLayoutPanel3.Controls.Add(this.cbCountrySelector, 1, 1);
             this.tableLayoutPanel3.Controls.Add(this.txtShipAddreess, 1, 3);
+            this.tableLayoutPanel3.Controls.Add(this.tbState, 1, 2);
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel3.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel3.Margin = new System.Windows.Forms.Padding(4);
@@ -300,16 +300,6 @@
             this.label13.Text = "Dirección de envío";
             this.label13.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // cbStateSelector
-            // 
-            this.cbStateSelector.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.cbStateSelector.FormattingEnabled = true;
-            this.cbStateSelector.Location = new System.Drawing.Point(79, 231);
-            this.cbStateSelector.Margin = new System.Windows.Forms.Padding(4);
-            this.cbStateSelector.Name = "cbStateSelector";
-            this.cbStateSelector.Size = new System.Drawing.Size(399, 27);
-            this.cbStateSelector.TabIndex = 1;
-            // 
             // label15
             // 
             this.label15.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
@@ -362,7 +352,7 @@
             // 
             this.cbCountrySelector.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.cbCountrySelector.FormattingEnabled = true;
-            this.cbCountrySelector.Location = new System.Drawing.Point(79, 158);
+            this.cbCountrySelector.Location = new System.Drawing.Point(79, 161);
             this.cbCountrySelector.Margin = new System.Windows.Forms.Padding(4);
             this.cbCountrySelector.Name = "cbCountrySelector";
             this.cbCountrySelector.Size = new System.Drawing.Size(399, 27);
@@ -376,6 +366,15 @@
             this.txtShipAddreess.Name = "txtShipAddreess";
             this.txtShipAddreess.Size = new System.Drawing.Size(399, 24);
             this.txtShipAddreess.TabIndex = 0;
+            // 
+            // tbState
+            // 
+            this.tbState.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbState.Location = new System.Drawing.Point(79, 233);
+            this.tbState.Margin = new System.Windows.Forms.Padding(4);
+            this.tbState.Name = "tbState";
+            this.tbState.Size = new System.Drawing.Size(399, 24);
+            this.tbState.TabIndex = 0;
             // 
             // pnlContact
             // 
@@ -569,7 +568,6 @@
         private System.Windows.Forms.Button btnNextShip;
         private System.Windows.Forms.TextBox cbZipCode;
         private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.ComboBox cbStateSelector;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.Label label17;
@@ -589,5 +587,6 @@
         private System.Windows.Forms.TextBox txtShipAddreess;
         private System.Windows.Forms.Button btnBackShipAddress;
         private System.Windows.Forms.Button btnBackContact;
+        private System.Windows.Forms.TextBox tbState;
     }
 }

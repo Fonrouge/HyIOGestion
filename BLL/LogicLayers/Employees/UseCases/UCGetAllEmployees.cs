@@ -2,8 +2,11 @@
 using BLL.DTOs.Errors;
 using BLL.DTOs.Mappers;
 using BLL.Infrastructure.Errors;
+using Domain.Exceptions;
 using Domain.Infrastructure;
+using Domain.Infrastructure.Permisos.Concrete;
 using Shared;
+using Shared.Sessions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,17 +19,23 @@ namespace BLL.LogicLayers.Employees //==========================================
         private readonly IUnitOfWork _uow;
         private readonly IApplicationSettings _appSettings;
         private readonly IErrorsFactory _errorsFactory;
+        private readonly ISessionProvider _sessionProvider;
+        private readonly string _tableNameEmployee;
 
         public UCGetAllEmployees
         (
             IUnitOfWork uow,
             IApplicationSettings appSettings,
-            IErrorsFactory errorsFactory
+            IErrorsFactory errorsFactory,
+            ISessionProvider sessionProvider
         )
         {
             _uow = uow;
             _appSettings = appSettings;
             _errorsFactory = errorsFactory;
+            _sessionProvider = sessionProvider;
+
+            _tableNameEmployee = _appSettings.EmployeeTableName;
         }
 
         public async Task<(IEnumerable<EmployeeDTO>, OperationResult<EmployeeDTO>)> ExecuteAsync()
@@ -36,6 +45,19 @@ namespace BLL.LogicLayers.Employees //==========================================
 
             try
             {
+
+                // 1. Validar Permisos
+                var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
+                var permissionsList = await _uow.PermisoRepo.GetPermissionsByUserAsync(_sessionProvider.Current.CurrentUserId);
+
+                bool hasAccess = permissionsList.Any(p => p.PermisoCode == PermisosEnum.EMPLOYEE_VIEW.ToString()
+                                                       || p.PermisoCode == PermisosEnum.ADMIN_ACCESS.ToString());
+                if (!hasAccess)
+                {
+                    result.Errors.Add(ErrorMapper.ToDTO(_errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameEmployee)));
+                    return (listDto, result);
+                }
+
                 _uow.SetConnectionString(_appSettings.EntitiesConnection);
                 await _uow.BeginTransactionAsync();
 

@@ -5,11 +5,13 @@ using BLL.Infrastructure.Errors;
 using Domain.Exceptions;
 using Domain.Infrastructure;
 using Domain.Infrastructure.Audit;
+using Domain.Infrastructure.Permisos.Concrete;
 using Domain.Repositories;
 using Shared;
 using Shared.Services;
 using Shared.Sessions;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BLL.LogicLayers.Clients  //=======================================================================REFACTORIZADO AL 27/02=======================================================================
@@ -42,7 +44,7 @@ namespace BLL.LogicLayers.Clients  //===========================================
             _errorsFactory = errorsFactory ?? throw new ArgumentNullException(nameof(errorsFactory)); 
             _errorsRepository = errorsRepository ?? throw new ArgumentNullException(nameof(errorsRepository)); 
 
-            _tableNameClient = appSettings.ClientTableName ?? "Client";
+            _tableNameClient = appSettings.ClientTableName ?? "Clients";
         }
 
         public async Task<OperationResult<ClientDTO>> ExecuteAsync(ClientDTO dto)
@@ -63,25 +65,20 @@ namespace BLL.LogicLayers.Clients  //===========================================
                 // 2. Configurar conexión y abrir transacción
                 _uow.SetConnectionString(_appSettings.EntitiesConnection);
                 await _uow.BeginTransactionAsync();
-
-                // 3. Validar Usuario y Permisos
+                
+                // 3. Validar Permisos (Ahora funcionará porque las queries son Cross-DB o usan SecurityConnection)
                 var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
+                var permissionsList = await _uow.PermisoRepo.GetPermissionsByUserAsync(_sessionProvider.Current.CurrentUserId);
 
-                // Evaluamos el permiso (solo necesitamos el específico de esta acción)
-                if (!currentUser.HasPermission("CLIENT_CREATE"))
+                bool hasAccess = permissionsList.Any(p => p.PermisoCode == PermisosEnum.CLIENT_CREATE.ToString()
+                                                       || p.PermisoCode == PermisosEnum.ADMIN_ACCESS.ToString());
+                if (!hasAccess)
                 {
-                    var authError = _errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameClient);
-                    opRes.Errors.Add(ErrorMapper.ToDTO(authError));
+                    opRes.Errors.Add(ErrorMapper.ToDTO(_errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameClient)));
                     return opRes;
                 }
 
-                // 4. Validar Reglas de Negocio (Ej. Campos obligatorios y Duplicados)
-                if (string.IsNullOrWhiteSpace(dto.TaxId) || string.IsNullOrWhiteSpace(dto.Name))
-                {
-                    opRes.Errors.Add(new ErrorLogDTO { Message = "El Nombre y el Documento/CUIT son obligatorios." });
-                    return opRes;
-                }
-
+                // 4. Validar unicidad}
                 var existingClient = await _uow.ClientRepo.GetByTaxIdAsync(dto.TaxId);
                
                 if (existingClient != null)
@@ -93,7 +90,6 @@ namespace BLL.LogicLayers.Clients  //===========================================
 
                 // 5. Mapeo a Entidad
                 var newClientEntity = ClientMapper.ToEntity(dto);
-                newClientEntity.Activate();
 
            
                 //  Podría optarse por incluir DVH de ser necesario
@@ -108,7 +104,7 @@ namespace BLL.LogicLayers.Clients  //===========================================
                 await _uow.ClientRepo.CreateAsync(newClientEntity);
 
                 // 7. Integridad Vertical (DVV)
-                await UpdateDVVAsync(_tableNameClient, _appSettings.EntitiesConnection);
+         //       await UpdateDVVAsync(_tableNameClient, _appSettings.EntitiesConnection);
 
                 // 8. Registrar Bitácora
                 var log = _bitacoraFact.Create

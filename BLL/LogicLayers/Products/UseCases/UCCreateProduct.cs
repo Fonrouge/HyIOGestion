@@ -6,6 +6,7 @@ using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Infrastructure;
 using Domain.Infrastructure.Audit;
+using Domain.Infrastructure.Permisos.Concrete;
 using Domain.Repositories;
 using Shared;
 using Shared.Sessions;
@@ -52,26 +53,31 @@ namespace BLL.LogicLayers.Products
 
             try
             {
-                // 1. Validar Sesión Activa
+                // 1. Seteamos la conexión de SEGURIDAD primero para las validaciones
+                _uow.SetConnectionString(_appSettings.SecurityConnection);
+
                 if (_sessionProvider.Current == null)
                 {
                     result.Errors.Add(ErrorMapper.ToDTO(_errorsFactory.Create(ErrorCatalogEnum.SessionExpired)));
                     return result;
                 }
 
-                // Seteamos la conexión (Lectura inicial)
-                _uow.SetConnectionString(_appSettings.EntitiesConnection);
-
-                // 2. Validar Permisos
+                // 2. Validar Permisos (Ahora funcionará porque las queries son Cross-DB o usan SecurityConnection)
                 var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
-                if (!currentUser.HasPermission("PRODUCT_CREATE"))
+                var permissionsList = await _uow.PermisoRepo.GetPermissionsByUserAsync(_sessionProvider.Current.CurrentUserId);
+
+                bool hasAccess = permissionsList.Any(p => p.PermisoCode == PermisosEnum.PRODUCT_CREATE.ToString()
+                                                       || p.PermisoCode == PermisosEnum.ADMIN_ACCESS.ToString());
+                if (!hasAccess)
                 {
                     result.Errors.Add(ErrorMapper.ToDTO(_errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameProduct)));
                     return result;
                 }
 
-                // 3. Validaciones de Negocio: Nombre Duplicado
-                // Usamos el nombre del DTO para chequear antes de instanciar el VO
+                // 3. Cambiamos a la conexión de ENTIDADES para el trabajo pesado
+                _uow.SetConnectionString(_appSettings.EntitiesConnection);
+
+                // 4. Validaciones de Negocio
                 var existing = await _uow.ProductRepo.GetByNameAsync(dto.Name);
                 if (existing != null)
                 {
@@ -79,35 +85,19 @@ namespace BLL.LogicLayers.Products
                     return result;
                 }
 
-                // 4. Instanciar Entidad (Fail Fast de VOs: Precio, Stock, Nombre)
-                // Usamos el Factory Method Create del Dominio
-                var newProduct = Product.Create(
-                    rawName: dto.Name,
-                    rawDescription: dto.Description,
-                    rawPrice: dto.Price,
-                    rawStock: dto.Stock,
-                    categories: CategoryMapper.ToListEntity(dto.Categories)
-                );
+                // 5. Instanciar y Transaccionar
+                var newProduct = Product.Create(dto.Name, dto.Description, dto.Price, dto.Stock, CategoryMapper.ToListEntity(dto.Categories));
 
-                // 5. ABRIR TRANSACCIÓN
                 await _uow.BeginTransactionAsync();
 
-                // 6. Persistencia (El repo se encarga de la tabla base y la intermedia de categorías)
                 await _uow.ProductRepo.CreateAsync(newProduct);
 
-                // 7. Auditoría (Bitácora)
-                var log = _bitacoraFact.Create(
-                    entry: BitacoraCatalogEnum.CreateOnBD,
-                    user: currentUser.Id.ToString(),
-                    tableName: _tableNameProduct,
-                    extraInfo: $"Producto Creado: {newProduct.Name.Value} | Stock Inicial: {newProduct.Stock.Value}"
-                );
+                // 6. Auditoría (Bitácora)            
+                var log = _bitacoraFact.Create(BitacoraCatalogEnum.CreateOnBD, currentUser.Id.ToString(), _tableNameProduct, $"Creado: {newProduct.Name.Value}");
                 await _uow.BitacoraRepo.CreateAsync(log);
 
-                // 8. Confirmación
                 await _uow.CommitAsync();
 
-                // 9. Retorno (Mapeamos la entidad real creada a DTO)
                 result.Value = ProductMapper.ToDto(newProduct);
                 return result;
             }
@@ -124,7 +114,7 @@ namespace BLL.LogicLayers.Products
                 if (ex is ArgumentException domainEx)
                 {
                     var errorDto = ErrorMapper.ToDTO(_errorsFactory.Create(ErrorCatalogEnum.InternalError, _tableNameProduct));
-                    errorDto.InformativeMessage = domainEx.Message; 
+                    errorDto.InformativeMessage = domainEx.Message;
                     result.Errors.Add(errorDto);
                     return result;
                 }

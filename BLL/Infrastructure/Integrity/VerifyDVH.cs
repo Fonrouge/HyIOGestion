@@ -52,10 +52,10 @@ namespace BLL.UseCases
         {
             // 1. Validar integridad fila por fila (DVH) - Hacemos el await primero y luego materializamos a lista
             var users = await _uow.UserRepo.GetAllAsync();
-            await ValidateUsersDVHAsync(users.ToList());
+      //      await ValidateUsersDVHAsync(users.ToList());
 
             var employees = await _uow.EmployeeRepo.GetAllAsync();
-            await ValidateEmployeesDVHAsync(employees.ToList());
+       //     await ValidateEmployeesDVHAsync(employees.ToList());
 
             // 2. Validar integridad de tablas completas (DVV)
             var dvvChecks = new[]

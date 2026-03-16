@@ -2,11 +2,12 @@
 using BLL.DTOs.Errors;
 using BLL.DTOs.Mappers;
 using BLL.Infrastructure.Errors;
-using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Infrastructure;
+using Domain.Infrastructure.Permisos.Concrete;
 using Domain.Repositories;
 using Shared;
+using Shared.Sessions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,19 +21,24 @@ namespace BLL.LogicLayers.Sales
         private readonly IApplicationSettings _appSettings;
         private readonly IErrorsFactory _errorsFactory;
         private readonly IErrorsRepository _errorsRepository;
+        private readonly ISessionProvider _sessionProvider;
+
+        private readonly string _tableNameSale;
 
         public UCGetAllSales
         (
             IUnitOfWork uow,
             IApplicationSettings appSettings,
             IErrorsFactory errorsFactory,
-            IErrorsRepository errorsRepository
+            IErrorsRepository errorsRepository,
+                   ISessionProvider sessionProvider
         )
         {
             _uow = uow;
-            _appSettings = appSettings;
-            _errorsFactory = errorsFactory;
-            _errorsRepository = errorsRepository;
+            _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
+            _errorsFactory = errorsFactory ?? throw new ArgumentNullException(nameof(errorsFactory));
+            _errorsRepository = errorsRepository ?? throw new ArgumentNullException(nameof(errorsRepository));
+            _sessionProvider = sessionProvider ?? throw new ArgumentNullException(nameof(sessionProvider));
         }
 
         public async Task<(IEnumerable<SaleDTO>, OperationResult<SaleDTO>)> ExecuteAsync()
@@ -42,6 +48,19 @@ namespace BLL.LogicLayers.Sales
 
             try
             {
+                // 1. Validar Permisos
+                var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
+                var permissionsList = await _uow.PermisoRepo.GetPermissionsByUserAsync(_sessionProvider.Current.CurrentUserId);
+
+                bool hasAccess = permissionsList.Any(p => p.PermisoCode == PermisosEnum.SALE_VIEW.ToString()
+                                                       || p.PermisoCode == PermisosEnum.ADMIN_ACCESS.ToString());
+                if (!hasAccess)
+                {
+                    result.Errors.Add(ErrorMapper.ToDTO(_errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameSale)));
+                    return (salesListDto, result);
+                }
+
+                // Setear conexión y empezar transacción
                 _uow.SetConnectionString(_appSettings.EntitiesConnection);
                 await _uow.BeginTransactionAsync();
 

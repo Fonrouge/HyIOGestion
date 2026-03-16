@@ -10,7 +10,7 @@ namespace Domain.Entities.Permisos.Abstracts
         public string Nombre { get; set; }
 
         // Corresponde a 'Permiso' en la DB (ej: "USR_CREATE")
-        public string Permiso { get; set; }
+        public string PermisoCode { get; set; }
 
         // Integridad Horizontal
         public DvhVo DVH { get; set; }

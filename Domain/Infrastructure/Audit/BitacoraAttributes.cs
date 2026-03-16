@@ -16,7 +16,7 @@ namespace Domain.Infrastructure.Audit
         public SeverityEnum DefaultSeverity { get; set; }
         public bool Success { get; set; }
 
-        // Constructor para los datos obligatorios (si se quieren datos obligatorios)
+        // Constructor para los datos obligatorios (si es que quiero datos obligatorios)
         public BitacoraAttributes() { }
     }
 

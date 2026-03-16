@@ -114,13 +114,13 @@ namespace WinformsUI.Forms.ProductCRUDL
         }
         public void ShowOperationResult(OperationResult<ProductDTO> opRes)
         {
-            if (!opRes.Errors.Any()) MessageBox.Show("Ok" + $"No");
+            if (opRes.Success) MessageBox.Show("Operación exitosa", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
             else
             {
                 foreach (ErrorLogDTO error in opRes.Errors)
                 {
-                    MessageBox.Show($"{error.Message} \n {error.RecommendedAction}", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show($"{error.Message} \n {error.RecommendedAction}", "Info", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
 
             }

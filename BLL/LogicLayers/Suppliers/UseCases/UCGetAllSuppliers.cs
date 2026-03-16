@@ -1,7 +1,11 @@
 ﻿using BLL.DTOs;
 using BLL.DTOs.Errors; // Para usar el ErrorLogDTO
+using BLL.Infrastructure.Errors;
+using Domain.Exceptions;
 using Domain.Infrastructure;
+using Domain.Infrastructure.Permisos.Concrete;
 using Shared; // Para IApplicationSettings
+using Shared.Sessions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,11 +20,21 @@ namespace BLL.LogicLayers.Suppliers
     {
         private readonly IUnitOfWork _uow;
         private readonly IApplicationSettings _appSettings;
+        private readonly IErrorsFactory _errorsFactory;
+        private readonly ISessionProvider _sessionProvider;
 
-        public UCGetAllSuppliers(IUnitOfWork uow, IApplicationSettings appSettings)
+
+        private readonly string _tableNameSupplier;
+
+
+        public UCGetAllSuppliers(IUnitOfWork uow, IApplicationSettings appSettings, IErrorsFactory errorsFactory, ISessionProvider sessionProvider)
         {
             _uow = uow;
             _appSettings = appSettings;
+            _errorsFactory = errorsFactory;
+            _sessionProvider = sessionProvider;
+
+            _tableNameSupplier = appSettings.SupplierTableName ?? "Suppliers";
         }
 
         public async Task<(IEnumerable<SupplierDTO>, OperationResult<SupplierDTO>)> ExecuteAsync()
@@ -30,6 +44,19 @@ namespace BLL.LogicLayers.Suppliers
 
             try
             {
+                // 3. Validar Usuario y Permisos
+                var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
+                var permissionsList = await _uow.PermisoRepo.GetPermissionsByUserAsync(_sessionProvider.Current.CurrentUserId);
+
+                bool hasAccess = permissionsList.Any(p => p.PermisoCode == PermisosEnum.SUPPLIER_CREATE.ToString()
+                                                       || p.PermisoCode == PermisosEnum.ADMIN_ACCESS.ToString());
+                if (!hasAccess)
+                {
+                    result.Errors.Add(ErrorMapper.ToDTO(_errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameSupplier)));
+                    return (listDto, result);
+                }
+
+
                 // 1. Configuramos y abrimos la conexión
                 _uow.SetConnectionString(_appSettings.EntitiesConnection);
                 await _uow.BeginTransactionAsync();
