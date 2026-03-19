@@ -10,26 +10,26 @@ namespace WinformsUI.Infrastructure.UserInterface.Windowing
     public class LayoutStrategyFactory : ILayoutStrategyFactory
     {
 
-        private readonly Dictionary<LayoutType, ILayoutStrategy> _strategies;
+        private readonly Dictionary<LayoutTypeEnum, ILayoutStrategy> _strategies;
 
         public LayoutStrategyFactory()
         {
-            _strategies = new Dictionary<LayoutType, ILayoutStrategy>
+            _strategies = new Dictionary<LayoutTypeEnum, ILayoutStrategy>
             {
-                { LayoutType.Cascade, new CascadeStrategy() },
-                { LayoutType.VerticalTile, new VerticalTileStrategy() },
-                { LayoutType.SmartGrid, new SmartGridStrategy() }
+                { LayoutTypeEnum.Cascade, new CascadeStrategy() },
+                { LayoutTypeEnum.VerticalTile, new VerticalTileStrategy() },
+                { LayoutTypeEnum.SmartGrid, new SmartGridStrategy() }
             };
         }
 
-        public ILayoutStrategy Create(LayoutType type)
+        public ILayoutStrategy Create(LayoutTypeEnum type)
         {
             if (_strategies.TryGetValue(type, out var strategy))
             {
                 return strategy;
             }
 
-            return _strategies[LayoutType.VerticalTile];
+            return _strategies[LayoutTypeEnum.VerticalTile];
         }
     }
 }

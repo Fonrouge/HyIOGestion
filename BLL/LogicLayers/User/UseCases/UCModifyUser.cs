@@ -6,6 +6,7 @@ using BLL.Infrastructure.Errors;
 using Domain.Exceptions;
 using Domain.Infrastructure;
 using Domain.Infrastructure.Audit;
+using Domain.Infrastructure.Permisos.Concrete;
 using Domain.Repositories;
 using Shared;
 using Shared.Services;
@@ -67,12 +68,14 @@ namespace BLL.LogicLayers //====================================================
             // Para verificar permisos, abrimos la BD de Seguridad
             _uow.SetConnectionString(_appSettings.SecurityConnection);
 
+            // 2. Validar Permisos
             var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
+            var permissionsList = await _uow.PermisoRepo.GetPermissionsByUserAsync(_sessionProvider.Current.CurrentUserId);
 
-            if (!currentUser.HasPermission("USER_UPDATE"))
+            bool hasAccess = permissionsList.Any(p => p.PermisoCode == PermisosEnum.ADMIN_ACCESS.ToString());
+            if (!hasAccess)
             {
-                var authError = _errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameUser);
-                result.Errors.Add(ErrorMapper.ToDTO(authError));
+                result.Errors.Add(ErrorMapper.ToDTO(_errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameUser)));
                 return result;
             }
 

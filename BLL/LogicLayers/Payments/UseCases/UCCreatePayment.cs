@@ -79,7 +79,7 @@ namespace BLL.LogicLayers.Payments
 
 
                 // 3. Validar Negocio: Verificar que el Cliente exista antes de registrarle un pago
-                var client = await _uow.ClientRepo.GetByIdAsync(dto.ClientId);
+                var client = await _uow.ClientRepo.GetByIdAsync(dto.SaleId);
                 if (client == null)
                 {
                     result.Errors.Add(new ErrorLogDTO { InformativeMessage = "El Cliente especificado no existe o fue eliminado." });
@@ -90,7 +90,7 @@ namespace BLL.LogicLayers.Payments
                 // Como es una creación nueva, NO usamos el Mapper (que usa Reconstitute), usamos el Factory estático
                 var newPayment = Payment.Create(
                     rawAmount: dto.Amount,
-                    clientId: dto.ClientId,
+                    saleId: dto.SaleId,
                     rawMethod: dto.Method,
                     rawReference: dto.Reference
                 );
@@ -117,7 +117,7 @@ namespace BLL.LogicLayers.Payments
                     entry: BitacoraCatalogEnum.CreateOnBD,
                     user: currentUser.Id.ToString(),
                     tableName: _tableNamePayment,
-                    extraInfo: $"Se registró un pago de $ {newPayment.Amount.Value} para el Cliente ID: {newPayment.ClientId} (Ref: {newPayment.Reference.Value})"
+                    extraInfo: $"Se registró un pago de $ {newPayment.Amount.Value} para el Cliente ID: {newPayment.SaleId} (Ref: {newPayment.Reference.Value})"
                 );
                 await _uow.BitacoraRepo.CreateAsync(log);
 

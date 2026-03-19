@@ -2,7 +2,7 @@
 
 namespace SharedAbstractions.Enums
 {
-    public enum DocTypes
+    public enum DocTypesEnum
     {
         [DocTypeInfo("80", "CUIT")]
         CUIT,

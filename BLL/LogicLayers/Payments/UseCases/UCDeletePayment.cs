@@ -114,7 +114,7 @@ namespace BLL.LogicLayers.Payments
                     entry: BitacoraCatalogEnum.DeleteOnBD,
                     user: currentUser.Id.ToString(),
                     tableName: _tableNamePayment,
-                    extraInfo: $"Se eliminó FÍSICAMENTE el pago ID: {dto.Id} (Monto original: $ {entity.Amount.Value}, Cliente: {entity.ClientId})"
+                    extraInfo: $"Se eliminó FÍSICAMENTE el pago ID: {dto.Id} (Monto original: $ {entity.Amount.Value}, Cliente: {entity.SaleId})"
                 );
                 await _uow.BitacoraRepo.CreateAsync(log);
 

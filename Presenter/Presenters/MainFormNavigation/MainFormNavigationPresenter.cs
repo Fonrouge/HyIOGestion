@@ -13,7 +13,7 @@ namespace Presenter.MainFormNavigation
     public class MainFormNavigationPresenter : IDisposable
     {
         private readonly IMainFormNavigation _view;
-        private LayoutType _currentLayoutType;
+        private LayoutTypeEnum _currentLayoutType;
         private List<HostFormActionsPresenter> _hostPresenters;
         private readonly ISessionProvider _sessionProvider;
         private readonly ISessionManager _sessionManager;
@@ -117,9 +117,9 @@ namespace Presenter.MainFormNavigation
         private void OnResizingWindow(object sender, EventArgs e) => OnResizingMainForm();
         private void OnChangeWindowManagementMode(object sender, EventArgs e)
         {
-            _view.WindowManageMode = (_view.WindowManageMode == WindowManagementMode.Tabbed)
-                ? WindowManagementMode.Dashboard
-                : WindowManagementMode.Tabbed;
+            _view.WindowManageMode = (_view.WindowManageMode == WindowManagementModeEnum.Tabbed)
+                ? WindowManagementModeEnum.Dashboard
+                : WindowManagementModeEnum.Tabbed;
             ReorganizeLayout();
             _view.UpdateWindowManageText();
         }
@@ -148,7 +148,7 @@ namespace Presenter.MainFormNavigation
             {
                 if (_hostPresenters.Contains(hfaPresenter)) //Tener clara la disquisición entre Tabbed y Dashboard para que efectivamente se pueda switchear ed ventana en modo Dashboard, pero no se pierda el correcto index en Tabbed (y se minimicen las ventanas que se tienen que minimizar cuando se expande la ventana que debe tener index 0)
                 {
-                    if (_view.WindowManageMode == WindowManagementMode.Tabbed)
+                    if (_view.WindowManageMode == WindowManagementModeEnum.Tabbed)
                     {
                         _hostPresenters.Remove(hfaPresenter);
                         _hostPresenters.Insert(0, hfaPresenter);
@@ -164,7 +164,7 @@ namespace Presenter.MainFormNavigation
 
             hfaPresenter.OnExpandingWindow += (s, e) =>
             {
-                if (_view.WindowManageMode == WindowManagementMode.Tabbed)
+                if (_view.WindowManageMode == WindowManagementModeEnum.Tabbed)
                     return;
 
                 MinimizeAllActiveWindows();
@@ -189,7 +189,7 @@ namespace Presenter.MainFormNavigation
         {
             var activeWindows = _view.GetActiveInternalWindows();
 
-            if (_view.WindowManageMode == WindowManagementMode.Tabbed)
+            if (_view.WindowManageMode == WindowManagementModeEnum.Tabbed)
             {
                 if (activeWindows.ToList().Count < 1 || _hostPresenters.Count == 0) return;
                 var excepted = _hostPresenters[0];
@@ -199,7 +199,7 @@ namespace Presenter.MainFormNavigation
                 excepted.SetMaximizeStatus(true);
             }
 
-            if (_view.WindowManageMode == WindowManagementMode.Dashboard)
+            if (_view.WindowManageMode == WindowManagementModeEnum.Dashboard)
             {
                 foreach (var window in _hostPresenters)
                 {
@@ -215,7 +215,7 @@ namespace Presenter.MainFormNavigation
             _view.TileWindows(_currentLayoutType, activeWindows);
         }
 
-        private void OnTileWindowsRequested(object sender, LayoutType layoutType)
+        private void OnTileWindowsRequested(object sender, LayoutTypeEnum layoutType)
         {
             _view.CurrentLayoutType = layoutType;
             _currentLayoutType = _view.CurrentLayoutType;

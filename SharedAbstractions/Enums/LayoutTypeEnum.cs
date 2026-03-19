@@ -1,6 +1,6 @@
 ﻿namespace Shared.Enums
 {
-    public enum LayoutType
+    public enum LayoutTypeEnum
     {
         Cascade,
         VerticalTile,

@@ -178,7 +178,7 @@
     <Compile Include="Infrastructure\Translations\ITranslatableControlsManager.cs" />
     <Compile Include="Infrastructure\Translations\TranslationsManager.cs" />
     <Compile Include="Infrastructure\UserInterface\Theming\DataGridViewThemer.cs" />
-    <Compile Include="Infrastructure\UserInterface\Theming\GiveMainDataGridViewFormat.cs" />
+    <Compile Include="Infrastructure\UserInterface\Theming\DgvFormat.cs" />
     <Compile Include="Infrastructure\UserInterface\Theming\ToolAndMenuStripThemer.cs" />
     <Compile Include="Infrastructure\UserInterface\Windowing\CascadeStrategy.cs" />
     <Compile Include="Infrastructure\UserInterface\Windowing\ILayoutStrategy.cs" />

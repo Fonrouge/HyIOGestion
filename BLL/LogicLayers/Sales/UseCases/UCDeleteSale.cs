@@ -2,6 +2,7 @@
 using BLL.DTOs.Errors;
 using BLL.Infrastructure.AuditLogs;
 using BLL.Infrastructure.Errors;
+using Domain.BaseContracts;
 using Domain.Exceptions;
 using Domain.Exceptions.Base;
 using Domain.Infrastructure;
@@ -76,13 +77,27 @@ namespace BLL.LogicLayers.Sales
 
                 // Conexión y Transacción
                 _uow.SetConnectionString(_appSettings.EntitiesConnection);
-                await _uow.BeginTransactionAsync();            
+                await _uow.BeginTransactionAsync();
 
-                // 4. Acción Principal: Eliminación (Soft Delete - el repositorio ya lo maneja)
+
+                // 4. Acción Principal: Eliminación 
+                var entity = SaleMapper.ToEntity(dto);
+     ;
+
+                if (entity is ISoftDeletable)
+                {
+                    await _uow.SaleRepo.UpdateAsync(entity);
+                    entity.MarkAsDeleted(true);
+
+
+
+                    var saleDetails = await _uow.SaleDetailRepo.GetAllAsync();
+
+                }
                 await _uow.SaleRepo.DeleteAsync(dto.Id);
 
                 // 5. Integridad Vertical (DVV)
-       //         await UpdateDVVAsync(_tableNameSale, _appSettings.EntitiesConnection);
+                //         await UpdateDVVAsync(_tableNameSale, _appSettings.EntitiesConnection);
 
                 // 6. Auditoría
                 var log = _bitacoraFact.Create(

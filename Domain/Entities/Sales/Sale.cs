@@ -20,6 +20,7 @@ namespace Domain.Entities
         public DateTime CreatedAt { get; private set; }
         public bool IsDeleted { get; private set; }
         public DvhVo DVH { get; private set; }
+        public string InvoiceNumber { get; private set; } = "A-0001-000005";
 
         // Constructor privado para forzar el uso de Factories
         private Sale() { }
@@ -91,7 +92,7 @@ namespace Domain.Entities
                 Active = active,
                 CreatedAt = createdAt,
                 IsDeleted = isDeleted,
-                DVH = !string.IsNullOrEmpty(dvh) ? DvhVo.Create(dvh) : null
+                DVH = !string.IsNullOrEmpty(dvh) ? DvhVo.Create(dvh) : DvhVo.Create(dvh)
             };
         }
 
@@ -118,11 +119,9 @@ namespace Domain.Entities
         }
         public void UpdateDVH(string dvh) => DVH = DvhVo.Create(dvh ?? string.Empty);
 
-        public void MarkAsDeleted()
+        public void MarkAsDeleted(bool isDeleted)
         {
-            if (IsDeleted) return;
-            IsDeleted = true;
-            Active = false;
+            IsDeleted = isDeleted;
         }
 
         public void Activate()

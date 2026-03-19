@@ -30,8 +30,8 @@ namespace Presenter.ForEmployee
         
         private void FillDropDownData()
         {
-            var datasourceDocs = Enum.GetValues(typeof(DocTypes))
-            .Cast<DocTypes>()
+            var datasourceDocs = Enum.GetValues(typeof(DocTypesEnum))
+            .Cast<DocTypesEnum>()
             .Select(d => new { Id = d.GetDocInfo().Id, Display = d.GetDocInfo().Description }).ToList();
 
             _view.FillCountries(datasourceDocs);

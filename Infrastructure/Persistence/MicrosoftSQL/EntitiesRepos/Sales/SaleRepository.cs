@@ -13,8 +13,6 @@ namespace DAL.Persistence.MicrosoftSQL
         private SqlTransaction _currentTransaction;
         private readonly IApplicationSettings _appSettings;
 
-
-
         // Clase auxiliar para aplanar el resultado de la DB antes de hidratar el Agregado
         private class SaleHeader
         {
@@ -26,9 +24,8 @@ namespace DAL.Persistence.MicrosoftSQL
             public bool Active { get; set; }
             public DateTime CreatedAt { get; set; }
             public bool IsDeleted { get; set; }
-            public string DVH { get; set; } 
+            public string DVH { get; set; } = "";
         }
-
 
         public SaleRepository(IApplicationSettings appSettings)
         {
@@ -39,11 +36,10 @@ namespace DAL.Persistence.MicrosoftSQL
 
         public async Task CreateAsync(Sale entity)
         {
-            // Agregado campo DVH
             string query = @"
-                INSERT INTO Sales 
+                INSERT INTO Sales
                     (Id, SaleDate, ClientId, EmployeeId, TotalAmount, Active, CreatedAt, IsDeleted, DVH)
-                VALUES 
+                VALUES
                     (@Id, @SaleDate, @ClientId, @EmployeeId, @TotalAmount, @Active, @CreatedAt, @IsDeleted, @DVH)";
 
             await ExecuteNonQueryAsync(query, cmd => SetParameters(cmd, entity));
@@ -52,31 +48,26 @@ namespace DAL.Persistence.MicrosoftSQL
 
         public async Task UpdateAsync(Sale entity)
         {
-            // Agregado DVH e IsDeleted
             string query = @"
-                UPDATE Sales 
-                SET SaleDate   = @SaleDate,
-                    ClientId   = @ClientId,
+                UPDATE Sales
+                SET SaleDate = @SaleDate,
+                    ClientId = @ClientId,
                     EmployeeId = @EmployeeId,
                     TotalAmount = @TotalAmount,
-                    Active      = @Active,
-                    IsDeleted   = @IsDeleted,
-                    DVH         = @DVH
+                    Active = @Active,
+                    IsDeleted = @IsDeleted,
+                    DVH = @DVH
                 WHERE Id = @Id";
 
             await ExecuteNonQueryAsync(query, cmd => SetParameters(cmd, entity));
-
-            // Reemplazo de detalles (Patrón Agregado: se limpia y se vuelve a insertar)
             await DeleteExistingDetails(entity.Id);
             await SyncSaleDetails(entity.Id, entity.Items);
         }
 
         public async Task DeleteAsync(Guid entityId)
         {
-            // Borrado FÍSICO. La BLL decide si usa este o el Update para borrado lógico.
             string deleteDetails = "DELETE FROM SaleDetails WHERE SaleId = @Id";
             string deleteSale = "DELETE FROM Sales WHERE Id = @Id";
-
             await ExecuteNonQueryAsync(deleteDetails, cmd => cmd.Parameters.AddWithValue("@Id", entityId));
             await ExecuteNonQueryAsync(deleteSale, cmd => cmd.Parameters.AddWithValue("@Id", entityId));
         }
@@ -84,7 +75,7 @@ namespace DAL.Persistence.MicrosoftSQL
         public async Task<Sale> GetByIdAsync(Guid id)
         {
             SaleHeader header = null;
-            string query = @"SELECT Id, SaleDate, ClientId, EmployeeId, TotalAmount, Active, CreatedAt, IsDeleted, DVH 
+            string query = @"SELECT Id, SaleDate, ClientId, EmployeeId, TotalAmount, Active, CreatedAt, IsDeleted, DVH
                              FROM Sales WHERE Id = @Id";
 
             await ExecuteReaderAsync(query,
@@ -97,7 +88,7 @@ namespace DAL.Persistence.MicrosoftSQL
         public async Task<IEnumerable<Sale>> GetAllAsync()
         {
             var headers = new List<SaleHeader>();
-            string query = @"SELECT Id, SaleDate, ClientId, EmployeeId, TotalAmount, Active, CreatedAt, IsDeleted, DVH 
+            string query = @"SELECT Id, SaleDate, ClientId, EmployeeId, TotalAmount, Active, CreatedAt, IsDeleted, DVH
                              FROM Sales ORDER BY SaleDate DESC";
 
             await ExecuteReaderAsync(query, null, reader => headers.Add(MapHeader(reader)));
@@ -110,12 +101,10 @@ namespace DAL.Persistence.MicrosoftSQL
         }
 
         // ====================== PRIVADOS ======================
-
         private async Task ExecuteNonQueryAsync(string query, Action<SqlCommand> setParams)
         {
             SqlConnection conn = _currentTransaction?.Connection ?? new SqlConnection(_appSettings.EntitiesConnection);
             bool ownConnection = _currentTransaction == null;
-
             try
             {
                 using (var cmd = new SqlCommand(query, conn))
@@ -136,16 +125,13 @@ namespace DAL.Persistence.MicrosoftSQL
         {
             SqlConnection conn = _currentTransaction?.Connection ?? new SqlConnection(_appSettings.EntitiesConnection);
             bool ownConnection = _currentTransaction == null;
-
             try
             {
                 using (var cmd = new SqlCommand(query, conn))
                 {
                     if (_currentTransaction != null) cmd.Transaction = _currentTransaction;
-
                     setParams?.Invoke(cmd);
                     if (ownConnection) await conn.OpenAsync();
-
                     using (var reader = await cmd.ExecuteReaderAsync())
                     {
                         while (await reader.ReadAsync())
@@ -169,7 +155,7 @@ namespace DAL.Persistence.MicrosoftSQL
             cmd.Parameters.AddWithValue("@Active", entity.Active);
             cmd.Parameters.AddWithValue("@CreatedAt", entity.CreatedAt);
             cmd.Parameters.AddWithValue("@IsDeleted", entity.IsDeleted);
-            cmd.Parameters.AddWithValue("@DVH", (object)entity.DVH?.Value ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@DVH", (object)entity.DVH?.Value ?? string.Empty);
         }
 
         private SaleHeader MapHeader(SqlDataReader reader)
@@ -191,15 +177,15 @@ namespace DAL.Persistence.MicrosoftSQL
         private async Task<Sale> LoadFullAggregate(SaleHeader header)
         {
             var details = new List<SaleDetail>();
-            // Agregado IsDeleted y DVH para los detalles
-            string query = @"SELECT Id, SaleId, ProductId, Quantity, UnitPrice, SubTotal, IsDeleted, DVH 
+
+            // ✅ CORREGIDO: ahora sí traemos IsDeleted
+            string query = @"SELECT Id, SaleId, ProductId, Quantity, UnitPrice, SubTotal, IsDeleted, DVH
                              FROM SaleDetails WHERE SaleId = @SaleId";
 
             await ExecuteReaderAsync(query,
                 cmd => cmd.Parameters.AddWithValue("@SaleId", header.Id),
                 reader => details.Add(MapDetail(reader)));
 
-            // Reconstitución con los 10 parámetros requeridos
             return Sale.Reconstitute(
                 id: header.Id,
                 date: header.SaleDate,
@@ -228,11 +214,11 @@ namespace DAL.Persistence.MicrosoftSQL
                 dvh: reader["DVH"]?.ToString() ?? string.Empty
             );
         }
+
         private async Task SyncSaleDetails(Guid saleId, IEnumerable<SaleDetail> details)
         {
             if (details == null || !details.Any()) return;
 
-            // Incluimos DVH e IsDeleted en los detalles si así lo requiere tu diseño
             string query = @"INSERT INTO SaleDetails (Id, SaleId, ProductId, Quantity, UnitPrice, IsDeleted, DVH)
                              VALUES (@Id, @SaleId, @ProductId, @Quantity, @UnitPrice, @IsDeleted, @DVH)";
 
@@ -246,7 +232,7 @@ namespace DAL.Persistence.MicrosoftSQL
                     cmd.Parameters.AddWithValue("@Quantity", d.Quantity.Value);
                     cmd.Parameters.AddWithValue("@UnitPrice", d.UnitPrice.Value);
                     cmd.Parameters.AddWithValue("@IsDeleted", d.IsDeleted);
-                    cmd.Parameters.AddWithValue("@DVH", (object)d.DVH?.Value ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@DVH", (object)d.DVH?.Value ?? string.Empty); // ← consistente con Sale
                 });
             }
         }

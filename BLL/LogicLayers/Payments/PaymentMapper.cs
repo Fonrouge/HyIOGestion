@@ -21,7 +21,7 @@ namespace BLL.LogicLayers
                 Amount = entity.Amount != null ? entity.Amount.Value : 0m,
                 CreationDate = entity.CreationDate,
                 EffectiveDate = entity.EffectiveDate,
-                ClientId = entity.ClientId,
+                SaleId = entity.SaleId,
                 Method = entity.Method != null ? entity.Method.Value : string.Empty,
                 Reference = entity.Reference != null ? entity.Reference.Value : string.Empty,
                 IsDeleted = entity.IsDeleted,
@@ -41,7 +41,7 @@ namespace BLL.LogicLayers
             {
                 return Payment.Create(
                     dto.Amount,
-                    dto.ClientId,
+                    dto.SaleId,
                     dto.Method ?? string.Empty,
                     dto.Reference ?? string.Empty
                 );
@@ -54,7 +54,7 @@ namespace BLL.LogicLayers
                     dto.Amount,
                     dto.CreationDate,
                     dto.EffectiveDate,
-                    dto.ClientId,
+                    dto.SaleId,
                     dto.Method ?? string.Empty,
                     dto.Reference ?? string.Empty,
                     dto.DVH ?? string.Empty,

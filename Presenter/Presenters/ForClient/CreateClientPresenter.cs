@@ -37,15 +37,15 @@ namespace Presenter.ForClient
 
         private void FillDropDownData()
         {
-            var datasourceDocs = Enum.GetValues(typeof(DocTypes))
-            .Cast<DocTypes>()
+            var datasourceDocs = Enum.GetValues(typeof(DocTypesEnum))
+            .Cast<DocTypesEnum>()
             .Select(d => new {Id = d.GetDocInfo().Id, Display = d.GetDocInfo().Description }).ToList();
 
             _view.FillClientDocTypes(datasourceDocs);
 
 
-            var datasourceCountries = Enum.GetValues(typeof(Countries))
-            .Cast<Countries>()
+            var datasourceCountries = Enum.GetValues(typeof(CountriesEnum))
+            .Cast<CountriesEnum>()
             .Select(d => new { Id = d.GetCountriesInfo().Id, Display = d.GetCountriesInfo().Description }).ToList();
             
             _view.FillCountries(datasourceCountries);

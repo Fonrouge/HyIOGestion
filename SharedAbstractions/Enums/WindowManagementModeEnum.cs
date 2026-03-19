@@ -1,6 +1,6 @@
 ﻿namespace Shared.Enums
 {
-    public enum WindowManagementMode
+    public enum WindowManagementModeEnum
     {
         Tabbed,   // "Modo Pestaña"
         Dashboard     // "Modo Tablero"

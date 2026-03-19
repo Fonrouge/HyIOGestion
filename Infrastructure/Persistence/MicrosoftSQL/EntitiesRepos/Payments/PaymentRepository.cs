@@ -26,8 +26,8 @@ namespace DAL.Persistence.MicrosoftSQL
         public Task CreateAsync(Payment entity)
         {
             // Agregamos DVH
-            string query = @"INSERT INTO Payments (Id, Amount, CreationDate, EffectiveDate, ClientId, Method, Reference, DVH) 
-                             VALUES (@Id, @Amount, @CreationDate, @EffectiveDate, @ClientId, @Method, @Reference, @DVH)";
+            string query = @"INSERT INTO Payments (Id, Amount, CreationDate, EffectiveDate, SaleId, Method, Reference, DVH) 
+                             VALUES (@Id, @Amount, @CreationDate, @EffectiveDate, @SaleId, @Method, @Reference, @DVH)";
 
             return ExecuteNonQueryAsync(query, cmd => SetParameters(cmd, entity));
         }
@@ -38,7 +38,7 @@ namespace DAL.Persistence.MicrosoftSQL
                      SET Amount = @Amount, 
                          CreationDate = @CreationDate, 
                          EffectiveDate = @EffectiveDate, 
-                         ClientId = @ClientId, 
+                         SaleId = @SaleId, 
                          Method = @Method, 
                          Reference = @Reference,
                          DVH = @DVH,
@@ -59,7 +59,7 @@ namespace DAL.Persistence.MicrosoftSQL
         public async Task<Payment> GetByIdAsync(Guid id)
         {
             Payment payment = null;
-            string query = "SELECT Id, Amount, CreationDate, EffectiveDate, ClientId, Method, Reference, DVH, IsDeleted FROM Payments WHERE Id = @Id";
+            string query = "SELECT Id, Amount, CreationDate, EffectiveDate, SaleId, Method, Reference, DVH, IsDeleted FROM Payments WHERE Id = @Id";
 
             await ExecuteReaderAsync(query,
                 cmd => cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = id }),
@@ -71,7 +71,7 @@ namespace DAL.Persistence.MicrosoftSQL
         public async Task<IEnumerable<Payment>> GetAllAsync()
         {
             var payments = new List<Payment>();
-            string query = "SELECT Id, Amount, CreationDate, EffectiveDate, ClientId, Method, Reference, DVH, IsDeleted FROM Payments";
+            string query = "SELECT Id, Amount, CreationDate, EffectiveDate, SaleId, Method, Reference, DVH, IsDeleted FROM Payments";
 
             await ExecuteReaderAsync(query, null, reader => payments.Add(Map(reader)));
 
@@ -139,7 +139,7 @@ namespace DAL.Persistence.MicrosoftSQL
             cmd.Parameters.Add(new SqlParameter("@Amount", SqlDbType.Decimal) { Value = entity.Amount?.Value ?? 0m });
             cmd.Parameters.Add(new SqlParameter("@CreationDate", SqlDbType.DateTime2) { Value = entity.CreationDate });
             cmd.Parameters.Add(new SqlParameter("@EffectiveDate", SqlDbType.DateTime2) { Value = entity.EffectiveDate });
-            cmd.Parameters.Add(new SqlParameter("@ClientId", SqlDbType.UniqueIdentifier) { Value = entity.ClientId });
+            cmd.Parameters.Add(new SqlParameter("@SaleId", SqlDbType.UniqueIdentifier) { Value = entity.SaleId });
 
             // Acceso correcto a los Value Objects
             cmd.Parameters.Add(new SqlParameter("@Method", SqlDbType.VarChar) { Value = (object)entity.Method?.Value ?? DBNull.Value });
@@ -157,7 +157,7 @@ namespace DAL.Persistence.MicrosoftSQL
                 rawAmount: (decimal)reader["Amount"],
                 creationDate: (DateTime)reader["CreationDate"],
                 effectiveDate: (DateTime)reader["EffectiveDate"],
-                clientId: (Guid)reader["ClientId"],
+                saleId: (Guid)reader["SaleId"],
                 rawMethod: reader["Method"]?.ToString(),
                 rawReference: reader["Reference"]?.ToString(),
                 dvh: reader["DVH"]?.ToString(),

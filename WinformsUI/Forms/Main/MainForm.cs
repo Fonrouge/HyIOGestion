@@ -43,9 +43,9 @@ namespace WinformsUI.Forms.Main
         private readonly ITranslatableControlsManager _transMgr;
 
 
-        public LayoutType CurrentLayoutType { get; set; }
+        public LayoutTypeEnum CurrentLayoutType { get; set; }
 
-        public WindowManagementMode WindowManageMode { get; set; }
+        public WindowManagementModeEnum WindowManageMode { get; set; }
 
         private readonly string _defaultTitle = "<EXAMPLE TITLE>";
 
@@ -79,7 +79,7 @@ namespace WinformsUI.Forms.Main
         public event EventHandler ExpandContractRequested;
 
         /// <summary>Fired when a window tiling layout is requested.</summary>
-        public event EventHandler<LayoutType> ApplyLayoutRequested;
+        public event EventHandler<LayoutTypeEnum> ApplyLayoutRequested;
 
         //Fired when a module is requested        
         public event EventHandler OpenClientModuleRequested;
@@ -196,9 +196,9 @@ namespace WinformsUI.Forms.Main
             this.MaximumSize = Screen.FromControl(this).WorkingArea.Size;
             tlpMenu.Size = tlpMenu.MinimumSize;
             UpdatingTitleRequested?.Invoke(this, EventArgs.Empty);
-            CurrentLayoutType = LayoutType.VerticalTile;
+            CurrentLayoutType = LayoutTypeEnum.VerticalTile;
 
-            WindowManageMode = WindowManagementMode.Dashboard;
+            WindowManageMode = WindowManagementModeEnum.Dashboard;
             UpdateWindowManageText();
         }
 
@@ -240,7 +240,7 @@ namespace WinformsUI.Forms.Main
             btnMenu.Click += (s, e) => CollapseExpandMenu();
 
             // Window management actions
-            btnVerticalTileWindows.Click += (s, e) => ExecuteSingleInvoke(() => ApplyLayoutRequested?.Invoke(this, LayoutType.VerticalTile));
+            btnVerticalTileWindows.Click += (s, e) => ExecuteSingleInvoke(() => ApplyLayoutRequested?.Invoke(this, LayoutTypeEnum.VerticalTile));
 
             btnChangeWindowManagementMode.Click += (s, e) => ExecuteSingleInvoke(() => ChangeWindowManagementMode?.Invoke(this, EventArgs.Empty));
 
@@ -309,7 +309,7 @@ namespace WinformsUI.Forms.Main
 
         public void UpdateWindowManageText()
         {
-            btnChangeWindowManagementMode.Text = (WindowManageMode == WindowManagementMode.Tabbed)
+            btnChangeWindowManagementMode.Text = (WindowManageMode == WindowManagementModeEnum.Tabbed)
                 ? _tabbedModeText
                 : _dashboardModeText;
         }
@@ -349,7 +349,7 @@ namespace WinformsUI.Forms.Main
                 : FormWindowState.Maximized;
 
         /// <inheritdoc/>
-        public void TileWindows(LayoutType layoutType, IEnumerable<IHostFormActions> objsForTiling)
+        public void TileWindows(LayoutTypeEnum layoutType, IEnumerable<IHostFormActions> objsForTiling)
         {
             SuspendLayout();
             _layoutFactory.Create(layoutType).Arrange(DashboardPnl.Bounds, (IEnumerable<Form>)objsForTiling);

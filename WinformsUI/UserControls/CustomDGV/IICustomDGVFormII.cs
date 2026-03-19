@@ -111,7 +111,7 @@ namespace WinformsUI.UserControls.CustomDGV
       //      DarkTheme.RedrawBorders = true;
         }
 
-        private void SetDGVAppearence() => GiveMainDataGridViewFormat.Execute(mainDGV);
+        private void SetDGVAppearence() => DgvFormat.Apply(mainDGV);
 
         private void AddTranslatables()  //Se desuscribe en la clase padre BaseManagementForm FormClosed() => _transMgr.RemoveFormNotify(this);
         {

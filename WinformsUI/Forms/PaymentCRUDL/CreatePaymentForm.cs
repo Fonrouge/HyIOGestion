@@ -26,13 +26,13 @@ namespace WinformsUI.Forms.PaymentCRUDL
 
         private readonly string _errorMsg;
         private readonly string _successMsg;
-        private SearchBehavior<ClientDTO> _searchBehavior;
+        private SearchBehavior<SaleDTO> _searchBehavior;
 
-        private BindingList<ClientDTO> _catchedAllClients;
-        private ClientDTO _selectedClientDTO;
+        private BindingList<SaleDTO> _catchedAllSales;
+        private SaleDTO _selectedSaleDTO;
 
         public event EventHandler<PaymentDTO> CreatePaymentRequested;
-        public event EventHandler GetAllClientsRequested;
+        public event EventHandler GetAllSalesRequested;
         public event EventHandler CloseRequested;
 
         public CreatePaymentForm
@@ -74,17 +74,17 @@ namespace WinformsUI.Forms.PaymentCRUDL
 
         private void InitializeClientsDGV()
         {
-            GetAllClientsRequested?.Invoke(this, EventArgs.Empty);
+            GetAllSalesRequested?.Invoke(this, EventArgs.Empty);
         }
 
-        public void CachingClientList(List<ClientDTO> allClientsList)
+        public void InitializeGrid(List<SaleDTO> allSalesList)
         {
-            if (allClientsList == null) return;
+            if (allSalesList == null) return;
 
-            _catchedAllClients = new BindingList<ClientDTO>();
+            _catchedAllSales = new BindingList<SaleDTO>();
 
 
-            _searchBehavior = new SearchBehavior<ClientDTO>
+            _searchBehavior = new SearchBehavior<SaleDTO>
             (
                 dgv: selectClientDGV,
                 listFilterSort: _listFilterSortProvider,
@@ -94,19 +94,15 @@ namespace WinformsUI.Forms.PaymentCRUDL
 
             _searchBehavior.AttachNewTextBoxAsSearchBar(tbSearchBar, _appSettings.SearchBarPlaceHolder);
 
-
-            GiveMainDataGridViewFormat.Execute(selectClientDGV);
-
-
-            _catchedAllClients = allClientsList.ToBindingList<ClientDTO>();
-
-            _searchBehavior.UpdateList(_catchedAllClients.ToBindingList());
-
+            _catchedAllSales = allSalesList.ToBindingList<SaleDTO>();
+            _searchBehavior.UpdateList(_catchedAllSales.ToBindingList());
+            DgvFormat.Apply(selectClientDGV, isMiniDgv: true);
             AddTranslatables();
             WireDGVEvents();
 
 
         }
+        public void FillPaymentMethods(IEnumerable<object> paymentMethods) => cbPaymentMethods.DataSource = paymentMethods;
 
         private void WireDGVEvents()
         {
@@ -114,7 +110,7 @@ namespace WinformsUI.Forms.PaymentCRUDL
             {
                 if (selectClientDGV.SelectedRows.Count > 0)
                 {
-                    _selectedClientDTO = selectClientDGV.SelectedRows[0].DataBoundItem as ClientDTO;
+                    _selectedSaleDTO = selectClientDGV.SelectedRows[0].DataBoundItem as SaleDTO;
                 }
             };
         }
@@ -177,7 +173,7 @@ namespace WinformsUI.Forms.PaymentCRUDL
             MessageBox.Show(opRes.Success ? $"{_successMsg}" : $"{_errorMsg}. Errors: {string.Join(", ", opRes.Errors)}");
             this.Close();
         }
-        public void ShowOperationResult(OperationResult<ClientDTO> opRes)
+        public void ShowOperationResult(OperationResult<SaleDTO> opRes)
         {
             MessageBox.Show(opRes.Success ? $"{_successMsg}" : $"{_errorMsg}. Errors: {string.Join(", ", opRes.Errors)}");
             this.Close();
@@ -199,10 +195,10 @@ namespace WinformsUI.Forms.PaymentCRUDL
 
         private void WizardAdvance(object sender, EventArgs e)
         {
-            if (_selectedClientDTO == null)
+            if (_selectedSaleDTO == null)
             {
-                _selectedClientDTO = selectClientDGV.SelectedRows[0].DataBoundItem as ClientDTO;
-                txtSelectedClient.Text = _selectedClientDTO.ToString();
+                _selectedSaleDTO = selectClientDGV.SelectedRows[0].DataBoundItem as SaleDTO;
+                txtSelectedClient.Text = _selectedSaleDTO.ToString();
             }
 
             _wizard.Advance();
@@ -225,9 +221,10 @@ namespace WinformsUI.Forms.PaymentCRUDL
                 Amount = decimal.Parse(txtAmount.Text),
                 CreationDate = DateTime.Now,
                 EffectiveDate = DateTime.Now, //DateTime.Parse(txtEffectiveDate.Text) ?
-                ClientId = Guid.NewGuid(), //    ClientId = Guid.Parse(txtClient.Text),             TOCA CAPTUDAD LA ENTIDAD RECUPERADA DEL DATAGRIDVIEW PARA USARLA ACA.
-                Method = txtMethod.Text,
-                Reference = txtReference.Text
+                SaleId = Guid.NewGuid(), //    ClientId = Guid.Parse(txtClient.Text),             TOCA CAPTUDAD LA ENTIDAD RECUPERADA DEL DATAGRIDVIEW PARA USARLA ACA.
+                Method = cbPaymentMethods.Text,
+                Reference = txtReference.Text,
+                IsDeleted = false
             };
 
 

@@ -13,10 +13,10 @@ namespace Presenter.MainFormNavigation
     public interface IMainFormNavigation
     {
         /// <summary>Gets or sets the current visual tiling strategy (e.g., Vertical, Horizontal) for internal windows.</summary>
-        LayoutType CurrentLayoutType { get; set; }
+        LayoutTypeEnum CurrentLayoutType { get; set; }
 
         /// <summary>Gets or sets the active window management mode (Tabbed vs. Dashboard).</summary>
-        WindowManagementMode WindowManageMode { get; set; }
+        WindowManagementModeEnum WindowManageMode { get; set; }
 
         // --- Application Control Events ---
 
@@ -30,7 +30,7 @@ namespace Presenter.MainFormNavigation
         event EventHandler ExpandContractRequested;
 
         /// <summary>Occurs when a specific tiling layout is requested to rearrange active internal windows.</summary>
-        event EventHandler<LayoutType> ApplyLayoutRequested;
+        event EventHandler<LayoutTypeEnum> ApplyLayoutRequested;
 
         // --- Module Navigation Events ---
 
@@ -138,7 +138,7 @@ namespace Presenter.MainFormNavigation
         /// </summary>
         /// <param name="layoutType">The tiling strategy to apply (Vertical, Horizontal, etc.).</param>
         /// <param name="objsForTiling">The collection of active window interfaces to be rearranged.</param>
-        void TileWindows(LayoutType layoutType, IEnumerable<IHostFormActions> objsForTiling);
+        void TileWindows(LayoutTypeEnum layoutType, IEnumerable<IHostFormActions> objsForTiling);
 
         /// <summary>
         /// Retrieves all currently active and non-disposed internal windows.

@@ -8,6 +8,7 @@ using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Infrastructure;
 using Domain.Infrastructure.Audit;
+using Domain.Infrastructure.Permisos.Concrete;
 using Domain.Repositories;
 using Shared;
 using Shared.Services;
@@ -48,8 +49,8 @@ namespace BLL.UseCases
             _errorsFactory = errorsFactory;
             _errorsRepository = errorsRepository;
             _encryptionSvc = encryptionSvc;
-            _tableNameUser = _appSettings.UserTableName ?? "Users";
-            _tableNameEmployee = _appSettings.EmployeeTableName ?? "Employee";
+            _tableNameUser = _appSettings.UserTableName ?? "User";
+            _tableNameEmployee = _appSettings.EmployeeTableName ?? "Employees";
         }
 
         public async Task<OperationResult<UsuarioDTO>> CreateAsync(UsuarioDTO userDto)
@@ -66,6 +67,17 @@ namespace BLL.UseCases
                 }
 
                 var currentSession = _sessionProvider.Current; // ← Movido aquí (más eficiente)
+
+                // 2. Validar Permisos
+                var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
+                var permissionsList = await _uow.PermisoRepo.GetPermissionsByUserAsync(_sessionProvider.Current.CurrentUserId);
+
+                bool hasAccess = permissionsList.Any(p => p.PermisoCode == PermisosEnum.ADMIN_ACCESS.ToString());
+                if (!hasAccess)
+                {
+                    result.Errors.Add(ErrorMapper.ToDTO(_errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameUser)));
+                    return result;
+                }
 
                 // 2. FAIL FAST: Verificación de Duplicados antes de tocar la DB
                 _uow.SetConnectionString(_appSettings.SecurityConnection);

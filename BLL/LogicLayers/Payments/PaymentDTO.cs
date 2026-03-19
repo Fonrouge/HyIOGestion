@@ -13,7 +13,7 @@ namespace BLL.DTOs
         public DateTime EffectiveDate { get; set; }
 
         [Browsable(false)]
-        public Guid ClientId { get; set; }
+        public Guid SaleId { get; set; }
         public string Method { get; set; }
         public string Reference { get; set; }
 
@@ -30,7 +30,7 @@ namespace BLL.DTOs
             Amount = 0m;
             CreationDate = DateTime.UtcNow;
             EffectiveDate = DateTime.UtcNow;
-            ClientId = Guid.Empty;
+            SaleId = Guid.Empty;
             Method = string.Empty;
             Reference = string.Empty;
             DVH = string.Empty;

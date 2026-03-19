@@ -9,12 +9,13 @@ namespace Presenter.ForEmployee
     public interface ICreatePaymentView : IView
     {
         event EventHandler<PaymentDTO> CreatePaymentRequested;
-        event EventHandler GetAllClientsRequested;
+        event EventHandler GetAllSalesRequested;
         event EventHandler CloseRequested;
 
+        void FillPaymentMethods(IEnumerable<object> countries);
         void ShowOperationResult(OperationResult<PaymentDTO> opRes);
-        void ShowOperationResult(OperationResult<ClientDTO> opRes);
-        void CachingClientList(List<ClientDTO> allClientsList);
+        void ShowOperationResult(OperationResult<SaleDTO> opRes);
+        void InitializeGrid(List<SaleDTO> allClientsList);
         void Dispose();
     }
 }

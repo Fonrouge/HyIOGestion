@@ -2,7 +2,7 @@
 
 namespace SharedAbstractions.Enums
 {
-    public enum Countries
+    public enum CountriesEnum
     {
         [CountryInfo("01", "Afganistán")] Afganistán,
         [CountryInfo("02", "Albania")] Albania,

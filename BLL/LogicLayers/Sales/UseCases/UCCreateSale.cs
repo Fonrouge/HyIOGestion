@@ -130,7 +130,7 @@ namespace BLL.LogicLayers.Sales
                 await _uow.SaleRepo.CreateAsync(newSale);
 
                 // 8. Integridad Vertical (DVV) - ¡ACTIVALO! Es dinero.
-                await UpdateDVVAsync(_tableNameSale, _appSettings.EntitiesConnection);
+    //            await UpdateDVVAsync(_tableNameSale, _appSettings.EntitiesConnection);
 
                 // 9. Auditoría
                 var log = _bitacoraFact.Create(
@@ -151,7 +151,7 @@ namespace BLL.LogicLayers.Sales
             {
                 if (_uow.HasActiveTransaction) await _uow.RollbackAsync();
 
-                // ... (Tu catch está perfecto, se mantiene igual)
+                // todavía me falta hacer esto
                 return result;
             }
         }

@@ -20,27 +20,27 @@
             this.btnNextPnl1 = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.tbSearchBar = new System.Windows.Forms.TextBox();
-            this.tlpAddPayment = new System.Windows.Forms.TableLayoutPanel();
-            this.btnFinish = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.txtAmount = new System.Windows.Forms.TextBox();
-            this.label8 = new System.Windows.Forms.Label();
-            this.txtMethod = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.txtReference = new System.Windows.Forms.TextBox();
-            this.btnBackContact = new System.Windows.Forms.Button();
-            this.label9 = new System.Windows.Forms.Label();
-            this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
             this.panel1 = new System.Windows.Forms.Panel();
             this.selectClientDGV = new System.Windows.Forms.DataGridView();
+            this.tlpAddPayment = new System.Windows.Forms.TableLayoutPanel();
+            this.btnFinish = new System.Windows.Forms.Button();
+            this.btnBackContact = new System.Windows.Forms.Button();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.txtReference = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
+            this.label1 = new System.Windows.Forms.Label();
+            this.txtAmount = new System.Windows.Forms.TextBox();
             this.txtSelectedClient = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
+            this.cbPaymentMethods = new System.Windows.Forms.ComboBox();
             this.pnlSelectClient.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
-            this.tlpAddPayment.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.selectClientDGV)).BeginInit();
+            this.tlpAddPayment.SuspendLayout();
             this.SuspendLayout();
             // 
             // pnlSelectClient
@@ -92,7 +92,7 @@
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(954, 48);
             this.label4.TabIndex = 5;
-            this.label4.Text = "Seleccionar cliente";
+            this.label4.Text = "Seleccionar Venta";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // tbSearchBar
@@ -103,6 +103,26 @@
             this.tbSearchBar.Name = "tbSearchBar";
             this.tbSearchBar.Size = new System.Drawing.Size(939, 24);
             this.tbSearchBar.TabIndex = 7;
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.selectClientDGV);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel1.Location = new System.Drawing.Point(19, 159);
+            this.panel1.Margin = new System.Windows.Forms.Padding(19, 3, 19, 3);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(939, 337);
+            this.panel1.TabIndex = 8;
+            // 
+            // selectClientDGV
+            // 
+            this.selectClientDGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.selectClientDGV.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.selectClientDGV.Location = new System.Drawing.Point(0, 0);
+            this.selectClientDGV.Name = "selectClientDGV";
+            this.selectClientDGV.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.selectClientDGV.Size = new System.Drawing.Size(939, 337);
+            this.selectClientDGV.TabIndex = 7;
             // 
             // tlpAddPayment
             // 
@@ -115,13 +135,13 @@
             this.tlpAddPayment.Controls.Add(this.label3, 0, 5);
             this.tlpAddPayment.Controls.Add(this.txtReference, 1, 5);
             this.tlpAddPayment.Controls.Add(this.label8, 0, 4);
-            this.tlpAddPayment.Controls.Add(this.txtMethod, 1, 4);
             this.tlpAddPayment.Controls.Add(this.label2, 0, 3);
             this.tlpAddPayment.Controls.Add(this.dateTimePicker1, 1, 3);
             this.tlpAddPayment.Controls.Add(this.label1, 0, 2);
             this.tlpAddPayment.Controls.Add(this.txtAmount, 1, 2);
             this.tlpAddPayment.Controls.Add(this.txtSelectedClient, 1, 1);
             this.tlpAddPayment.Controls.Add(this.label5, 0, 1);
+            this.tlpAddPayment.Controls.Add(this.cbPaymentMethods, 1, 4);
             this.tlpAddPayment.Location = new System.Drawing.Point(1004, 0);
             this.tlpAddPayment.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.tlpAddPayment.Name = "tlpAddPayment";
@@ -149,81 +169,6 @@
             this.btnFinish.Tag = "Accentuable";
             this.btnFinish.Text = "Finalizar";
             this.btnFinish.UseVisualStyleBackColor = true;
-            // 
-            // label1
-            // 
-            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(5, 236);
-            this.label1.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(76, 19);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "Monto";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // label2
-            // 
-            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(5, 298);
-            this.label2.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(76, 19);
-            this.label2.TabIndex = 2;
-            this.label2.Text = "Fecha";
-            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // txtAmount
-            // 
-            this.txtAmount.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtAmount.Location = new System.Drawing.Point(91, 233);
-            this.txtAmount.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
-            this.txtAmount.Name = "txtAmount";
-            this.txtAmount.Size = new System.Drawing.Size(353, 24);
-            this.txtAmount.TabIndex = 0;
-            // 
-            // label8
-            // 
-            this.label8.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(5, 366);
-            this.label8.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(76, 19);
-            this.label8.TabIndex = 2;
-            this.label8.Text = "Método";
-            this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // txtMethod
-            // 
-            this.txtMethod.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtMethod.Location = new System.Drawing.Point(91, 363);
-            this.txtMethod.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
-            this.txtMethod.Name = "txtMethod";
-            this.txtMethod.Size = new System.Drawing.Size(353, 24);
-            this.txtMethod.TabIndex = 0;
-            // 
-            // label3
-            // 
-            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(5, 416);
-            this.label3.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(76, 38);
-            this.label3.TabIndex = 2;
-            this.label3.Text = "Nro.\r\nReferencia";
-            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // txtReference
-            // 
-            this.txtReference.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtReference.Location = new System.Drawing.Point(91, 423);
-            this.txtReference.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
-            this.txtReference.Name = "txtReference";
-            this.txtReference.Size = new System.Drawing.Size(353, 24);
-            this.txtReference.TabIndex = 0;
             // 
             // btnBackContact
             // 
@@ -254,6 +199,51 @@
             this.label9.Text = "Ingresar pago";
             this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // label3
+            // 
+            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(5, 416);
+            this.label3.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(76, 38);
+            this.label3.TabIndex = 2;
+            this.label3.Text = "Nro.\r\nReferencia";
+            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // txtReference
+            // 
+            this.txtReference.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtReference.Location = new System.Drawing.Point(91, 423);
+            this.txtReference.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
+            this.txtReference.Name = "txtReference";
+            this.txtReference.Size = new System.Drawing.Size(353, 24);
+            this.txtReference.TabIndex = 0;
+            // 
+            // label8
+            // 
+            this.label8.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(5, 366);
+            this.label8.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(76, 19);
+            this.label8.TabIndex = 2;
+            this.label8.Text = "Método";
+            this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // label2
+            // 
+            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(5, 298);
+            this.label2.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(76, 19);
+            this.label2.TabIndex = 2;
+            this.label2.Text = "Fecha";
+            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
             // dateTimePicker1
             // 
             this.dateTimePicker1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
@@ -262,25 +252,26 @@
             this.dateTimePicker1.Size = new System.Drawing.Size(357, 24);
             this.dateTimePicker1.TabIndex = 8;
             // 
-            // panel1
+            // label1
             // 
-            this.panel1.Controls.Add(this.selectClientDGV);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(19, 159);
-            this.panel1.Margin = new System.Windows.Forms.Padding(19, 3, 19, 3);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(939, 337);
-            this.panel1.TabIndex = 8;
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(5, 236);
+            this.label1.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(76, 19);
+            this.label1.TabIndex = 2;
+            this.label1.Text = "Monto";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // selectClientDGV
+            // txtAmount
             // 
-            this.selectClientDGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.selectClientDGV.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.selectClientDGV.Location = new System.Drawing.Point(0, 0);
-            this.selectClientDGV.Name = "selectClientDGV";
-            this.selectClientDGV.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.selectClientDGV.Size = new System.Drawing.Size(939, 337);
-            this.selectClientDGV.TabIndex = 7;
+            this.txtAmount.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtAmount.Location = new System.Drawing.Point(91, 233);
+            this.txtAmount.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
+            this.txtAmount.Name = "txtAmount";
+            this.txtAmount.Size = new System.Drawing.Size(353, 24);
+            this.txtAmount.TabIndex = 0;
             // 
             // txtSelectedClient
             // 
@@ -305,6 +296,15 @@
             this.label5.Text = "Cliente";
             this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
+            // cbPaymentMethods
+            // 
+            this.cbPaymentMethods.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbPaymentMethods.FormattingEnabled = true;
+            this.cbPaymentMethods.Location = new System.Drawing.Point(89, 365);
+            this.cbPaymentMethods.Name = "cbPaymentMethods";
+            this.cbPaymentMethods.Size = new System.Drawing.Size(357, 27);
+            this.cbPaymentMethods.TabIndex = 9;
+            // 
             // CreatePaymentForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 19F);
@@ -322,10 +322,10 @@
             this.pnlSelectClient.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
-            this.tlpAddPayment.ResumeLayout(false);
-            this.tlpAddPayment.PerformLayout();
             this.panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.selectClientDGV)).EndInit();
+            this.tlpAddPayment.ResumeLayout(false);
+            this.tlpAddPayment.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -342,7 +342,6 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox txtAmount;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.TextBox txtMethod;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox txtReference;
         private System.Windows.Forms.Label label9;
@@ -352,5 +351,6 @@
         private System.Windows.Forms.DataGridView selectClientDGV;
         private System.Windows.Forms.TextBox txtSelectedClient;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.ComboBox cbPaymentMethods;
     }
 }

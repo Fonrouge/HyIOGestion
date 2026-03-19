@@ -7,9 +7,9 @@ namespace Winforms.Theme
     /// <summary>
     /// Aplica un formato consistente al DataGridView principal.
     /// </summary>
-    public static class GiveMainDataGridViewFormat
+    public static class DgvFormat
     {
-        public static void Execute(DataGridView dgv)
+        public static void Apply(DataGridView dgv, bool isMiniDgv = false)
         {
             if (dgv == null) return;
 
@@ -46,21 +46,27 @@ namespace Winforms.Theme
                 // 3. ¡Congelamos los anchos! (esto es lo que hace aparecer la scrollbar horizontal)
                 dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
 
+
+                int ColumnMinimumWidth = 0;
+                int ColumnWidth = 0;
+
+                if (!isMiniDgv)
+                {
+                    ColumnWidth = 300;
+                    ColumnMinimumWidth = 100;
+                }
+                else
+                {
+                    ColumnWidth = 100;
+                    ColumnMinimumWidth = 40;
+                }
+
                 // Ajustes por columna (mantenemos tu lógica original)
                 foreach (DataGridViewColumn col in dgv.Columns)
                 {
-                    col.MinimumWidth = 100;   // tu valor original
-                    col.Width = 300;
-
-                    // Columna especial (Nombre/Descripción) ocupa más espacio natural
-                    string nombreCol = col.Name.ToLowerInvariant();
-                    if (nombreCol.Contains("descripcion") || nombreCol.Contains("nombre"))
-                    {
-                        col.MinimumWidth = 380;   // un poco más generoso
-                    }
-
-                    // Pequeño padding visual para que no quede pegado
-                    col.Width += 12;
+                   // Pequeño padding visual para que no quede pegado
+                    col.Width += ColumnWidth;
+                    col.MinimumWidth += ColumnMinimumWidth;
                 }
 
                 // Altura de filas existentes

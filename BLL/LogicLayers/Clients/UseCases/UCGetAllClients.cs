@@ -74,8 +74,6 @@ namespace BLL.LogicLayers.Clients //============================================
             }
             catch (Exception ex)
             {
-                var h = ex;
-
                 if (_uow.HasActiveTransaction)
                 {
                     await _uow.RollbackAsync();

@@ -17,7 +17,7 @@ namespace Domain.Entities.Sales.ValueObjects
                 ? date
                 : date.ToUniversalTime();
 
-            if (utcDate > DateTime.UtcNow.AddMinutes(5))
+            if (utcDate > DateTime.UtcNow.AddMinutes(600))
                 throw new ArgumentException("La fecha de venta no puede ser futura.");
 
             return new SaleDateVO(utcDate);

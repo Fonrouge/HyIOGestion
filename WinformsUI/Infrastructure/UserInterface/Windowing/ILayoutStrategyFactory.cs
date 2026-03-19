@@ -7,6 +7,6 @@ namespace WinformsUI.Infrastructure.UserInterface.Windowing
         /// <summary>
         /// Obtiene la estrategia de layout correspondiente al tipo solicitado.
         /// </summary>
-        ILayoutStrategy Create(LayoutType type);
+        ILayoutStrategy Create(LayoutTypeEnum type);
     }
 }

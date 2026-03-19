@@ -65,11 +65,13 @@
     <Compile Include="ArchitecturalMarkers\IView.cs" />
     <Compile Include="Enums\Attributes\CountryInfoAttribute.cs" />
     <Compile Include="Enums\Attributes\DocTypeInfoAttribute.cs" />
-    <Compile Include="Enums\Countries.cs" />
-    <Compile Include="Enums\DocTypes.cs" />
+    <Compile Include="Enums\Attributes\PaymentsMethodsAttribute.cs" />
+    <Compile Include="Enums\CountriesEnum.cs" />
+    <Compile Include="Enums\DocTypesEnum.cs" />
     <Compile Include="Enums\EnumExtensions.cs" />
-    <Compile Include="Enums\LayoutType.cs" />
-    <Compile Include="Enums\WindowManagementMode.cs" />
+    <Compile Include="Enums\LayoutTypeEnum.cs" />
+    <Compile Include="Enums\PaymentMethodsEnum.cs" />
+    <Compile Include="Enums\WindowManagementModeEnum.cs" />
     <Compile Include="Factories\IAppEnvironmentFactory.cs" />
     <Compile Include="IApplicationSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

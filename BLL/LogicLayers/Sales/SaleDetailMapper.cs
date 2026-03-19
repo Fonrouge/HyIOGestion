@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -35,6 +36,16 @@ namespace BLL.LogicLayers.Sales
         public static SaleDetail ToEntity(SaleDetailDTO dto)
         {
             if (dto == null) return null;
+
+            if (dto.Id == Guid.Empty)
+            {
+                // ← Aquí se soluciona el Guid.Empty de una vez por todas
+                return SaleDetail.Create(
+                    productId: dto.ProductId,
+                    rawQuantity: dto.Quantity,
+                    rawUnitPrice: dto.UnitPrice
+                );
+            }
 
             // Usamos Reconstitute pasando el estado técnico completo
             return SaleDetail.Reconstitute
