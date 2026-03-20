@@ -11,7 +11,6 @@ namespace BLL.LogicLayers
 
         public string CompanyName { get; set; } = string.Empty;
         public string ContactName { get; set; }
-        public string TaxId { get; set; } // CUIT/CUIL
         public string Mail { get; set; }
         public string Phone { get; set; }
         public string Address { get; set; }
@@ -24,7 +23,7 @@ namespace BLL.LogicLayers
 
         // --- CAMPOS TÉCNICOS (Integridad y Auditoría) ---
         [Browsable(false)]
-        public bool IsDeleted { get; set; }
+        public bool IsDeleted { get; set; } = false;
 
         [Browsable(false)]
         public string DVH { get; set; }

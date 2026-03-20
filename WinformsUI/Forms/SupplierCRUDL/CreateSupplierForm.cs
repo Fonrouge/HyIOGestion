@@ -8,9 +8,11 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 using Winforms.Theme;
 using WinformsUI.Infrastructure.Translations;
 using WinformsUI.UserControls.Wizard;
@@ -48,6 +50,7 @@ namespace WinformsUI.Forms.SupplierCRUDL
             AddTranslatables();
             InitializeWizard();
             ApplyGlobalPalette();
+            WireCommonEvents();
 
         }
         public void ApplyGlobalPalette() => DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
@@ -62,6 +65,28 @@ namespace WinformsUI.Forms.SupplierCRUDL
         {
             btnNextPnl1.Click += WizardAdvance;
             btnBackPnl2.Click += WizardBack;
+        }
+
+        private void WireCommonEvents()
+        {
+            btnFinish.Click += ExecuteCreation;
+        }
+
+        private void ExecuteCreation(object sender, EventArgs e)
+        {
+            var newSupplierDto = new SupplierDTO()
+            {
+                CompanyName = txtCompanyName.Text,
+                ContactName = txtContactName.Text,
+                TaxId = txtTaxId.Text,
+                Mail = txtMail.Text,
+                Phone = txtPhone.Text,
+                Address = txtAddress.Text,
+                City = txtCity.Text,
+                Observations = txtObservations.Text,                
+            };
+
+            CreateSupplierRequested?.Invoke(this, newSupplierDto);
         }
 
         private void WizardAdvance(object sender, EventArgs e)
@@ -93,7 +118,6 @@ namespace WinformsUI.Forms.SupplierCRUDL
         public void ShowOperationResult(OperationResult<SupplierDTO> opRes)
         {
             MessageBox.Show(opRes.Success ? $"{_successMsg}" : $"{_errorMsg}. Errors: {string.Join(", ", opRes.Errors)}");
-            this.Close();
         }
 
         protected override void Dispose(bool disposing)
@@ -108,7 +132,6 @@ namespace WinformsUI.Forms.SupplierCRUDL
             btnNextPnl1.Click -= WizardAdvance;
             btnBackPnl2.Click -= WizardBack;
             _transMgr.RemoveFormNotify(this);
-        //    _transMgr.UnsubscribeTarget(this);
 
             base.Dispose(disposing);
 

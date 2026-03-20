@@ -33,7 +33,7 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.pnlAddAddress = new System.Windows.Forms.TableLayoutPanel();
             this.btnBackPnl2 = new System.Windows.Forms.Button();
-            this.tbnFinish = new System.Windows.Forms.Button();
+            this.btnFinish = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -203,12 +203,12 @@
             // 
             this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(4, 302);
+            this.label5.Location = new System.Drawing.Point(4, 293);
             this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(83, 19);
+            this.label5.Size = new System.Drawing.Size(83, 38);
             this.label5.TabIndex = 2;
-            this.label5.Text = "CUIT";
+            this.label5.Text = "Tipo Documento";
             this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // txtTaxId
@@ -235,7 +235,7 @@
             this.pnlAddAddress.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 23.23652F));
             this.pnlAddAddress.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 76.76348F));
             this.pnlAddAddress.Controls.Add(this.btnBackPnl2, 0, 0);
-            this.pnlAddAddress.Controls.Add(this.tbnFinish, 0, 5);
+            this.pnlAddAddress.Controls.Add(this.btnFinish, 0, 5);
             this.pnlAddAddress.Controls.Add(this.label1, 1, 0);
             this.pnlAddAddress.Controls.Add(this.label2, 0, 1);
             this.pnlAddAddress.Controls.Add(this.label3, 0, 2);
@@ -274,18 +274,18 @@
             this.btnBackPnl2.Tag = "IsImageColorable";
             this.btnBackPnl2.UseVisualStyleBackColor = false;
             // 
-            // tbnFinish
+            // btnFinish
             // 
-            this.tbnFinish.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.pnlAddAddress.SetColumnSpan(this.tbnFinish, 2);
-            this.tbnFinish.Location = new System.Drawing.Point(14, 473);
-            this.tbnFinish.Margin = new System.Windows.Forms.Padding(14, 4, 4, 4);
-            this.tbnFinish.Name = "tbnFinish";
-            this.tbnFinish.Size = new System.Drawing.Size(464, 73);
-            this.tbnFinish.TabIndex = 5;
-            this.tbnFinish.Tag = "Accentuable";
-            this.tbnFinish.Text = "Finalizar";
-            this.tbnFinish.UseVisualStyleBackColor = true;
+            this.btnFinish.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlAddAddress.SetColumnSpan(this.btnFinish, 2);
+            this.btnFinish.Location = new System.Drawing.Point(14, 473);
+            this.btnFinish.Margin = new System.Windows.Forms.Padding(14, 4, 4, 4);
+            this.btnFinish.Name = "btnFinish";
+            this.btnFinish.Size = new System.Drawing.Size(464, 73);
+            this.btnFinish.TabIndex = 5;
+            this.btnFinish.Tag = "Accentuable";
+            this.btnFinish.Text = "Finalizar";
+            this.btnFinish.UseVisualStyleBackColor = true;
             // 
             // label1
             // 
@@ -403,7 +403,7 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.TableLayoutPanel pnlAddAddress;
         private System.Windows.Forms.Button btnBackPnl2;
-        private System.Windows.Forms.Button tbnFinish;
+        private System.Windows.Forms.Button btnFinish;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;

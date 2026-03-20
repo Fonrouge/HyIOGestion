@@ -11,7 +11,7 @@ namespace Domain.Entities
         public ContactNameVO ContactName { get; private set; }
         public SupplierEmailVO Mail { get; private set; }
         public SupplierPhoneVO Phone { get; private set; }
-        public SupplierTaxIdVO TaxId { get; private set; }
+  //      public SupplierTaxIdVO TaxId { get; private set; }
         public SupplierAddressVO Address { get; private set; }
         public SupplierCityVO City { get; private set; }
         public SupplierObservationsVO Observations { get; private set; }
@@ -35,7 +35,7 @@ namespace Domain.Entities
         (
             string rawCompanyName,
             string rawContactName,
-            string rawTaxId,
+    //        string rawTaxId,
             string rawPhone,
             string rawMail,
             string rawAddress,
@@ -47,7 +47,7 @@ namespace Domain.Entities
             {
                 CompanyName = CompanyNameVO.Create(rawCompanyName),
                 ContactName = ContactNameVO.Create(rawContactName),
-                TaxId = SupplierTaxIdVO.Create(rawTaxId),
+           //     TaxId = SupplierTaxIdVO.Create(rawTaxId),
                 Phone = SupplierPhoneVO.Create(rawPhone),
                 Mail = SupplierEmailVO.Create(rawMail),
                 Address = SupplierAddressVO.Create(rawAddress),
@@ -67,7 +67,7 @@ namespace Domain.Entities
             Guid id,
             string rawCompanyName,
             string rawContactName,
-            string rawTaxId,
+     //      string rawTaxId,
             string rawPhone,
             string rawMail,
             string rawAddress,
@@ -83,7 +83,7 @@ namespace Domain.Entities
                 Id = id,
                 CompanyName = CompanyNameVO.Create(rawCompanyName),
                 ContactName = ContactNameVO.Create(rawContactName),
-                TaxId = SupplierTaxIdVO.Create(rawTaxId),
+    //            TaxId = SupplierTaxIdVO.Create(rawTaxId),
                 Phone = SupplierPhoneVO.Create(rawPhone),
                 Mail = SupplierEmailVO.Create(rawMail),
                 Address = SupplierAddressVO.Create(rawAddress),

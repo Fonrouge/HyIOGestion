@@ -79,6 +79,11 @@ namespace Domain.Entities
         // --- COMPORTAMIENTO ---
         private void CalculateSubtotal() => Subtotal = Quantity.Value * UnitPrice.Value;
 
+        public void MarkAsDeleted()
+        {
+            IsDeleted = true;
+        }
+
         public void UpdateDVH(string dvh) => DVH = DvhVo.Create(dvh ?? string.Empty);
 
         /// <summary>

@@ -3,6 +3,7 @@ using BLL.DTOs.Errors;
 using BLL.Infrastructure.AuditLogs;
 using BLL.Infrastructure.Errors;
 using Domain.BaseContracts;
+using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Exceptions.Base;
 using Domain.Infrastructure;
@@ -80,21 +81,14 @@ namespace BLL.LogicLayers.Sales
                 await _uow.BeginTransactionAsync();
 
 
-                // 4. Acción Principal: Eliminación 
                 var entity = SaleMapper.ToEntity(dto);
-     ;
 
                 if (entity is ISoftDeletable)
                 {
-                    await _uow.SaleRepo.UpdateAsync(entity);
-                    entity.MarkAsDeleted(true);
-
-
-
-                    var saleDetails = await _uow.SaleDetailRepo.GetAllAsync();
-
+                    entity.MarkAsDeleted();                    // ← ahora propaga a los detalles
+                    await _uow.SaleRepo.UpdateAsync(entity);   // ← UNA sola llamada (borra + reinserta TODO con IsDeleted=true)
                 }
-                await _uow.SaleRepo.DeleteAsync(dto.Id);
+
 
                 // 5. Integridad Vertical (DVV)
                 //         await UpdateDVVAsync(_tableNameSale, _appSettings.EntitiesConnection);

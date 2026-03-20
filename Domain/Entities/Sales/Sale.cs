@@ -119,11 +119,17 @@ namespace Domain.Entities
         }
         public void UpdateDVH(string dvh) => DVH = DvhVo.Create(dvh ?? string.Empty);
 
-        public void MarkAsDeleted(bool isDeleted)
+        public void MarkAsDeleted()
         {
-            IsDeleted = isDeleted;
-        }
+            IsDeleted = true;
+            Active = false;
 
+            foreach (var detail in Items)
+            {
+                detail.MarkAsDeleted();
+            }
+        }
+        
         public void Activate()
         {
             if (IsDeleted)

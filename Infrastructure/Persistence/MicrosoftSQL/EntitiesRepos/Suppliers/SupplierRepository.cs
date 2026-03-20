@@ -88,15 +88,18 @@ namespace DAL.Persistence.MicrosoftSQL
             cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = entity.Id });
             cmd.Parameters.Add(new SqlParameter("@CompanyName", SqlDbType.NVarChar) { Value = (object)entity.CompanyName?.Value ?? DBNull.Value });
             cmd.Parameters.Add(new SqlParameter("@ContactName", SqlDbType.NVarChar) { Value = (object)entity.ContactName?.Value ?? DBNull.Value });
-            cmd.Parameters.Add(new SqlParameter("@TaxId", SqlDbType.NVarChar) { Value = (object)entity.TaxId?.Value ?? DBNull.Value });
+   //         cmd.Parameters.Add(new SqlParameter("@TaxId", SqlDbType.NVarChar) { Value = (object)entity.TaxId?.Value ?? DBNull.Value });
             cmd.Parameters.Add(new SqlParameter("@Phone", SqlDbType.NVarChar) { Value = (object)entity.Phone?.Value ?? DBNull.Value });
             cmd.Parameters.Add(new SqlParameter("@Mail", SqlDbType.NVarChar) { Value = (object)entity.Mail?.Value ?? DBNull.Value });
             cmd.Parameters.Add(new SqlParameter("@Address", SqlDbType.NVarChar) { Value = (object)entity.Address?.Value ?? DBNull.Value });
             cmd.Parameters.Add(new SqlParameter("@City", SqlDbType.NVarChar) { Value = (object)entity.City?.Value ?? DBNull.Value });
             cmd.Parameters.Add(new SqlParameter("@Observations", SqlDbType.NVarChar) { Value = (object)entity.Observations?.Value ?? DBNull.Value });
 
-            // CORREGIDO: Acceso al .Value del DVH
-            cmd.Parameters.Add(new SqlParameter("@DVH", SqlDbType.NVarChar) { Value = (object)entity.DVH?.Value ?? DBNull.Value });
+            
+            cmd.Parameters.Add(new SqlParameter("@DVH", SqlDbType.VarChar)
+            {
+                Value = (object)entity.DVH?.Value ?? string.Empty
+            });
 
             cmd.Parameters.Add(new SqlParameter("@IsActive", SqlDbType.Bit) { Value = entity.Active });
             cmd.Parameters.Add(new SqlParameter("@IsDeleted", SqlDbType.Bit) { Value = entity.IsDeleted });
@@ -109,7 +112,7 @@ namespace DAL.Persistence.MicrosoftSQL
                 id: (Guid)reader["Id"],
                 rawCompanyName: reader["CompanyName"]?.ToString(),
                 rawContactName: reader["ContactName"]?.ToString(),
-                rawTaxId: reader["TaxId"]?.ToString(),
+            //    rawTaxId: reader["TaxId"]?.ToString(),
                 rawPhone: reader["Phone"]?.ToString(),
                 rawMail: reader["Mail"]?.ToString(),
                 rawAddress: reader["Address"]?.ToString(),

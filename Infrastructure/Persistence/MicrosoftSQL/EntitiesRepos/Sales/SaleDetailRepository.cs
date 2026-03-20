@@ -28,13 +28,21 @@ namespace DAL.Persistence.MicrosoftSQL
                   VALUES (@Id, @SaleId, @ProductId, @Quantity, @UnitPrice, @IsDeleted, @DVH)",
                 cmd => SetParameters(cmd, entity));
 
-        public Task UpdateAsync(SaleDetail entity) =>
-            ExecuteNonQueryAsync(
-                @"UPDATE SaleDetails 
-                  SET SaleId = @SaleId, ProductId = @ProductId, Quantity = @Quantity, 
-                      UnitPrice = @UnitPrice, IsDeleted = @IsDeleted, DVH = @DVH
-                  WHERE Id = @Id",
+        public async Task UpdateAsync(SaleDetail entity)
+        {
+            Console.WriteLine($"[DEBUG REPO SALEDETAIL] === INICIO Update ID: {entity.Id} ===");
+            Console.WriteLine($"[DEBUG REPO SALEDETAIL] IsDeleted que llega: {entity.IsDeleted}");
+            Console.WriteLine($"[DEBUG REPO SALEDETAIL] ¿Tiene transacción? {_currentTransaction != null}");
+
+            await ExecuteNonQueryAsync(
+                @"UPDATE SaleDetails
+          SET SaleId = @SaleId, ProductId = @ProductId, Quantity = @Quantity,
+              UnitPrice = @UnitPrice, IsDeleted = @IsDeleted, DVH = @DVH
+          WHERE Id = @Id",
                 cmd => SetParameters(cmd, entity));
+
+            Console.WriteLine($"[DEBUG REPO SALEDETAIL] === FIN Update ID: {entity.Id} ===");
+        }
 
         public Task DeleteAsync(Guid entityId) =>
             ExecuteNonQueryAsync("DELETE FROM SaleDetails WHERE Id = @Id",
@@ -104,7 +112,6 @@ namespace DAL.Persistence.MicrosoftSQL
         // --- INFRAESTRUCTURA ---
         private async Task ExecuteNonQueryAsync(string query, Action<SqlCommand> setParams)
         {
-            // (mismo código que tenías, sin cambios)
             SqlConnection conn = _currentTransaction?.Connection ?? new SqlConnection(_appSettings.EntitiesConnection);
             bool ownConnection = _currentTransaction == null;
             try
@@ -113,8 +120,13 @@ namespace DAL.Persistence.MicrosoftSQL
                 {
                     if (_currentTransaction != null) cmd.Transaction = _currentTransaction;
                     setParams?.Invoke(cmd);
+
                     if (ownConnection) await conn.OpenAsync();
-                    await cmd.ExecuteNonQueryAsync();
+
+                    int rowsAffected = await cmd.ExecuteNonQueryAsync();   // ← cambiado
+                    Console.WriteLine($"[DEBUG REPO SALEDETAIL] Filas afectadas: {rowsAffected}");  // ← nueva línea
+
+                    return; // si tenías return type void
                 }
             }
             finally
