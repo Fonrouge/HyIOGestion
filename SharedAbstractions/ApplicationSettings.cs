@@ -51,7 +51,7 @@ namespace Shared
         public string CategoryTableName { get; } = "Categories";
 
         public string SearchBarPlaceHolder { get; } = "Búsqueda";
-        public string SuccessOnOperation { get; } = "Operación existosa:";
+        public string SuccessOnOperation { get; } = "Operación existosa.";
         public string ErrorOnOperation { get; } = "Operación fallida:";
         public string DefaultLanguage { get; } = "es";
         public string ComboBoxPlaceholder { get; } = "Seleccionar columna";

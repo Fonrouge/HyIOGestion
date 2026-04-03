@@ -28,7 +28,7 @@ namespace Domain.Entities.Suppliers.ValueObjects
                 throw new ArgumentException("El nombre de contacto del cliente debe tener entre 2 y 50 caracteres.", nameof(lastName));
 
 
-            return new ContactNameVO(lastName);
+            return new ContactNameVO(lastName.Trim().ToUpper());
         }
 
         // --- COMPORTAMIENTO DE VALUE OBJECT (Comparación por valor) ---

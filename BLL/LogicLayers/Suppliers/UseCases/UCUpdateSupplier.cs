@@ -80,7 +80,7 @@ namespace BLL.LogicLayers.Suppliers
 
 
                 // 5. Validación de Duplicados (Trampa del Update)
-                var existingSupplierWithTaxId = await _uow.SupplierRepo.GetByTaxIdAsync(dto.TaxId);
+                var existingSupplierWithTaxId = await _uow.SupplierRepo.GetByTaxNumberAsync(dto.TaxNumber);
                 if (existingSupplierWithTaxId != null && existingSupplierWithTaxId.Id != dto.Id)
                 {
                     var dupError = _errorsFactory.Create(ErrorCatalogEnum.DuplicateEntry, _tableNameSupplier);

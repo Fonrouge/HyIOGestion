@@ -10,8 +10,8 @@ public class ProductDTO : IDto
     [Browsable(false)]
     public Guid Id { get; set; } = Guid.Empty;
 
-    public string Name { get; set; } = string.Empty;
-    public string Description { get; set; }
+    public string  Name { get; set; } = string.Empty;
+    public string  Description { get; set; }
     public decimal Price { get; set; }
 
     // Corregido a decimal para mantener coherencia con el dominio

@@ -32,7 +32,7 @@ namespace BLL.LogicLayers
         {
             if (dto == null) return null;
 
-            if (dto.Id == Guid.Empty)
+            if (dto.Id == Guid.Empty) //Los DTOs por defecto y contrato reciben Guid.Empty() en su creación, de ahí esta verificación en cada mapper.
             {
                 return Sale.Create
                 (

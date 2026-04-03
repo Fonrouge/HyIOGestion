@@ -31,7 +31,7 @@ namespace Domain.Entities.Clients.ValueObjects
             if (!Regex.IsMatch(lastName, @"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\-]+$"))
                 throw new ArgumentException("El apellido del cliente contiene caracteres inválidos. Solo se permiten letras.", nameof(lastName));
 
-            return new ClientLastNameVO(lastName);
+            return new ClientLastNameVO(lastName.ToUpper());
         }
 
         // --- COMPORTAMIENTO DE VALUE OBJECT (Comparación por valor) ---

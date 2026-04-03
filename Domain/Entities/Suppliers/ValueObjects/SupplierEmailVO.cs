@@ -16,7 +16,7 @@ namespace Domain.Entities.Suppliers.ValueObjects
             if (email.Length > 30 || !email.Contains("@"))
                 throw new ArgumentException("El email no tiene un formato válido. Máximo 30 caracteres y debe contener '@'");
 
-            return new SupplierEmailVO(email.Trim().ToLowerInvariant());
+            return new SupplierEmailVO(email.Trim().ToUpper());
         }
     }
 }

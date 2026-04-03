@@ -1,16 +1,14 @@
-﻿using BLL.LogicLayers;
-using BLL.DTOs;
+﻿using BLL.DTOs;
+using Presenter.ForPayments;
 using Shared;
 using System;
-using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Winforms.Theme;
 using WinformsUI.Forms.Base;
 using WinformsUI.Infrastructure.Factories;
 using WinformsUI.Infrastructure.Translations;
 using WinformsUI.UserControls.CustomDGV;
-using Presenter.ForPayments;
-using Presenter.ForEmployee;
 
 namespace WinformsUI.Forms.PaymentCRUDL
 {
@@ -18,44 +16,27 @@ namespace WinformsUI.Forms.PaymentCRUDL
     {
         private readonly IFormsFactory _formsFactory;
 
-        public PaymentForm(
+        public PaymentForm
+        (
             IApplicationSettings appSettings,
             ITranslatableControlsManager transMgr,
             ICustomDGVFactory dgvFact,
-            IFormsFactory formsFact)
-            : base(appSettings, transMgr, dgvFact)
+            IFormsFactory formsFact
+        ) : base(appSettings, transMgr, dgvFact)
         {
             _formsFactory = formsFact;
 
             InitializeComponent();
-
-            // 2. Inicializamos la grilla en el panel del diseñador
             InitializeDGV(this.dgvPanel);
 
             WireSpecificEvents();
             AddTranslatables();
-
-
-        }
-        private void AddTranslatables()
-        {
-            _transMgr.AddParentedObjects<Label>(this.Controls, "Text");
-            _transMgr.AddParentedObjects<Button>(this.Controls, "Text");
-
-            _transMgr.AddSingleObject(btnCreate, "Text");
-            _transMgr.AddSingleObject(btnDelete, "Text");
-            _transMgr.AddSingleObject(btnRefresh, "Text");
-            _transMgr.AddSingleObject(btnUpdate, "Text");
-
-            _transMgr.AddFormNotify(this);
-
-            base.ApplyTranslation();
         }
 
-        // =========================================================
-        // IMPLEMENTACIÓN DE IPaymentView (Mapeo de Eventos)
-        // =========================================================
 
+        // =========================================================
+        // IMPLEMENTACIÓN DE IPaymentView (Mapeo de Eventos a Base)
+        // =========================================================
         public event EventHandler CreatePaymentRequested
         {
             add => CreateRequested += value;
@@ -74,60 +55,86 @@ namespace WinformsUI.Forms.PaymentCRUDL
             remove => DeleteRequested -= value;
         }
 
-        public event EventHandler CachingAllPaymentRequested
+        public event EventHandler CachingAllPaymentsRequested
         {
             add => ListAllRequested += value;
             remove => ListAllRequested -= value;
         }
 
+        public event EventHandler ClosePaymentRequested
+        {
+            add => CloseRequested += value;
+            remove => CloseRequested -= value;
+        }
 
 
-        // Los métodos CachingList, FillDGV, ShowOperationResult, ApplyTranslation
-        // ya están implementados en la clase Base y coinciden con la firma.
+        // =========================================================
+        // TRADUCCIONES Y PALETA
+        // =========================================================
+        private void AddTranslatables()
+        {
+            _transMgr.AddParentedObjects<Label>(this.Controls, "Text");
+            _transMgr.AddParentedObjects<Button>(this.Controls, "Text");
 
+            _transMgr.AddSingleObject(btnCreate, "Text");
+            _transMgr.AddSingleObject(btnDelete, "Text");
+            _transMgr.AddSingleObject(btnRefresh, "Text");
+            _transMgr.AddSingleObject(btnUpdate, "Text");
+
+            _transMgr.AddFormNotify(this);
+
+            base.ApplyTranslation();
+        }
+
+        public new void ApplyGlobalPalette() => DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
 
 
         // =========================================================
         // LÓGICA ESPECÍFICA DE PAGO
         // =========================================================
-
-        public void OpenCreationForm() => ((Form)_formsFactory.PaymentCreationForm()).ShowDialog();
-
-
-        public void ShowOperationResult(OperationResult<PaymentDTO> opRes)
-        {
-            if (opRes.Success) MessageBox.Show("Ok" + $"No");
-
-            else
-            {
-                foreach (ErrorLogDTO error in opRes.Errors)
-                {
-                    MessageBox.Show($"{error.Message} \n {error.RecommendedAction}", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-
-            }
-        }
-
-
-        // =========================================================
-        // AESTHETICS - LANG
-        // =========================================================
-
-        public new void ApplyGlobalPalette() => DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
-
+        public void OpenCreationView() => ((Form)_formsFactory.PaymentCreationForm()).ShowDialog();
 
         private void WireSpecificEvents()
         {
-            // Conectamos los botones visuales a la lógica base
-            btnCreate.Click += (s, e) =>
-            {
-                OnCreateRequest();
-            };
+            btnCreate.Click += OnCreateRequest;
+            btnUpdate.Click += OnUpdateRequest;
+            btnDelete.Click += OnDeleteRequest;
+            btnRefresh.Click += OnListAllRequest;
+        }
 
-            btnUpdate.Click += (s, e) => OnUpdateRequest();
-            btnDelete.Click += (s, e) => OnDeleteRequest();
-            btnRefresh.Click += (s, e) => OnListAllRequest();
+
+        // =========================================================
+        // CICLO DE VIDA (Lifecycle)
+        // =========================================================
+
+        // CloseView(): Eliminado por redundancia (implementado en BaseManagementForm)
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // Desuscripción de eventos de controles específicos
+                if (btnCreate != null) btnCreate.Click -= OnCreateRequest;
+                if (btnUpdate != null) btnUpdate.Click -= OnUpdateRequest;
+                if (btnDelete != null) btnDelete.Click -= OnDeleteRequest;
+                if (btnRefresh != null) btnRefresh.Click -= OnListAllRequest;
+
+                // Limpieza de referencias
+                _entitiesList = null;
+                _dgvForm = null;
+                _transMgr.RemoveFormNotify(this);
+
+                if (components != null)
+                {
+                    components.Dispose();
+                }
+            }
+            base.Dispose(disposing); // La base se encarga de desuscribir el evento de cierre global
+        }
+
+        public Task OpenUpdateView()
+        {
+            throw new NotImplementedException();
         }
     }
 }
-

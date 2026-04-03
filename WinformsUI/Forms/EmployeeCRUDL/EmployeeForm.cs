@@ -1,11 +1,12 @@
 ﻿using BLL.DTOs;
 using Presenter.ForEmployee;
+using Presenter.Presenters.ForEmployee;
 using Shared;
 using System;
-using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Winforms.Theme;
-using WinformsUI.Forms.Base; // Asegúrate de que este namespace apunte a donde guardaste la Base
+using WinformsUI.Forms.Base;
 using WinformsUI.Infrastructure.Factories;
 using WinformsUI.Infrastructure.Translations;
 using WinformsUI.UserControls.CustomDGV;
@@ -16,47 +17,27 @@ namespace WinformsUI.Forms.EmployeeCRUDL
     {
         private readonly IFormsFactory _formsFactory;
 
-        public EmployeeForm(
+        public EmployeeForm
+        (
             IApplicationSettings appSettings,
             ITranslatableControlsManager transMgr,
             ICustomDGVFactory dgvFact,
-            IFormsFactory formsFact)
-            : base(appSettings, transMgr, dgvFact)
+            IFormsFactory formsFact
+        ) : base(appSettings, transMgr, dgvFact)
         {
             _formsFactory = formsFact;
 
             InitializeComponent();
-
-            // 2. Inicializamos la grilla en el panel del diseñador
             InitializeDGV(this.dgvPanel);
 
             WireSpecificEvents();
-            ApplyGlobalPalette();
             AddTranslatables();
         }
 
-        private void AddTranslatables()
-        {
-            _transMgr.AddParentedObjects<Label>(this.Controls, "Text");
-            _transMgr.AddParentedObjects<Button>(this.Controls, "Text");
-
-            _transMgr.AddSingleObject(btnCreate, "Text");
-            _transMgr.AddSingleObject(btnDelete, "Text");
-            _transMgr.AddSingleObject(btnRefresh, "Text");
-            _transMgr.AddSingleObject(btnUpdate, "Text");
-
-            _transMgr.AddFormNotify(this);
-            
-            base.ApplyTranslation();
-            
-        }
-
-        public void ApplyGlobalPalette() => DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
 
         // =========================================================
-        // IMPLEMENTACIÓN DE IEmployeeView (Mapeo de Eventos)
+        // IMPLEMENTACIÓN DE IEmployeeView (Mapeo de Eventos a Base)
         // =========================================================
-
         public event EventHandler CreateEmployeeRequested
         {
             add => CreateRequested += value;
@@ -81,45 +62,96 @@ namespace WinformsUI.Forms.EmployeeCRUDL
             remove => ListAllRequested -= value;
         }
 
+        public event EventHandler CloseEmployeeRequested
+        {
+            add => CloseRequested += value;
+            remove => CloseRequested -= value;
+        }
 
-        // Los métodos CachingList, FillDGV, ShowOperationResult, ApplyTranslation
-        // ya están implementados en la clase Base y coinciden con la firma.
 
-        
+        // =========================================================
+        // TRADUCCIONES Y PALETA
+        // =========================================================
+        private void AddTranslatables()
+        {
+            _transMgr.AddParentedObjects<Label>(this.Controls, "Text");
+            _transMgr.AddParentedObjects<Button>(this.Controls, "Text");
+
+            _transMgr.AddSingleObject(btnCreate, "Text");
+            _transMgr.AddSingleObject(btnDelete, "Text");
+            _transMgr.AddSingleObject(btnRefresh, "Text");
+            _transMgr.AddSingleObject(btnUpdate, "Text");
+
+            _transMgr.AddFormNotify(this);
+
+            base.ApplyTranslation();
+        }
+
+        public new void ApplyGlobalPalette() => DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
 
 
         // =========================================================
         // LÓGICA ESPECÍFICA DE EMPLEADO
         // =========================================================
-
-        public void OpenCreationForm()
-        {
-            
-            ((Form)_formsFactory.EmployeeCreationForm()).Show();
-        }
-        public void ShowOperationResult(OperationResult<EmployeeDTO> opRes)
-        {
-            if (!opRes.Errors.Any()) MessageBox.Show("Ok" + $"No");
-
-            else
-            {
-                foreach (ErrorLogDTO error in opRes.Errors)
-                {
-                    MessageBox.Show($"{error.Message} \n {error.RecommendedAction}", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-
-            }
-        }
-
-
+        public void OpenCreationView() => ((Form)_formsFactory.EmployeeCreationForm()).Show();
 
         private void WireSpecificEvents()
         {
-            // Conectamos los botones visuales a la lógica base
-            btnCreate.Click += (s, e) => OnCreateRequest();
-            btnUpdate.Click += (s, e) => OnUpdateRequest();
-            btnDelete.Click += (s, e) => OnDeleteRequest();
-            btnRefresh.Click += (s, e) => OnListAllRequest();
+            btnCreate.Click += OnCreateRequest;
+            btnUpdate.Click += OnUpdateRequest;
+            btnDelete.Click += OnDeleteRequest;
+            btnRefresh.Click += OnListAllRequest;
+        }
+
+        private void OpenUpdateModule(object sender, EventArgs e)
+        {
+            if (_currentSelectedEntity == null)
+            {
+                MessageBox.Show("Primero seleccione un cliente en la grilla");
+                return;
+            }
+
+            base.OnUpdateRequest(sender, e);
+        }
+
+        // =========================================================
+        // CICLO DE VIDA (Lifecycle)
+        // =========================================================
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // Desuscripción de eventos de botones específicos
+                if (btnCreate != null) btnCreate.Click -= OnCreateRequest;
+                if (btnUpdate != null) btnUpdate.Click -= OnUpdateRequest;
+                if (btnDelete != null) btnDelete.Click -= OnDeleteRequest;
+                if (btnRefresh != null) btnRefresh.Click -= OnListAllRequest;
+
+                // Limpieza de referencias
+                _entitiesList = null;
+                _dgvForm = null;
+                _transMgr.RemoveFormNotify(this);
+
+                if (components != null)
+                {
+                    components.Dispose();
+                }
+            }
+            base.Dispose(disposing); // La base desuscribe el cierre automático
+        }
+
+        public Task OpenUpdateView()
+        {
+            if (_currentSelectedEntity == null)
+            {
+                MessageBox.Show("Primero seleccione un cliente en la grilla");
+                return Task.CompletedTask;
+            }
+
+            var newUpdateForm = (UpdateEmployeeForm)_formsFactory.EmployeeUpdateForm<IUpdateEmployeeView>();
+            newUpdateForm.SetEmployeeData(_currentSelectedEntity);
+            newUpdateForm.ShowDialog();            
+            return Task.CompletedTask;
         }
     }
 }

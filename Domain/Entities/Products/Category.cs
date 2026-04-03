@@ -1,9 +1,9 @@
-﻿using Domain.BaseContracts;
+﻿using Domain.Contracts;
 using System;
 
 namespace Domain.Entities
 {
-    public class Category : EntityBase
+    public class Category : EntityBase, IIntegrityCheckable
     {
         public string Name { get; private set; } = string.Empty;
         public string Description { get; private set; } = string.Empty;
@@ -38,6 +38,22 @@ namespace Domain.Entities
                 Description = description,
                 DVH = !string.IsNullOrEmpty(dvh) ? DvhVo.Create(dvh) : null
             };
+        }
+
+        /// <summary>
+        /// Genera la cadena de serialización para el cálculo del Dígito Verificador Horizontal.
+        /// Asegura la integridad del nombre y descripción de la categoría.
+        /// </summary>
+        public string GetDvhSerialization()
+        {
+            // Usamos cultura invariante para el Id (Guid)
+            var culture = System.Globalization.CultureInfo.InvariantCulture;
+
+            return string.Join("|",
+                Id.ToString(),
+                Name.Trim().ToUpper(culture),        
+                Description.Trim().ToUpper(culture)  
+            );
         }
 
         public void UpdateDVH(string dvh)

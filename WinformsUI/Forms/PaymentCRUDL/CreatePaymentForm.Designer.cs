@@ -300,7 +300,7 @@
             // 
             this.cbPaymentMethods.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.cbPaymentMethods.FormattingEnabled = true;
-            this.cbPaymentMethods.Location = new System.Drawing.Point(89, 365);
+            this.cbPaymentMethods.Location = new System.Drawing.Point(89, 362);
             this.cbPaymentMethods.Name = "cbPaymentMethods";
             this.cbPaymentMethods.Size = new System.Drawing.Size(357, 27);
             this.cbPaymentMethods.TabIndex = 9;
@@ -317,7 +317,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "CreatePaymentForm";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "CreatePaymentForm";
             this.pnlSelectClient.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);

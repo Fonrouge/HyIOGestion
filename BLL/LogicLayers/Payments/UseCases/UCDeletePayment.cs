@@ -2,7 +2,7 @@
 using BLL.DTOs.Errors;
 using BLL.Infrastructure.AuditLogs;
 using BLL.Infrastructure.Errors;
-using Domain.BaseContracts;
+using Domain.Contracts;
 using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Exceptions.Base;

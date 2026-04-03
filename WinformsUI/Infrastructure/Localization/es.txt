@@ -9,6 +9,7 @@ Proveedores=Proveedores
 Modo Tablero=Modo Tablero
 Modo Pestañas=Modo Pestañas
 Configuraciones=Configuraciones
+Acomodar Automáticamente=Acomodar Automáticamente
 
 
 =============BASEFORM=============

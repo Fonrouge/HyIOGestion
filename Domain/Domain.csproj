@@ -42,7 +42,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseContracts\ISoftDeletable.cs" />
+    <Compile Include="Contracts\IIntegrityCheckable.cs" />
+    <Compile Include="Contracts\ISoftDeletable.cs" />
     <Compile Include="Entities\DvhVo.cs" />
     <Compile Include="Entities\Clients\ValueObjects\ClientLastNameVO.cs" />
     <Compile Include="Entities\Clients\ValueObjects\ClientNameVO.cs" />
@@ -95,6 +96,7 @@
     <Compile Include="Entities\Suppliers\ValueObjects\SupplierObservationsVO.cs" />
     <Compile Include="Entities\Suppliers\ValueObjects\SupplierPhoneVO.cs" />
     <Compile Include="Entities\Suppliers\ValueObjects\SupplierTaxIdVO.cs" />
+    <Compile Include="Entities\Suppliers\ValueObjects\SupplierTaxNumber.cs" />
     <Compile Include="Infrastructure\Audit\BitacoraAttributes.cs" />
     <Compile Include="Infrastructure\Audit\BitacoraCatalogEnum.cs" />
     <Compile Include="Infrastructure\Audit\BitacoraTypeEnum.cs" />
@@ -114,7 +116,7 @@
     <Compile Include="Infrastructure\Exceptions\SeverityEnum.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Infrastructure\Audit\IBitacoraRepository.cs" />
-    <Compile Include="BaseContracts\ICrudl.cs" />
+    <Compile Include="Contracts\ICrudl.cs" />
     <Compile Include="Entities\Employees\IEmployeeRepository.cs" />
     <Compile Include="Infrastructure\Errors\IErrorsRepository.cs" />
     <Compile Include="Infrastructure\Exceptions\IIntegrityVerifierRepository.cs" />

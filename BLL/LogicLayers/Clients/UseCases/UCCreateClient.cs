@@ -50,7 +50,7 @@ namespace BLL.LogicLayers.Clients  //===========================================
         public async Task<OperationResult<ClientDTO>> ExecuteAsync(ClientDTO dto)
         {
             var opRes = new OperationResult<ClientDTO>();
-
+            
             try
             {
                 // 1. Validar Sesión Activa (Fail Fast)
@@ -62,16 +62,19 @@ namespace BLL.LogicLayers.Clients  //===========================================
                     return opRes;
                 }
 
+
                 // 2. Configurar conexión y abrir transacción
                 _uow.SetConnectionString(_appSettings.EntitiesConnection);
                 await _uow.BeginTransactionAsync();
                 
+
                 // 3. Validar Permisos (Ahora funcionará porque las queries son Cross-DB o usan SecurityConnection)
                 var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
                 var permissionsList = await _uow.PermisoRepo.GetPermissionsByUserAsync(_sessionProvider.Current.CurrentUserId);
 
                 bool hasAccess = permissionsList.Any(p => p.PermisoCode == PermisosEnum.CLIENT_CREATE.ToString()
                                                        || p.PermisoCode == PermisosEnum.ADMIN_ACCESS.ToString());
+
                 if (!hasAccess)
                 {
                     opRes.Errors.Add(ErrorMapper.ToDTO(_errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameClient)));
@@ -79,7 +82,7 @@ namespace BLL.LogicLayers.Clients  //===========================================
                 }
 
                 // 4. Validar unicidad}
-                var existingClient = await _uow.ClientRepo.GetByTaxIdAsync(dto.TaxId);
+                var existingClient = await _uow.ClientRepo.GetByDocNumberAsync(dto.DocNumber);
                
                 if (existingClient != null)
                 {

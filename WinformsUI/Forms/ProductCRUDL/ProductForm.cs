@@ -1,20 +1,21 @@
 ﻿using BLL.LogicLayers;
-using BLL.DTOs;
 using Presenter.ForProducts;
+using Presenter.Presenters.ForProducts;
 using Shared;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Winforms.Theme;
 using WinformsUI.Forms.Base;
 using WinformsUI.Infrastructure.Factories;
 using WinformsUI.Infrastructure.Translations;
 using WinformsUI.UserControls.CustomDGV;
-using System.Collections.Generic;
 
 namespace WinformsUI.Forms.ProductCRUDL
 {
-    public partial class ProductForm : BaseManagementForm<ProductDTO>, IProductView //BaseManagementForm<ProductDTO>
+    public partial class ProductForm : BaseManagementForm<ProductDTO>, IProductView
     {
         private readonly IFormsFactory _formsFactory;
 
@@ -24,54 +25,20 @@ namespace WinformsUI.Forms.ProductCRUDL
             ITranslatableControlsManager transMgr,
             ICustomDGVFactory dgvFact,
             IFormsFactory formsFact
-
         ) : base(appSettings, transMgr, dgvFact)
-
         {
             _formsFactory = formsFact;
-
             InitializeComponent();
-
             InitializeDGV(this.dgvPanel);
 
             WireSpecificEvents();
-            WireCommonEvents();
             AddTranslatables();
-            ApplyGlobalPalette();
         }
 
-
-
-        public void SetSearchFilters<T>(IEnumerable<T> categories) where T : CategoryDTO => _dgvForm.ConfigureFilters<CategoryDTO>(categories.ToList());
-
-
-        private void WireCommonEvents()
-        {
-
-            //For adding common events such as a Button event that is not common to all C(RUDL), in that case, go to it's parent > BaseManagementForm.
-
-
-        }
-
-        private void AddTranslatables()
-        {
-            _transMgr.AddParentedObjects<Label>(this.Controls, "Text");
-            _transMgr.AddParentedObjects<Button>(this.Controls, "Text");
-
-            _transMgr.AddSingleObject(btnCreate, "Text");
-            _transMgr.AddSingleObject(btnDelete, "Text");
-            _transMgr.AddSingleObject(btnRefresh, "Text");
-            _transMgr.AddSingleObject(btnUpdate, "Text");
-
-            _transMgr.AddFormNotify(this);
-
-            base.ApplyTranslation();
-        }
 
         // =========================================================
-        // IMPLEMENTACIÓN DE IClientView (Mapeo de Eventos)
+        // IMPLEMENTACIÓN DE IProductView (Mapeo de Eventos a Base)
         // =========================================================
-
         public event EventHandler CreateProductRequested
         {
             add => CreateRequested += value;
@@ -96,45 +63,93 @@ namespace WinformsUI.Forms.ProductCRUDL
             remove => ListAllRequested -= value;
         }
 
+        public event EventHandler CloseProductRequested
+        {
+            add => CloseRequested += value;
+            remove => CloseRequested -= value;
+        }
 
-
-        // Los métodos CachingList, FillDGV, ShowOperationResult, ApplyTranslation
-        // ya están implementados en la clase Base y coinciden con la firma.
 
         // =========================================================
-        // LÓGICA ESPECÍFICA DE EMPLEADO
+        // TRADUCCIONES Y PALETA
         // =========================================================
+        private void AddTranslatables()
+        {
+            _transMgr.AddParentedObjects<Label>(this.Controls, "Text");
+            _transMgr.AddParentedObjects<Button>(this.Controls, "Text");
 
-        public void OpenCreationForm() => ((Form)_formsFactory.ProductCreationForm()).Show();
+            _transMgr.AddSingleObject(btnCreate, "Text");
+            _transMgr.AddSingleObject(btnDelete, "Text");
+            _transMgr.AddSingleObject(btnRefresh, "Text");
+            _transMgr.AddSingleObject(btnUpdate, "Text");
+
+            _transMgr.AddFormNotify(this);
+
+            base.ApplyTranslation();
+        }
 
         public new void ApplyGlobalPalette()
         {
             DarkTheme.RedrawBorders = true;
             DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
         }
-        public void ShowOperationResult(OperationResult<ProductDTO> opRes)
+
+
+        // =========================================================
+        // LÓGICA ESPECÍFICA DE PRODUCTO
+        // =========================================================
+
+        public void SetSearchFilters<T>(IEnumerable<T> categories) where T : CategoryDTO
+            => _dgvForm.ConfigureFilters<CategoryDTO>(categories.ToList());
+
+        public void OpenCreationView() => ((Form)_formsFactory.ProductCreationForm()).Show();
+        public Task OpenUpdateView()
         {
-            if (opRes.Success) MessageBox.Show("Operación exitosa", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-            else
+            if (_currentSelectedEntity == null)
             {
-                foreach (ErrorLogDTO error in opRes.Errors)
-                {
-                    MessageBox.Show($"{error.Message} \n {error.RecommendedAction}", "Info", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-
+                MessageBox.Show("Primero seleccione un producto en la grilla");
+                return Task.CompletedTask;
             }
-        }
 
+            var newUpdateForm = (UpdateProductForm)_formsFactory.ProductUpdateForm<IUpdateProductView>();
+            newUpdateForm.SetProductData(_currentSelectedEntity);
+            newUpdateForm.ShowDialog();
+            return Task.CompletedTask;
+        }
         private void WireSpecificEvents()
         {
-            // Conectamos los botones visuales a la lógica base
-            btnCreate.Click += (s, e) => OnCreateRequest();
-            btnUpdate.Click += (s, e) => OnUpdateRequest();
-            btnDelete.Click += (s, e) => OnDeleteRequest();
-            btnRefresh.Click += (s, e) => OnListAllRequest();
+            btnCreate.Click += OnCreateRequest;
+            btnUpdate.Click += OnUpdateRequest;
+            btnDelete.Click += OnDeleteRequest;
+            btnRefresh.Click += OnListAllRequest;
         }
 
+
+        // =========================================================
+        // CICLO DE VIDA (Lifecycle)
+        // =========================================================
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // Desuscripción de eventos de botones
+                if (btnCreate != null) btnCreate.Click -= OnCreateRequest;
+                if (btnUpdate != null) btnUpdate.Click -= OnUpdateRequest;
+                if (btnDelete != null) btnDelete.Click -= OnDeleteRequest;
+                if (btnRefresh != null) btnRefresh.Click -= OnListAllRequest;
+
+                // Limpieza de referencias
+                _entitiesList = null;
+                _dgvForm = null;
+                _transMgr.RemoveFormNotify(this);
+
+                if (components != null)
+                {
+                    components.Dispose();
+                }
+            }
+            base.Dispose(disposing); // La base se encarga de desuscribir el evento de cierre
+        }
 
     }
 }

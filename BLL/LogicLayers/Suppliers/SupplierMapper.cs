@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BLL.DTOs;
 
 namespace BLL.LogicLayers
 {
@@ -16,7 +17,8 @@ namespace BLL.LogicLayers
                 Id = supplier.Id,
                 CompanyName = supplier.CompanyName?.Value,
                 ContactName = supplier.ContactName?.Value,
-            //    TaxId = supplier.TaxId?.Value,
+                TaxId = supplier.TaxId?.Value,
+                TaxNumber = supplier.TaxNumber?.Value, // <--- AGREGADO
                 Phone = supplier.Phone?.Value,
                 Mail = supplier.Mail?.Value,
                 Address = supplier.Address?.Value,
@@ -37,11 +39,12 @@ namespace BLL.LogicLayers
             // DISQUISICIÓN: ¿Es un nuevo proveedor o estamos hidratando uno de la DB?
             if (dto.Id == Guid.Empty)
             {
-                // ALTA: Usamos Create (el dominio asigna estados iniciales)
+                // ALTA: Usamos Create (Agregado dto.TaxNumber)
                 return Supplier.Create(
                     dto.CompanyName,
                     dto.ContactName,
-          //          dto.TaxId,
+                    dto.TaxId,
+                    dto.TaxNumber, // <--- AGREGADO
                     dto.Phone,
                     dto.Mail,
                     dto.Address,
@@ -50,12 +53,13 @@ namespace BLL.LogicLayers
                 );
             }
 
-            // RECONSTITUCIÓN: Usamos los valores técnicos que vienen del DTO (la DB)
+            // RECONSTITUCIÓN: (Este ya lo tenías bien)
             return Supplier.Reconstitute(
                 id: dto.Id,
                 rawCompanyName: dto.CompanyName,
                 rawContactName: dto.ContactName,
-          //      rawTaxId: dto.TaxId,
+                rawTaxId: dto.TaxId,
+                rawTaxNumber: dto.TaxNumber,
                 rawPhone: dto.Phone,
                 rawMail: dto.Mail,
                 rawAddress: dto.Address,
@@ -67,7 +71,7 @@ namespace BLL.LogicLayers
             );
         }
 
-        // --- Mapeos de listas (Select().ToList() como venías haciendo) ---
+        // --- Mapeos de listas ---
         public static List<SupplierDTO> ToListDto(IEnumerable<Supplier> entities) =>
             entities?.Select(ToDto).ToList() ?? new List<SupplierDTO>();
 

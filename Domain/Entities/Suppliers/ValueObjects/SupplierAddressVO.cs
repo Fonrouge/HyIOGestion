@@ -21,7 +21,7 @@ namespace Domain.Entities.Suppliers.ValueObjects
 
             // Retornamos normalizado (lo pasamos a mayúsculas si tu sistema prefiere ese estándar, 
             // o lo dejamos con su case original limpio)
-            return new SupplierAddressVO(cleaned.ToUpperInvariant());
+            return new SupplierAddressVO(cleaned.Trim().ToUpper());
         }
     }
 }

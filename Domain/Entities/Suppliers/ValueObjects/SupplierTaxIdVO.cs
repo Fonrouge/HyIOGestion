@@ -34,7 +34,7 @@ namespace Domain.Entities.Suppliers.ValueObjects
             if (!Regex.IsMatch(taxId, @"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"))
                 throw new ArgumentException("La categoría fiscal contiene caracteres inválidos. Solo se permiten letras y espacios.", nameof(taxId));
 
-            return new SupplierTaxIdVO(taxId);
+            return new SupplierTaxIdVO(taxId.Trim().ToUpper());
         }
 
         // --- COMPORTAMIENTO DE VALUE OBJECT ---

@@ -5,6 +5,6 @@ namespace BLL.LogicLayers.Employees
 {
     public interface IUCUpdateEmployee
     {
-        Task<OperationResult<EmployeeDTO>> Execute(EmployeeDTO dto);
+        Task<OperationResult<EmployeeDTO>> ExecuteAsync(EmployeeDTO dto);
     }
 }

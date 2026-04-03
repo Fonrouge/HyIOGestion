@@ -11,6 +11,7 @@ Modo Tablero=Dashboard Mode
 Modo Pestañas=Tabbed Mode
 
 Configuraciones=Configurations
+Acomodar automáticamente=Automatic Arrangement
 
 
 

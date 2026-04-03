@@ -1,11 +1,12 @@
-﻿using Domain.BaseContracts;
+﻿using Domain.Contracts;
 using Domain.Entities.Products.ValueObjects;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace Domain.Entities
 {
-    public class Product : EntityBase, ISoftDeletable
+    public class Product : EntityBase, ISoftDeletable, IIntegrityCheckable
     {
         // --- PROPIEDADES DE DOMINIO (Rich Domain Model) ---
         public ProdNameVO Name { get; private set; }
@@ -90,9 +91,9 @@ namespace Domain.Entities
         // --- COMPORTAMIENTO (Transiciones de Estado Seguras) ---
         public void MarkAsDeleted()
         {
-            if (IsDeleted) return; // Idempotencia
+            if (IsDeleted) return;
             IsDeleted = true;
-            Active = false; // Regla de negocio: un producto borrado lógicamente no puede estar activo
+            Active = false; 
         }
 
         public void Activate()
@@ -106,11 +107,23 @@ namespace Domain.Entities
 
         public void UpdateDVH(string dvh) => DVH = DvhVo.Create(dvh);
 
-        /// <summary>
-        /// Reduce la cantidad de stock disponible. 
-        /// Valida que no se intente reducir una cantidad negativa y que haya stock suficiente.
-        /// </summary>
-     // --- COMPORTAMIENTO (Transiciones de Estado Seguras) ---
+        public string GetDvhSerialization()
+        {
+            var culture = CultureInfo.InvariantCulture;
+
+            return string.Join("|",
+                Id.ToString(),
+                Name.Value,
+                Description.Value,
+                Price.Value.ToString("F2", culture),
+                Stock.Value.ToString("F3", culture),
+                Active ? "1" : "0",
+                CreatedAt.ToString("yyyyMMddHHmmss", culture),
+                IsDeleted ? "1" : "0"
+            );
+        }
+
+        // --- COMPORTAMIENTO (Transiciones de Estado Seguras) ---
 
         /// <summary>
         /// Reduce el stock. Al usar decimal, soportamos ventas por peso, volumen o fracción.

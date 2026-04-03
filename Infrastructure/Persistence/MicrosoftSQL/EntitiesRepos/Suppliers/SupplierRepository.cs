@@ -13,14 +13,14 @@ namespace DAL.Persistence.MicrosoftSQL
         private SqlTransaction _currentTransaction;
         private readonly IApplicationSettings _appSettings;
 
-        // Queries actualizadas: Sin filtros IsDeleted y Borrado Físico en la DAL
+
         private const string SQL_INSERT = @"INSERT INTO {0} 
-            (Id, CompanyName, ContactName, TaxId, Phone, Mail, Address, City, Observations, DVH, IsActive, IsDeleted) 
+            (Id, CompanyName, ContactName, TaxId, TaxNumber, Phone, Mail, Address, City, Observations, DVH, IsActive, IsDeleted) 
             VALUES 
-            (@Id, @CompanyName, @ContactName, @TaxId, @Phone, @Mail, @Address, @City, @Observations, @DVH, @IsActive, @IsDeleted)";
+            (@Id, @CompanyName, @ContactName, @TaxId, @TaxNumber, @Phone, @Mail, @Address, @City, @Observations, @DVH, @IsActive, @IsDeleted)";
 
         private const string SQL_UPDATE = @"UPDATE {0} 
-            SET CompanyName = @CompanyName, ContactName = @ContactName, TaxId = @TaxId, 
+            SET CompanyName = @CompanyName, ContactName = @ContactName, TaxId = @TaxId, TaxNumber = @TaxNumber,
                 Phone = @Phone, Mail = @Mail, Address = @Address, City = @City, 
                 Observations = @Observations, DVH = @DVH, IsActive = @IsActive, IsDeleted = @IsDeleted
             WHERE Id = @Id";
@@ -28,7 +28,7 @@ namespace DAL.Persistence.MicrosoftSQL
         private const string SQL_HARD_DELETE = "DELETE FROM {0} WHERE Id = @Id";
         private const string SQL_SELECT_BY_ID = "SELECT * FROM {0} WHERE Id = @Id";
         private const string SQL_SELECT_ALL = "SELECT * FROM {0}";
-        private const string SQL_SELECT_BY_TAXID = "SELECT * FROM {0} WHERE TaxId = @TaxId";
+        private const string SQL_SELECT_BY_TAXID = "SELECT * FROM {0} WHERE TaxNumber = @TaxNumber"; 
 
         public SupplierRepository(IApplicationSettings appSettings)
         {
@@ -37,25 +37,25 @@ namespace DAL.Persistence.MicrosoftSQL
 
         public void SetTransaction(object transaction) => _currentTransaction = (SqlTransaction)transaction;
 
-        
-        
+
+
         // --- MÉTODOS PÚBLICOS ---
 
-        public async Task<Supplier> GetByTaxIdAsync(string taxId)
+        public async Task<Supplier> GetByTaxNumberAsync(string taxNumber)
         {
             Supplier supplier = null;
             string query = string.Format(SQL_SELECT_BY_TAXID, _appSettings.SupplierTableName);
 
             await ExecuteReaderAsync(query,
-                // Usamos NVarChar para coincidir con la definición de la tabla
-                cmd => cmd.Parameters.Add(new SqlParameter("@TaxId", SqlDbType.NVarChar) { Value = taxId }),
+                cmd => cmd.Parameters.Add(new SqlParameter("@TaxNumber", SqlDbType.NVarChar) { Value = taxNumber }),
                 reader => supplier = Map(reader));
 
             return supplier;
         }
 
+
         public Task CreateAsync(Supplier entity) =>
-            ExecuteNonQueryAsync(string.Format(SQL_INSERT, _appSettings.SupplierTableName), cmd => SetParameters(cmd, entity));
+                  ExecuteNonQueryAsync(string.Format(SQL_INSERT, _appSettings.SupplierTableName), cmd => SetParameters(cmd, entity));
 
         public Task UpdateAsync(Supplier entity) =>
             ExecuteNonQueryAsync(string.Format(SQL_UPDATE, _appSettings.SupplierTableName), cmd => SetParameters(cmd, entity));
@@ -82,20 +82,22 @@ namespace DAL.Persistence.MicrosoftSQL
         }
 
         // --- MAPEO Y PARÁMETROS ---
-
         private void SetParameters(SqlCommand cmd, Supplier entity)
         {
             cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = entity.Id });
             cmd.Parameters.Add(new SqlParameter("@CompanyName", SqlDbType.NVarChar) { Value = (object)entity.CompanyName?.Value ?? DBNull.Value });
             cmd.Parameters.Add(new SqlParameter("@ContactName", SqlDbType.NVarChar) { Value = (object)entity.ContactName?.Value ?? DBNull.Value });
-   //         cmd.Parameters.Add(new SqlParameter("@TaxId", SqlDbType.NVarChar) { Value = (object)entity.TaxId?.Value ?? DBNull.Value });
+            cmd.Parameters.Add(new SqlParameter("@TaxId", SqlDbType.NVarChar) { Value = (object)entity.TaxId?.Value ?? DBNull.Value });
+
+            // Nuevo parámetro TaxNumber
+            cmd.Parameters.Add(new SqlParameter("@TaxNumber", SqlDbType.NVarChar) { Value = (object)entity.TaxNumber?.Value ?? DBNull.Value });
+
             cmd.Parameters.Add(new SqlParameter("@Phone", SqlDbType.NVarChar) { Value = (object)entity.Phone?.Value ?? DBNull.Value });
             cmd.Parameters.Add(new SqlParameter("@Mail", SqlDbType.NVarChar) { Value = (object)entity.Mail?.Value ?? DBNull.Value });
             cmd.Parameters.Add(new SqlParameter("@Address", SqlDbType.NVarChar) { Value = (object)entity.Address?.Value ?? DBNull.Value });
             cmd.Parameters.Add(new SqlParameter("@City", SqlDbType.NVarChar) { Value = (object)entity.City?.Value ?? DBNull.Value });
             cmd.Parameters.Add(new SqlParameter("@Observations", SqlDbType.NVarChar) { Value = (object)entity.Observations?.Value ?? DBNull.Value });
 
-            
             cmd.Parameters.Add(new SqlParameter("@DVH", SqlDbType.VarChar)
             {
                 Value = (object)entity.DVH?.Value ?? string.Empty
@@ -107,12 +109,12 @@ namespace DAL.Persistence.MicrosoftSQL
 
         private Supplier Map(SqlDataReader reader)
         {
-            // Reconstitución limpia respetando la firma de la Entidad
             return Supplier.Reconstitute(
                 id: (Guid)reader["Id"],
                 rawCompanyName: reader["CompanyName"]?.ToString(),
                 rawContactName: reader["ContactName"]?.ToString(),
-            //    rawTaxId: reader["TaxId"]?.ToString(),
+                rawTaxId: reader["TaxId"]?.ToString(),
+                rawTaxNumber: reader["TaxNumber"]?.ToString(), // Mapeo del nuevo campo
                 rawPhone: reader["Phone"]?.ToString(),
                 rawMail: reader["Mail"]?.ToString(),
                 rawAddress: reader["Address"]?.ToString(),
@@ -175,6 +177,6 @@ namespace DAL.Persistence.MicrosoftSQL
             }
         }
 
-    
+
     }
 }

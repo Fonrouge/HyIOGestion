@@ -1,8 +1,6 @@
-﻿using BLL.LogicLayers;
-using BLL.DTOs;
+﻿using BLL.DTOs;
 using SharedAbstractions.ArchitecturalMarkers;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using BLL.LogicLayers.Suppliers;
 
@@ -12,16 +10,16 @@ namespace Presenter.ForSupplier
     {
         private readonly ICreateSupplierView _view;
         private readonly IUCCreateSupplier _useCaseCreate;
-        
+
         public CreateSupplierPresenter
         (
             ICreateSupplierView view,
-            IUCCreateSupplier useCaseCreate            
+            IUCCreateSupplier useCaseCreate
         )
         {
             _view = view;
             _useCaseCreate = useCaseCreate;
-            
+
             WireViewEvents();
             ApplyDarkTheme();
         }
@@ -30,50 +28,24 @@ namespace Presenter.ForSupplier
 
         private void WireViewEvents()
         {
-            _view.CreateSupplierRequested += HandleCreateProductRequested;            
+            _view.CreateSupplierRequested += HandleCreateSupplierRequested;
             _view.CloseRequested += HandleCloseRequested;
         }
 
         // ===================================================================
         // Event Handlers
         // ===================================================================
-        private async void HandleCreateProductRequested(object sender, SupplierDTO e)
-        {
-            await OnCreateRequested(e);
-        }
+        private async void HandleCreateSupplierRequested(object sender, SupplierDTO e) => await OnCreateRequested(e);
+        private void HandleCloseRequested(object sender, EventArgs e) => Dispose();
 
-        private void HandleCloseRequested(object sender, EventArgs e)
-        {
-            Dispose();
-        }
-        
-        
+
         // ===================================================================
         // Lógica de Casos de Uso
         // ===================================================================
         private async Task OnCreateRequested(SupplierDTO data)
         {
-            try
-            {
-                var opRes = await _useCaseCreate.ExecuteAsync(data);
-                _view.ShowOperationResult(opRes);
-            }
-            catch
-            {
-                var inCaseOfUncoveredException = new OperationResult<SupplierDTO>
-                {
-                    Errors = new List<ErrorLogDTO>
-                    {
-                        new ErrorLogDTO
-                        {
-                            Code = "EXCEPTION",
-                            Message = "An unexpected error occurred while creating the entity."
-                        }
-                    }
-                };
-
-                _view.ShowOperationResult(inCaseOfUncoveredException);
-            }
+            var opRes = await _useCaseCreate.ExecuteAsync(data);
+            _view.ShowOperationResult(opRes);
         }
 
         // ===================================================================
@@ -83,7 +55,7 @@ namespace Presenter.ForSupplier
         {
             if (_view != null)
             {
-                _view.CreateSupplierRequested -= HandleCreateProductRequested;                
+                _view.CreateSupplierRequested -= HandleCreateSupplierRequested;
                 _view.CloseRequested -= HandleCloseRequested;
             }
         }

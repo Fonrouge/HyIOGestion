@@ -42,7 +42,8 @@ namespace BLL.LogicLayers
             // DISQUISICIÓN: Si el Id es Empty, es un cliente nuevo.
             if (dto.Id == Guid.Empty)
             {
-                return Client.Create(
+                return Client.Create
+                (
                     dto.Name,
                     dto.LastName,
                     dto.ShipAddress,
@@ -55,7 +56,8 @@ namespace BLL.LogicLayers
             else
             {
                 // Si tiene Id, viene de la base de datos (Reconstitución)
-                return Client.Reconstitute(
+                return Client.Reconstitute
+                (
                     dto.Id,
                     dto.Name,
                     dto.LastName,

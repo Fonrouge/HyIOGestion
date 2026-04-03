@@ -21,7 +21,6 @@
             this.dgvSelectClient = new System.Windows.Forms.DataGridView();
             this.tbSearchBarClient = new System.Windows.Forms.TextBox();
             this.tlpSelectProds = new System.Windows.Forms.TableLayoutPanel();
-            this.btnBackPnl2 = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.tbSearchBarProducts = new System.Windows.Forms.TextBox();
             this.dgvSelectProduct = new System.Windows.Forms.DataGridView();
@@ -38,7 +37,6 @@
             this.btnFinish = new System.Windows.Forms.Button();
             this.tlpAddPayment = new System.Windows.Forms.TableLayoutPanel();
             this.button1 = new System.Windows.Forms.Button();
-            this.btnBackContact = new System.Windows.Forms.Button();
             this.label9 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.txtReference = new System.Windows.Forms.TextBox();
@@ -50,6 +48,8 @@
             this.txtClientsummary = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
             this.cbPaymentMethods = new System.Windows.Forms.ComboBox();
+            this.btnBackContact = new System.Windows.Forms.Button();
+            this.btnBackPnl2 = new System.Windows.Forms.Button();
             this.tlpSelectClient.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvSelectClient)).BeginInit();
             this.tlpSelectProds.SuspendLayout();
@@ -144,22 +144,6 @@
             this.tlpSelectProds.Size = new System.Drawing.Size(977, 751);
             this.tlpSelectProds.TabIndex = 9;
             // 
-            // btnBackPnl2
-            // 
-            this.btnBackPnl2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnBackPnl2.BackColor = System.Drawing.Color.Transparent;
-            this.btnBackPnl2.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnBackPnl2.FlatAppearance.BorderSize = 0;
-            this.btnBackPnl2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnBackPnl2.Image = global::WinformsUI.Properties.Resources.BackArrow;
-            this.btnBackPnl2.Location = new System.Drawing.Point(4, 18);
-            this.btnBackPnl2.Margin = new System.Windows.Forms.Padding(4);
-            this.btnBackPnl2.Name = "btnBackPnl2";
-            this.btnBackPnl2.Size = new System.Drawing.Size(94, 79);
-            this.btnBackPnl2.TabIndex = 10;
-            this.btnBackPnl2.Tag = "IsImageColorable";
-            this.btnBackPnl2.UseVisualStyleBackColor = false;
-            // 
             // label2
             // 
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
@@ -200,7 +184,7 @@
             this.tlpSelectProds.SetColumnSpan(this.tableLayoutPanel4, 2);
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 13.55499F));
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 86.44501F));
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 113F));
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 116F));
             this.tableLayoutPanel4.Controls.Add(this.label8, 0, 1);
             this.tableLayoutPanel4.Controls.Add(this.lbAddedProds, 1, 1);
             this.tableLayoutPanel4.Controls.Add(this.btnAddProd, 2, 0);
@@ -226,7 +210,7 @@
             this.label8.Location = new System.Drawing.Point(4, 102);
             this.label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(108, 19);
+            this.label8.Size = new System.Drawing.Size(107, 19);
             this.label8.TabIndex = 17;
             this.label8.Text = "Agregados";
             this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -237,10 +221,10 @@
             this.lbAddedProds.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F);
             this.lbAddedProds.FormattingEnabled = true;
             this.lbAddedProds.ItemHeight = 19;
-            this.lbAddedProds.Location = new System.Drawing.Point(135, 55);
+            this.lbAddedProds.Location = new System.Drawing.Point(134, 55);
             this.lbAddedProds.Margin = new System.Windows.Forms.Padding(19, 3, 19, 3);
             this.lbAddedProds.Name = "lbAddedProds";
-            this.lbAddedProds.Size = new System.Drawing.Size(703, 114);
+            this.lbAddedProds.Size = new System.Drawing.Size(701, 114);
             this.lbAddedProds.TabIndex = 16;
             // 
             // btnAddProd
@@ -249,10 +233,10 @@
             this.btnAddProd.FlatAppearance.BorderSize = 0;
             this.btnAddProd.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnAddProd.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F);
-            this.btnAddProd.Location = new System.Drawing.Point(860, 3);
+            this.btnAddProd.Location = new System.Drawing.Point(857, 3);
             this.btnAddProd.Margin = new System.Windows.Forms.Padding(3, 3, 15, 3);
             this.btnAddProd.Name = "btnAddProd";
-            this.btnAddProd.Size = new System.Drawing.Size(96, 46);
+            this.btnAddProd.Size = new System.Drawing.Size(99, 46);
             this.btnAddProd.TabIndex = 14;
             this.btnAddProd.Text = "Agregar";
             this.btnAddProd.UseVisualStyleBackColor = true;
@@ -263,10 +247,10 @@
             this.btnRemoveProd.FlatAppearance.BorderSize = 0;
             this.btnRemoveProd.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnRemoveProd.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F);
-            this.btnRemoveProd.Location = new System.Drawing.Point(860, 55);
+            this.btnRemoveProd.Location = new System.Drawing.Point(857, 55);
             this.btnRemoveProd.Margin = new System.Windows.Forms.Padding(3, 3, 15, 3);
             this.btnRemoveProd.Name = "btnRemoveProd";
-            this.btnRemoveProd.Size = new System.Drawing.Size(96, 114);
+            this.btnRemoveProd.Size = new System.Drawing.Size(99, 114);
             this.btnRemoveProd.TabIndex = 13;
             this.btnRemoveProd.Text = "Quitar";
             this.btnRemoveProd.UseVisualStyleBackColor = true;
@@ -275,10 +259,10 @@
             // 
             this.tbQuantity.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.tbQuantity.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F);
-            this.tbQuantity.Location = new System.Drawing.Point(135, 14);
+            this.tbQuantity.Location = new System.Drawing.Point(134, 14);
             this.tbQuantity.Margin = new System.Windows.Forms.Padding(19, 3, 19, 3);
             this.tbQuantity.Name = "tbQuantity";
-            this.tbQuantity.Size = new System.Drawing.Size(703, 24);
+            this.tbQuantity.Size = new System.Drawing.Size(701, 24);
             this.tbQuantity.TabIndex = 10;
             // 
             // label7
@@ -289,7 +273,7 @@
             this.label7.Location = new System.Drawing.Point(4, 16);
             this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(108, 19);
+            this.label7.Size = new System.Drawing.Size(107, 19);
             this.label7.TabIndex = 6;
             this.label7.Text = "Cantidad";
             this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -299,9 +283,9 @@
             this.panel1.Controls.Add(this.label10);
             this.panel1.Controls.Add(this.tbSubTotal);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(119, 175);
+            this.panel1.Location = new System.Drawing.Point(118, 175);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(735, 30);
+            this.panel1.Size = new System.Drawing.Size(733, 30);
             this.panel1.TabIndex = 18;
             // 
             // label10
@@ -322,7 +306,7 @@
             this.tbSubTotal.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.tbSubTotal.Enabled = false;
             this.tbSubTotal.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F);
-            this.tbSubTotal.Location = new System.Drawing.Point(590, 3);
+            this.tbSubTotal.Location = new System.Drawing.Point(588, 3);
             this.tbSubTotal.Margin = new System.Windows.Forms.Padding(19, 3, 19, 3);
             this.tbSubTotal.Name = "tbSubTotal";
             this.tbSubTotal.ReadOnly = true;
@@ -389,22 +373,6 @@
             this.button1.Tag = "Accentuable";
             this.button1.Text = "Finalizar";
             this.button1.UseVisualStyleBackColor = true;
-            // 
-            // btnBackContact
-            // 
-            this.btnBackContact.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnBackContact.BackColor = System.Drawing.Color.Transparent;
-            this.btnBackContact.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnBackContact.FlatAppearance.BorderSize = 0;
-            this.btnBackContact.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnBackContact.Image = global::WinformsUI.Properties.Resources.BackArrow;
-            this.btnBackContact.Location = new System.Drawing.Point(4, 34);
-            this.btnBackContact.Margin = new System.Windows.Forms.Padding(4);
-            this.btnBackContact.Name = "btnBackContact";
-            this.btnBackContact.Size = new System.Drawing.Size(78, 79);
-            this.btnBackContact.TabIndex = 7;
-            this.btnBackContact.Tag = "IsImageColorable";
-            this.btnBackContact.UseVisualStyleBackColor = false;
             // 
             // label9
             // 
@@ -535,6 +503,38 @@
             this.cbPaymentMethods.Size = new System.Drawing.Size(357, 27);
             this.cbPaymentMethods.TabIndex = 9;
             // 
+            // btnBackContact
+            // 
+            this.btnBackContact.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnBackContact.BackColor = System.Drawing.Color.Transparent;
+            this.btnBackContact.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnBackContact.FlatAppearance.BorderSize = 0;
+            this.btnBackContact.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnBackContact.Image = global::WinformsUI.Properties.Resources.BackArrow;
+            this.btnBackContact.Location = new System.Drawing.Point(4, 34);
+            this.btnBackContact.Margin = new System.Windows.Forms.Padding(4);
+            this.btnBackContact.Name = "btnBackContact";
+            this.btnBackContact.Size = new System.Drawing.Size(78, 79);
+            this.btnBackContact.TabIndex = 7;
+            this.btnBackContact.Tag = "IsImageColorable";
+            this.btnBackContact.UseVisualStyleBackColor = false;
+            // 
+            // btnBackPnl2
+            // 
+            this.btnBackPnl2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnBackPnl2.BackColor = System.Drawing.Color.Transparent;
+            this.btnBackPnl2.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnBackPnl2.FlatAppearance.BorderSize = 0;
+            this.btnBackPnl2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnBackPnl2.Image = global::WinformsUI.Properties.Resources.BackArrow;
+            this.btnBackPnl2.Location = new System.Drawing.Point(4, 18);
+            this.btnBackPnl2.Margin = new System.Windows.Forms.Padding(4);
+            this.btnBackPnl2.Name = "btnBackPnl2";
+            this.btnBackPnl2.Size = new System.Drawing.Size(94, 79);
+            this.btnBackPnl2.TabIndex = 10;
+            this.btnBackPnl2.Tag = "IsImageColorable";
+            this.btnBackPnl2.UseVisualStyleBackColor = false;
+            // 
             // CreateSaleForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -544,6 +544,7 @@
             this.Controls.Add(this.tlpSelectProds);
             this.Controls.Add(this.tlpSelectClient);
             this.Name = "CreateSaleForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "CreateSaleForm";
             this.tlpSelectClient.ResumeLayout(false);
             this.tlpSelectClient.PerformLayout();

@@ -34,11 +34,10 @@ namespace Presenter.ForSale
             _view.CreateRequested += (s, e) => OnOpenCreationForm();
             _view.UpdateRequested += (s, e) => UpdateSale(e);
             _view.DeleteRequested += (s, e) => DeleteSale(e);
-
             _view.ListAllRequested += (s, e) => GetAllSales();
         }
 
-        private void OnOpenCreationForm() => _view.OpenCreationForm();
+        private void OnOpenCreationForm() => _view.OpenCreationView();
 
         private async void UpdateSale(SaleDTO e)
         {
@@ -47,8 +46,7 @@ namespace Presenter.ForSale
             var opRes = await _ucUpdate.ExecuteAsync(e);
             ShowResult(opRes);
 
-            // Refrescar lista si salió bien
-            if (!opRes.Success) GetAllSales();
+            if (opRes.Success) GetAllSales();
         }
 
         private async void DeleteSale(SaleDTO e)
@@ -58,37 +56,35 @@ namespace Presenter.ForSale
             var opRes = await _ucDelete.ExecuteAsync(e);
             ShowResult(opRes);
 
-            // Refrescar lista si salió bien
-            if (!opRes.Success) GetAllSales();
+            if (opRes.Success) GetAllSales();
         }
 
         private async void GetAllSales()
         {
             var tuple = await _ucGetAll.ExecuteAsync();
 
-            var employeeList = tuple.Item1;
+            var salesList = tuple.Item1;
             var opResult = tuple.Item2;
 
 
-            if (!opResult.Success)
-            {
-                ShowResult(opResult);
-            }
-            else
+            if (opResult.Success)
             {
                 try
                 {
                     // Método genérico de ICrudView
-                    _view.CachingList(employeeList);
+                    _view.CachingList(salesList);
                 }
                 finally
                 {
                     _view.FillDGV();
                 }
             }
+            else
+            {
+                ShowResult(opResult);               
+            }
         }
 
-        private void ShowResult(OperationResult<SaleDTO> opRes)
-            => _view.ShowOperationResult(opRes);
+        private void ShowResult(OperationResult<SaleDTO> opRes) => _view.ShowOperationResult(opRes);
     }
 }

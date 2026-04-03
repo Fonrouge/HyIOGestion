@@ -1,5 +1,4 @@
-﻿using Domain.BaseContracts;
-using Domain.Entities;
+﻿using Domain.Entities;
 using Domain.Repositories;
 using Shared;
 using System;

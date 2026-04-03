@@ -1,17 +1,18 @@
-﻿using Domain.BaseContracts;
+﻿using Domain.Contracts;
 using Domain.Entities.Suppliers.ValueObjects;
 using System;
 
 namespace Domain.Entities
 {
-    public class Supplier : EntityBase, ISoftDeletable
+    public class Supplier : EntityBase, ISoftDeletable, IIntegrityCheckable
     {
         // --- PROPIEDADES DE DOMINIO (Encapsuladas con Value Objects) ---
         public CompanyNameVO CompanyName { get; private set; }
         public ContactNameVO ContactName { get; private set; }
         public SupplierEmailVO Mail { get; private set; }
         public SupplierPhoneVO Phone { get; private set; }
-  //      public SupplierTaxIdVO TaxId { get; private set; }
+        public SupplierTaxIdVO TaxId { get; private set; }
+        public SupplierTaxNumber TaxNumber { get; private set; }
         public SupplierAddressVO Address { get; private set; }
         public SupplierCityVO City { get; private set; }
         public SupplierObservationsVO Observations { get; private set; }
@@ -35,19 +36,21 @@ namespace Domain.Entities
         (
             string rawCompanyName,
             string rawContactName,
-    //        string rawTaxId,
+            string rawTaxId,
+            string rawTaxNumber,
             string rawPhone,
             string rawMail,
             string rawAddress,
             string rawCity,
-            string observations = ""
+            string observations = null
         )
-        {
+        {            
             return new Supplier
             {
                 CompanyName = CompanyNameVO.Create(rawCompanyName),
                 ContactName = ContactNameVO.Create(rawContactName),
-           //     TaxId = SupplierTaxIdVO.Create(rawTaxId),
+                TaxId = SupplierTaxIdVO.Create(rawTaxId),
+                TaxNumber = SupplierTaxNumber.Create(rawTaxNumber),
                 Phone = SupplierPhoneVO.Create(rawPhone),
                 Mail = SupplierEmailVO.Create(rawMail),
                 Address = SupplierAddressVO.Create(rawAddress),
@@ -67,7 +70,8 @@ namespace Domain.Entities
             Guid id,
             string rawCompanyName,
             string rawContactName,
-     //      string rawTaxId,
+            string rawTaxId,
+            string rawTaxNumber,
             string rawPhone,
             string rawMail,
             string rawAddress,
@@ -83,7 +87,8 @@ namespace Domain.Entities
                 Id = id,
                 CompanyName = CompanyNameVO.Create(rawCompanyName),
                 ContactName = ContactNameVO.Create(rawContactName),
-    //            TaxId = SupplierTaxIdVO.Create(rawTaxId),
+                TaxId = SupplierTaxIdVO.Create(rawTaxId),
+                TaxNumber = SupplierTaxNumber.Create(rawTaxNumber),
                 Phone = SupplierPhoneVO.Create(rawPhone),
                 Mail = SupplierEmailVO.Create(rawMail),
                 Address = SupplierAddressVO.Create(rawAddress),
@@ -95,9 +100,33 @@ namespace Domain.Entities
             };
         }
 
+        /// <summary>
+        /// Genera la cadena de serialización para el cálculo del Dígito Verificador Horizontal.
+        /// Centraliza el orden y formato de los datos para garantizar consistencia.
+        /// </summary>
+        public string GetDvhSerialization()
+        {
+            // Usamos cultura invariante para evitar problemas con símbolos locales
+            var culture = System.Globalization.CultureInfo.InvariantCulture;
 
-        // --- COMPORTAMIENTO (Transiciones de Estado) ---
+            return string.Join("|",
+                Id.ToString(),
+                CompanyName.Value,
+                ContactName.Value,
+                Mail.Value.ToUpper(culture),
+                Phone.Value,
+                TaxId.Value,
+                TaxNumber.Value,
+                Address.Value,
+                City.Value,
+                (Observations?.Value ?? string.Empty), // Manejo de nulos por seguridad
+                Active ? "1" : "0",
+                IsDeleted ? "1" : "0"
+            );
+        }
 
+
+        // --- COMPORTAMIENTO (Transiciones de Estado) ---    
         public void MarkAsDeleted()
         {
             if (IsDeleted) return;

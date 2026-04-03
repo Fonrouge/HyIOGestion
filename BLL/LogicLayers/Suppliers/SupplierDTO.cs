@@ -2,15 +2,16 @@
 using System;
 using System.ComponentModel;
 
-namespace BLL.LogicLayers
+namespace BLL.DTOs
 {
     public class SupplierDTO : IDto
     {
         [Browsable(false)]
-        public Guid Id { get; set; } = Guid.Empty;
-
+        public Guid   Id { get; set; } = Guid.Empty;
         public string CompanyName { get; set; } = string.Empty;
         public string ContactName { get; set; }
+        public string TaxId { get; set; } // CUIT/CUIL
+        public string TaxNumber { get; set; }
         public string Mail { get; set; }
         public string Phone { get; set; }
         public string Address { get; set; }

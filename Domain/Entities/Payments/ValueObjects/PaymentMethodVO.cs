@@ -7,9 +7,6 @@ namespace Domain.Entities.Payments.ValueObjects
     {
         public string Value { get; }
 
-        // Lista temporal de valores permitidos para simular el comportamiento del futuro Enum.
-        // Esto evitará que ingrese basura a la base de datos antes de la migración.
-        private static readonly string[] AllowedMethods = { "CASH", "TRANSFER", "CREDIT_CARD", "DEBIT_CARD", "CHECK" };
 
         private PaymentMethodVO(string value)
         {
@@ -24,14 +21,7 @@ namespace Domain.Entities.Payments.ValueObjects
             // Normalizamos a mayúsculas y quitamos espacios para evitar inconsistencias
             var sanitizedValue = value.Trim().ToUpperInvariant();
 
-            // Validamos contra nuestra lista blanca provisoria
-            if (!AllowedMethods.Contains(sanitizedValue))
-            {
-                var allowedList = string.Join(", ", AllowedMethods);
-                throw new ArgumentException($"Método de pago inválido: '{value}'. Los valores permitidos temporalmente son: {allowedList}.");
-            }
-
-            return new PaymentMethodVO(sanitizedValue);
+            return new PaymentMethodVO(sanitizedValue.ToUpper());
         }
 
         // --- COMPORTAMIENTO DE VALUE OBJECT ---

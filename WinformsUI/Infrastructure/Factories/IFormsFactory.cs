@@ -1,9 +1,14 @@
-﻿using Presenter.ForClient;
+﻿using BLL.DTOs;
+using Presenter.ForClient;
 using Presenter.ForEmployee;
 using Presenter.ForPayments;
 using Presenter.ForProducts;
 using Presenter.ForSale;
 using Presenter.ForSupplier;
+using Presenter.Presenters.ForClient;
+using Presenter.Presenters.ForEmployee;
+using Presenter.Presenters.ForProducts;
+using Presenter.Presenters.ForSupplier;
 using Shared.ArchitecturalMarkers;
 
 namespace WinformsUI.Infrastructure.Factories
@@ -17,11 +22,13 @@ namespace WinformsUI.Infrastructure.Factories
         //For client
         T ClientForm<T>() where T : IClientView;
         T ClientCreationForm<T>() where T : ICreateClientView;
+        T ClientUpdateForm<T>() where T : IUpdateClientView;
 
 
         //For employees
         T EmployeeForm<T>() where T : IEmployeeView;
         ICreateEmployeeView EmployeeCreationForm();
+        T EmployeeUpdateForm<T>() where T : IUpdateEmployeeView;
 
 
         //For Payments
@@ -37,9 +44,11 @@ namespace WinformsUI.Infrastructure.Factories
         //For Products
         T ProductForm<T>() where T : IProductView;
         ICreateProductView ProductCreationForm();
+        T ProductUpdateForm<T>() where T : IUpdateProductView;
 
         //For Supplier
         T SupplierForm<T>() where T : ISupplierView;
         ICreateSupplierView SupplierCreationForm();
+        T SupplierUpdateForm<T>() where T : IUpdateSupplierView;
     }
 }

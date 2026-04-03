@@ -16,6 +16,6 @@ public sealed class LastNameVO : IValueObject
             throw new ArgumentException("El apellido no puede superar los 50 caracteres");
 
 
-        return new LastNameVO(lastName.Trim());
+        return new LastNameVO(lastName.Trim().ToUpper());
     }
 }

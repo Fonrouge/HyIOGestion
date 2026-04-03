@@ -1,10 +1,10 @@
-﻿using Domain.BaseContracts;
+﻿using Domain.Contracts;
 using Domain.Entities.Sales.ValueObjects;
 using System;
 
 namespace Domain.Entities
 {
-    public class SaleDetail : EntityBase, ISoftDeletable
+    public class SaleDetail : EntityBase, ISoftDeletable, IIntegrityCheckable
     {
         // --- PROPIEDADES DE DOMINIO (Rich Domain Model) ---
         public Guid SaleId { get; private set; }
@@ -75,6 +75,27 @@ namespace Domain.Entities
                 DVH = !string.IsNullOrEmpty(dvh) ? DvhVo.Create(dvh) : null,
             };
         }
+
+        /// <summary>
+        /// Genera la cadena de serialización para el cálculo del Dígito Verificador Horizontal.
+        /// Protege la integridad de los datos filiatorios y de contacto del cliente.
+        /// </summary>
+        public string GetDvhSerialization()
+        {
+            // Usamos cultura invariante para normalizar decimales y Guids
+            var culture = System.Globalization.CultureInfo.InvariantCulture;
+
+            return string.Join("|",
+                Id.ToString(),
+                SaleId.ToString(),       // Crucial para evitar "huérfanos" o traslados entre ventas
+                ProductId.ToString(),
+                Quantity.Value.ToString("F3", culture),  // F3 por si vendes por peso/volumen
+                UnitPrice.Value.ToString("F2", culture), // F2 estándar moneda
+                Subtotal.ToString("F2", culture),
+                IsDeleted ? "1" : "0"
+            );
+        }
+
 
         // --- COMPORTAMIENTO ---
         private void CalculateSubtotal() => Subtotal = Quantity.Value * UnitPrice.Value;

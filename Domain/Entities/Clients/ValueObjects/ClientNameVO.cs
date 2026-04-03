@@ -35,9 +35,9 @@ namespace Domain.Entities.Clients.ValueObjects
             // 3. Validación de Caracteres (Solo letras, acentos, ñ, espacios y guiones)
             // Evita números y símbolos raros como @, !, $, etc.
             if (!Regex.IsMatch(name, @"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\-]+$"))
-                throw new ArgumentException("El nombre del cliente contiene caracteres inválidos. Solo se permiten letras.", nameof(name));
+                throw new ArgumentException("El nombre del cliente contiene caracteres inválidos. Sólo se permiten letras.", nameof(name));
 
-            return new ClientNameVO(name);
+            return new ClientNameVO(name.ToUpper());
         }
 
         // --- COMPORTAMIENTO DE VALUE OBJECT (Comparación por valor) ---

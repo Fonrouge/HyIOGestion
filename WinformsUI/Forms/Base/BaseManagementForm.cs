@@ -13,39 +13,40 @@ using WinformsUI.UserControls.CustomDGV;
 namespace WinformsUI.Forms.Base
 {
     /// <summary>
-    /// Formulario base para la gestión (CRUD) de entidades (Create va a parte, el form se encarga de los casos restantes C(RUDL))
-    /// Encapsula la lógica común de Grillas, Temas, Traducciones y Eventos estándar.
+    /// Formulario base para la gestión (CRUD) de entidades.
+    /// Encapsula la lógica común de Grillas, Temas, Traducciones, Cierre y Eventos estándar.
     /// </summary>
-    /// <typeparam name="TEntity">El tipo de DTO que gestiona este formulario (ej. ClientDTO).</typeparam>
+    /// <typeparam name="TEntity">El tipo de DTO que gestiona este formulario.</typeparam>
     public class BaseManagementForm<TEntity> : Form, IView where TEntity : IDto
     {
-        //Dependencias Protegidas (Accesibles por los hijos)
         protected readonly IApplicationSettings _appSettings;
         protected readonly ITranslatableControlsManager _transMgr;
         protected readonly ICustomDGVFactory _dgvFactory;
 
+        protected CustomDGVFunctions _dgvControls;
         protected CustomDGVForm _dgvForm;
         protected BindingList<TEntity> _entitiesList;
         protected TEntity _currentSelectedEntity;
 
-        // Mensaje de éxito genérico (puede ser sobreescrito o usado tal cual)
         protected string _successOperationMessage;
 
-        // EventHandler genéricos para estandarizar, se espera que cada form suscriba sus propios eventos a estos handlers (ej: public event EventHandler CreateClientRequested{add => CreateRequested += value; remove => CreateRequested -= value;}
+        // Eventos estándar
         public event EventHandler CreateRequested;
         public event EventHandler<TEntity> UpdateRequested;
         public event EventHandler<TEntity> DeleteRequested;
         public event EventHandler ListAllRequested;
+        public event EventHandler CloseRequested;
 
 
-        #region Constructor Base
+
         public BaseManagementForm() { }
 
         public BaseManagementForm
         (
             IApplicationSettings appSettings,
             ITranslatableControlsManager transMgr,
-            ICustomDGVFactory dgvFact)
+            ICustomDGVFactory dgvFact
+        )
         {
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             _transMgr = transMgr ?? throw new ArgumentNullException(nameof(transMgr));
@@ -54,28 +55,28 @@ namespace WinformsUI.Forms.Base
             _successOperationMessage = _appSettings.SuccessOnOperation;
             _entitiesList = new BindingList<TEntity>();
 
-            this.FormClosed += (s, e) =>
-            {
-           //     _transMgr.CleanupForm(this);
-            };
+            // Suscripción automática al cierre para notificar al Presenter
+            this.FormClosed += HandleBaseFormClosed;
+
+
+
         }
+
         public void ApplyGlobalPalette() { }
 
-
-        #endregion
-
-        #region Ciclo de Vida y Configuración (Template Methods)
-
+     
+        //====================================================
+        //          CICLO DE VIDA Y CONFIGURACIÓN
+        //====================================================
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-
             DoubleBuffering.TryForAllControls(this.Controls);
 
             if (!DesignMode)
             {
                 SetBaseFormAppearance();
-                ApplyTranslation(); // Llama al método abstracto/virtual
+                ApplyTranslation();
             }
         }
 
@@ -84,7 +85,7 @@ namespace WinformsUI.Forms.Base
             base.OnShown(e);
             if (!DesignMode)
             {
-                OnListAllRequest(); // Carga inicial de datos automática
+                OnListAllRequest(null, e);
             }
         }
 
@@ -95,12 +96,15 @@ namespace WinformsUI.Forms.Base
             this.Dock = DockStyle.Fill;
         }
 
-        #endregion
+        private void HandleBaseFormClosed(object sender, FormClosedEventArgs e)
+        {
+            CloseRequested?.Invoke(this, EventArgs.Empty);
+        }
 
 
-
-        #region Métodos Públicos (Contrato IView Genérico)
-
+        //====================================================
+        //             MÉTODOS PÚBLICOS (IView)
+        //====================================================
         public void CachingList(IEnumerable<TEntity> list)
         {
             _entitiesList = list.ToBindingList();
@@ -114,45 +118,42 @@ namespace WinformsUI.Forms.Base
             }
         }
 
-        public void ShowOperationResult(OperationResult<TEntity> opRes, Func<TEntity, string> successMessageSelector = null)
-        {
-            if (!opRes.Errors.Any())
-            {
-                string msg = successMessageSelector != null
-                    ? _successOperationMessage + " " + successMessageSelector(_currentSelectedEntity)
-                    : _successOperationMessage;
+        protected void InitializeDGVControls() => _dgvControls.TargetDGV = _dgvForm;
 
-                MessageBox.Show(msg); // Reemplazar por IMessageDialogService inyectado cuando refactorice
+        public void ShowOperationResult(OperationResult<TEntity> opRes)
+        {
+            if (opRes.Success)
+            {
+                MessageBox.Show(_successOperationMessage, "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
                 foreach (var error in opRes.Errors)
                 {
-                    MessageBox.Show($"{error.Message}\n{error.RecommendedAction}", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show($"{error.Message}\n{error.RecommendedAction}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
 
+        public virtual void CloseView()
+        {
+            if (!this.IsDisposed)
+            {
+                this.Close();
+            }
+        }
 
-        public void NotifiedByTranslationManager() => ApplyTranslation(); //Notified by reflection on TranslatorManager class. That's why it has 0 references.
+        public void NotifiedByTranslationManager() => ApplyTranslation();
 
         public void ApplyTranslation() => _transMgr.Apply();
 
-        #endregion
 
 
-
-        #region Métodos Protegidos para los Hijos (Hooks)
-
-        /// <summary>
-        /// Método opcional que se ejecuta cuando cambia la selección en la grilla.
-        /// </summary>
+        //====================================================
+        //             MÉTODOS PROTEGIDOS (HOOKS)
+        //====================================================
         protected virtual void OnEntitySelected(TEntity entity) { }
 
-        /// <summary>
-        /// Inicializa y configura el DataGridView dentro del panel contenedor proporcionado.
-        /// </summary>
-        /// <param name="containerPanel">El Panel donde se incrustará la grilla.</param>
         protected void InitializeDGV(Control containerPanel)
         {
             if (containerPanel == null) throw new ArgumentNullException(nameof(containerPanel));
@@ -164,7 +165,6 @@ namespace WinformsUI.Forms.Base
             containerPanel.Controls.Add((Form)_dgvForm);
             _dgvForm.Show();
 
-            // Cableado automático de selección
             _dgvForm.SelectedRowChanged += (s, entity) =>
             {
                 _dgvForm.EnsureDgvRowSelection();
@@ -172,34 +172,32 @@ namespace WinformsUI.Forms.Base
                 if (entity != null && entity is TEntity typedEntity)
                 {
                     _currentSelectedEntity = typedEntity;
-                    OnEntitySelected(typedEntity); // Hook para hijos
+                    OnEntitySelected(typedEntity);
                 }
             };
         }
-        #endregion
 
 
-        #region Disparadores de Eventos (Event Invokers)
+        //====================================================
+        //              DISPARADORES DE EVENTOS
+        //====================================================
+        protected void OnCreateRequest(object sender, EventArgs e) => CreateRequested?.Invoke(this, EventArgs.Empty);
 
-        protected void OnCreateRequest() => CreateRequested?.Invoke(this, EventArgs.Empty);
-
-        protected void OnUpdateRequest()
+        protected void OnUpdateRequest(object sender, EventArgs e)
         {
             _dgvForm.EnsureDgvRowSelection();
-
             if (_currentSelectedEntity != null)
                 UpdateRequested?.Invoke(this, _currentSelectedEntity);
         }
 
-        protected void OnDeleteRequest()
+        protected void OnDeleteRequest(object sender, EventArgs e)
         {
             _dgvForm.EnsureDgvRowSelection();
-
             if (_currentSelectedEntity != null)
                 DeleteRequested?.Invoke(this, _currentSelectedEntity);
         }
 
-        protected void OnListAllRequest()
+        protected void OnListAllRequest(object sender, EventArgs e)
         {
             try
             {
@@ -212,11 +210,27 @@ namespace WinformsUI.Forms.Base
             }
         }
 
-        #endregion
+
+        //====================================================
+        //                   LIMPIEZA
+        //====================================================
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this.FormClosed -= HandleBaseFormClosed;
+                _entitiesList = null;
+                _dgvForm = null;
+            }
+            base.Dispose(disposing);
+        }
 
         private void InitializeComponent()
         {
             this.SuspendLayout();
+            // 
+            // BaseManagementForm
+            // 
             this.ClientSize = new System.Drawing.Size(284, 261);
             this.Name = "BaseManagementForm";
             this.ResumeLayout(false);

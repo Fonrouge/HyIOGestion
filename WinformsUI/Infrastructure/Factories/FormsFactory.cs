@@ -1,12 +1,16 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Presenter.ForClient;
 using Presenter.ForEmployee;
+using Presenter.ForPayments;
 using Presenter.ForProducts;
 using Presenter.ForSale;
+using Presenter.ForSupplier;
+using Presenter.Presenters.ForClient;
+using Presenter.Presenters.ForEmployee;
+using Presenter.Presenters.ForProducts;
+using Presenter.Presenters.ForSupplier;
 using Shared.ArchitecturalMarkers; // Asumiendo que aquí están las interfaces de View
 using System;
-using Presenter.ForPayments;
-using Presenter.ForSupplier;
 
 namespace WinformsUI.Infrastructure.Factories
 {
@@ -49,8 +53,6 @@ namespace WinformsUI.Infrastructure.Factories
 
             return view;
         }
-
-
         public T ClientCreationForm<T>() where T : ICreateClientView
         {
             var creationView = _sp.GetRequiredService<T>();
@@ -58,6 +60,15 @@ namespace WinformsUI.Infrastructure.Factories
             ActivatorUtilities.CreateInstance<CreateClientPresenter>(_sp, creationView);
 
             return creationView;
+        }
+        public T ClientUpdateForm<T>() where T : IUpdateClientView
+        {
+            var updateView = _sp.GetRequiredService<T>();
+
+            ActivatorUtilities.CreateInstance<UpdateClientPresenter>(_sp, updateView);
+
+
+            return updateView;
         }
 
         // ==============================================================
@@ -78,6 +89,16 @@ namespace WinformsUI.Infrastructure.Factories
             ActivatorUtilities.CreateInstance<CreateEmployeePresenter>(_sp, newCreationForm);
 
             return newCreationForm;
+        }
+
+        public T EmployeeUpdateForm<T>() where T : IUpdateEmployeeView
+        {
+            var updateView = _sp.GetRequiredService<T>();
+
+            ActivatorUtilities.CreateInstance<UpdateEmployeePresenter>(_sp, updateView);
+
+
+            return updateView;
         }
 
 
@@ -149,7 +170,16 @@ namespace WinformsUI.Infrastructure.Factories
 
             return view;
         }
+        public T ProductUpdateForm<T>() where T : IUpdateProductView
+        {
+            var updateView = _sp.GetRequiredService<T>();
 
+            ActivatorUtilities.CreateInstance<UpdateProductPresenter>(_sp, updateView);
+
+
+            return updateView;
+        }
+        
 
 
         // ==============================================================
@@ -171,6 +201,15 @@ namespace WinformsUI.Infrastructure.Factories
             ActivatorUtilities.CreateInstance<CreateSupplierPresenter>(_sp, newCreationForm);
 
             return newCreationForm;
+        }
+
+        public T SupplierUpdateForm<T>() where T : IUpdateSupplierView
+        {
+            var updateView = _sp.GetRequiredService<T>();
+
+            ActivatorUtilities.CreateInstance<UpdateSupplierPresenter>(_sp, updateView);
+
+            return updateView;
         }
 
 

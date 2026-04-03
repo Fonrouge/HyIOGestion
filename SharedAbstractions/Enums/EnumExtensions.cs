@@ -16,10 +16,10 @@ namespace SharedAbstractions.Enums
             return (CountryInfoAttribute)Attribute.GetCustomAttribute(field, typeof(CountryInfoAttribute));
         }
 
-        public static CountryInfoAttribute GetPaymentMethodsInfo(this CountriesEnum val)
+        public static PaymentsMethodsAttribute GetPaymentMethodsInfo(this PaymentMethodsEnum val)
         {
             var field = val.GetType().GetField(val.ToString());
-            return (CountryInfoAttribute)Attribute.GetCustomAttribute(field, typeof(CountryInfoAttribute));
+            return (PaymentsMethodsAttribute)Attribute.GetCustomAttribute(field, typeof(PaymentsMethodsAttribute));
         }
 
 

@@ -72,13 +72,14 @@ namespace BLL.LogicLayers.Clients //============================================
 
                 await _uow.CommitAsync();
             }
+
             catch (Exception ex)
             {
                 if (_uow.HasActiveTransaction)
                 {
                     await _uow.RollbackAsync();
                 }
-
+                
                 // 1. Log técnico interno
                 var dbError = _errorsFactory.CreateFromException(ex);
                 dbError.Table = _appSettings.ClientTableName ?? "Client";
@@ -87,7 +88,7 @@ namespace BLL.LogicLayers.Clients //============================================
                 {
                     await _errorsRepository.CreateAsync(dbError);
                 }
-                catch { /* Falla silenciosa para no romper el retorno a la UI */ }
+                catch {}
 
                 // 2. Error catalogado para el usuario (CERO strings mágicos)
                 var uiError = _errorsFactory.Create(ErrorCatalogEnum.DataLoadError, _appSettings.ClientTableName);

@@ -108,7 +108,7 @@ namespace Bootstrapper
 
             //INFRA - Security
             services.AddTransient<IVerifyDVV, VerifyDVV>();
-            services.AddTransient<IVerifyDVH, VerifyDVH>();
+            services.AddTransient<IVerifyDVH, DVHVerifier>();
 
             //INFRA - Registers
 //            services.AddSingleton<IBitacoraMapper, BitacoraMapper>();

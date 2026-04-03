@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Domain.Exceptions; // Para SeverityEnum si fuera necesario
+using Domain.Exceptions; 
 
 namespace BLL.DTOs
 {

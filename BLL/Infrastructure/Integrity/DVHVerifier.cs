@@ -1,5 +1,6 @@
 ﻿using BLL.Infrastructure.Errors;
 using BLL.LogicLayer;
+using Domain.Contracts;
 using Domain.Entities;
 using Domain.Entities.Permisos.Concrete;
 using Domain.Exceptions;
@@ -7,6 +8,7 @@ using Domain.Infrastructure;
 using Domain.Repositories;
 using Shared;
 using Shared.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,7 +19,7 @@ namespace BLL.UseCases
     /// Caso de uso encargado de verificar la integridad de los datos (DVH y DVV) 
     /// para las entidades críticas del sistema.
     /// </summary>
-    public class VerifyDVH : IVerifyDVH // Recuerda actualizar esta interfaz a Task<bool> ExecuteAsync()
+    public class DVHVerifier : IVerifyDVH // Recuerda actualizar esta interfaz a Task<bool> ExecuteAsync()
     {
         private readonly IUnitOfWork _uow;
         private readonly IVerifyDVV _verifyDVV;
@@ -29,15 +31,22 @@ namespace BLL.UseCases
         private readonly string _tableEmployee;
 
         /// <summary>
-        /// Inicializa una nueva instancia de la clase <see cref="VerifyDVH"/>.
+        /// Inicializa una nueva instancia de la clase <see cref="DVHVerifier"/>.
         /// </summary>
-        public VerifyDVH(IUnitOfWork uow, IVerifyDVV verifyDVV, IErrorsRepository exceptionRepo, IApplicationSettings appSettings, IErrorsFactory errorsFactory)
+        public DVHVerifier
+        (
+            IUnitOfWork uow, 
+            IVerifyDVV verifyDVV, 
+            IErrorsRepository exceptionRepo, 
+            IApplicationSettings appSettings, 
+            IErrorsFactory errorsFactory
+        )
         {
-            _uow = uow;
-            _verifyDVV = verifyDVV;
-            _exceptionRepo = exceptionRepo;
-            _appSettings = appSettings;
-            _errorsFactory = errorsFactory;
+            _uow = uow ?? throw new ArgumentException($"{nameof(uow)} cannot be null.");
+            _verifyDVV = verifyDVV ?? throw new ArgumentException($"{nameof(verifyDVV)} cannot be null.");                                 
+            _exceptionRepo = exceptionRepo ?? throw new ArgumentException($"{nameof(exceptionRepo)} cannot be null.");
+            _appSettings = appSettings ?? throw new ArgumentException($"{nameof(appSettings)} cannot be null.");
+            _errorsFactory = errorsFactory ?? throw new ArgumentException($"{nameof(errorsFactory)} cannot be null.");
 
             _tableUser = appSettings.UserTableName;
             _tableEmployee = appSettings.EmployeeTableName;
@@ -52,10 +61,10 @@ namespace BLL.UseCases
         {
             // 1. Validar integridad fila por fila (DVH) - Hacemos el await primero y luego materializamos a lista
             var users = await _uow.UserRepo.GetAllAsync();
-      //      await ValidateUsersDVHAsync(users.ToList());
+            //      await ValidateUsersDVHAsync(users.ToList());
 
             var employees = await _uow.EmployeeRepo.GetAllAsync();
-       //     await ValidateEmployeesDVHAsync(employees.ToList());
+            //     await ValidateEmployeesDVHAsync(employees.ToList());
 
             // 2. Validar integridad de tablas completas (DVV)
             var dvvChecks = new[]
@@ -83,35 +92,19 @@ namespace BLL.UseCases
         /// <summary>
         /// Valida el Dígito Verificador Horizontal para la lista de usuarios.
         /// </summary>
-        private async Task ValidateUsersDVHAsync(List<Usuario> allUsers)
+        private async Task ValidateUsersDVHAsync<TEntity>(IEnumerable<TEntity> allUsers) where TEntity : IIntegrityCheckable
         {
-  //        foreach (var u in allUsers)
-  //        {
-  //            // El cálculo de hash es de CPU (memoria pura), así que se mantiene síncrono.
-  //            var calculatedDVH = IntegrityService.GetIntegrityHash(u.Id, u.Username, u.Language, u.EmployeeId);
-  //
-  //            if (u.DVH != calculatedDVH)
-  //            {
-  //                // Si falla, el registro de error es asíncrono (I/O)
-  //                await HandleIntegrityErrorAsync(_tableUser, "Violación externa de registro individual (DVH).", ErrorCatalogEnum.InconsistentRowIntegrity);
-  //            }
-  //        }
-        }
+            foreach (var u in allUsers)
+            {
+                // El cálculo de hash es de CPU (memoria pura), así que se mantiene síncrono.
+                var calculatedDVH = IntegrityService.GetIntegrityHash(u.GetDvhSerialization());
 
-        /// <summary>
-        /// Valida el Dígito Verificador Horizontal para la lista de empleados.
-        /// </summary>
-        private async Task ValidateEmployeesDVHAsync(List<Employee> allEmployees)
-        {
-       //     foreach (var e in allEmployees)
-       //     {
-       //         var calculatedDVH = IntegrityService.GetIntegrityHash(e.Id, e.FirstName, e.LastName, e.NationalId);
-       //
-       //         if (e.DVH != calculatedDVH)
-       //         {
-       //             await HandleIntegrityErrorAsync(_tableEmployee, "Violación externa de registro individual (DVH).", ErrorCatalogEnum.InconsistentRowIntegrity);
-       //         }
-       //     }
+                if (u.DVH.Value != calculatedDVH)
+                {
+                    // Si falla, el registro de error es asíncrono (I/O)
+                    await HandleIntegrityErrorAsync(_tableUser, "Violación externa de registro individual (DVH).", ErrorCatalogEnum.InconsistentRowIntegrity);
+                }
+            }
         }
 
         /// <summary>

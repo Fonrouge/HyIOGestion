@@ -1,9 +1,9 @@
-﻿using Domain.BaseContracts;
+﻿using Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Domain.Repositories
+namespace Domain.Contracts
 {
     public interface ICrudl<T> where T : EntityBase
     {

@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Presenter.LoginScreen;
 using Presenter.MainFormNavigation;
 using System;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using WinformsUI.Forms.Login;
 using WinformsUI.Forms.Main;
@@ -14,39 +15,32 @@ namespace Winforms.Theme
 {
     internal static class Program
     {
-        private static ServiceCollection _services;
-        private static ServiceProvider _finalProvider;
-        private static MainForm _mainForm;
+        private static IServiceProvider _serviceProvider;
 
         [STAThread]
         static void Main()
         {
-           // // Detectar si hay un debugger de Windows o un Profiler de memoria
-           // if (System.Diagnostics.Debugger.IsAttached ||
-           //     System.Runtime.InteropServices.Marshal.GetExceptionCode() != 0)
-           // {
-           //     // "Suicidio" silencioso del proceso
-           //     System.Diagnostics.Process.GetCurrentProcess().Kill();
-           // }
+            // 1. Configuración básica de WinForms
+            InitializeWinForms();
 
-            Initialize();
-            
+            // 2. Estética y DI
             SetGlobalPalette();
-            CreateServiceCollection();
+            _serviceProvider = CreateServiceProvider();
 
-            AddExternalServiceLayer(_services); //Bootstrapper goes first because UI is gonna need an Instance of IApplicationSettings         
-            AddInternalLayer(_services); //Goes second.
-            _finalProvider = _services.BuildServiceProvider();
-          
+            // 3. Flujo de Integridad (Ahora sí es esperado/awaited)
+            //           if (!await RunIntegrityCheckAsync()) return;
 
-            if (!RunIntegrityCheck()) return; //Desactivado porquie la base de datos está en fase de prueba y hay datos que modifican constantemente directamente por el motor de bbdd.
+            // 4. Flujo de Login
             if (!RunLoginFlow()) return;
-      
-            InstanceServices();
-            Application.Run(_mainForm);
+
+            // 5. Flujo Principal (Main Form)
+            RunMainFlow();
+
+
+
         }
 
-        private static void Initialize()
+        private static void InitializeWinForms()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
@@ -54,53 +48,61 @@ namespace Winforms.Theme
 
         private static void SetGlobalPalette() => DarkTheme.SetGlobalPalette(DarkTheme.PalettesDark.Oceanic());
 
-        private static void CreateServiceCollection() => _services = new ServiceCollection();
-
-        private static void AddExternalServiceLayer(IServiceCollection services) => services.AddApplicationLayer();
-
-        private static void AddInternalLayer(IServiceCollection services)
+        private static IServiceProvider CreateServiceProvider()
         {
+            var services = new ServiceCollection();
+
+            // Capas externas e internas
+            services.AddApplicationLayer();
             services.AddUILayer();
             services.AddFromPresenter();
-        }
- 
 
-        private static void InstanceServices()
-        {
-           
-            _mainForm = _finalProvider.GetRequiredService<MainForm>();
-
-            ActivatorUtilities.CreateInstance<MainFormNavigationPresenter>(_finalProvider, _mainForm);
+            return services.BuildServiceProvider();
         }
 
-        private static bool RunIntegrityCheck()
+        private static async Task<bool> RunIntegrityCheckAsync()
         {
+            // IMPORTANTE: En fase de prueba esto podría retornar true directamente
+            // pero mantenemos la lógica asíncrona corregida.
             try
             {
-                _finalProvider.GetRequiredService<IVerifyDVH>().ExecuteAsync();
+                var checker = _serviceProvider.GetRequiredService<IVerifyDVH>();
+                await checker.ExecuteAsync();
                 return true;
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error crítico de integridad: {ex.Message}\nEl sistema se cerrará.", //CAMBIAR POR MENSAJE DE ERROR PROVENIENTE DE ARCHIVO DE CONFIGURACION A FUTURO
-                                "ALERTA DE SEGURIDAD", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                MessageBox.Show($"Error crítico de integridad: {ex.Message}\nEl sistema se cerrará.",
+                    "ALERTA DE SEGURIDAD", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return false;
             }
         }
 
         private static bool RunLoginFlow()
         {
-            var UCLogin = _finalProvider.GetRequiredService<IUCLogin>();
-            var fact = _finalProvider.GetRequiredService<IFormsFactory>();
+            var factory = _serviceProvider.GetRequiredService<IFormsFactory>();
 
-            ILoginView loginform = fact.CreateGeneric<LoginFrm>();
-
-            ActivatorUtilities.CreateInstance<LoginPresenter>(_finalProvider, loginform, UCLogin);
-
-            using (loginform)
+            // Usamos 'using' para asegurar que el Form se libere
+            using (var loginForm = factory.CreateGeneric<LoginFrm>())
             {
-                var result = loginform.ShowDialog();
-                return result == true;
+                // Instanciamos el Presenter y usamos 'using' para su Dispose (eventos)
+                using (ActivatorUtilities.CreateInstance<LoginPresenter>(_serviceProvider, loginForm))
+                {
+                    // En WinForms ShowDialog devuelve DialogResult
+                    var result = loginForm.ShowDialog();
+                    return result == DialogResult.OK || result == DialogResult.Yes;
+                }
+            }
+        }
+
+        private static void RunMainFlow()
+        {
+            var mainForm = _serviceProvider.GetRequiredService<MainForm>();
+
+            // Vinculamos el Presenter de navegación principal
+            using (ActivatorUtilities.CreateInstance<MainFormNavigationPresenter>(_serviceProvider, mainForm))
+            {
+                Application.Run(mainForm);
             }
         }
     }

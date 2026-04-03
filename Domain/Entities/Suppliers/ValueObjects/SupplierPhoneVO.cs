@@ -33,7 +33,7 @@ namespace Domain.Entities.Suppliers.ValueObjects
                 throw new ArgumentException("El número de teléfono debe contener al menos 7 dígitos");
 
             // Normalizamos (quitamos espacios extras, pero mantenemos formato legible)
-            return new SupplierPhoneVO(cleaned);
+            return new SupplierPhoneVO(cleaned.Trim().ToUpper());
         }
     }
 }

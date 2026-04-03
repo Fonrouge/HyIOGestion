@@ -1,8 +1,8 @@
-﻿using BLL.DTOs;
-using BLL.LogicLayers;
+﻿using BLL.LogicLayers;
 using Presenter.ForSale;
 using Shared;
 using System;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Winforms.Theme;
 using WinformsUI.Forms.Base;
@@ -21,9 +21,8 @@ namespace WinformsUI.Forms.SaleCRUDL
             IApplicationSettings appSettings,
             ITranslatableControlsManager transMgr,
             ICustomDGVFactory dgvFact,
-            IFormsFactory formsFact)
-            : base(appSettings, transMgr, dgvFact
-        )
+            IFormsFactory formsFact
+        ) : base(appSettings, transMgr, dgvFact)
         {
             _formsFactory = formsFact;
 
@@ -34,25 +33,10 @@ namespace WinformsUI.Forms.SaleCRUDL
             AddTranslatables();
         }
 
-        private void AddTranslatables()
-        {
-            _transMgr.AddParentedObjects<Label>(this.Controls, "Text");
-            _transMgr.AddParentedObjects<Button>(this.Controls, "Text");
-
-            _transMgr.AddSingleObject(btnCreate, "Text");
-            _transMgr.AddSingleObject(btnDelete, "Text");
-            _transMgr.AddSingleObject(btnRefresh, "Text");
-            _transMgr.AddSingleObject(btnUpdate, "Text");
-
-            _transMgr.AddFormNotify(this);
-
-            base.ApplyTranslation();
-        }
 
         // =========================================================
-        // IMPLEMENTACIÓN DE IEmployeeView (Mapeo de Eventos)
+        // IMPLEMENTACIÓN DE ISaleView (Mapeo de Eventos a Base)
         // =========================================================
-
         public event EventHandler CreateSaleRequested
         {
             add => CreateRequested += value;
@@ -77,40 +61,77 @@ namespace WinformsUI.Forms.SaleCRUDL
             remove => ListAllRequested -= value;
         }
 
+        public event EventHandler CloseSaleRequested
+        {
+            add => CloseRequested += value;
+            remove => CloseRequested -= value;
+        }
 
-        // Los métodos CachingList, FillDGV, ShowOperationResult, ApplyTranslation
-        // ya están implementados en la clase Base y coinciden con la firma.
+
+        // =========================================================
+        // TRADUCCIONES Y PALETA
+        // =========================================================
+        private void AddTranslatables()
+        {
+            _transMgr.AddParentedObjects<Label>(this.Controls, "Text");
+            _transMgr.AddParentedObjects<Button>(this.Controls, "Text");
+
+            _transMgr.AddSingleObject(btnCreate, "Text");
+            _transMgr.AddSingleObject(btnDelete, "Text");
+            _transMgr.AddSingleObject(btnRefresh, "Text");
+            _transMgr.AddSingleObject(btnUpdate, "Text");
+
+            _transMgr.AddFormNotify(this);
+
+            base.ApplyTranslation();
+        }
+
         public new void ApplyGlobalPalette() => DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
 
 
         // =========================================================
         // LÓGICA ESPECÍFICA DE VENTA
         // =========================================================
-
-        public void OpenCreationForm() => ((Form)_formsFactory.SaleCreationForm()).Show();
-
-        public void ShowOperationResult(OperationResult<SaleDTO> opRes)
-        {
-            if (opRes.Success) { }
-
-            else
-            {
-                foreach (ErrorLogDTO error in opRes.Errors)
-                {
-                    MessageBox.Show($"{error.Message} \n {error.RecommendedAction}", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-
-            }
-        }
+        public void OpenCreationView() => ((Form)_formsFactory.SaleCreationForm()).Show();
 
         private void WireSpecificEvents()
         {
-            // Conectamos los botones visuales a la lógica base
-            btnCreate.Click += (s, e) => OnCreateRequest();
-            btnUpdate.Click += (s, e) => OnUpdateRequest();
-            btnDelete.Click += (s, e) => OnDeleteRequest();
-            btnRefresh.Click += (s, e) => OnListAllRequest();
+            btnCreate.Click += OnCreateRequest;
+            btnUpdate.Click += OnUpdateRequest;
+            btnDelete.Click += OnDeleteRequest;
+            btnRefresh.Click += OnListAllRequest;
+        }
+
+
+        // =========================================================
+        // CICLO DE VIDA (Lifecycle)
+        // =========================================================
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // Limpieza de eventos de controles específicos
+                if (btnCreate != null) btnCreate.Click -= OnCreateRequest;
+                if (btnUpdate != null) btnUpdate.Click -= OnUpdateRequest;
+                if (btnDelete != null) btnDelete.Click -= OnDeleteRequest;
+                if (btnRefresh != null) btnRefresh.Click -= OnListAllRequest;
+
+                // Limpieza de referencias
+                _entitiesList = null;
+                _dgvForm = null;
+                _transMgr.RemoveFormNotify(this);
+
+                if (components != null)
+                {
+                    components.Dispose();
+                }
+            }
+            base.Dispose(disposing); // La base se encarga de desuscribir el cierre
+        }
+
+        public Task OpenUpdateView()
+        {
+            throw new NotImplementedException();
         }
     }
-
 }

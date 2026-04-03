@@ -1,7 +1,5 @@
 ﻿using BLL.DTOs;
-using BLL.Infrastructure.Errors;
 using BLL.LogicLayers;
-using BLL.LogicLayers.Clients;
 using BLL.LogicLayers.Payments;
 using BLL.LogicLayers.Sales;
 using SharedAbstractions.ArchitecturalMarkers;
@@ -44,66 +42,42 @@ namespace Presenter.ForEmployee
         private void FillDropDownData()
         {
             var datasourcePayMeth = Enum.GetValues(typeof(PaymentMethodsEnum))
-            .Cast<DocTypesEnum>()
-            .Select(d => new { Id = d.GetDocInfo().Id, Display = d.GetDocInfo().Description }).ToList();
+            .Cast<PaymentMethodsEnum>()
+            .Select(d =>
+            {
+                var attr = d.GetPaymentMethodsInfo();
+                return new
+                {
+                    Id = attr?.Id ?? "0",
+                    Display = attr?.Description ?? d.ToString()
+                };
+
+            }).ToList();
 
             _view.FillPaymentMethods(datasourcePayMeth);
         }
+
         private async Task OnListAllClientsRequested()
         {
-            OperationResult<SaleDTO> opResult;
+            var result = await _uCGetAllSales.ExecuteAsync();
 
-            try
-            {
-                var result = await _uCGetAllSales.ExecuteAsync();
+            var allSales = result.Item1.ToList();
+            var opResult = result.Item2;
 
-                List<SaleDTO> allSales = result.Item1.ToList();
-                opResult = result.Item2;
-
+            if (!(allSales.Count > 0))
+                _view.InitializeGrid(new List<SaleDTO>());
+            else
                 _view.InitializeGrid(allSales);
 
-            }
-
-            catch //La información de errores proviene de capas superiores
-            {
-                opResult = new OperationResult<SaleDTO>();
-
-                if (opResult.Errors.Count == 0)
-                {
-                    var newError = new ErrorLogDTO() { Message = "Error desconocido al cargar ventas. Por favor intente nuevamente o reinicie el programa" };
-                    opResult.Errors.Add(newError);
-
-                    _view.ShowOperationResult(opResult);
-                }
-            }
+            _view.ShowOperationResult(opResult);
         }
 
         private void OnCloseRequested() => _view.Dispose();
 
-
         private async Task OnCreateRequested(PaymentDTO data)
         {
-            try
-            {
-                var opRes = await _useCaseCreate.ExecuteAsync(data);
-                _view.ShowOperationResult(opRes);
-            }
-            catch
-            {
-                var inCaseOfUncoveredException = new OperationResult<PaymentDTO>
-                {
-                    Errors = new List<ErrorLogDTO>
-                    {
-                        new ErrorLogDTO
-                        {
-                            Code = "EXCEPTION",
-                            Message = "An unexpected error occurred while creating the entity."
-                        }
-                    }
-                };
-
-                _view.ShowOperationResult(inCaseOfUncoveredException);
-            }
+            var opRes = await _useCaseCreate.ExecuteAsync(data);
+            _view.ShowOperationResult(opRes);
         }
     }
 }

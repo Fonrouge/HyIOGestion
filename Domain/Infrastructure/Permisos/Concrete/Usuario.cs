@@ -1,4 +1,4 @@
-﻿using Domain.BaseContracts;
+﻿using Domain.Contracts;
 using Domain.Entities.Permisos.Abstracts;
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Domain.Entities.Permisos.Concrete
 {
-    public class Usuario : EntityBase, ISoftDeletable
+    public class Usuario : EntityBase, ISoftDeletable, IIntegrityCheckable
     {
         public string Username { get; private set; }
         public string Password { get; private set; } // Hash
@@ -57,6 +57,27 @@ namespace Domain.Entities.Permisos.Concrete
                 IsDeleted = isDeleted
             };
         }
+
+        /// <summary>
+        /// Genera la cadena de serialización para el cálculo del Dígito Verificador Horizontal.
+        /// Crucial para evitar la manipulación de credenciales, vinculación con empleados y estados de borrado.
+        /// </summary>
+        public string GetDvhSerialization()
+        {
+            // Mantenemos la política de cultura invariante para normalizar GUIDs y strings
+            var culture = System.Globalization.CultureInfo.InvariantCulture;
+
+            return string.Join("|",
+                Id.ToString(),
+                Username.Trim().ToUpper(culture),
+                Password,              
+                Language.Trim().ToUpper(culture),
+                EmployeeId.ToString(), 
+                IsDeleted ? "1" : "0",
+                IsActive ? "1" : "0"
+            );
+        }
+
 
         // --- LÓGICA DE PERMISOS ---
         public void AddPermiso(PermisoComponente componente) => Permisos.Add(componente);

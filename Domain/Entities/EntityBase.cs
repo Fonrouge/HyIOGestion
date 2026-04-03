@@ -1,9 +1,9 @@
 ﻿using System;
 
-namespace Domain.BaseContracts
+namespace Domain.Entities
 {
     public class EntityBase
     {
-        public Guid Id = Guid.NewGuid();
+        public Guid Id = Guid.NewGuid();        
     }
 }

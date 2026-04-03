@@ -25,7 +25,7 @@ namespace Domain.Entities.Products.ValueObjects
             if (Regex.IsMatch(cleanName, @"[<>/{}[\]]"))
                 throw new ArgumentException("El nombre contiene caracteres no permitidos.", nameof(name));
 
-            return new ProdNameVO(cleanName.ToUpper());
+            return new ProdNameVO(cleanName.Trim().ToUpper());
         }
 
         public override string ToString() => Value;

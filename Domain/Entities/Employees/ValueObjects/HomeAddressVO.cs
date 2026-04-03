@@ -25,6 +25,6 @@ public sealed class HomeAddressVO : IValueObject
         if (cleaned.All(c => char.IsDigit(c) || char.IsPunctuation(c) || char.IsWhiteSpace(c)))
             throw new ArgumentException("La dirección debe contener texto descriptivo (calle, barrio, etc.)");
 
-        return new HomeAddressVO(cleaned);
+        return new HomeAddressVO(cleaned.Trim().ToUpper());
     }
 }

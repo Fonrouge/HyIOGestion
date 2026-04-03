@@ -17,7 +17,7 @@ namespace Domain.Entities.Employees.ValueObjects
             if (nationalId.Length != 8)
                 throw new ArgumentException("El DNI debe tener exactamente 8 dígitos numéricos");
 
-            return new NationalIdVO(nationalId.Trim());
+            return new NationalIdVO(nationalId.Trim().ToUpper());
         }
     }
 }

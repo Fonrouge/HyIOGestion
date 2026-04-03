@@ -19,7 +19,7 @@ namespace Domain.Entities.Products.ValueObjects
             if (cleanDescription.Length > 500)
                 throw new ArgumentException("La descripción no puede superar los 500 caracteres.", nameof(description));
 
-            return new DescriptionVO(cleanDescription.ToUpper());
+            return new DescriptionVO(cleanDescription.Trim().ToUpper());
         }
 
     }

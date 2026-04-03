@@ -34,7 +34,7 @@ namespace Presenter.MainFormNavigation
             _sessionManager = sessionManager ?? throw new ArgumentNullException(nameof(sessionManager));
             _messenger = messenger ?? throw new ArgumentNullException(nameof(messenger));
             _hostPresenters = new List<HostFormActionsPresenter>();
-            
+
             WireViewEvents();
             _view.Showed += (sender, e) => MainMenuFirstTimeShow();
 
@@ -120,6 +120,7 @@ namespace Presenter.MainFormNavigation
             _view.WindowManageMode = (_view.WindowManageMode == WindowManagementModeEnum.Tabbed)
                 ? WindowManagementModeEnum.Dashboard
                 : WindowManagementModeEnum.Tabbed;
+
             ReorganizeLayout();
             _view.UpdateWindowManageText();
         }
@@ -139,10 +140,14 @@ namespace Presenter.MainFormNavigation
             HostFormActionsPresenter hfaPresenter = new HostFormActionsPresenter(internalWindow); // Una vez creada la lógica de ventanas internas, crear Factory para pasarle el IHostFormActions y obtener el Presenter correspondiente.
 
             _hostPresenters.Insert(0, hfaPresenter);
+
             ReorganizeLayout();
             // Nota: Las lambdas aquí están bien si HostFormActionsPresenter destruye sus
             // propios eventos internamente, o si mueren junto con la app.
+            hfaPresenter.OnMinimizingWindow -= (s, e) => ReorganizeLayout();
             hfaPresenter.OnMinimizingWindow += (s, e) => ReorganizeLayout();
+
+
 
             hfaPresenter.OnRestoringFromMinimized += (s, e) =>
             {
@@ -167,20 +172,36 @@ namespace Presenter.MainFormNavigation
                 if (_view.WindowManageMode == WindowManagementModeEnum.Tabbed)
                     return;
 
-                MinimizeAllActiveWindows();
+                MinimizeAllActiveWindows(s);
             };
         }
 
-        private void MinimizeAllActiveWindows()
+        private void MinimizeAllActiveWindows(object sender)
         {
             if (_hostPresenters.Count == 0) return;
-            var excepted = _hostPresenters[0];
-            foreach (var window in _hostPresenters)
+
+            if (sender == null)
             {
-                if (window != excepted && window.IsMinimized == false)
+                foreach (var window in _hostPresenters)
                 {
-                    window.MinimizeWindow();
-                    window.SetMaximizeStatus(false);
+                    if (window != _hostPresenters[0])
+                    {
+                        window.MinimizeWindow();
+                        window.SetMaximizeStatus(false);
+                    }
+                }
+            }
+            else
+            {
+                var excepted = sender;
+
+                foreach (var window in _hostPresenters)
+                {
+                    if (window != excepted)
+                    {
+                        window.MinimizeWindow();
+                        window.SetMaximizeStatus(false);
+                    }
                 }
             }
         }
@@ -194,7 +215,7 @@ namespace Presenter.MainFormNavigation
                 if (activeWindows.ToList().Count < 1 || _hostPresenters.Count == 0) return;
                 var excepted = _hostPresenters[0];
 
-                MinimizeAllActiveWindows();
+                MinimizeAllActiveWindows(null);
                 excepted.ExpandWindow();
                 excepted.SetMaximizeStatus(true);
             }
@@ -220,6 +241,7 @@ namespace Presenter.MainFormNavigation
             _view.CurrentLayoutType = layoutType;
             _currentLayoutType = _view.CurrentLayoutType;
             var activeWindows = _view.GetActiveInternalWindows();
+
             if (activeWindows != null && activeWindows.Any())
             {
                 _view.TileWindows(_currentLayoutType, activeWindows);

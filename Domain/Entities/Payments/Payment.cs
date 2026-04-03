@@ -1,10 +1,10 @@
-﻿using Domain.BaseContracts;
+﻿using Domain.Contracts;
 using Domain.Entities.Payments.ValueObjects;
 using System;
 
 namespace Domain.Entities
 {
-    public class Payment : EntityBase, ISoftDeletable
+    public class Payment : EntityBase, ISoftDeletable, IIntegrityCheckable
     {
         public PaymentAmountVO Amount { get; private set; }
         public DateTime CreationDate { get; private set; }
@@ -62,6 +62,24 @@ namespace Domain.Entities
                 IsDeleted = isDeleted
             };
         }
+
+        public string GetDvhSerialization()
+        {
+            // Usamos cultura invariante para normalizar fechas, decimales y Guids
+            var culture = System.Globalization.CultureInfo.InvariantCulture;
+
+            return string.Join("|",
+                Id.ToString(),
+                Amount.Value.ToString("F2", culture),
+                CreationDate.ToString("yyyyMMddHHmmss", culture),
+                EffectiveDate.ToString("yyyyMMddHHmmss", culture),
+                SaleId.ToString(),
+                Method.Value,    // Ya viene en Mayúsculas por su VO
+                Reference.Value, // Ya viene en Mayúsculas por su VO
+                IsDeleted ? "1" : "0"
+            );
+        }
+        
 
         public void MarkAsEffective(DateTime effectiveDate)
         {

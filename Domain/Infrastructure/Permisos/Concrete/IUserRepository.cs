@@ -1,4 +1,5 @@
-﻿using Domain.Entities.Permisos.Concrete;
+﻿using Domain.Contracts;
+using Domain.Entities.Permisos.Concrete;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

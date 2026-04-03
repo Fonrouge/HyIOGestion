@@ -27,7 +27,6 @@
             this.dateTimePickerSince = new System.Windows.Forms.DateTimePicker();
             this.panelHorDivider = new System.Windows.Forms.Panel();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.panel2 = new System.Windows.Forms.Panel();
             this.tableLayoutPanelFilters = new System.Windows.Forms.TableLayoutPanel();
             this.checkedListBoxFilters = new System.Windows.Forms.CheckedListBox();
             this.btnApplyFilter = new System.Windows.Forms.Button();
@@ -44,6 +43,7 @@
             this.rbAtLeastOneCategory = new System.Windows.Forms.RadioButton();
             this.rbAllCategories = new System.Windows.Forms.RadioButton();
             this.label5 = new System.Windows.Forms.Label();
+            this.panel2 = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.mainDGV)).BeginInit();
             this.tableLayoutPanelSearchControls.SuspendLayout();
             this.tableLayoutPanelFilters.SuspendLayout();
@@ -71,10 +71,10 @@
             dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.mainDGV.DefaultCellStyle = dataGridViewCellStyle2;
             this.mainDGV.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mainDGV.Location = new System.Drawing.Point(251, 75);
+            this.mainDGV.Location = new System.Drawing.Point(251, 69);
             this.mainDGV.Margin = new System.Windows.Forms.Padding(15, 3, 3, 3);
             this.mainDGV.Name = "mainDGV";
-            this.mainDGV.Size = new System.Drawing.Size(1125, 732);
+            this.mainDGV.Size = new System.Drawing.Size(1125, 738);
             this.mainDGV.TabIndex = 23;
             // 
             // tableLayoutPanelSearchControls
@@ -88,7 +88,7 @@
             this.tableLayoutPanelSearchControls.Controls.Add(this.btnShowFilters, 0, 0);
             this.tableLayoutPanelSearchControls.Controls.Add(this.cbColumnsNameSearch, 1, 0);
             this.tableLayoutPanelSearchControls.Dock = System.Windows.Forms.DockStyle.Top;
-            this.tableLayoutPanelSearchControls.Location = new System.Drawing.Point(0, 11);
+            this.tableLayoutPanelSearchControls.Location = new System.Drawing.Point(0, 5);
             this.tableLayoutPanelSearchControls.Margin = new System.Windows.Forms.Padding(0);
             this.tableLayoutPanelSearchControls.Name = "tableLayoutPanelSearchControls";
             this.tableLayoutPanelSearchControls.RowCount = 1;
@@ -136,7 +136,7 @@
             this.dateTimePickerUpTo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.dateTimePickerUpTo.Cursor = System.Windows.Forms.Cursors.Hand;
             this.dateTimePickerUpTo.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
-            this.dateTimePickerUpTo.Location = new System.Drawing.Point(3, 478);
+            this.dateTimePickerUpTo.Location = new System.Drawing.Point(3, 484);
             this.dateTimePickerUpTo.Name = "dateTimePickerUpTo";
             this.dateTimePickerUpTo.Size = new System.Drawing.Size(240, 23);
             this.dateTimePickerUpTo.TabIndex = 2;
@@ -146,7 +146,7 @@
             this.dateTimePickerSince.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.dateTimePickerSince.Cursor = System.Windows.Forms.Cursors.Hand;
             this.dateTimePickerSince.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
-            this.dateTimePickerSince.Location = new System.Drawing.Point(3, 444);
+            this.dateTimePickerSince.Location = new System.Drawing.Point(3, 450);
             this.dateTimePickerSince.Name = "dateTimePickerSince";
             this.dateTimePickerSince.Size = new System.Drawing.Size(240, 23);
             this.dateTimePickerSince.TabIndex = 0;
@@ -155,9 +155,9 @@
             // 
             this.panelHorDivider.BackColor = System.Drawing.Color.Transparent;
             this.panelHorDivider.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panelHorDivider.Location = new System.Drawing.Point(246, 75);
+            this.panelHorDivider.Location = new System.Drawing.Point(246, 69);
             this.panelHorDivider.Name = "panelHorDivider";
-            this.panelHorDivider.Size = new System.Drawing.Size(5, 732);
+            this.panelHorDivider.Size = new System.Drawing.Size(5, 738);
             this.panelHorDivider.TabIndex = 25;
             this.panelHorDivider.Tag = "";
             // 
@@ -165,21 +165,11 @@
             // 
             this.panel1.BackColor = System.Drawing.Color.Transparent;
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel1.Location = new System.Drawing.Point(0, 70);
+            this.panel1.Location = new System.Drawing.Point(0, 64);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(1376, 5);
             this.panel1.TabIndex = 28;
             this.panel1.Tag = "";
-            // 
-            // panel2
-            // 
-            this.panel2.BackColor = System.Drawing.Color.Transparent;
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel2.Location = new System.Drawing.Point(0, 0);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(1376, 11);
-            this.panel2.TabIndex = 27;
-            this.panel2.Tag = "NonPaintable";
             // 
             // tableLayoutPanelFilters
             // 
@@ -203,7 +193,7 @@
             this.tableLayoutPanelFilters.Controls.Add(this.tableLayoutPanel1, 0, 2);
             this.tableLayoutPanelFilters.Controls.Add(this.label5, 0, 5);
             this.tableLayoutPanelFilters.Dock = System.Windows.Forms.DockStyle.Left;
-            this.tableLayoutPanelFilters.Location = new System.Drawing.Point(0, 75);
+            this.tableLayoutPanelFilters.Location = new System.Drawing.Point(0, 69);
             this.tableLayoutPanelFilters.Margin = new System.Windows.Forms.Padding(3, 10, 10, 3);
             this.tableLayoutPanelFilters.Name = "tableLayoutPanelFilters";
             this.tableLayoutPanelFilters.RowCount = 15;
@@ -222,7 +212,7 @@
             this.tableLayoutPanelFilters.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
             this.tableLayoutPanelFilters.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
             this.tableLayoutPanelFilters.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 51F));
-            this.tableLayoutPanelFilters.Size = new System.Drawing.Size(246, 732);
+            this.tableLayoutPanelFilters.Size = new System.Drawing.Size(246, 738);
             this.tableLayoutPanelFilters.TabIndex = 29;
             this.tableLayoutPanelFilters.Tag = "NonPaintable";
             // 
@@ -235,7 +225,7 @@
             this.checkedListBoxFilters.FormattingEnabled = true;
             this.checkedListBoxFilters.Location = new System.Drawing.Point(3, 173);
             this.checkedListBoxFilters.Name = "checkedListBoxFilters";
-            this.checkedListBoxFilters.Size = new System.Drawing.Size(240, 166);
+            this.checkedListBoxFilters.Size = new System.Drawing.Size(240, 172);
             this.checkedListBoxFilters.TabIndex = 0;
             // 
             // btnApplyFilter
@@ -243,7 +233,7 @@
             this.btnApplyFilter.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnApplyFilter.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnApplyFilter.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
-            this.btnApplyFilter.Location = new System.Drawing.Point(3, 684);
+            this.btnApplyFilter.Location = new System.Drawing.Point(3, 690);
             this.btnApplyFilter.Name = "btnApplyFilter";
             this.btnApplyFilter.Size = new System.Drawing.Size(240, 45);
             this.btnApplyFilter.TabIndex = 2;
@@ -256,7 +246,7 @@
             this.btnCleanFilters.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnCleanFilters.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnCleanFilters.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
-            this.btnCleanFilters.Location = new System.Drawing.Point(3, 649);
+            this.btnCleanFilters.Location = new System.Drawing.Point(3, 655);
             this.btnCleanFilters.Name = "btnCleanFilters";
             this.btnCleanFilters.Size = new System.Drawing.Size(240, 29);
             this.btnCleanFilters.TabIndex = 1;
@@ -270,7 +260,7 @@
             this.cbColumnsNameFilterDate.Cursor = System.Windows.Forms.Cursors.Hand;
             this.cbColumnsNameFilterDate.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F);
             this.cbColumnsNameFilterDate.FormattingEnabled = true;
-            this.cbColumnsNameFilterDate.Location = new System.Drawing.Point(3, 406);
+            this.cbColumnsNameFilterDate.Location = new System.Drawing.Point(3, 412);
             this.cbColumnsNameFilterDate.Name = "cbColumnsNameFilterDate";
             this.cbColumnsNameFilterDate.Size = new System.Drawing.Size(240, 25);
             this.cbColumnsNameFilterDate.TabIndex = 13;
@@ -282,7 +272,7 @@
             this.rbOnlyActives.Checked = true;
             this.rbOnlyActives.Cursor = System.Windows.Forms.Cursors.Hand;
             this.rbOnlyActives.Font = new System.Drawing.Font("Microsoft YaHei UI", 8.25F);
-            this.rbOnlyActives.Location = new System.Drawing.Point(3, 549);
+            this.rbOnlyActives.Location = new System.Drawing.Point(3, 555);
             this.rbOnlyActives.Name = "rbOnlyActives";
             this.rbOnlyActives.Size = new System.Drawing.Size(240, 17);
             this.rbOnlyActives.TabIndex = 0;
@@ -297,7 +287,7 @@
             this.rbOnlyDeleted.BackColor = System.Drawing.Color.Transparent;
             this.rbOnlyDeleted.Cursor = System.Windows.Forms.Cursors.Hand;
             this.rbOnlyDeleted.Font = new System.Drawing.Font("Microsoft YaHei UI", 8.25F);
-            this.rbOnlyDeleted.Location = new System.Drawing.Point(3, 581);
+            this.rbOnlyDeleted.Location = new System.Drawing.Point(3, 587);
             this.rbOnlyDeleted.Name = "rbOnlyDeleted";
             this.rbOnlyDeleted.Size = new System.Drawing.Size(240, 17);
             this.rbOnlyDeleted.TabIndex = 0;
@@ -310,7 +300,7 @@
             this.rbAllEntities.BackColor = System.Drawing.Color.Transparent;
             this.rbAllEntities.Cursor = System.Windows.Forms.Cursors.Hand;
             this.rbAllEntities.Font = new System.Drawing.Font("Microsoft YaHei UI", 8.25F);
-            this.rbAllEntities.Location = new System.Drawing.Point(3, 615);
+            this.rbAllEntities.Location = new System.Drawing.Point(3, 621);
             this.rbAllEntities.Margin = new System.Windows.Forms.Padding(3, 9, 3, 3);
             this.rbAllEntities.Name = "rbAllEntities";
             this.rbAllEntities.Size = new System.Drawing.Size(239, 17);
@@ -350,7 +340,7 @@
             this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft YaHei UI", 8.25F);
-            this.label3.Location = new System.Drawing.Point(3, 520);
+            this.label3.Location = new System.Drawing.Point(3, 526);
             this.label3.Margin = new System.Windows.Forms.Padding(3, 0, 3, 5);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(96, 16);
@@ -424,13 +414,23 @@
             this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft YaHei UI", 8.25F);
-            this.label5.Location = new System.Drawing.Point(3, 377);
+            this.label5.Location = new System.Drawing.Point(3, 383);
             this.label5.Margin = new System.Windows.Forms.Padding(3, 0, 3, 5);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(80, 16);
             this.label5.TabIndex = 4;
             this.label5.Tag = "Accented";
             this.label5.Text = "Elegir periodo";
+            // 
+            // panel2
+            // 
+            this.panel2.BackColor = System.Drawing.Color.Transparent;
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel2.Location = new System.Drawing.Point(0, 0);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(1376, 5);
+            this.panel2.TabIndex = 27;
+            this.panel2.Tag = "NonPaintable";
             // 
             // CustomDGVForm
             // 
@@ -466,7 +466,6 @@
         private System.Windows.Forms.DateTimePicker dateTimePickerSince;
         private System.Windows.Forms.Panel panelHorDivider;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.TextBox tbSearchBar;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanelFilters;
         private System.Windows.Forms.CheckedListBox checkedListBoxFilters;
@@ -484,5 +483,6 @@
         private System.Windows.Forms.RadioButton rbAllCategories;
         private System.Windows.Forms.ComboBox cbColumnsNameFilterDate;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Panel panel2;
     }
 }

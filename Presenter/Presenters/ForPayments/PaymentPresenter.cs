@@ -1,17 +1,15 @@
-﻿using BLL.LogicLayers;
+﻿using BLL.DTOs;
 using BLL.LogicLayers.Payments;
-using BLL.DTOs;
 using SharedAbstractions.ArchitecturalMarkers;
 using System;
-using System.Linq;
+using System.Threading.Tasks;
 
 namespace Presenter.ForPayments
 {
-    public class PaymentPresenter : IPresenter
+    public class PaymentPresenter : IPresenter, IDisposable
     {
         private readonly IPaymentView _view;
         private readonly IUCGetAllPayments _ucGetAll;
-        private readonly IUCCreatePayment _ucCreate;
         private readonly IUCUpdatePayment _ucUpdate;
         private readonly IUCDeletePayment _ucDelete;
 
@@ -19,84 +17,90 @@ namespace Presenter.ForPayments
         (
             IPaymentView view,
             IUCGetAllPayments ucGetAll,
-            IUCCreatePayment ucCreate,
             IUCUpdatePayment ucUpdate,
             IUCDeletePayment ucDelete
         )
         {
-            _view = view;
-            _ucGetAll = ucGetAll;
-            _ucCreate = ucCreate;
-            _ucUpdate = ucUpdate;
-            _ucDelete = ucDelete;
+            _view = view ?? throw new ArgumentNullException(nameof(view));
+            _ucGetAll = ucGetAll ?? throw new ArgumentNullException(nameof(ucGetAll));
+            _ucUpdate = ucUpdate ?? throw new ArgumentNullException(nameof(ucUpdate));
+            _ucDelete = ucDelete ?? throw new ArgumentNullException(nameof(ucDelete));
 
-            WireEvents();
+            WireViewEvents();
             ApplyDarkTheme();
         }
 
-        private void WireEvents()
-        {
-            // Mapeo de eventos GENÉRICOS (ICrudView<EmployeeDTO>)
-            _view.CreateRequested += (s, e) => OnOpenCreationForm();
-            _view.UpdateRequested += (s, e) => UpdatePayment(e);
-            _view.DeleteRequested += (s, e) => DeletePayment(e);
-
-            // Evento para listar (renombrado de CachingAll... a ListAll...)
-            _view.ListAllRequested += (s, e) => GetAllPayments();
-            
-        }
         private void ApplyDarkTheme() => _view.ApplyGlobalPalette();
-        private void OnOpenCreationForm() => _view.OpenCreationForm();
 
-        private async void UpdatePayment(PaymentDTO e)
+        private void WireViewEvents()
         {
-            if (e == null) throw new ArgumentNullException(nameof(e));
-
-            var opRes = await _ucUpdate.ExecuteAsync(e);
-            ShowResult(opRes);
-
-            // Refrescar lista si salió bien
-            if (!opRes.Errors.Any()) GetAllPayments();
+            // Suscripción explícita para permitir desuscripción en Dispose
+            _view.CreateRequested += HandleCreateRequested;
+            _view.UpdateRequested += HandleUpdateRequested;
+            _view.DeleteRequested += HandleDeleteRequested;
+            _view.ListAllRequested += HandleListAllRequested;
+            _view.CloseRequested += HandleCloseRequested;
         }
 
-        private async void DeletePayment(PaymentDTO e)
+
+        // =========================================================
+        // Event Handlers (Orquestación de UI)
+        // =========================================================
+        private void HandleCreateRequested(object sender, EventArgs e) => _view.OpenCreationView();
+        private async void HandleUpdateRequested(object sender, PaymentDTO e) => await OnUpdateRequested(e);
+        private async void HandleDeleteRequested(object sender, PaymentDTO e) => await OnDeleteRequested(e);
+        private async void HandleListAllRequested(object sender, EventArgs e) => await OnGetAllRequested();
+        private void HandleCloseRequested(object sender, EventArgs e) => Dispose();
+
+
+        // =========================================================
+        // Lógica de Casos de Uso (Task-based)
+        // =========================================================
+        private async Task OnUpdateRequested(PaymentDTO payment)
         {
-            if (e == null) throw new ArgumentNullException(nameof(e));
+            var opRes = await _ucUpdate.ExecuteAsync(payment);
+            _view.ShowOperationResult(opRes);
 
-            var opRes = await _ucDelete.ExecuteAsync(e);
-            ShowResult(opRes);
-
-            // Refrescar lista si salió bien
-            if (!opRes.Errors.Any()) GetAllPayments();
+            if (opRes.Success) await OnGetAllRequested();
         }
 
-        private async void GetAllPayments()
+        private async Task OnDeleteRequested(PaymentDTO payment)
         {
-            var tuple = await _ucGetAll.ExecuteAsync();
+            var opRes = await _ucDelete.ExecuteAsync(payment);
+            _view.ShowOperationResult(opRes);
 
-            var employeeList = tuple.Item1;
-            var opResult = tuple.Item2;    
+            if (opRes.Success) await OnGetAllRequested();
+        }
 
+        private async Task OnGetAllRequested()
+        {
+            var (payments, opResult) = await _ucGetAll.ExecuteAsync();
 
-            if (!opResult.Success)
+            if (opResult.Success)
             {
-                ShowResult(opResult);
+                _view.CachingList(payments);
+                _view.FillDGV();
             }
             else
             {
-                try
-                {
-                    // Método genérico de ICrudView
-                    _view.CachingList(employeeList);
-                }
-                finally
-                {
-                    _view.FillDGV();
-                }
+                _view.ShowOperationResult(opResult);
             }
         }
 
-        private void ShowResult(OperationResult<PaymentDTO> opRes)
-            => _view.ShowOperationResult(opRes);
+
+        // =========================================================
+        // IDisposable (Prevención de fugas de memoria)
+        // =========================================================
+        public void Dispose()
+        {
+            if (_view != null)
+            {
+                _view.CreateRequested -= HandleCreateRequested;
+                _view.UpdateRequested -= HandleUpdateRequested;
+                _view.DeleteRequested -= HandleDeleteRequested;
+                _view.ListAllRequested -= HandleListAllRequested;
+                _view.CloseRequested -= HandleCloseRequested;
+            }
+        }
     }
 }

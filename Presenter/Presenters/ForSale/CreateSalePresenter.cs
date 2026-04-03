@@ -127,35 +127,22 @@ namespace Presenter.ForSale
         // ==================== CREACIÓN DE VENTA ====================
         private async Task OnCreateSaleRequested()
         {
-            try
+            var newSale = _view.GetMappedSaleDTO();
+
+            if (newSale.Items == null || !newSale.Items.Any())
             {
-                var newSale = _view.GetMappedSaleDTO();
-
-                if (newSale.Items == null || !newSale.Items.Any())
-                {
-                    _view.ShowOperationResultSales(CreateError<SaleDTO>("INCOMPLETO", "Debe ingresar al menos un producto"));
-                    return;
-                }
-
-                foreach (var item in newSale.Items)
-                    item.SaleId = newSale.Id;
-
-                var operationResult = await _useCaseCreate.ExecuteAsync(newSale);
-                _view.ShowOperationResultSales(operationResult);
-
-                if (operationResult.Errors.Count == 0)
-                    _view.ClearSaleDetailsList();
+                _view.ShowOperationResultSales(CreateError<SaleDTO>("INCOMPLETO", "Debe ingresar al menos un producto"));
+                return;
             }
-            catch
-            {
-                _view.ShowOperationResultSales(new OperationResult<SaleDTO>
-                {
-                    Errors = new List<ErrorLogDTO>
-                    {
-                        new ErrorLogDTO { Code = "EXCEPTION", Message = "Un error inesperado surgió durante la creación de la venta. Se sugiere reiniciar el programa." }
-                    }
-                });
-            }
+
+            foreach (var item in newSale.Items)
+                item.SaleId = newSale.Id;
+
+            var operationResult = await _useCaseCreate.ExecuteAsync(newSale);
+            _view.ShowOperationResultSales(operationResult);
+
+            if (operationResult.Success)
+                _view.ClearSaleDetailsList();
         }
 
         private OperationResult<T> CreateError<T>(string code, string message) where T : IDto

@@ -19,10 +19,6 @@ namespace Domain.Entities.Clients.ValueObjects
 
             address = address.Trim();
 
-            
-        //   if (address == "N/I")
-        //       throw new ArgumentException("La dirección de envío es un dato obligatorio.", nameof(address));
-
             // 2. Validación de Longitud (Mínimo 2, Máximo 150 caracteres)
             if (address.Length < 2 || address.Length > 150)
                 throw new ArgumentException("La dirección de envío debe tener entre 2 y 150 caracteres.", nameof(address));
@@ -31,7 +27,7 @@ namespace Domain.Entities.Clients.ValueObjects
             if (!Regex.IsMatch(address, @"^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s\-\.,#ºª]+$"))
                 throw new ArgumentException("La dirección de envío contiene caracteres inválidos.", nameof(address));
 
-            return new ShipAddressVO(address);
+            return new ShipAddressVO(address.Trim().ToUpper());
         }
 
         // --- COMPORTAMIENTO DE VALUE OBJECT (Comparación por valor) ---

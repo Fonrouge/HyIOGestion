@@ -1,12 +1,13 @@
-﻿using Domain.BaseContracts;
-using Domain.Entities.Sales.ValueObjects;   // ← nuevo using
+﻿using Domain.Contracts;
+using Domain.Entities.Sales.ValueObjects;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace Domain.Entities
 {
-    public class Sale : EntityBase, ISoftDeletable
+    public class Sale : EntityBase, ISoftDeletable, IIntegrityCheckable
     {
         // --- PROPIEDADES DE DOMINIO (Rich Domain Model) ---
         public SaleDateVO Date { get; private set; }
@@ -96,6 +97,28 @@ namespace Domain.Entities
             };
         }
 
+        /// <summary>
+        /// Genera la cadena de serialización para el cálculo del Dígito Verificador Horizontal.
+        /// Protege la integridad de los datos filiatorios y de contacto del cliente.
+        /// </summary>
+        public string GetDvhSerialization()
+        {
+            var culture = CultureInfo.InvariantCulture;
+
+            var headerData = string.Join("|",
+                Id.ToString(),
+                Date.Value.ToString("yyyyMMddHHmmss", culture),
+                ClientId.ToString(),
+                EmployeeId.ToString(),
+                InvoiceNumber.ToUpper(culture),
+                TotalAmount.Value.ToString("F2", culture),
+                Active ? "1" : "0",
+                IsDeleted ? "1" : "0"
+            );
+
+            return headerData;
+        }
+
         // --- COMPORTAMIENTO (Transiciones de Estado Seguras) ---
         private void CalculateTotal()
         {
@@ -129,7 +152,7 @@ namespace Domain.Entities
                 detail.MarkAsDeleted();
             }
         }
-        
+
         public void Activate()
         {
             if (IsDeleted)

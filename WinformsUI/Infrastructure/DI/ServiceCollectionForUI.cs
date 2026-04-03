@@ -1,5 +1,4 @@
-﻿using BLL.LogicLayers.Products.Categories.UseCases;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Presenter.ForClient;
 using Presenter.ForEmployee;
 using Presenter.ForPayments;
@@ -10,6 +9,10 @@ using Presenter.HostFormActions;
 using Presenter.LoginScreen;
 using Presenter.MainFormNavigation;
 using Presenter.Messaging;
+using Presenter.Presenters.ForClient;
+using Presenter.Presenters.ForEmployee;
+using Presenter.Presenters.ForProducts;
+using Presenter.Presenters.ForSupplier;
 using Shared;
 using Shared.ArchitecturalMarkers;
 using Shared.Factories;
@@ -88,17 +91,23 @@ namespace WinformsUI.Infrastructure.DI
             services.AddSingleton<LoginPresenter>();
 
 
-            //Employees
-            services.AddTransient<IEmployeeView, EmployeeForm>();
-            services.AddTransient<EmployeePresenter>();
-
+            //Employees            
             services.AddTransient<ICreateEmployeeView, CreateEmployeeForm>();
             services.AddTransient<CreateClientPresenter>();
+
+            services.AddTransient<IUpdateEmployeeView, UpdateEmployeeForm>();
+            services.AddTransient<UpdateEmployeePresenter>();
+
+            services.AddTransient<IEmployeeView, EmployeeForm>();
+            services.AddTransient<EmployeePresenter>();
 
 
             //Clients
             services.AddTransient<ICreateClientView, CreateClientForm>();
             services.AddTransient<CreateClientPresenter>();
+
+            services.AddTransient<IUpdateClientView, UpdateClientForm>();
+            services.AddTransient<UpdateClientPresenter>();
 
             services.AddTransient<IClientView, ClientForm>();
             services.AddTransient<ClientPresenter>();
@@ -124,6 +133,9 @@ namespace WinformsUI.Infrastructure.DI
             services.AddTransient<ICreateProductView, CreateProductForm>();
             services.AddTransient<CreateProductPresenter>();
 
+            services.AddTransient<IUpdateProductView, UpdateProductForm>();
+            services.AddTransient<UpdateProductPresenter>();
+
             services.AddTransient<IProductView, ProductForm>();           
             services.AddTransient<ProductPresenter>();
 
@@ -131,6 +143,9 @@ namespace WinformsUI.Infrastructure.DI
             //Suppliers
             services.AddTransient<ICreateSupplierView, CreateSupplierForm>();
             services.AddTransient<CreateProductPresenter>();
+
+            services.AddTransient<IUpdateSupplierView, UpdateSupplierForm>();
+            services.AddTransient<UpdateSupplierPresenter>();
 
             services.AddTransient<ISupplierView, SupplierForm>();
             services.AddTransient<SupplierPresenter>();

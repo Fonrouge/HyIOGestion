@@ -15,6 +15,6 @@ public sealed class FirstNameVO : IValueObject
         if (firstName.Length > 50)
             throw new ArgumentException("El nombre no puede superar los 50 caracteres");
 
-        return new FirstNameVO(firstName.Trim());
+        return new FirstNameVO(firstName.Trim().ToUpper());
     }
 }

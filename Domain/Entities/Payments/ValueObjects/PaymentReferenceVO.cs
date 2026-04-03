@@ -29,7 +29,7 @@ namespace Domain.Entities.Payments.ValueObjects
             if (!Regex.IsMatch(sanitizedValue, @"^[a-zA-Z0-9\-.#]+$"))
                 throw new ArgumentException("La referencia de pago contiene caracteres inválidos. Solo se permiten letras, números, guiones (-), puntos (.) y numeral (#).");
 
-            return new PaymentReferenceVO(sanitizedValue);
+            return new PaymentReferenceVO(sanitizedValue.Trim().ToUpper());
         }
 
         // --- COMPORTAMIENTO DE VALUE OBJECT (Igualdad basada en el valor) ---

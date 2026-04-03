@@ -1,4 +1,4 @@
-﻿namespace Domain.BaseContracts
+﻿namespace Domain.Contracts
 {
     public interface ISoftDeletable
     {

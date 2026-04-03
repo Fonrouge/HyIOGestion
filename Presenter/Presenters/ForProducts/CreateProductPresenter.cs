@@ -1,6 +1,5 @@
 ﻿using BLL.LogicLayers;
 using BLL.LogicLayers.Products;
-using BLL.DTOs;
 using SharedAbstractions.ArchitecturalMarkers;
 using System;
 using System.Collections.Generic;
@@ -72,27 +71,8 @@ namespace Presenter.ForProducts
 
         private async Task OnCreateRequested(ProductDTO data)
         {
-            try
-            {
-                var opRes = await _useCaseCreate.ExecuteAsync(data);
-                _view.ShowOperationResult(opRes);
-            }
-            catch
-            {
-                var inCaseOfUncoveredException = new OperationResult<ProductDTO>
-                {
-                    Errors = new List<ErrorLogDTO>
-                    {
-                        new ErrorLogDTO
-                        {
-                            Code = "EXCEPTION",
-                            Message = "An unexpected error occurred while creating the entity."
-                        }
-                    }
-                };
-
-                _view.ShowOperationResult(inCaseOfUncoveredException);
-            }
+            var opRes = await _useCaseCreate.ExecuteAsync(data);
+            _view.ShowOperationResult(opRes);
         }
 
         // ===================================================================
@@ -104,7 +84,7 @@ namespace Presenter.ForProducts
             {
                 _view.CreateProductRequested -= HandleCreateProductRequested;
                 _view.ListAllCategoriesRequested -= HandleListAllCategoriesRequested;
-                _view.CloseRequested -= HandleCloseRequested;                
+                _view.CloseRequested -= HandleCloseRequested;
             }
         }
     }

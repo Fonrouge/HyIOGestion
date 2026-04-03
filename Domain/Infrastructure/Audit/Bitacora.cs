@@ -1,4 +1,4 @@
-﻿using Domain.BaseContracts;
+﻿using Domain.Contracts;
 using Domain.Entities;
 using Domain.Infrastructure.Audit;
 using System;

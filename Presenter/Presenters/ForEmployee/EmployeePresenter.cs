@@ -1,16 +1,16 @@
-﻿using BLL.LogicLayers;
-using BLL.LogicLayers.Employees;
+﻿using BLL.LogicLayers.Employees;
 using BLL.DTOs;
 using SharedAbstractions.ArchitecturalMarkers;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Presenter.ForEmployee
 {
-    public class EmployeePresenter : IPresenter
+    public class EmployeePresenter : IPresenter, IDisposable
     {
         private readonly IEmployeeView _view;
-        private readonly IUCGetAllEmployees _ucGetAll;        
+        private readonly IUCGetAllEmployees _ucGetAll;
         private readonly IUCUpdateEmployee _ucUpdate;
         private readonly IUCDeleteEmployee _ucDelete;
 
@@ -22,82 +22,81 @@ namespace Presenter.ForEmployee
             IUCDeleteEmployee ucDelete
         )
         {
-            _view = view;
-            _ucGetAll = ucGetAll;
-            _ucUpdate = ucUpdate;
-            _ucDelete = ucDelete;
+            _view = view ?? throw new ArgumentNullException(nameof(view));
+            _ucGetAll = ucGetAll ?? throw new ArgumentNullException(nameof(ucGetAll));
+            _ucUpdate = ucUpdate ?? throw new ArgumentNullException(nameof(ucUpdate));
+            _ucDelete = ucDelete ?? throw new ArgumentNullException(nameof(ucDelete));
 
-            WireEvents();
+            WireViewEvents();
             ApplyDarkTheme();
         }
 
         private void ApplyDarkTheme() => _view.ApplyGlobalPalette();
 
-        private void WireEvents()
+        private void WireViewEvents()
         {
-            // Mapeo de eventos GENÉRICOS (ICrudView<EmployeeDTO>)
-            _view.CreateRequested += (s, e) => OnOpenCreationForm();
-            _view.UpdateRequested += (s, e) => UpdateEmployee(e);
-            _view.DeleteRequested += (s, e) => DeleteEmployee(e);
-
-            // Evento para listar (renombrado de CachingAll... a ListAll...)
-            _view.ListAllRequested += (s, e) => GetAllEmployees();
-            
+            // Usamos nombres explícitos de métodos para poder desuscribir en Dispose
+            _view.CreateRequested += HandleCreateRequested;
+            _view.UpdateRequested += HandleUpdateRequested;
+            _view.DeleteRequested += HandleDeleteRequested;
+            _view.ListAllRequested += HandleListAllRequested;
+            _view.CloseRequested += HandleCloseRequested;
         }
 
-        private void OnOpenCreationForm() => _view.OpenCreationForm();
 
-        private async void UpdateEmployee(EmployeeDTO e)
+        // =========================================================
+        // Event Handlers (Orquestación de UI)
+        // =========================================================
+        private void HandleCreateRequested(object sender, EventArgs e) => _view.OpenCreationView();
+        private async void HandleUpdateRequested(object sender, EmployeeDTO e) => await OnUpdateRequested(e);
+        private async void HandleDeleteRequested(object sender, EmployeeDTO e) => await OnDeleteRequested(e);
+        private async void HandleListAllRequested(object sender, EventArgs e) => await OnGetAllRequested();
+        private void HandleCloseRequested(object sender, EventArgs e) => Dispose();
+
+
+        // =========================================================
+        // Lógica de Casos de Uso (Task-based)
+        // =========================================================
+        private async Task OnUpdateRequested(EmployeeDTO employee) => await _view.OpenUpdateView();
+
+        private async Task OnDeleteRequested(EmployeeDTO employee)
         {
-            if (e == null) throw new ArgumentNullException(nameof(e));
+            var opRes = await _ucDelete.ExecuteAsync(employee);
+            _view.ShowOperationResult(opRes);
 
-            var opRes = await _ucUpdate.Execute(e);
-            ShowResult(opRes);
-
-            // Refrescar lista si salió bien
-            if (!opRes.Errors.Any()) GetAllEmployees();
+            if (opRes.Success) await OnGetAllRequested();
         }
 
-        private async void DeleteEmployee(EmployeeDTO e)
+        private async Task OnGetAllRequested()
         {
-            if (e == null) throw new ArgumentNullException(nameof(e));
+            // Deconstrucción de tuplas (C# 7.0+)
+            var (employees, opResult) = await _ucGetAll.ExecuteAsync();
 
-            var opRes = await _ucDelete.ExecuteAsync(e);
-            ShowResult(opRes);
-
-            // Refrescar lista si salió bien
-            if (!opRes.Errors.Any()) GetAllEmployees();
-        }
-
-        private async void GetAllEmployees()
-        {
-            var tuple = await _ucGetAll.ExecuteAsync();
-
-            var employeeList = tuple.Item1;
-            var opResult = tuple.Item2;    
-
-
-            if (!opResult.Success)
+            if (opResult.Success)
             {
-                ShowResult(opResult);
+                _view.CachingList(employees);
+                _view.FillDGV();
             }
             else
             {
-                try
-                {
-                    // Método genérico de ICrudView
-                    _view.CachingList(employeeList);
-                }
-                finally
-                {
-                    _view.FillDGV();
-                }
+                _view.ShowOperationResult(opResult);
             }
         }
 
-        private void ShowResult(OperationResult<EmployeeDTO> opRes)
-            => _view.ShowOperationResult(opRes);
 
-       
+        // =========================================================
+        // IDisposable (Limpieza de "Alumbrado")
+        // =========================================================
+        public void Dispose()
+        {
+            if (_view != null)
+            {
+                _view.CreateRequested -= HandleCreateRequested;
+                _view.UpdateRequested -= HandleUpdateRequested;
+                _view.DeleteRequested -= HandleDeleteRequested;
+                _view.ListAllRequested -= HandleListAllRequested;
+                _view.CloseRequested -= HandleCloseRequested;
+            }
+        }
     }
 }

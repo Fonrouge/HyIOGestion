@@ -47,6 +47,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.DirectoryServices" />
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.1.2\lib\net462\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
@@ -73,6 +74,18 @@
     </Compile>
     <Compile Include="Forms\Base\HostForm.Designer.cs">
       <DependentUpon>HostForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ClientCRUDL\UpdateClientForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ClientCRUDL\UpdateClientForm.Designer.cs">
+      <DependentUpon>UpdateClientForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\EmployeeCRUDL\UpdateEmployeeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\EmployeeCRUDL\UpdateEmployeeForm.Designer.cs">
+      <DependentUpon>UpdateEmployeeForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\Main\MainForm.cs">
       <SubType>Form</SubType>
@@ -140,6 +153,12 @@
     <Compile Include="Forms\ProductCRUDL\ProductForm.Designer.cs">
       <DependentUpon>ProductForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\ProductCRUDL\UpdateProductForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ProductCRUDL\UpdateProductForm.Designer.cs">
+      <DependentUpon>UpdateProductForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\SaleCRUDL\CreateSaleForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -164,6 +183,12 @@
     <Compile Include="Forms\SupplierCRUDL\SupplierForm.Designer.cs">
       <DependentUpon>SupplierForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\SupplierCRUDL\UpdateSupplierForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SupplierCRUDL\UpdateSupplierForm.Designer.cs">
+      <DependentUpon>UpdateSupplierForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Helpers\TextBoxPlaceholder.cs" />
     <Compile Include="Infrastructure\Culture\CultureProfile.cs" />
     <Compile Include="Infrastructure\Culture\ICultureSwitcher.cs" />
@@ -175,6 +200,7 @@
     <Compile Include="Infrastructure\Localization\LocalizationService.cs" />
     <Compile Include="Infrastructure\Shells\AppEnvironment.cs" />
     <Compile Include="Infrastructure\Shells\FormTypeEnum.cs" />
+    <Compile Include="Infrastructure\Shortcuts\ShortcutManager.cs" />
     <Compile Include="Infrastructure\Translations\ITranslatableControlsManager.cs" />
     <Compile Include="Infrastructure\Translations\TranslationsManager.cs" />
     <Compile Include="Infrastructure\UserInterface\Theming\DataGridViewThemer.cs" />
@@ -199,6 +225,13 @@
     <Compile Include="UserControls\CustomDGV\CustomDGVForm.Designer.cs">
       <DependentUpon>CustomDGVForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\CustomDGV\CustomDGVFunctions.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\CustomDGV\CustomDGVFunctions.Designer.cs">
+      <DependentUpon>CustomDGVFunctions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\CustomDGV\DGVCellsStyle.cs" />
     <Compile Include="UserControls\CustomDGV\ICustomDGVFactory.cs" />
     <Compile Include="UserControls\CustomDGV\IICustomDGVFormII.cs">
       <SubType>Form</SubType>
@@ -215,6 +248,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Base\HostForm.resx">
       <DependentUpon>HostForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ClientCRUDL\UpdateClientForm.resx">
+      <DependentUpon>UpdateClientForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\EmployeeCRUDL\UpdateEmployeeForm.resx">
+      <DependentUpon>UpdateEmployeeForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Main\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
@@ -249,6 +288,9 @@
     <EmbeddedResource Include="Forms\ProductCRUDL\ProductForm.resx">
       <DependentUpon>ProductForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ProductCRUDL\UpdateProductForm.resx">
+      <DependentUpon>UpdateProductForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\SaleCRUDL\CreateSaleForm.resx">
       <DependentUpon>CreateSaleForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -260,6 +302,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SupplierCRUDL\SupplierForm.resx">
       <DependentUpon>SupplierForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SupplierCRUDL\UpdateSupplierForm.resx">
+      <DependentUpon>UpdateSupplierForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -274,6 +319,9 @@
     </Compile>
     <EmbeddedResource Include="UserControls\CustomDGV\CustomDGVForm.resx">
       <DependentUpon>CustomDGVForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\CustomDGV\CustomDGVFunctions.resx">
+      <DependentUpon>CustomDGVFunctions.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\CustomDGV\IICustomDGVFormII.resx">
       <DependentUpon>IICustomDGVFormII.cs</DependentUpon>

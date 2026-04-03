@@ -59,12 +59,12 @@ namespace WinformsUI.Forms.PaymentCRUDL
             WireFlowButtonsEvents();
             ApplyGlobalPalette();
 
-            UpdateFormSize();
+            //   UpdateFormSize();
 
 
             this.Load += (sender, e) =>
             {
-                InitializeClientsDGV();
+                GetAllSales();
             };
 
         }
@@ -72,10 +72,7 @@ namespace WinformsUI.Forms.PaymentCRUDL
         public void ApplyGlobalPalette() => DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
         private void UpdateFormSize() => this.ClientSize = _wizard.GetPanelSize();
 
-        private void InitializeClientsDGV()
-        {
-            GetAllSalesRequested?.Invoke(this, EventArgs.Empty);
-        }
+        private void GetAllSales() => GetAllSalesRequested?.Invoke(this, EventArgs.Empty); //El presenter pega en InitializeGrid
 
         public void InitializeGrid(List<SaleDTO> allSalesList)
         {
@@ -99,11 +96,16 @@ namespace WinformsUI.Forms.PaymentCRUDL
             DgvFormat.Apply(selectClientDGV, isMiniDgv: true);
             AddTranslatables();
             WireDGVEvents();
-
+            txtSelectedClient.Text = _selectedSaleDTO.Client.ToString();
 
         }
-        public void FillPaymentMethods(IEnumerable<object> paymentMethods) => cbPaymentMethods.DataSource = paymentMethods;
+        public void FillPaymentMethods(IEnumerable<object> paymentMethods)
+        {
+            cbPaymentMethods.DataSource = paymentMethods;
+            cbPaymentMethods.ValueMember = "Id";
+            cbPaymentMethods.DisplayMember = "Display";
 
+        }
         private void WireDGVEvents()
         {
             selectClientDGV.SelectionChanged += (sender, e) =>
@@ -113,6 +115,13 @@ namespace WinformsUI.Forms.PaymentCRUDL
                     _selectedSaleDTO = selectClientDGV.SelectedRows[0].DataBoundItem as SaleDTO;
                 }
             };
+            
+            if (selectClientDGV.Columns.Count > 0)
+            {
+                selectClientDGV.Columns[0].Selected = true;
+                _selectedSaleDTO = selectClientDGV.SelectedRows[0].DataBoundItem as SaleDTO;
+            }
+
         }
 
         private void InitializeWizard() => _wizard.Initialize(new Panel[] { pnlSelectClient, tlpAddPayment });
@@ -171,12 +180,12 @@ namespace WinformsUI.Forms.PaymentCRUDL
         public void ShowOperationResult(OperationResult<PaymentDTO> opRes)
         {
             MessageBox.Show(opRes.Success ? $"{_successMsg}" : $"{_errorMsg}. Errors: {string.Join(", ", opRes.Errors)}");
-            this.Close();
+            //  this.Close();
         }
         public void ShowOperationResult(OperationResult<SaleDTO> opRes)
         {
             MessageBox.Show(opRes.Success ? $"{_successMsg}" : $"{_errorMsg}. Errors: {string.Join(", ", opRes.Errors)}");
-            this.Close();
+            //   this.Close();
         }
 
         private void ApplyDarkTheme()
@@ -198,7 +207,7 @@ namespace WinformsUI.Forms.PaymentCRUDL
             if (_selectedSaleDTO == null)
             {
                 _selectedSaleDTO = selectClientDGV.SelectedRows[0].DataBoundItem as SaleDTO;
-                txtSelectedClient.Text = _selectedSaleDTO.ToString();
+
             }
 
             _wizard.Advance();

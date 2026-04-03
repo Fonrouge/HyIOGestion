@@ -1,4 +1,4 @@
-﻿using Domain.BaseContracts;
+﻿using Domain.Contracts;
 using System;
 using System.Collections.Generic;
 

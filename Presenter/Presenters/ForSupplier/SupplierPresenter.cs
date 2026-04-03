@@ -1,101 +1,120 @@
 ﻿using BLL.DTOs;
-using BLL.LogicLayers;
+using BLL.LogicLayers.Clients;
 using BLL.LogicLayers.Suppliers;
+using Presenter.Messaging;
 using SharedAbstractions.ArchitecturalMarkers;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Presenter.ForSupplier
 {
-    public class SupplierPresenter : IPresenter
+    public class SupplierPresenter : IPresenter, IDisposable
     {
-
         private readonly ISupplierView _view;
         private readonly IUCGetAllSuppliers _ucGetAll;
         private readonly IUCUpdateSupplier _ucUpdate;
         private readonly IUCDeleteSupplier _ucDelete;
+        private readonly IMessenger _messenger;
+
 
         public SupplierPresenter
         (
             ISupplierView view,
             IUCGetAllSuppliers ucGetAll,
             IUCUpdateSupplier ucUpdate,
-            IUCDeleteSupplier ucDelete
+            IUCDeleteSupplier ucDelete,
+            IMessenger messenger
         )
         {
-            _view = view;
-            _ucGetAll = ucGetAll;
-            _ucUpdate = ucUpdate;
-            _ucDelete = ucDelete;
+            _view = view ?? throw new ArgumentNullException(nameof(view));
+            _ucGetAll = ucGetAll ?? throw new ArgumentNullException(nameof(ucGetAll));
+            _ucUpdate = ucUpdate ?? throw new ArgumentNullException(nameof(ucUpdate));
+            _ucDelete = ucDelete ?? throw new ArgumentNullException(nameof(ucDelete));
+            _messenger = messenger ?? throw new ArgumentNullException(nameof(messenger));
 
-            WireEvents();
+            WireViewEvents();
             ApplyDarkTheme();
+            SubscribeToMessenger();
         }
+
+        // =========================================================
+        // SUSCRIPCIÓN A MENSAJERÍA GLOBAL
+        // =========================================================
+        private void SubscribeToMessenger() => _messenger.Subscribe<RelistSuppliersMessage>(OnGetAllRequested);
+
+
         private void ApplyDarkTheme() => _view.ApplyGlobalPalette();
-        private void WireEvents()
-        {
-            // Mapeo de eventos GENÉRICOS (ICrudView<SupplierDTO>)
-            _view.CreateRequested += (s, e) => OnOpenCreationForm();
-            _view.UpdateRequested += (s, e) => UpdateSupplier(e);
-            _view.DeleteRequested += (s, e) => DeleteSupplier(e);
 
-            // Evento para listar (renombrado de CachingAll... a ListAll...)
-            _view.ListAllRequested += (s, e) => GetAllSuppliers();
+
+        // =============================================================
+        // Suscripción a eventos no anónimos para desuscribir al cerrar
+        // =============================================================
+        private void WireViewEvents()
+        {
+            _view.CreateRequested += HandleCreateRequested;
+            _view.UpdateRequested += HandleUpdateRequested;
+            _view.DeleteRequested += HandleDeleteRequested;
+            _view.ListAllRequested += HandleListAllRequested;
+            _view.CloseRequested += HandleCloseRequested;
         }
 
-        private void OnOpenCreationForm() => _view.OpenCreationForm();
 
-        private async Task UpdateSupplier(SupplierDTO e)
+        // =========================================================
+        // Event Handlers (Orquestación de UI)
+        // =========================================================
+        private void HandleCreateRequested(object sender, EventArgs e) => _view.OpenCreationView();
+        private async void HandleUpdateRequested(object sender, SupplierDTO e) => await OnUpdateRequested(e);
+        private async void HandleDeleteRequested(object sender, SupplierDTO e) => await OnDeleteRequested(e);
+        private async void HandleListAllRequested(object sender, EventArgs e) => await OnGetAllRequested();
+        private void HandleCloseRequested(object sender, EventArgs e) => Dispose();
+
+
+        // =========================================================
+        // Lógica de Casos de Uso
+        // =========================================================
+
+        private async Task OnDeleteRequested(SupplierDTO supplier)
         {
-            if (e == null) throw new ArgumentNullException(nameof(e));
+            var opRes = await _ucDelete.ExecuteAsync(supplier);
+            _view.ShowOperationResult(opRes);
 
-            var opRes = await _ucUpdate.ExecuteAsync(e);
-            ShowResult(opRes);
-
-            // Refrescar lista si salió bien
-            if (!opRes.Errors.Any()) GetAllSuppliers();
+            if (opRes.Success) await OnGetAllRequested();
         }
 
-        private async Task DeleteSupplier(SupplierDTO e)
+        private async void OnGetAllRequested(RelistSuppliersMessage message) => await OnGetAllRequested();
+
+        private async Task OnGetAllRequested()
         {
-            if (e == null) throw new ArgumentNullException(nameof(e));
+            var (clients, opResult) = await _ucGetAll.ExecuteAsync();
 
-            var opRes = await _ucDelete.ExecuteAsync(e);
-            ShowResult(opRes);
-
-            // Refrescar lista si salió bien
-            if (!opRes.Errors.Any()) GetAllSuppliers();
-        }
-
-        private async Task GetAllSuppliers()
-        {
-            var tuple = await _ucGetAll.ExecuteAsync();
-
-            var supplierList = tuple.Item1;
-            var opResult = tuple.Item2;
-
-
-            if (!opResult.Success)
+            if (opResult.Success)
             {
-                ShowResult(opResult);
+                _view.CachingList(clients);
+                _view.FillDGV();
             }
             else
             {
-                try
-                {
-                    // Método genérico de ICrudView
-                    _view.CachingList(supplierList);
-                }
-                finally
-                {
-                    _view.FillDGV();
-                }
+                _view.ShowOperationResult(opResult);
             }
         }
 
-        private void ShowResult(OperationResult<SupplierDTO> opRes)
-            => _view.ShowOperationResult(opRes);
+        private async Task OnUpdateRequested(SupplierDTO client) => await _view.OpenUpdateView();
+
+
+
+        // =========================================================
+        // IDisposable (Limpieza de Memoria)
+        // =========================================================
+        public void Dispose()
+        {
+            if (_view != null)
+            {
+                _view.CreateRequested -= HandleCreateRequested;
+                _view.UpdateRequested -= HandleUpdateRequested;
+                _view.DeleteRequested -= HandleDeleteRequested;
+                _view.ListAllRequested -= HandleListAllRequested;
+                _view.CloseRequested -= HandleCloseRequested;
+            }
+        }
     }
 }
-

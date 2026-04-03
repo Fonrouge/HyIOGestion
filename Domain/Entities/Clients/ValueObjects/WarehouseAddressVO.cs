@@ -31,7 +31,7 @@ namespace Domain.Entities.Clients.ValueObjects
             if (!Regex.IsMatch(address, @"^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s\-\.,#ºª]+$"))
                 throw new ArgumentException("La dirección de envío contiene caracteres inválidos.", nameof(address));
 
-            return new WarehouseAddressVO(address);
+            return new WarehouseAddressVO(address.Trim().ToUpper());
         }
 
         // --- COMPORTAMIENTO DE VALUE OBJECT (Comparación por valor) ---

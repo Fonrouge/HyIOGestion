@@ -7,19 +7,6 @@
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-            base.Dispose(disposing);
-        }
-
         #region Windows Form Designer generated code
 
         /// <summary>
@@ -30,13 +17,13 @@
         {
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
-            this.dgvPanel = new System.Windows.Forms.Panel();
             this.btnCreate = new System.Windows.Forms.ToolStripButton();
             this.btnDelete = new System.Windows.Forms.ToolStripButton();
             this.btnRefresh = new System.Windows.Forms.ToolStripButton();
             this.btnUpdate = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.dgvPanel = new System.Windows.Forms.Panel();
+            this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.tableLayoutPanel1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -66,44 +53,13 @@
             this.btnRefresh,
             this.btnUpdate,
             this.toolStripSeparator1,
-            this.toolStripButton1});
+            this.toolStripButton2});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Padding = new System.Windows.Forms.Padding(0, 10, 1, 0);
-            this.toolStrip1.Size = new System.Drawing.Size(862, 80);
+            this.toolStrip1.Size = new System.Drawing.Size(862, 79);
             this.toolStrip1.TabIndex = 0;
             this.toolStrip1.Text = "toolStrip1";
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.toolStripSeparator1.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.toolStripSeparator1.Margin = new System.Windows.Forms.Padding(0, 8, 0, 8);
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 54);
-            // 
-            // toolStripButton1
-            // 
-            this.toolStripButton1.Image = global::WinformsUI.Properties.Resources.HandShakeIcon;
-            this.toolStripButton1.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton1.Margin = new System.Windows.Forms.Padding(0, 1, 0, 10);
-            this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(73, 59);
-            this.toolStripButton1.Text = "--VENTAS--";
-            this.toolStripButton1.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
-            this.toolStripButton1.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            // 
-            // dgvPanel
-            // 
-            this.dgvPanel.AutoSize = true;
-            this.dgvPanel.BackColor = System.Drawing.Color.IndianRed;
-            this.dgvPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgvPanel.Location = new System.Drawing.Point(0, 80);
-            this.dgvPanel.Margin = new System.Windows.Forms.Padding(0);
-            this.dgvPanel.Name = "dgvPanel";
-            this.dgvPanel.Size = new System.Drawing.Size(862, 393);
-            this.dgvPanel.TabIndex = 1;
             // 
             // btnCreate
             // 
@@ -165,6 +121,40 @@
             this.btnUpdate.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.btnUpdate.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.toolStripSeparator1.ForeColor = System.Drawing.SystemColors.HotTrack;
+            this.toolStripSeparator1.Margin = new System.Windows.Forms.Padding(0, 8, 0, 8);
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 54);
+            // 
+            // dgvPanel
+            // 
+            this.dgvPanel.AutoSize = true;
+            this.dgvPanel.BackColor = System.Drawing.Color.IndianRed;
+            this.dgvPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgvPanel.Location = new System.Drawing.Point(0, 80);
+            this.dgvPanel.Margin = new System.Windows.Forms.Padding(0);
+            this.dgvPanel.Name = "dgvPanel";
+            this.dgvPanel.Size = new System.Drawing.Size(862, 393);
+            this.dgvPanel.TabIndex = 1;
+            // 
+            // toolStripButton2
+            // 
+            this.toolStripButton2.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.toolStripButton2.Font = new System.Drawing.Font("Microsoft YaHei UI", 8F);
+            this.toolStripButton2.Image = global::WinformsUI.Properties.Resources.BigaIconEditar;
+            this.toolStripButton2.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.toolStripButton2.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton2.Margin = new System.Windows.Forms.Padding(0, -10, 0, 0);
+            this.toolStripButton2.Name = "toolStripButton2";
+            this.toolStripButton2.Size = new System.Drawing.Size(118, 79);
+            this.toolStripButton2.Text = "Ver pagos asociados";
+            this.toolStripButton2.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.toolStripButton2.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            // 
             // SaleForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -187,11 +177,11 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.ToolStripButton toolStripButton1;
         private System.Windows.Forms.Panel dgvPanel;
         private System.Windows.Forms.ToolStripButton btnCreate;
         private System.Windows.Forms.ToolStripButton btnDelete;
         private System.Windows.Forms.ToolStripButton btnRefresh;
         private System.Windows.Forms.ToolStripButton btnUpdate;
+        private System.Windows.Forms.ToolStripButton toolStripButton2;
     }
 }

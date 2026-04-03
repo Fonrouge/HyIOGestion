@@ -25,7 +25,7 @@ namespace Domain.Entities.Suppliers.ValueObjects
                 throw new ArgumentException("El nombre de la ciudad no puede contener números.");
 
             // Normalizamos
-            return new SupplierCityVO(cleaned.ToUpperInvariant());
+            return new SupplierCityVO(cleaned.Trim().ToUpper());
         }
     }
 }

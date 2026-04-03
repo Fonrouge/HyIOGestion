@@ -95,7 +95,7 @@ namespace BLL.LogicLayers.Suppliers
                 }
 
                 // Validación de Duplicado
-                var existingSupplier = await _uow.SupplierRepo.GetByTaxIdAsync(dto.TaxId);
+                var existingSupplier = await _uow.SupplierRepo.GetByTaxNumberAsync(dto.TaxNumber);
                 if (existingSupplier != null)
                 {
                     var dupError = _errorsFactory.Create(ErrorCatalogEnum.DuplicateEntry, _tableNameSupplier);

@@ -15,7 +15,7 @@ namespace Domain.Entities.Suppliers.ValueObjects
             if (cleaned.Length > 500)
                 throw new ArgumentException("Las observaciones no pueden superar los 500 caracteres.");
 
-            return new SupplierObservationsVO(cleaned);
+            return new SupplierObservationsVO(cleaned.Trim().ToUpper());
         }
     }
 }

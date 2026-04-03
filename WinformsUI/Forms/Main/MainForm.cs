@@ -9,7 +9,6 @@ using Presenter.MainFormNavigation;
 using Shared.ArchitecturalMarkers;
 using Shared.Enums;
 using Shared.Factories;
-using Shared.Sessions;
 using SharedAbstractions.ArchitecturalMarkers;
 using System;
 using System.Collections.Generic;
@@ -41,7 +40,7 @@ namespace WinformsUI.Forms.Main
         private readonly ILayoutStrategyFactory _layoutFactory;
         private readonly ICustomDGVFactory _customDgvFact;
         private readonly ITranslatableControlsManager _transMgr;
-
+        private bool _isMenuCollapsed = true;
 
         public LayoutTypeEnum CurrentLayoutType { get; set; }
 
@@ -61,6 +60,7 @@ namespace WinformsUI.Forms.Main
 
         private string _dashboardModeText = "Modo tablero";
         private string _tabbedModeText = "Modo pestañas";
+        private string _autoArrangement = "Acomodar Automáticamente";
 #pragma warning restore IDE0044
 
         // Mapea la instancia del form con su LLAVE de traducción (ej: "MainForm._employeeTitle")
@@ -130,6 +130,7 @@ namespace WinformsUI.Forms.Main
             WireGeneralEvents();
             AddTranslatables();
 
+
             this.Load += (sender, e) => Showed?.Invoke(this, EventArgs.Empty);
             this.FormClosed += (sender, e) => _transMgr.RemoveFormNotify(this);
 
@@ -148,7 +149,12 @@ namespace WinformsUI.Forms.Main
             _transMgr.AddParentedObjects<Button>(this.Controls, "Text");
 
 
-            _transMgr.AddString("MainForm.Textbox.tbmt", _tabbedModeText);
+            //_transMgr.AddString("MainForm.Textbox.tbmt", _tabbedModeText);
+
+            _transMgr.AddString("MainForm._dashboardModeText", _dashboardModeText);
+            _transMgr.AddString("MainForm._tabbedModeText", _tabbedModeText);
+            _transMgr.AddString("MainForm._autoArrangement", _autoArrangement);
+
 
             _transMgr.AddString("MainForm._employeeTitle", _employeeTitle);
             _transMgr.AddString("MainForm._paymentsTitle", _paymentsTitle);
@@ -157,17 +163,12 @@ namespace WinformsUI.Forms.Main
             _transMgr.AddString("MainForm._productsTitle", _productsTitle);
             _transMgr.AddString("MainForm._suppliersTitle", _suppliersTitle);
 
-            _transMgr.AddString("MainForm.Textbox.dbmt", _dashboardModeText);
-            _transMgr.AddString("MainForm.Textbox.tbmt", _tabbedModeText);
-
             _transMgr.AddSingleObject(txtSuppliers, "Text");
 
             //Para después hacer el OnClose(); ---> _transMgr.RemoveFormNotify(this);
 
-
             ApplyTranslation();
-
-
+            CollapseExpandMenu();
 
             _transMgr.AddFormNotify(this);
         }
@@ -186,13 +187,29 @@ namespace WinformsUI.Forms.Main
             ApplyTranslation();
         }
 
-        public void ApplyTranslation() => _transMgr.Apply();
+        public void ApplyTranslation()
+        {
+            SuspendLayout();
+            _transMgr.Apply();
+
+            _dashboardModeText = _transMgr.GetString("MainForm._dashboardModeText");
+            _tabbedModeText = _transMgr.GetString("MainForm._tabbedModeText");
+            _autoArrangement = _transMgr.GetString("MainForm._autoArrangement");
+            this.BeginInvoke(new Action(MakeItShort));
+
+            btnVerticalTileWindows.TextChanged += (s, e) =>
+            {
+                this.BeginInvoke(new Action(MakeItShort));
+            };
+            ResumeLayout();
+        }
 
         #region Initialization
 
         /// <summary>Configures initial window properties such as constraints and default text.</summary>
         private void ConfigureInitialState()
         {
+            SuspendLayout();
             this.MaximumSize = Screen.FromControl(this).WorkingArea.Size;
             tlpMenu.Size = tlpMenu.MinimumSize;
             UpdatingTitleRequested?.Invoke(this, EventArgs.Empty);
@@ -200,6 +217,8 @@ namespace WinformsUI.Forms.Main
 
             WindowManageMode = WindowManagementModeEnum.Dashboard;
             UpdateWindowManageText();
+            ResumeLayout();
+
         }
 
         /// <summary>Initializes the UI environment (Dashboard and Side Panels) through the environment factory.</summary>
@@ -210,6 +229,7 @@ namespace WinformsUI.Forms.Main
         /// <summary>Applies the global dark theme palette to the form. Static class on purpose, it's a Drag&Drop library.</summary>
         private void ApplyGlobalPalette()
         {
+            SuspendLayout();
             Color darkerAccent = Darken(DarkTheme.GetCurrentPalette().LowAccent, 0.85);
 
             DarkTheme.RedrawBorders = false;
@@ -219,6 +239,7 @@ namespace WinformsUI.Forms.Main
             DarkTheme.ApplyGradientBackground(tlpMenu, darkerAccent, darkerAccent, System.Drawing.Drawing2D.LinearGradientMode.Vertical);
             DarkTheme.ApplyGradientBackground(tableLayoutPanel1, darkerAccent, darkerAccent, System.Drawing.Drawing2D.LinearGradientMode.Vertical);
             mainSs.BackColor = darkerAccent;
+            ResumeLayout();
         }
 
         private void ExecuteSingleInvoke(Action m)
@@ -301,29 +322,78 @@ namespace WinformsUI.Forms.Main
 
         #endregion
 
-        public void UpdateTitle()
-        {
-            this.Text = _defaultTitle;
-        }
+        public void UpdateTitle() => this.Text = _defaultTitle;
 
 
         public void UpdateWindowManageText()
         {
-            btnChangeWindowManagementMode.Text = (WindowManageMode == WindowManagementModeEnum.Tabbed)
-                ? _tabbedModeText
-                : _dashboardModeText;
+            SuspendLayout();
+            if (WindowManageMode == WindowManagementModeEnum.Dashboard)
+                btnChangeWindowManagementMode.Text = _dashboardModeText;
+
+            else if (WindowManageMode == WindowManagementModeEnum.Tabbed)
+                btnChangeWindowManagementMode.Text = _tabbedModeText;
+
+            MakeItShort();
+            ResumeLayout();
         }
 
+        private void MakeItShort()
+        {
+            SuspendLayout();
+            if (!_isMenuCollapsed)
+            {
+                btnChangeWindowManagementMode.Text = InitialsExtracter(btnChangeWindowManagementMode.Text);
+                btnVerticalTileWindows.Text = InitialsExtracter(btnVerticalTileWindows.Text);
+
+                btnChangeWindowManagementMode.TextAlign = ContentAlignment.MiddleCenter;
+                btnVerticalTileWindows.TextAlign = ContentAlignment.MiddleCenter;
+            }
+
+            else
+            {
+                if (WindowManageMode == WindowManagementModeEnum.Dashboard)
+                    btnChangeWindowManagementMode.Text = _dashboardModeText;
+
+                else if (WindowManageMode == WindowManagementModeEnum.Tabbed)
+                    btnChangeWindowManagementMode.Text = _tabbedModeText;
+
+                btnVerticalTileWindows.Text = _autoArrangement;
+                btnChangeWindowManagementMode.TextAlign = ContentAlignment.MiddleRight;
+                btnVerticalTileWindows.TextAlign = ContentAlignment.MiddleRight;
+            }
+            ResumeLayout();
+        }
+
+        private string InitialsExtracter(string words)
+        {
+            string[] shortName = words.Split(' ');
+            if (shortName.Length < 2) return words;
+
+            char firstLetter = shortName[0].ToArray()[0];
+            char secondLetter = shortName[1].ToArray()[0];
+
+            return $"{firstLetter + "."}{secondLetter + "."}";
+        }
 
         #region UI Logic
 
         /// <summary>Handles the visual expansion or collapse of the side menu.</summary>
         private void CollapseExpandMenu()
         {
-            tlpMenu.Size = (tlpMenu.Size.Width == tlpMenu.MinimumSize.Width)
+            SuspendLayout();
+
+            _isMenuCollapsed = !_isMenuCollapsed;
+
+            tlpMenu.Size = _isMenuCollapsed
                 ? tlpMenu.MaximumSize
                 : tlpMenu.MinimumSize;
+
+            UpdateWindowManageText();
+            ResumeLayout();
         }
+
+
 
         #endregion
 
@@ -385,6 +455,7 @@ namespace WinformsUI.Forms.Main
 
         public void OpenEmployeeFrm()
         {
+            SuspendLayout();
             CreateForm<IEmployeeView>
             (
                 DarkTheme.IsDarkPalette(DarkTheme.GetCurrentPalette()) ? DarkTheme.PalettesDark.Nordic() : DarkTheme.PalettesLight.Paper(),
@@ -393,10 +464,12 @@ namespace WinformsUI.Forms.Main
                 "MainForm._employeeTitle",
                 () => _formsFactory.EmployeeForm<IEmployeeView>()
             );
+            ResumeLayout();
         }
 
         public void OpenSaleFrm()
         {
+            SuspendLayout();
             CreateForm<ISaleView>
             (
                 DarkTheme.IsDarkPalette(DarkTheme.GetCurrentPalette()) ? DarkTheme.PalettesDark.Forest() : DarkTheme.PalettesLight.Mint(),
@@ -405,10 +478,12 @@ namespace WinformsUI.Forms.Main
                 "MainForm._salesTitle",
                 () => _formsFactory.SaleForm<ISaleView>()
             );
+            ResumeLayout();
         }
 
         public void OpenPaymentFrm()
         {
+            SuspendLayout();
             CreateForm<IPaymentView>
             (
                 DarkTheme.IsDarkPalette(DarkTheme.GetCurrentPalette()) ? DarkTheme.PalettesDark.Volcanic() : DarkTheme.PalettesLight.Berry(),
@@ -417,11 +492,12 @@ namespace WinformsUI.Forms.Main
                 "MainForm._paymentsTitle",
                 () => _formsFactory.PaymentForm<IPaymentView>()
             );
+            ResumeLayout();
         }
 
         public void OpenProductFrm()
         {
-
+            SuspendLayout();
             CreateForm<IProductView>
             (
                 DarkTheme.IsDarkPalette(DarkTheme.GetCurrentPalette()) ? DarkTheme.PalettesDark.Aubergine() : DarkTheme.PalettesLight.Grape(),
@@ -430,10 +506,12 @@ namespace WinformsUI.Forms.Main
                 "MainForm._productsTitle",
                 () => _formsFactory.ProductForm<IProductView>()
             );
+            ResumeLayout();
         }
 
         public void OpenSupplierFrm()
         {
+            SuspendLayout();
             CreateForm<ISupplierView>
             (
                 DarkTheme.IsDarkPalette(DarkTheme.GetCurrentPalette()) ? DarkTheme.PalettesDark.Oceanic() : DarkTheme.PalettesLight.Solar(),
@@ -442,11 +520,14 @@ namespace WinformsUI.Forms.Main
                 "MainForm._suppliersTitle",
                 () => _formsFactory.SupplierForm<ISupplierView>()
             );
+            ResumeLayout();
         }
 
         public void OpenConfigsFrm()
         {
+            SuspendLayout();
             _formsFactory.CreateGeneric<ConfigurationsForm>().ShowDialog();
+            ResumeLayout();
         }
 
         public void CreateForm<TView>
@@ -490,6 +571,7 @@ namespace WinformsUI.Forms.Main
         /// <param name="F">The form to be hosted.</param>
         private void ShowForm(IHostFormActions F)
         {
+            SuspendLayout();
             if (F is Form form)
             {
                 form.TopLevel = false;
@@ -497,6 +579,7 @@ namespace WinformsUI.Forms.Main
                 form.BringToFront();
                 form.Show();
             }
+            ResumeLayout();
         }
 
 

@@ -1,5 +1,5 @@
-﻿using Domain.Entities;
-using System.Collections.Generic;
+﻿using Domain.Contracts;
+using Domain.Entities;
 using System.Threading.Tasks;
 
 namespace Domain.Repositories

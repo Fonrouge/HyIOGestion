@@ -16,7 +16,7 @@ namespace Domain.Entities.Employees.ValueObjects
             if (email.Length > 100 || !email.Contains("@"))
                 throw new ArgumentException("El email no tiene un formato válido");
 
-            return new EmployeeEmailVO(email.Trim().ToLowerInvariant());
+            return new EmployeeEmailVO(email.Trim().ToUpper());
         }
     }
 }

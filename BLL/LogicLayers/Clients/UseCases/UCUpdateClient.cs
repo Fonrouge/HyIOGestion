@@ -82,7 +82,8 @@ namespace BLL.LogicLayers.Clients //============================================
                 }
 
                 // --- TRAMPA DEL UPDATE: Validación de Duplicados ---
-                var existingClientWithTaxId = await _uow.ClientRepo.GetByTaxIdAsync(dto.TaxId);
+                var existingClientWithTaxId = await _uow.ClientRepo.GetByDocNumberAsync(dto.DocNumber);
+
                 // Si el CUIT existe y NO es el del cliente que estoy editando, entonces es un duplicado ilegal.
                 if (existingClientWithTaxId != null && existingClientWithTaxId.Id != dto.Id)
                 {
@@ -106,7 +107,7 @@ namespace BLL.LogicLayers.Clients //============================================
                 await _uow.ClientRepo.UpdateAsync(clientEntityToUpdate);
 
                 // 7. Integridad Vertical (DVV)
-                await UpdateDVVAsync(_tableNameClient, _appSettings.EntitiesConnection);
+          //      await UpdateDVVAsync(_tableNameClient, _appSettings.EntitiesConnection);
 
                 // 8. Auditoría (Bitácora)
                 var log = _bitacoraFact.Create(

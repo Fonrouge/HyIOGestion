@@ -3,8 +3,6 @@ using BLL.LogicLayers.Clients;
 using SharedAbstractions.ArchitecturalMarkers;
 using SharedAbstractions.Enums;
 using System;
-using System.Collections.Generic;
-using System.Drawing.Design;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -39,7 +37,7 @@ namespace Presenter.ForClient
         {
             var datasourceDocs = Enum.GetValues(typeof(DocTypesEnum))
             .Cast<DocTypesEnum>()
-            .Select(d => new {Id = d.GetDocInfo().Id, Display = d.GetDocInfo().Description }).ToList();
+            .Select(d => new { Id = d.GetDocInfo().Id, Display = d.GetDocInfo().Description }).ToList();
 
             _view.FillClientDocTypes(datasourceDocs);
 
@@ -47,35 +45,17 @@ namespace Presenter.ForClient
             var datasourceCountries = Enum.GetValues(typeof(CountriesEnum))
             .Cast<CountriesEnum>()
             .Select(d => new { Id = d.GetCountriesInfo().Id, Display = d.GetCountriesInfo().Description }).ToList();
-            
+
             _view.FillCountries(datasourceCountries);
         }
 
         private void ApplyDarkTheme() => _view.ApplyGlobalPalette();
         private async Task OnCreateClientRequested(ClientDTO clientData)
         {
-            try
-            {
-                var opRes = await _useCaseCreate.ExecuteAsync(clientData);
+            var opRes = await _useCaseCreate.ExecuteAsync(clientData);
 
-                _view.ShowOperationResult(opRes);
-            }
-            catch
-            {
-                var inCaseOfUncoveredException = new OperationResult<ClientDTO>
-                {
-                    Errors = new List<ErrorLogDTO>
-                    {
-                        new ErrorLogDTO
-                        {
-                            Code = "EXCEPTION",
-                            Message = "An unexpected error occurred while creating the client."
-                        }
-                    }
-                };
 
-                _view.ShowOperationResult(inCaseOfUncoveredException);
-            }
+            _view.ShowOperationResult(opRes);
         }
     }
 

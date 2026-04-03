@@ -1,6 +1,4 @@
-﻿using BLL.DTOs;
-using BLL.UseCases;
-using Shared.Sessions;
+﻿using BLL.UseCases;
 using SharedAbstractions.ArchitecturalMarkers;
 using System;
 using System.Threading.Tasks;
@@ -28,8 +26,6 @@ namespace Presenter.LoginScreen
         private void WireEvents()
         {
             _view.LoginRequested += OnLoginRequestedHandler;
-
-            //For more events...
         }
 
         private async Task OnLoginRequestedHandler(object sender, (string username, string password) credentials)
@@ -37,17 +33,8 @@ namespace Presenter.LoginScreen
             try
             {
                 _view.SetLoadingState(true);
-
-                var operationResult = await _loginUseCase.ExecuteAsync(credentials.username, credentials.password);
-
-
-                
+                var operationResult = await _loginUseCase.ExecuteAsync(credentials.username, credentials.password);                
                 _view.ShowOperationResult(operationResult);
-            }
-            catch (Exception ex)
-            {
-                var opResultException = OperationResult<UsuarioDTO>.FromException(ex);
-                _view.ShowOperationResult(opResultException);
             }
             finally
             {
@@ -57,7 +44,6 @@ namespace Presenter.LoginScreen
 
         public void Dispose()
         {
-            // Desuscripción para evitar memory leaks. Desuscribir de todos los eventos a los que se haya suscripto el presenter.
             _view.LoginRequested -= OnLoginRequestedHandler;
         }
     }

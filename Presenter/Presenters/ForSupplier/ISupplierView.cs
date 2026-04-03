@@ -1,4 +1,4 @@
-﻿using BLL.LogicLayers;
+﻿using BLL.DTOs;
 using SharedAbstractions.Interfaces;
 
 namespace Presenter.ForSupplier

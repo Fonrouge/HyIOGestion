@@ -30,8 +30,8 @@
             this.txtMail = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.txtTaxId = new System.Windows.Forms.TextBox();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.pnlAddAddress = new System.Windows.Forms.TableLayoutPanel();
+            this.pnlAddAddress = new System.Windows.Forms.Panel();
+            this.tablelayoutpanel = new System.Windows.Forms.TableLayoutPanel();
             this.btnBackPnl2 = new System.Windows.Forms.Button();
             this.btnFinish = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
@@ -41,10 +41,12 @@
             this.txtObservations = new System.Windows.Forms.TextBox();
             this.txtCity = new System.Windows.Forms.TextBox();
             this.txtAddress = new System.Windows.Forms.TextBox();
+            this.txtTaxNumber = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
             this.pnlAddSupplier.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
-            this.panel1.SuspendLayout();
             this.pnlAddAddress.SuspendLayout();
+            this.tablelayoutpanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // pnlAddSupplier
@@ -61,29 +63,32 @@
             this.tableLayoutPanel3.ColumnCount = 2;
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 18.87967F));
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 81.12033F));
-            this.tableLayoutPanel3.Controls.Add(this.btnNextPnl1, 0, 6);
+            this.tableLayoutPanel3.Controls.Add(this.btnNextPnl1, 0, 7);
             this.tableLayoutPanel3.Controls.Add(this.label13, 1, 0);
             this.tableLayoutPanel3.Controls.Add(this.label15, 0, 1);
             this.tableLayoutPanel3.Controls.Add(this.label16, 0, 2);
             this.tableLayoutPanel3.Controls.Add(this.txtCompanyName, 1, 1);
             this.tableLayoutPanel3.Controls.Add(this.txtContactName, 1, 2);
-            this.tableLayoutPanel3.Controls.Add(this.label18, 0, 5);
-            this.tableLayoutPanel3.Controls.Add(this.label17, 0, 4);
-            this.tableLayoutPanel3.Controls.Add(this.txtPhone, 1, 5);
-            this.tableLayoutPanel3.Controls.Add(this.txtMail, 1, 4);
+            this.tableLayoutPanel3.Controls.Add(this.label18, 0, 6);
+            this.tableLayoutPanel3.Controls.Add(this.label17, 0, 5);
+            this.tableLayoutPanel3.Controls.Add(this.txtPhone, 1, 6);
+            this.tableLayoutPanel3.Controls.Add(this.txtMail, 1, 5);
             this.tableLayoutPanel3.Controls.Add(this.label5, 0, 3);
             this.tableLayoutPanel3.Controls.Add(this.txtTaxId, 1, 3);
+            this.tableLayoutPanel3.Controls.Add(this.txtTaxNumber, 1, 4);
+            this.tableLayoutPanel3.Controls.Add(this.label6, 0, 4);
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel3.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel3.Margin = new System.Windows.Forms.Padding(4);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.Padding = new System.Windows.Forms.Padding(0, 5, 10, 5);
-            this.tableLayoutPanel3.RowCount = 7;
+            this.tableLayoutPanel3.RowCount = 8;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 49F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 45F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 46F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 96F));
             this.tableLayoutPanel3.Size = new System.Drawing.Size(492, 563);
@@ -107,7 +112,7 @@
             this.label13.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.label13.AutoSize = true;
             this.label13.Font = new System.Drawing.Font("Microsoft YaHei", 27.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label13.Location = new System.Drawing.Point(95, 59);
+            this.label13.Location = new System.Drawing.Point(95, 49);
             this.label13.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(383, 48);
@@ -119,7 +124,7 @@
             // 
             this.label15.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(4, 173);
+            this.label15.Location = new System.Drawing.Point(4, 153);
             this.label15.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(83, 38);
@@ -131,7 +136,7 @@
             // 
             this.label16.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(4, 233);
+            this.label16.Location = new System.Drawing.Point(4, 213);
             this.label16.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(83, 38);
@@ -142,7 +147,7 @@
             // txtCompanyName
             // 
             this.txtCompanyName.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtCompanyName.Location = new System.Drawing.Point(95, 180);
+            this.txtCompanyName.Location = new System.Drawing.Point(95, 160);
             this.txtCompanyName.Margin = new System.Windows.Forms.Padding(4);
             this.txtCompanyName.Name = "txtCompanyName";
             this.txtCompanyName.Size = new System.Drawing.Size(383, 24);
@@ -151,7 +156,7 @@
             // txtContactName
             // 
             this.txtContactName.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtContactName.Location = new System.Drawing.Point(95, 240);
+            this.txtContactName.Location = new System.Drawing.Point(95, 220);
             this.txtContactName.Margin = new System.Windows.Forms.Padding(4);
             this.txtContactName.Name = "txtContactName";
             this.txtContactName.Size = new System.Drawing.Size(383, 24);
@@ -173,7 +178,7 @@
             // 
             this.label17.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(4, 362);
+            this.label17.Location = new System.Drawing.Point(4, 369);
             this.label17.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(83, 19);
@@ -193,7 +198,7 @@
             // txtMail
             // 
             this.txtMail.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtMail.Location = new System.Drawing.Point(95, 360);
+            this.txtMail.Location = new System.Drawing.Point(95, 367);
             this.txtMail.Margin = new System.Windows.Forms.Padding(4);
             this.txtMail.Name = "txtMail";
             this.txtMail.Size = new System.Drawing.Size(383, 24);
@@ -203,7 +208,7 @@
             // 
             this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(4, 293);
+            this.label5.Location = new System.Drawing.Point(4, 267);
             this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(83, 38);
@@ -214,49 +219,49 @@
             // txtTaxId
             // 
             this.txtTaxId.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtTaxId.Location = new System.Drawing.Point(95, 300);
+            this.txtTaxId.Location = new System.Drawing.Point(95, 274);
             this.txtTaxId.Margin = new System.Windows.Forms.Padding(4);
             this.txtTaxId.Name = "txtTaxId";
             this.txtTaxId.Size = new System.Drawing.Size(383, 24);
             this.txtTaxId.TabIndex = 0;
             // 
-            // panel1
-            // 
-            this.panel1.Controls.Add(this.pnlAddAddress);
-            this.panel1.Location = new System.Drawing.Point(518, 0);
-            this.panel1.Margin = new System.Windows.Forms.Padding(4);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(492, 563);
-            this.panel1.TabIndex = 6;
-            // 
             // pnlAddAddress
             // 
-            this.pnlAddAddress.ColumnCount = 2;
-            this.pnlAddAddress.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 23.23652F));
-            this.pnlAddAddress.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 76.76348F));
-            this.pnlAddAddress.Controls.Add(this.btnBackPnl2, 0, 0);
-            this.pnlAddAddress.Controls.Add(this.btnFinish, 0, 5);
-            this.pnlAddAddress.Controls.Add(this.label1, 1, 0);
-            this.pnlAddAddress.Controls.Add(this.label2, 0, 1);
-            this.pnlAddAddress.Controls.Add(this.label3, 0, 2);
-            this.pnlAddAddress.Controls.Add(this.label4, 0, 3);
-            this.pnlAddAddress.Controls.Add(this.txtObservations, 1, 3);
-            this.pnlAddAddress.Controls.Add(this.txtCity, 1, 1);
-            this.pnlAddAddress.Controls.Add(this.txtAddress, 1, 2);
-            this.pnlAddAddress.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlAddAddress.Location = new System.Drawing.Point(0, 0);
+            this.pnlAddAddress.Controls.Add(this.tablelayoutpanel);
+            this.pnlAddAddress.Location = new System.Drawing.Point(518, 0);
             this.pnlAddAddress.Margin = new System.Windows.Forms.Padding(4);
             this.pnlAddAddress.Name = "pnlAddAddress";
-            this.pnlAddAddress.Padding = new System.Windows.Forms.Padding(0, 5, 10, 5);
-            this.pnlAddAddress.RowCount = 6;
-            this.pnlAddAddress.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.pnlAddAddress.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 65F));
-            this.pnlAddAddress.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 65F));
-            this.pnlAddAddress.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 57F));
-            this.pnlAddAddress.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 108F));
-            this.pnlAddAddress.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 97F));
             this.pnlAddAddress.Size = new System.Drawing.Size(492, 563);
-            this.pnlAddAddress.TabIndex = 5;
+            this.pnlAddAddress.TabIndex = 6;
+            // 
+            // tablelayoutpanel
+            // 
+            this.tablelayoutpanel.ColumnCount = 2;
+            this.tablelayoutpanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 23.23652F));
+            this.tablelayoutpanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 76.76348F));
+            this.tablelayoutpanel.Controls.Add(this.btnBackPnl2, 0, 0);
+            this.tablelayoutpanel.Controls.Add(this.btnFinish, 0, 5);
+            this.tablelayoutpanel.Controls.Add(this.label1, 1, 0);
+            this.tablelayoutpanel.Controls.Add(this.label2, 0, 1);
+            this.tablelayoutpanel.Controls.Add(this.label3, 0, 2);
+            this.tablelayoutpanel.Controls.Add(this.label4, 0, 3);
+            this.tablelayoutpanel.Controls.Add(this.txtObservations, 1, 3);
+            this.tablelayoutpanel.Controls.Add(this.txtCity, 1, 1);
+            this.tablelayoutpanel.Controls.Add(this.txtAddress, 1, 2);
+            this.tablelayoutpanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tablelayoutpanel.Location = new System.Drawing.Point(0, 0);
+            this.tablelayoutpanel.Margin = new System.Windows.Forms.Padding(4);
+            this.tablelayoutpanel.Name = "tablelayoutpanel";
+            this.tablelayoutpanel.Padding = new System.Windows.Forms.Padding(0, 5, 10, 5);
+            this.tablelayoutpanel.RowCount = 6;
+            this.tablelayoutpanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tablelayoutpanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 65F));
+            this.tablelayoutpanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 65F));
+            this.tablelayoutpanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 57F));
+            this.tablelayoutpanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 108F));
+            this.tablelayoutpanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 97F));
+            this.tablelayoutpanel.Size = new System.Drawing.Size(492, 563);
+            this.tablelayoutpanel.TabIndex = 5;
             // 
             // btnBackPnl2
             // 
@@ -277,7 +282,7 @@
             // btnFinish
             // 
             this.btnFinish.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.pnlAddAddress.SetColumnSpan(this.btnFinish, 2);
+            this.tablelayoutpanel.SetColumnSpan(this.btnFinish, 2);
             this.btnFinish.Location = new System.Drawing.Point(14, 473);
             this.btnFinish.Margin = new System.Windows.Forms.Padding(14, 4, 4, 4);
             this.btnFinish.Name = "btnFinish";
@@ -342,7 +347,7 @@
             this.txtObservations.Margin = new System.Windows.Forms.Padding(4, 22, 4, 4);
             this.txtObservations.Multiline = true;
             this.txtObservations.Name = "txtObservations";
-            this.pnlAddAddress.SetRowSpan(this.txtObservations, 2);
+            this.tablelayoutpanel.SetRowSpan(this.txtObservations, 2);
             this.txtObservations.Size = new System.Drawing.Size(362, 131);
             this.txtObservations.TabIndex = 0;
             // 
@@ -364,24 +369,46 @@
             this.txtAddress.Size = new System.Drawing.Size(362, 24);
             this.txtAddress.TabIndex = 0;
             // 
+            // txtTaxNumber
+            // 
+            this.txtTaxNumber.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtTaxNumber.Location = new System.Drawing.Point(95, 321);
+            this.txtTaxNumber.Margin = new System.Windows.Forms.Padding(4);
+            this.txtTaxNumber.Name = "txtTaxNumber";
+            this.txtTaxNumber.Size = new System.Drawing.Size(383, 24);
+            this.txtTaxNumber.TabIndex = 0;
+            // 
+            // label6
+            // 
+            this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(4, 314);
+            this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(83, 38);
+            this.label6.TabIndex = 2;
+            this.label6.Text = "N° Documento";
+            this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
             // CreateSupplierForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 19F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1074, 610);
-            this.Controls.Add(this.panel1);
+            this.Controls.Add(this.pnlAddAddress);
             this.Controls.Add(this.pnlAddSupplier);
             this.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "CreateSupplierForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "CreateSupplierForm";
             this.pnlAddSupplier.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel3.PerformLayout();
-            this.panel1.ResumeLayout(false);
             this.pnlAddAddress.ResumeLayout(false);
-            this.pnlAddAddress.PerformLayout();
+            this.tablelayoutpanel.ResumeLayout(false);
+            this.tablelayoutpanel.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -400,8 +427,8 @@
         private System.Windows.Forms.TextBox txtMail;
         private System.Windows.Forms.TextBox txtCompanyName;
         private System.Windows.Forms.TextBox txtContactName;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.TableLayoutPanel pnlAddAddress;
+        private System.Windows.Forms.Panel pnlAddAddress;
+        private System.Windows.Forms.TableLayoutPanel tablelayoutpanel;
         private System.Windows.Forms.Button btnBackPnl2;
         private System.Windows.Forms.Button btnFinish;
         private System.Windows.Forms.Label label1;
@@ -413,5 +440,7 @@
         private System.Windows.Forms.TextBox txtAddress;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox txtTaxId;
+        private System.Windows.Forms.TextBox txtTaxNumber;
+        private System.Windows.Forms.Label label6;
     }
 }

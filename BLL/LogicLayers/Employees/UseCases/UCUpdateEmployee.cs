@@ -48,7 +48,7 @@ namespace BLL.LogicLayers.Employees
             _tableNameEmployee = appSettings.EmployeeTableName ?? "Employees";
         }
 
-        public async Task<OperationResult<EmployeeDTO>> Execute(EmployeeDTO dto)
+        public async Task<OperationResult<EmployeeDTO>> ExecuteAsync(EmployeeDTO dto)
         {
             var result = new OperationResult<EmployeeDTO>();
 

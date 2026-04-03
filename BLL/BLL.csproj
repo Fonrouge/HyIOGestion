@@ -149,7 +149,7 @@
     <Compile Include="LogicLayers\User\UseCases\IUCCreateUser.cs" />
     <Compile Include="Infrastructure\Integrity\IVerifyDVH.cs" />
     <Compile Include="LogicLayers\User\UseCases\UCCreateUser.cs" />
-    <Compile Include="Infrastructure\Integrity\VerifyDVH.cs" />
+    <Compile Include="Infrastructure\Integrity\DVHVerifier.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.csproj">

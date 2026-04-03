@@ -4,7 +4,6 @@ using System;
 using System.Drawing;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography;
 using System.Windows.Forms;
 using Winforms.Theme;
 using WinformsUI.Infrastructure;
@@ -544,7 +543,7 @@ namespace WinformsUI.Forms.Base
 
         private void Common_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (!IsMaximized)
+            if (!IsExpanded)
             {
                 SuspendLayout();
                 ExpandRequested?.Invoke(this, EventArgs.Empty);

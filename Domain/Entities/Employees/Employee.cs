@@ -1,10 +1,10 @@
-﻿using Domain.BaseContracts;
+﻿using Domain.Contracts;
 using Domain.Entities.Employees.ValueObjects;
 using System;
 
 namespace Domain.Entities
 {
-    public class Employee : EntityBase, ISoftDeletable
+    public class Employee : EntityBase, ISoftDeletable, IIntegrityCheckable
     {
         // --- PROPIEDADES DE DOMINIO (Rich Domain Model) ---
         public FirstNameVO FirstName { get; private set; }
@@ -92,6 +92,30 @@ namespace Domain.Entities
 
             return emp;
         }
+
+        /// <summary>
+        /// Genera la cadena de serialización para el cálculo del Dígito Verificador Horizontal.
+        /// Incluye los datos de identidad y contacto para asegurar que no sean alterados externamente.
+        /// </summary>
+        public string GetDvhSerialization()
+        {
+            // Usamos cultura invariante para normalizar la representación de Guids y tipos básicos
+            var culture = System.Globalization.CultureInfo.InvariantCulture;
+
+            return string.Join("|",
+                Id.ToString(),
+                FileNumber.Value,    
+                FirstName.Value,     
+                LastName.Value,      
+                NationalId.Value,    
+                Email.Value,         
+                PhoneNumber.Value,   
+                HomeAddress.Value,   
+                Active ? "1" : "0",
+                IsDeleted ? "1" : "0"
+            );
+        }
+
 
         // --- COMPORTAMIENTO (Transiciones de Estado Seguras) ---
 

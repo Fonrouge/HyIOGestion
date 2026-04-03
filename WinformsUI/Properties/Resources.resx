@@ -118,11 +118,20 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="accesibilityIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="bigcongri" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\accesibilityIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="AddIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\AddIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="alinearCenIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\alinearCenIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="alinearDerIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\alinearDerIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="alinearIzqIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\alinearIzqIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="BackArrow" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\BackArrow.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -136,8 +145,17 @@
   <data name="BigIconAddUser" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\BigIconAddUser.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="BigIconCell" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\BigIconCell.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="BigIconCopy" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\BigIconCopy.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="BigIconDeleteUser" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\BigIconDeleteUser.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="BigIconText" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\BigIconText.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="btnCloseClassic" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\btnCloseClassic.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -160,8 +178,26 @@
   <data name="BusinessPartnerIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\BusinessPartnerIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="cellAllBordersIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\cellAllBordersIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="cellNoBordersIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\cellNoBordersIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="cellVerticalBordersIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\cellVerticalBordersIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="ClientIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ClientIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ColumnaDefecto" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ColumnaDefecto.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ColumnaMasAlturaIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ColumnaMasAlturaIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ColumnaMenosAlturaIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ColumnaMenosAlturaIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="configIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\configIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -172,8 +208,20 @@
   <data name="EmployeeIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\EmployeeIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="FilaContraer" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\FilaContraer.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="FilaDefecto" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\FilaDefecto.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="FilaExpandir" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\FilaExpandir.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="FiltersIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\FiltersIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ForwardArrow" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ForwardArrow.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="HandShakeIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\HandShakeIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -222,5 +270,8 @@
   </data>
   <data name="TileWindows" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\TileWindows.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="BigIconGrid" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\BigIconGrid.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

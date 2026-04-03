@@ -1,10 +1,10 @@
-﻿using Domain.BaseContracts;
+﻿using Domain.Contracts;
 using Domain.Entities.Clients.ValueObjects;
 using System;
 
 namespace Domain.Entities
 {
-    public class Client : EntityBase, ISoftDeletable
+    public class Client : EntityBase, ISoftDeletable, IIntegrityCheckable
     {
         public ClientNameVO Name { get; private set; }
         public ClientLastNameVO LastName { get; private set; }
@@ -28,17 +28,18 @@ namespace Domain.Entities
             string rawPhone,
             string rawTaxId,
             string rawDocNumber,
-            string dvh = null)
+            string dvh = null
+        )
         {
             var client = new Client();
 
-            client.Name = ClientNameVO.Create(rawName?.ToUpper() ?? "N/I");
-            client.LastName = ClientLastNameVO.Create(rawLastName?.ToUpper() ?? "N/I");
-            client.ShipAddress = ShipAddressVO.Create(rawShipAddress?.ToUpper() ?? "N/I");
-            client.Email = ClientEmailVO.Create(rawEmail?.ToUpper() ?? "N/I");
-            client.Phone = ClientPhoneVO.Create(rawPhone?.ToUpper() ?? "N/I");
-            client.TaxId = ClientTaxIdVO.Create(rawTaxId?.ToUpper() ?? "N/I");
-            client.DocNumber = DocNumberVO.Create(rawDocNumber?.ToUpper() ?? "N/I");
+            client.Name = ClientNameVO.Create(rawName?.ToUpper() ?? string.Empty);
+            client.LastName = ClientLastNameVO.Create(rawLastName?.ToUpper() ?? string.Empty);
+            client.ShipAddress = ShipAddressVO.Create(rawShipAddress?.ToUpper() ?? string.Empty);
+            client.Email = ClientEmailVO.Create(rawEmail?.ToUpper() ?? string.Empty);
+            client.Phone = ClientPhoneVO.Create(rawPhone?.ToUpper() ?? string.Empty);
+            client.TaxId = ClientTaxIdVO.Create(rawTaxId?.ToUpper() ?? string.Empty);
+            client.DocNumber = DocNumberVO.Create(rawDocNumber?.ToUpper() ?? string.Empty);
 
             client.IsDeleted = false;
             client.DVH = null;
@@ -68,12 +69,35 @@ namespace Domain.Entities
                 ShipAddress = ShipAddressVO.Create(rawShipAddress?.ToUpper() ?? string.Empty),
                 Email = ClientEmailVO.Create(rawEmail?.ToUpper() ?? string.Empty),
                 Phone = ClientPhoneVO.Create(rawPhone?.ToUpper() ?? string.Empty),
-                TaxId = ClientTaxIdVO.Create(rawTaxId?.ToUpper() ?? string.Empty),
+                TaxId = ClientTaxIdVO.Create(rawTaxId?.ToUpper() ?? string.Empty), 
                 DocNumber = DocNumberVO.Create(rawDocNumber?.ToUpper() ?? string.Empty),
                 IsDeleted = isDeleted,
                 DVH = !string.IsNullOrEmpty(dvh) ? DvhVo.Create(dvh) : null
             };
         }
+
+        /// <summary>
+        /// Genera la cadena de serialización para el cálculo del Dígito Verificador Horizontal.
+        /// Protege la integridad de los datos filiatorios y de contacto del cliente.
+        /// </summary>
+        public string GetDvhSerialization()
+        {
+            // Mantenemos la consistencia con cultura invariante para el ID (Guid)
+            var culture = System.Globalization.CultureInfo.InvariantCulture;
+
+            return string.Join("|",
+                Id.ToString(),
+                Name.Value,        // Ya viene en UPPER por su VO
+                LastName.Value,    // Ya viene en UPPER por su VO
+                DocNumber.Value,   // Ya viene en UPPER por su VO (DNI/Pasaporte)
+                TaxId.Value,       // Ya viene en UPPER por su VO (CUIT/CUIL)
+                Email.Value,       // Ya viene en UPPER por su VO
+                Phone.Value,       // Ya viene en UPPER por su VO
+                ShipAddress.Value, // Ya viene en UPPER por su VO
+                IsDeleted ? "1" : "0"
+            );
+        }
+
 
         public void MarkAsDeleted()
         {

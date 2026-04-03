@@ -77,14 +77,13 @@ namespace BLL.LogicLayers.Payments
                     return result;
                 }
 
-
-                // 3. Validar Negocio: Verificar que el Cliente exista antes de registrarle un pago
-                var client = await _uow.ClientRepo.GetByIdAsync(dto.SaleId);
-                if (client == null)
-                {
-                    result.Errors.Add(new ErrorLogDTO { InformativeMessage = "El Cliente especificado no existe o fue eliminado." });
-                    return result;
-                }
+//                // 3. Validar Negocio: Verificar que el Cliente exista antes de registrarle un pago
+//                var client = await _uow.SaleRepo.GetByIdAsync(dto.SaleId);
+//                if (client == null)
+//                {
+//                    result.Errors.Add(new ErrorLogDTO { InformativeMessage = "El Cliente especificado no existe o fue eliminado." }); //ACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 
+//                    return result;
+//                }
 
                 // 4. Instanciar Entidad (Fail Fast de VOs: Monto negativo, método vacío, etc.)
                 // Como es una creación nueva, NO usamos el Mapper (que usa Reconstitute), usamos el Factory estático

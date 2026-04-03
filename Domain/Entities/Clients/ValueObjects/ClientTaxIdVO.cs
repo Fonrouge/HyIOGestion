@@ -31,7 +31,7 @@ namespace Domain.Entities.Clients.ValueObjects
             if (!Regex.IsMatch(taxId, @"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"))
                 throw new ArgumentException("La categoría fiscal contiene caracteres inválidos. Solo se permiten letras y espacios.", nameof(taxId));
 
-            return new ClientTaxIdVO(taxId);
+            return new ClientTaxIdVO(taxId.ToUpper());
         }
 
         // --- COMPORTAMIENTO DE VALUE OBJECT ---

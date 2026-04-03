@@ -17,7 +17,7 @@ namespace Domain.Entities.Employees.ValueObjects
                 throw new ArgumentException("El número de legajo debe tener entre 1 y 10 caracteres");
             
 
-            return new FileNumberVO(fileNumber.Trim().ToUpperInvariant());
+            return new FileNumberVO(fileNumber.Trim().ToUpper());
         }
     }
 }

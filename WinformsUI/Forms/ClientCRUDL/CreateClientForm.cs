@@ -1,11 +1,9 @@
 ﻿using BLL.DTOs;
 using Presenter.ForClient;
 using Shared;
-using SharedAbstractions.Enums;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using System.Xml.Linq;
 using Winforms.Theme;
 using WinformsUI.Infrastructure.Translations;
 using WinformsUI.UserControls.Wizard;

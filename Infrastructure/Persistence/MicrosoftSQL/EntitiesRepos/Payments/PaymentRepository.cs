@@ -144,15 +144,19 @@ namespace DAL.Persistence.MicrosoftSQL
             // Acceso correcto a los Value Objects
             cmd.Parameters.Add(new SqlParameter("@Method", SqlDbType.VarChar) { Value = (object)entity.Method?.Value ?? DBNull.Value });
             cmd.Parameters.Add(new SqlParameter("@Reference", SqlDbType.VarChar) { Value = (object)entity.Reference?.Value ?? DBNull.Value });
-            cmd.Parameters.Add(new SqlParameter("@DVH", SqlDbType.VarChar) { Value = (object)entity.DVH?.Value ?? DBNull.Value });
+       
+            cmd.Parameters.Add(new SqlParameter("@DVH", SqlDbType.VarChar)
+            {
+                Value = (object)entity.DVH?.Value ?? string.Empty
+            });
 
-            // La DAL simplemente persiste lo que la BLL mande en esta propiedad
             cmd.Parameters.Add(new SqlParameter("@IsDeleted", SqlDbType.Bit) { Value = entity.IsDeleted });
         }
 
         private Payment Map(SqlDataReader reader)
         {
-            return Payment.Reconstitute(
+            return Payment.Reconstitute
+            (
                 id: (Guid)reader["Id"],
                 rawAmount: (decimal)reader["Amount"],
                 creationDate: (DateTime)reader["CreationDate"],

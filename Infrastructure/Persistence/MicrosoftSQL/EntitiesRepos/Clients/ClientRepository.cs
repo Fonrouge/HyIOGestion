@@ -1,5 +1,4 @@
-﻿using Domain.BaseContracts;
-using Domain.Entities;
+﻿using Domain.Entities;
 using Domain.Repositories;
 using Shared;
 using System;
@@ -84,17 +83,17 @@ namespace DAL.Persistence.MicrosoftSQL
             return clients;
         }
 
-        public async Task<Client> GetByTaxIdAsync(string taxId)
+        public async Task<Client> GetByDocNumberAsync(string taxId)
         {
             Client client = null;
 
             // Agregado el campo DVH al SELECT
             string query = @"SELECT Id, Name, LastName, ShipAddress, Email, Phone, TaxId, DocNumber, IsDeleted, DVH 
-                             FROM Clients 
-                             WHERE TaxId = @TaxId";
+                             FROM dbo.Clients 
+                             WHERE DocNumber = @DocNumber";
 
             await ExecuteReaderAsync(query,
-                cmd => cmd.Parameters.Add(new SqlParameter("@TaxId", SqlDbType.NVarChar) { Value = taxId }),
+                cmd => cmd.Parameters.Add(new SqlParameter("@DocNumber", SqlDbType.NVarChar) { Value = taxId }),
                 reader => client = Map(reader));
 
             return client;
@@ -122,8 +121,7 @@ namespace DAL.Persistence.MicrosoftSQL
         }
 
         private Client Map(SqlDataReader reader)
-        {
-            // Agregado el reader["DVH"] como último parámetro para que coincida con la firma de Reconstitute
+        {           
             return Client.Reconstitute
             (
                 (Guid)reader["Id"],
@@ -151,6 +149,7 @@ namespace DAL.Persistence.MicrosoftSQL
                 {
                     if (isExternalConn) cmd.Transaction = _currentTransaction;
                     parameterSetter?.Invoke(cmd);
+                   
                     if (!isExternalConn) await conn.OpenAsync();
                     await cmd.ExecuteNonQueryAsync();
                 }

@@ -20,15 +20,18 @@ namespace WinformsUI.UserControls.CustomDGV
         public readonly IApplicationSettings _appSettings;
         public readonly ITranslatableControlsManager _transMgr;
 
+        private readonly DGVCellsStyle _styleHelper = new DGVCellsStyle();
+
         private string _placeholder;
         private dynamic _searchBehavior;
         private bool _filtersConfigured = false;
-        private Type _entityType;                    // ← Nuevo: para refrescar el combo de fechas
+        private Type _entityType;
+        private bool _firstOpen = true;
 
         private sealed class DateColumnItem
         {
             public string HeaderText { get; set; }
-            public string PropertyName { get; set; }   // null = "Todas"
+            public string PropertyName { get; set; }
         }
 
         public CustomDGVForm
@@ -38,6 +41,7 @@ namespace WinformsUI.UserControls.CustomDGV
             ITranslatableControlsManager transMgr
         )
         {
+            SuspendLayout();
             _listTools = listTools;
             _appSettings = appSettings;
             _transMgr = transMgr;
@@ -53,7 +57,11 @@ namespace WinformsUI.UserControls.CustomDGV
 
             panelHorDivider.Visible = false;
             tableLayoutPanelFilters.Visible = false;
+            _styleHelper.SetDGV(mainDGV);
+            ResumeLayout();
         }
+
+        public DataGridView MainDGV => mainDGV;
 
         // ====================== APIS PÚBLICAS ======================
         /// <summary>
@@ -79,7 +87,72 @@ namespace WinformsUI.UserControls.CustomDGV
             ChooseCheckedListBoxItemsHeight(24);
         }
 
+        // ====================== APIs DE PERSONALIZACIÓN ======================
 
+        // ---------- ALTURAS ----------
+        public void NudgeRowHeight(int deltaPx)
+            => _styleHelper.NudgeHeights(deltaPx);
+
+        public void NudgeHeaderHeight(int deltaPx)
+            => _styleHelper.NudgeHeights(0, alsoHeader: true, deltaHeaderPx: deltaPx);
+
+        public void AutoFitRowAndHeader(bool alsoHeader = true, int extraRowPx = 2, int extraHeaderPx = 2)
+            => _styleHelper.ApplyRecommendedRowHeight(alsoHeader, extraRowPx, extraHeaderPx);
+
+        // ---------- ANCHOS DE COLUMNAS ----------
+        public void NudgeColumnWidth(int deltaPx, bool onlySelected = false)
+            => _styleHelper.NudgeColumnWidths(deltaPx, onlySelected);
+
+        public void AutoFitColumns(bool onlySelected = false, int sampleRows = 200, bool includeHeader = true, int extraPx = 12)
+            => _styleHelper.ApplyRecommendedColumnWidths(onlySelected, sampleRows, includeHeader, extraPx);
+
+        // ---------- ALINEACIÓN ----------
+        public void AlignCellsLeft(bool onlySelected = false, bool includeHeader = false)
+            => _styleHelper.AlignCellsLeft(onlySelected, includeHeader);
+
+        public void AlignCellsCenter(bool onlySelected = false, bool includeHeader = false)
+            => _styleHelper.AlignCellsCenter(onlySelected, includeHeader);
+
+        public void AlignCellsRight(bool onlySelected = false, bool includeHeader = false)
+            => _styleHelper.AlignCellsRight(onlySelected, includeHeader);
+
+        // ---------- ESTADOS (para habilitar/deshabilitar botones) ----------
+        public (bool canGrowRows, bool canShrinkRows, bool canGrowHeader, bool canShrinkHeader)
+            GetRowHeaderNudgeState()
+            => _styleHelper.GetCanNudgeState();
+
+        public (bool canWider, bool canNarrower)
+            GetColumnNudgeState(bool onlySelected = false)
+                     => _styleHelper.GetCanNudgeColumnsState(onlySelected: onlySelected);
+
+        // ---------- BORDES (GRILLA) ----------
+        public void SetAllBorders()
+            => _styleHelper.SetGridAllBorders();
+
+        public void SetVerticalBordersOnly()
+            => _styleHelper.SetGridVerticalBordersOnly();
+
+        public void SetNoBorders()
+            => _styleHelper.SetGridNoBorders();
+
+        // ---------- COPIAR ----------
+        public void CopyAsText()
+            => _styleHelper.CopySelectedToClipboardAsText(includeHeaders: true);
+
+        public void CopyAsCell()
+            => _styleHelper.CopySelectedToClipboardStandard();
+
+        public void FocusSearchBar() => tbSearchBar.Focus();
+        public void FocusFirstDGVRow() => EnsureDgvRowSelection();
+        public void OpenFiltersPanel()
+        {
+            BtnShowFilters_Click(this, EventArgs.Empty);
+            if (tableLayoutPanelFilters.Visible)
+                rbAtLeastOneCategory.Focus();
+            
+            else 
+                FocusFirstDGVRow();
+        }
         #region For choose CheckedListBox items height
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         private static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
@@ -125,7 +198,11 @@ namespace WinformsUI.UserControls.CustomDGV
 
             AddTranslatables();
             ApplyTranslation();
-            SetDGVAppearence();
+
+            if (_firstOpen)
+                SetDGVAppearence();
+
+            _firstOpen = false;
         }
 
         /// <summary>
@@ -202,7 +279,7 @@ namespace WinformsUI.UserControls.CustomDGV
 
         private void CheckedListBoxMouseLeave(object sender, EventArgs e) => checkedListBoxFilters.SelectedIndex = -1;
 
-        private void InitializeVariables() =>_placeholder = _appSettings.SearchBarPlaceHolder;
+        private void InitializeVariables() => _placeholder = _appSettings.SearchBarPlaceHolder;
 
         private void SetFormAppearence()
         {

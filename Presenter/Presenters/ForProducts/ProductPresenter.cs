@@ -1,10 +1,6 @@
-﻿using BLL.LogicLayers;
-using BLL.LogicLayers.Products;
+﻿using BLL.LogicLayers.Products;
 using BLL.DTOs;
 using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Collections.Generic;
 using BLL.LogicLayers.Products.Categories.UseCases;
 
 namespace Presenter.ForProducts
@@ -34,33 +30,22 @@ namespace Presenter.ForProducts
             _uCGetAllCategories = uCGetAllCategories;
 
             WireEvents();
+            ApplyDarkTheme(); 
         }
+
+        private void ApplyDarkTheme() => _view.ApplyGlobalPalette();
 
         private void WireEvents()
         {
-            // Mapeo de eventos GENÉRICOS (ICrudView<ProductDTO>)
             _view.CreateRequested += (s, e) => OnOpenCreationForm();
             _view.UpdateRequested += (s, e) => UpdateProduct(e);
             _view.DeleteRequested += (s, e) => DeleteProduct(e);
-
-            // Evento para listar (renombrado de CachingAll... a ListAll...)
             _view.ListAllRequested += (s, e) => GetAllProducts();
-
         }
 
-        private void OnOpenCreationForm() => _view.OpenCreationForm();
+        private void OnOpenCreationForm() => _view.OpenCreationView();
 
-        private async void UpdateProduct(ProductDTO e)
-        {
-            if (e == null) throw new ArgumentNullException(nameof(e));
-
-            var opRes = await _ucUpdate.ExecuteAsync(e);
-            ShowResult(opRes);
-
-            // Refrescar lista si salió bien
-            if (!opRes.Errors.Any()) GetAllProducts();
-        }
-
+        private async void UpdateProduct(ProductDTO e) => await _view.OpenUpdateView();
         private async void DeleteProduct(ProductDTO e)
         {
             if (e == null) throw new ArgumentNullException(nameof(e));
@@ -82,16 +67,11 @@ namespace Presenter.ForProducts
             var opResult = tuple.Item2;
 
             var categTuple = await _uCGetAllCategories.ExecuteAsync();
-
             var categories = categTuple.Item1;
 
             _view.SetSearchFilters(categories);
 
-            if (!opResult.Success)
-            {
-                ShowResult(opResult);
-            }
-            else
+            if (opResult.Success)
             {
                 try
                 {
@@ -101,6 +81,10 @@ namespace Presenter.ForProducts
                 {
                     _view.FillDGV();
                 }
+            }
+            else
+            {
+                ShowResult(opResult);
             }
         }
 

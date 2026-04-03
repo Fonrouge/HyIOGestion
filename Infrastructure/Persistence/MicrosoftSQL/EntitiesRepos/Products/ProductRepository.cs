@@ -54,13 +54,13 @@ namespace DAL.Persistence.MicrosoftSQL
 
             await ExecuteNonQueryAsync(query, cmd => SetParameters(cmd, entity));
 
-            //            // Limpiar relaciones antiguas
-            //            string deleteRelations = "DELETE FROM ProductsCategories WHERE Id_Product = @Id";
-            //         
-            //            await ExecuteNonQueryAsync(deleteRelations, cmd =>
-            //                cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = entity.Id }));
-            //
-            //            await SyncCategories(entity);
+                        // Limpiar relaciones antiguas
+                        string deleteRelations = "DELETE FROM ProductsCategories WHERE Id_Product = @Id";
+                     
+                        await ExecuteNonQueryAsync(deleteRelations, cmd =>
+                            cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = entity.Id }));
+            
+                        await SyncCategories(entity);
         }
 
         /// <summary>
@@ -77,6 +77,7 @@ namespace DAL.Persistence.MicrosoftSQL
             await ExecuteNonQueryAsync(query, cmd =>
                 cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = entityId }));
         }
+
         public async Task<Product> GetByIdAsync(Guid id)
         {
             Product product = null;
@@ -86,7 +87,8 @@ namespace DAL.Persistence.MicrosoftSQL
                     p.IsActive, p.CreatedAt, p.IsDeleted, p.DVH,
                     c.Id as CategoryId, 
                     c.Name as CategoryName, 
-                    c.Description as CategoryDesc
+                    c.Description as CategoryDesc,
+                    c.DVH as CategoryDVH
                 FROM Products p
                 LEFT JOIN ProductsCategories pc ON p.Id = pc.Id_Product
                 LEFT JOIN Categories c ON pc.Id_Category = c.Id
@@ -109,19 +111,20 @@ namespace DAL.Persistence.MicrosoftSQL
         {
             var productDictionary = new Dictionary<Guid, Product>();
 
-            string query = $@"
-                              SELECT 
-                                  p.Id, p.Name, p.Description, p.Price, p.Stock, 
-                                  p.IsActive, p.CreatedAt, p.IsDeleted, p.DVH,
-                                  c.Id as CategoryId, 
-                                  c.Name as CategoryName, 
-                                  c.Description as CategoryDesc
-                              FROM Products p
-                              LEFT JOIN ProductsCategories pc ON p.Id = pc.Id_Product
-                              LEFT JOIN Categories c ON pc.Id_Category = c.Id
-                              WHERE p.IsDeleted = 0
-                              ORDER BY p.Name
-                              ";
+            string query = @"
+                SELECT 
+                    p.Id, p.Name, p.Description, p.Price, p.Stock, 
+                    p.IsActive, p.CreatedAt, p.IsDeleted, p.DVH,
+                    c.Id as CategoryId, 
+                    c.Name as CategoryName, 
+                    c.Description as CategoryDesc,
+                    c.DVH as CategoryDVH
+                FROM Products p
+                LEFT JOIN ProductsCategories pc ON p.Id = pc.Id_Product
+                LEFT JOIN Categories c ON pc.Id_Category = c.Id
+                WHERE p.IsDeleted = 0
+                ORDER BY p.Name
+                ";
 
             await ExecuteReaderAsync(query, null, reader =>
             {
@@ -146,7 +149,8 @@ namespace DAL.Persistence.MicrosoftSQL
                     p.IsActive, p.CreatedAt, p.IsDeleted, p.DVH,
                     c.Id as CategoryId, 
                     c.Name as CategoryName, 
-                    c.Description as CategoryDesc
+                    c.Description as CategoryDesc,
+                    c.DVH as CategoryDVH
                 FROM Products p
                 LEFT JOIN ProductsCategories pc ON p.Id = pc.Id_Product
                 LEFT JOIN Categories c ON pc.Id_Category = c.Id
@@ -280,11 +284,15 @@ namespace DAL.Persistence.MicrosoftSQL
         {
             if (reader["CategoryId"] != DBNull.Value)
             {
-                var category = Category.Create
+                var category = Category.Reconstitute
                 (
+                    id: (Guid)reader["CategoryId"],
                     name: reader["CategoryName"].ToString(),
                     description: reader["CategoryDesc"] != DBNull.Value
                         ? reader["CategoryDesc"].ToString()
+                        : string.Empty,
+                    dvh: reader["CategoryDVH"] != DBNull.Value
+                        ? reader["CategoryDVH"].ToString()
                         : string.Empty
                 );
 

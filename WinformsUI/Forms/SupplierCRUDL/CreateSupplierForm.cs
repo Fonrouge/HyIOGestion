@@ -1,18 +1,8 @@
 ﻿using BLL.DTOs;
-using BLL.LogicLayers;
 using Presenter.ForSupplier;
 using Shared;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Windows.Forms.DataVisualization.Charting;
 using Winforms.Theme;
 using WinformsUI.Infrastructure.Translations;
 using WinformsUI.UserControls.Wizard;
@@ -51,6 +41,7 @@ namespace WinformsUI.Forms.SupplierCRUDL
             InitializeWizard();
             ApplyGlobalPalette();
             WireCommonEvents();
+            UpdateFormSize();
 
         }
         public void ApplyGlobalPalette() => DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
@@ -79,6 +70,7 @@ namespace WinformsUI.Forms.SupplierCRUDL
                 CompanyName = txtCompanyName.Text,
                 ContactName = txtContactName.Text,
                 TaxId = txtTaxId.Text,
+                TaxNumber = txtTaxNumber.Text,
                 Mail = txtMail.Text,
                 Phone = txtPhone.Text,
                 Address = txtAddress.Text,
@@ -134,8 +126,6 @@ namespace WinformsUI.Forms.SupplierCRUDL
             _transMgr.RemoveFormNotify(this);
 
             base.Dispose(disposing);
-
-            this.Close();
         }
 
     }
