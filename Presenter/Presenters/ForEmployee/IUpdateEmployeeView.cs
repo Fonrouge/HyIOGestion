@@ -1,7 +1,7 @@
 ﻿using BLL.DTOs;
 using System;
 
-namespace Presenter.Presenters.ForEmployee
+namespace Presenter.ForEmployee
 {
     public interface IUpdateEmployeeView
     {         

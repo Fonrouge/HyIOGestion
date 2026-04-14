@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Presenter.Messaging;
+using System;
 
 namespace Shared.ArchitecturalMarkers
 {
@@ -7,11 +8,9 @@ namespace Shared.ArchitecturalMarkers
         event EventHandler ContractRequested;
         event EventHandler ExpandRequested;
         event EventHandler CloseWindowRequested;
-        event EventHandler RestoreWindowFromMinimizedRequested;
-        event EventHandler MinimizeWindowRequested;              
+        event EventHandler RestoreFromMinimizedRequested;
+        event EventHandler MinimizeRequested;              
 
-        Guid Id { get; }
-        bool IsExpanded { get; set; }
         bool IsMinimized { get; set; }
         bool IsMaximized { get; set; }
 
@@ -20,13 +19,16 @@ namespace Shared.ArchitecturalMarkers
         void CloseWindow();
         void RestoreWindowFromMinimized();
         void MinimizeWindow();
-
+        void CloseWholeForm(HostFormCloseRequestMessage message);
 
         void SetTitle(string Title);
         string GetTitle();
         void Initialize(IAppEnvironment ae);
 
         void SetContent(object content); // Recibe el formulario de caso de uso (C)
-                        
+        void SetViewId(Guid Id);
+        Guid GetViewId();
+        Guid _viewId { get; set; }
+
     }
 }

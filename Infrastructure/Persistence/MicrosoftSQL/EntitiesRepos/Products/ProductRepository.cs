@@ -54,13 +54,13 @@ namespace DAL.Persistence.MicrosoftSQL
 
             await ExecuteNonQueryAsync(query, cmd => SetParameters(cmd, entity));
 
-                        // Limpiar relaciones antiguas
-                        string deleteRelations = "DELETE FROM ProductsCategories WHERE Id_Product = @Id";
-                     
-                        await ExecuteNonQueryAsync(deleteRelations, cmd =>
-                            cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = entity.Id }));
-            
-                        await SyncCategories(entity);
+            // Limpiar relaciones antiguas
+            string deleteRelations = "DELETE FROM ProductsCategories WHERE Id_Product = @Id";
+
+            await ExecuteNonQueryAsync(deleteRelations, cmd =>
+                cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = entity.Id }));
+
+            await SyncCategories(entity);
         }
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace DAL.Persistence.MicrosoftSQL
         {
             var productDictionary = new Dictionary<Guid, Product>();
 
-            string query = @"
+            string query = $@"
                 SELECT 
                     p.Id, p.Name, p.Description, p.Price, p.Stock, 
                     p.IsActive, p.CreatedAt, p.IsDeleted, p.DVH,
@@ -139,6 +139,42 @@ namespace DAL.Persistence.MicrosoftSQL
 
             return productDictionary.Values;
         }
+
+        public async Task<IEnumerable<Product>> GetAllDeletedAsync()
+        {
+            var productDictionary = new Dictionary<Guid, Product>();
+
+            string query = $@"
+                SELECT 
+                    p.Id, p.Name, p.Description, p.Price, p.Stock, 
+                    p.IsActive, p.CreatedAt, p.IsDeleted, p.DVH,
+                    c.Id as CategoryId, 
+                    c.Name as CategoryName, 
+                    c.Description as CategoryDesc,
+                    c.DVH as CategoryDVH
+                FROM Products p
+                LEFT JOIN ProductsCategories pc ON p.Id = pc.Id_Product
+                LEFT JOIN Categories c ON pc.Id_Category = c.Id
+                WHERE p.IsDeleted = 1
+                ORDER BY p.Name
+                ";
+
+            await ExecuteReaderAsync(query, null, reader =>
+            {
+                Guid productId = (Guid)reader["Id"];
+                if (!productDictionary.TryGetValue(productId, out Product product))
+                {
+                    product = MapProduct(reader);
+                    productDictionary.Add(productId, product);
+                }
+                MapCategoryToProduct(reader, product);
+            });
+
+            return productDictionary.Values;
+        }
+
+
+
 
         public async Task<Product> GetByNameAsync(string name)
         {
@@ -242,7 +278,6 @@ namespace DAL.Persistence.MicrosoftSQL
         {
             if (product.Categories == null || !product.Categories.Any()) return;
 
-            // Incluimos el campo DVH en la tabla intermedia
             string query = @"INSERT INTO ProductsCategories (Id_Product, Id_Category, DVH) 
                              VALUES (@IdProduct, @IdCategory, @DVH)";
 
@@ -261,6 +296,25 @@ namespace DAL.Persistence.MicrosoftSQL
                     });
                 });
             }
+        }
+        public async Task<IEnumerable<ProductCategoryRelacionDTO>> GetAllProductCategoryAsync()
+        {
+            var relations = new List<ProductCategoryRelacionDTO>();
+
+            // Query simple a la tabla intermedia
+            string query = "SELECT Id_Product, Id_Category, DVH FROM ProductsCategories";
+
+            await ExecuteReaderAsync(query, null, reader =>
+            {
+                relations.Add(ProductCategoryRelacionDTO.Reconstitute(
+
+                    (Guid)reader["Id_Product"],
+                    (Guid)reader["Id_Category"],
+                    reader["DVH"] != DBNull.Value ? reader["DVH"].ToString() : string.Empty
+                ));
+            });
+
+            return relations;
         }
 
         private Product MapProduct(SqlDataReader reader)

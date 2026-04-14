@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Winforms.Theme;
+using WinformsUI.Infrastructure.Shortcuts;
 using WinformsUI.Infrastructure.Translations;
 using WinformsUI.UserControls.SearchBar;
 
@@ -21,6 +22,7 @@ namespace WinformsUI.UserControls.CustomDGV
         public readonly ITranslatableControlsManager _transMgr;
 
         private readonly DGVCellsStyle _styleHelper = new DGVCellsStyle();
+        private ShortcutManager _shortcutMgr;
 
         private string _placeholder;
         private dynamic _searchBehavior;
@@ -42,6 +44,7 @@ namespace WinformsUI.UserControls.CustomDGV
         )
         {
             SuspendLayout();
+
             _listTools = listTools;
             _appSettings = appSettings;
             _transMgr = transMgr;
@@ -58,10 +61,16 @@ namespace WinformsUI.UserControls.CustomDGV
             panelHorDivider.Visible = false;
             tableLayoutPanelFilters.Visible = false;
             _styleHelper.SetDGV(mainDGV);
+            SetShortcuts();
             ResumeLayout();
         }
-
         public DataGridView MainDGV => mainDGV;
+        private void SetShortcuts() => _shortcutMgr = ShortcutManager.Attach(this)
+               .BindWheelZoom(() => this.ZoomIn(), () => this.ZoomOut())
+               .Add("Ctrl+H", () => ToggleSearchBar())
+               .Add("Ctrl+F", () => ToggleFiltersPanel())
+            ;
+
 
         // ====================== APIS PÚBLICAS ======================
         /// <summary>
@@ -88,6 +97,15 @@ namespace WinformsUI.UserControls.CustomDGV
         }
 
         // ====================== APIs DE PERSONALIZACIÓN ======================
+
+        public void ToggleSearchBar() => tableLayoutPanelSearchControls.Visible = !tableLayoutPanelSearchControls.Visible;
+        public bool IsToggleSearchBarVisible() => tableLayoutPanelSearchControls.Visible;
+        public void ToggleFiltersPanel() => BtnShowFilters_Click(this, EventArgs.Empty);
+
+        // ---------- ZOOM ----------
+        public void ZoomIn() => _styleHelper.ZoomGrid(mainDGV, 1.0f);
+
+        public void ZoomOut() => _styleHelper.ZoomGrid(mainDGV, -1.0f);
 
         // ---------- ALTURAS ----------
         public void NudgeRowHeight(int deltaPx)
@@ -149,10 +167,11 @@ namespace WinformsUI.UserControls.CustomDGV
             BtnShowFilters_Click(this, EventArgs.Empty);
             if (tableLayoutPanelFilters.Visible)
                 rbAtLeastOneCategory.Focus();
-            
-            else 
+
+            else
                 FocusFirstDGVRow();
         }
+
         #region For choose CheckedListBox items height
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         private static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
@@ -260,6 +279,9 @@ namespace WinformsUI.UserControls.CustomDGV
                 cbColumnsNameFilterDate.SelectedIndex = 0;
         }
 
+        /// <summary>
+        /// Método profiláctico que asegura que siempre haya una fila seleccionada en el DataGridView (si tiene filas), para evitar ecepciones sobre objetos potencialmente nulos.
+        /// </summary>
         public void EnsureDgvRowSelection()
         {
             if (mainDGV.Rows.Count > 0 && mainDGV.SelectedRows.Count == 0)
@@ -277,6 +299,11 @@ namespace WinformsUI.UserControls.CustomDGV
             checkedListBoxFilters.MouseLeave += CheckedListBoxMouseLeave;
         }
 
+        /// <summary>
+        /// Deselecciona cualquier item del CheckedListBox cuando el mouse sale de su área, para coherencia visual con una aplicación "moderna".
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CheckedListBoxMouseLeave(object sender, EventArgs e) => checkedListBoxFilters.SelectedIndex = -1;
 
         private void InitializeVariables() => _placeholder = _appSettings.SearchBarPlaceHolder;
@@ -347,6 +374,7 @@ namespace WinformsUI.UserControls.CustomDGV
             if (tableLayoutPanelFilters.Visible)
             {
                 string selectedColumn = null;
+
                 if (cbColumnsNameFilterDate.SelectedItem is DateColumnItem dcItem &&
                     !string.IsNullOrEmpty(dcItem.PropertyName))
                 {

@@ -25,12 +25,14 @@ namespace WinformsUI.Forms.Base
         // Variables para control de estado
         private Size _previousSize;
         private Point _previousLocation;
-        public bool IsExpanded { get; set; } = false;
         public bool IsMinimized { get; set; } = false;
         public bool IsMaximized { get; set; } = false;
 
         private string _title;
+        public Guid _viewId { get; set; }
 
+        private readonly Guid _id = Guid.NewGuid();  // Nuevo: ID único
+        public Guid Id => _id;  // Nuevo: Exposición
 
         #region === Inicialización ===
 
@@ -44,10 +46,11 @@ namespace WinformsUI.Forms.Base
             _messenger = messenger;
 
             InitializeComponent();
+            this.MinimumSize = new Size(100, 100); // Tamaño mínimo para evitar problemas de redimensionado
 
 
         }
-
+     
         public void SetTitle(string Title)
         {
             _title = Title;
@@ -57,6 +60,13 @@ namespace WinformsUI.Forms.Base
             if (_minimizedWindowBtn != null)
                 _minimizedWindowBtn.Text = Title;
         }
+
+        public void SetViewId(Guid ViewId)
+        {
+            _viewId = ViewId;
+        }
+
+        public Guid GetViewId() => _viewId;
 
         public string GetTitle()
         {
@@ -109,13 +119,7 @@ namespace WinformsUI.Forms.Base
         private Button _minimizedWindowBtn;
 
         private FormTypeEnum _formType { get; set; }
-
-
-
-
         #endregion
-
-
 
 
         public void SetContent(object content)
@@ -184,7 +188,7 @@ namespace WinformsUI.Forms.Base
                 //Formularios internos.
                 case FormTypeEnum.Module:
 
-                    DarkTheme.RedrawBorders = true;
+                    //      DarkTheme.RedrawBorders = true;
                     break;
 
                 case FormTypeEnum.Configs:
@@ -206,14 +210,11 @@ namespace WinformsUI.Forms.Base
         private void SetUpBasicEvents()
         {
             WireTitleBarEvents();
-
             CreateInstanceMinimizedWindow(); //Ya se deja instanciada su representación minimizada antes de asociarla a una acción que requiera su existencia en los eventos de botones.
             WireButtonsEvents();
         }
 
 
-        private readonly Guid _id = Guid.NewGuid();  // Nuevo: ID único
-        public Guid Id => _id;  // Nuevo: Exposición
 
 
         protected override void OnFormClosing(FormClosingEventArgs e)
@@ -231,14 +232,32 @@ namespace WinformsUI.Forms.Base
             {
                 _parentContainer.SizeChanged -= ContainerSizeChanged;
             }
-            // Notificación vía Messenger: Usa GUID como ID (robusto, no depende de _title)
-            var closedMessage = new HostFormClosedMessage(_id, this);
+
+            var closedMessage = new HostFormClosedNotificationMessage(_viewId, this);
+
             _messenger.Send(closedMessage);
-            if (e != null)
-                base.OnFormClosing(e);
+        
+          //  if (e != null)
+          //      base.OnFormClosing(e);
 
             base.Dispose();
+            this.Close();
         }
+     
+        public void CloseWholeForm(HostFormCloseRequestMessage message)
+        {
+            if (message.Payload == _viewId)
+            {
+                OnFormClosing(null);
+            }
+        }
+
+        public void CloseWindow()
+        {
+            OnFormClosing(null);
+        }
+
+
         #endregion
 
         #endregion
@@ -249,8 +268,8 @@ namespace WinformsUI.Forms.Base
         public event EventHandler ExpandRequested;
         public event EventHandler CloseWindowRequested;
 
-        public event EventHandler RestoreWindowFromMinimizedRequested;
-        public event EventHandler MinimizeWindowRequested;
+        public event EventHandler RestoreFromMinimizedRequested;
+        public event EventHandler MinimizeRequested;
 
 
 
@@ -258,35 +277,37 @@ namespace WinformsUI.Forms.Base
 
         public void WireButtonsEvents()
         {
-            btnClose.Click += (s, e) => CloseWindowRequested?.Invoke(this, EventArgs.Empty);
+            btnClose.Click += (s, e) => CloseWindowRequested?.Invoke(this, EventArgs.Empty); //Pega en CloseWindow();
 
             btnExpand.Click += (s, e) =>
             {
                 SuspendLayout();
-                if (IsExpanded) ContractRequested?.Invoke(this, EventArgs.Empty);
-                else if (!IsExpanded) ExpandRequested?.Invoke(this, EventArgs.Empty);
+                if (IsMaximized) ContractRequested?.Invoke(this, EventArgs.Empty);
+                else if (!IsMaximized) ExpandRequested?.Invoke(this, EventArgs.Empty);
                 ResumeLayout();
             };
 
             btnMinimize.Click += (s, e) =>
             {
                 SuspendLayout();
-                MinimizeWindowRequested?.Invoke(this, EventArgs.Empty);
+                MinimizeRequested?.Invoke(this, EventArgs.Empty);
                 ResumeLayout();
             };
 
             _minimizedWindowBtn.Click += (s, e) =>
             {
                 SuspendLayout();
-                RestoreWindowFromMinimizedRequested?.Invoke(this, EventArgs.Empty);
+                RestoreFromMinimizedRequested?.Invoke(this, EventArgs.Empty);
                 ResumeLayout();
             };
         }
 
+      //  public void ThemingNotifiedByConfigurationsModule() => DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
 
         private void ApplyPalette(Palette p)
         {
             InternalPalette = p;
+           //             DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
             DarkTheme.Apply(this, InternalPalette);
         }
 
@@ -355,19 +376,19 @@ namespace WinformsUI.Forms.Base
         public void ContractWindow()
         {
             if (_upperMenuPanel == null) return;
-            if (!IsExpanded) return;
+            if (!IsMaximized) return;
 
             SuspendLayout();
             this.Size = _previousSize;
             this.Location = _previousLocation;
-            IsExpanded = false;
+            IsMaximized = false;
             ResumeLayout();
         }
 
         public void ExpandWindow()
         {
             if (_upperMenuPanel == null) return;
-            if (IsExpanded) return;
+            if (IsMaximized) return;
 
             SuspendLayout();
             _previousSize = this.Size;
@@ -375,15 +396,10 @@ namespace WinformsUI.Forms.Base
 
             this.Location = new Point(0, 0);
             this.Size = _parentContainer.Size;
-            IsExpanded = true;
+            IsMaximized = true;
             ResumeLayout();
         }
 
-        public void CloseWindow()
-        {
-            OnFormClosing(null);
-            this.Close();
-        }
 
         public void RestoreWindowFromMinimized()
         {
@@ -460,7 +476,6 @@ namespace WinformsUI.Forms.Base
 
         public void EnableDoubleBuffering(Control control)
         {
-            // Esto habilita la magia interna de Windows para que pinte en memoria antes de mostrarlo
             typeof(Control).InvokeMember("DoubleBuffered",
                 BindingFlags.SetProperty |
                 BindingFlags.Instance |
@@ -504,9 +519,9 @@ namespace WinformsUI.Forms.Base
                 {
                     // A. LÓGICA DE MAXIMIZADO (Despegue)
                     bool isMaximized = (_parentContainer == null && this.WindowState == FormWindowState.Maximized)
-                                       || (_parentContainer != null && IsExpanded);
+                                       || (_parentContainer != null && IsMaximized);
 
-                    if (isMaximized)
+                    if (IsMaximized)
                     {
                         // ... Tu lógica de cálculo de Ratio (es excelente, no la cambies) ...
 
@@ -543,7 +558,7 @@ namespace WinformsUI.Forms.Base
 
         private void Common_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (!IsExpanded)
+            if (!IsMaximized)
             {
                 SuspendLayout();
                 ExpandRequested?.Invoke(this, EventArgs.Empty);
@@ -587,7 +602,7 @@ namespace WinformsUI.Forms.Base
 
         private void ContainerSizeChanged(object sender, EventArgs e)
         {
-            if (IsExpanded && _parentContainer != null)
+            if (IsMaximized && _parentContainer != null)
             {
                 this.SuspendLayout();
                 this.Size = _parentContainer.Size;
@@ -618,7 +633,7 @@ namespace WinformsUI.Forms.Base
 
                 if ((int)m.Result == HTCLIENT)
                 {
-                    if (IsExpanded) return;
+                    if (IsMaximized) return;
 
                     Point screenPoint = new Point(m.LParam.ToInt32());
                     Point clientPoint = this.PointToClient(screenPoint);
@@ -672,6 +687,8 @@ namespace WinformsUI.Forms.Base
             btnMinimize.FlatAppearance.MouseDownBackColor = pressColor;
 
         }
+
+     
     }
 }
-        #endregion
+#endregion

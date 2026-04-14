@@ -1,4 +1,5 @@
 ﻿using Domain.Exceptions.Base;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,6 +13,9 @@ namespace BLL.Infrastructure.AuditLogs
             return new BitacoraDTO
             {
                 Id = entity.Id,
+                SessionId = entity.SessionId,
+                CorrelationId = entity.CorrelationId,
+                HostName = entity.HostName,
                 Timestamp = entity.Timestamp,
                 User = entity.User,
                 Message = entity.Message,
@@ -29,37 +33,46 @@ namespace BLL.Infrastructure.AuditLogs
         {
             if (dto == null) return null;
 
-            if (dto.Id == 0)
+            // Si el Id es vacío, asumimos que es un registro nuevo para persistir
+            if (dto.Id == Guid.Empty)
             {
                 return Bitacora.Create
                 (
-                    dto.User,
-                    dto.Message,
-                    dto.BitacoraType,
-                    dto.Severity,
-                    dto.Success,
-                    dto.TableName,
-                    dto.ExceptionType,
-                    dto.StackTrace
+                    user: dto.User,
+                    message: dto.Message,
+                    sessionId: dto.SessionId,
+                    correlationId: dto.CorrelationId,
+                    type: dto.BitacoraType,
+                    severity: dto.Severity,
+                    success: dto.Success,
+                    hostName: dto.HostName,
+                    tableName: dto.TableName,
+                    exceptionType: dto.ExceptionType,
+                    stackTrace: dto.StackTrace
                 );
             }
 
+            // Si tiene Id, lo reconstituimos con los datos exactos de la BBDD
             return Bitacora.Reconstitute
             (
-                dto.Id,
-                dto.Timestamp,
-                dto.User,
-                dto.Message,
-                (int)dto.BitacoraType,
-                (int)dto.Severity,
-                dto.Success,
-                dto.TableName,
-                dto.ExceptionType,
-                dto.StackTrace,
-                dto.DVH
+                id: dto.Id,
+                timestamp: dto.Timestamp,
+                user: dto.User,
+                message: dto.Message,
+                sessionId: dto.SessionId,
+                correlationId: dto.CorrelationId,
+                type: (int)dto.BitacoraType,
+                severity: (int)dto.Severity,
+                hostName: dto.HostName,
+                success: dto.Success,
+                tableName: dto.TableName,
+                exceptionType: dto.ExceptionType,
+                stackTrace: dto.StackTrace,
+                dvh: dto.DVH
             );
         }
 
-        public static List<BitacoraDTO> ToListDto(IEnumerable<Bitacora> entities) => entities?.Select(ToDto).ToList() ?? new List<BitacoraDTO>();
+        public static List<BitacoraDTO> ToListDto(IEnumerable<Bitacora> entities)
+            => entities?.Select(ToDto).ToList() ?? new List<BitacoraDTO>();
     }
 }

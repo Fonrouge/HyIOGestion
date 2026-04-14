@@ -94,9 +94,11 @@ namespace BLL.LogicLayers.Sales
 
                 // 6. Auditoría
                 var log = _bitacoraFact.Create(
-                    entry: BitacoraCatalogEnum.DeleteOnBD,
+                    entry: BitacoraCatalogEnum.SoftDeleteOnBD,
                     user: currentUser.Id.ToString(),
-                    tableName: _tableNameSale,
+                    tableName: _tableNameSale,                    
+                    sessionId: _sessionProvider.Current.Id,
+                    correlationId: Guid.NewGuid(),
                     extraInfo: $"Se eliminó la venta ID: {dto.Id} - Total: {dto.TotalAmount:C2} ({dto.Items?.Count() ?? 0} ítems)"
                 );
                 await _uow.BitacoraRepo.CreateAsync(log);

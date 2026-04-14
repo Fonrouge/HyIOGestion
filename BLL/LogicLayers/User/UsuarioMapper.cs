@@ -16,7 +16,7 @@ namespace BLL.LogicLayers
                 Id = entity.Id,
                 Username = entity.Username,
                 Password = entity.Password,
-                Language = entity.Language,
+                LanguageCode = entity.Language,
                 DVH = entity.DVH?.Value ?? string.Empty,
                 IsDeleted = entity.IsDeleted,
                 // Aquí podrías inyectar el EmployeeDTO si lo tienes
@@ -34,7 +34,7 @@ namespace BLL.LogicLayers
 
             if (dto.Id == Guid.Empty)
             {
-                return Usuario.Create(dto.Username, dto.Password, dto.Language, dto.EmployeeId);
+                return Usuario.Create(dto.Username, dto.Password, dto.LanguageCode, dto.EmployeeId);
             }
 
             return Usuario.Reconstitute
@@ -42,7 +42,7 @@ namespace BLL.LogicLayers
                 dto.Id,
                 dto.Username,
                 dto.Password,
-                dto.Language,
+                dto.LanguageCode,
                 dto.DVH,
                 dto.EmployeeId,
                 dto.IsDeleted

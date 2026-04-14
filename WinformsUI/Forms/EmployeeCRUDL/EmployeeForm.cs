@@ -1,9 +1,7 @@
 ﻿using BLL.DTOs;
 using Presenter.ForEmployee;
-using Presenter.Presenters.ForEmployee;
 using Shared;
 using System;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Winforms.Theme;
 using WinformsUI.Forms.Base;
@@ -16,6 +14,7 @@ namespace WinformsUI.Forms.EmployeeCRUDL
     public partial class EmployeeForm : BaseManagementForm<EmployeeDTO>, IEmployeeView
     {
         private readonly IFormsFactory _formsFactory;
+        public override event EventHandler OnceLoadedAdvice;
 
         public EmployeeForm
         (
@@ -28,45 +27,17 @@ namespace WinformsUI.Forms.EmployeeCRUDL
             _formsFactory = formsFact;
 
             InitializeComponent();
-            InitializeDGV(this.dgvPanel);
-
+            InitializeDGV();
             WireSpecificEvents();
             AddTranslatables();
+
+            InitializeRibbonControls();
+            InitializePanelToggle();
+
+            this.Load += OnceLoaded;
         }
 
-
-        // =========================================================
-        // IMPLEMENTACIÓN DE IEmployeeView (Mapeo de Eventos a Base)
-        // =========================================================
-        public event EventHandler CreateEmployeeRequested
-        {
-            add => CreateRequested += value;
-            remove => CreateRequested -= value;
-        }
-
-        public event EventHandler<EmployeeDTO> UpdateEmployeeRequested
-        {
-            add => UpdateRequested += value;
-            remove => UpdateRequested -= value;
-        }
-
-        public event EventHandler<EmployeeDTO> DeleteEmployeeRequested
-        {
-            add => DeleteRequested += value;
-            remove => DeleteRequested -= value;
-        }
-
-        public event EventHandler CachingAllEmployeesRequested
-        {
-            add => ListAllRequested += value;
-            remove => ListAllRequested -= value;
-        }
-
-        public event EventHandler CloseEmployeeRequested
-        {
-            add => CloseRequested += value;
-            remove => CloseRequested -= value;
-        }
+        private void OnceLoaded(object sender, EventArgs e) => OnceLoadedAdvice?.Invoke(this, EventArgs.Empty);
 
 
         // =========================================================
@@ -87,7 +58,11 @@ namespace WinformsUI.Forms.EmployeeCRUDL
             base.ApplyTranslation();
         }
 
-        public new void ApplyGlobalPalette() => DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
+        public override void ThemingNotifiedByConfigurationsModule()
+        {
+            DarkTheme.RedrawBorders = true;
+            DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
+        }
 
 
         // =========================================================
@@ -113,6 +88,39 @@ namespace WinformsUI.Forms.EmployeeCRUDL
 
             base.OnUpdateRequest(sender, e);
         }
+
+        protected override void OnEntitySelected(EmployeeDTO entity)
+        {
+            // Hook opcional para acciones dependientes de selección
+        }
+
+        public void OpenUpdateView()
+        {
+            if (_currentSelectedEntity == null)
+            {
+                MessageBox.Show("Primero seleccione un cliente en la grilla");
+            }
+
+            var newUpdateForm = (UpdateEmployeeForm)_formsFactory.EmployeeUpdateForm<IUpdateEmployeeView>();
+            newUpdateForm.SetEmployeeData(_currentSelectedEntity);
+            newUpdateForm.ShowDialog();
+        }
+
+
+        // =============================================================================================================
+        // LINKEO DE CONTROLES (instancia genérica -de BaseForm- ahora apunta a instancia específica de este formulario)
+        // =============================================================================================================
+        private void InitializeDGV() => base.InitializeDGV(this.dgvPanel);
+
+        private new void InitializeRibbonControls()
+        {
+            _dgvRibbonControls = DGVFunctionsControl;
+            _eyeRestRibbonControls = eyeRestRibbon;
+            base.InitializeRibbonControls();
+        }
+
+        public void InitializePanelToggle() => base.ToolStripsPanelToggle(toolStripsPanel);
+
 
         // =========================================================
         // CICLO DE VIDA (Lifecycle)
@@ -140,18 +148,6 @@ namespace WinformsUI.Forms.EmployeeCRUDL
             base.Dispose(disposing); // La base desuscribe el cierre automático
         }
 
-        public Task OpenUpdateView()
-        {
-            if (_currentSelectedEntity == null)
-            {
-                MessageBox.Show("Primero seleccione un cliente en la grilla");
-                return Task.CompletedTask;
-            }
-
-            var newUpdateForm = (UpdateEmployeeForm)_formsFactory.EmployeeUpdateForm<IUpdateEmployeeView>();
-            newUpdateForm.SetEmployeeData(_currentSelectedEntity);
-            newUpdateForm.ShowDialog();            
-            return Task.CompletedTask;
-        }
+      
     }
 }

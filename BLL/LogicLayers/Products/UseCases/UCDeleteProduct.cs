@@ -106,10 +106,13 @@ namespace BLL.LogicLayers.Products
        //         await UpdateDVVAsync(_tableNameProduct, _appSettings.EntitiesConnection);
 
                 // 7. Auditoría
-                var log = _bitacoraFact.Create(
-                    entry: BitacoraCatalogEnum.DeleteOnBD,
+                var log = _bitacoraFact.Create
+                (
+                    entry: BitacoraCatalogEnum.SoftDeleteOnBD,
                     user: currentUser.Id.ToString(),
                     tableName: _tableNameProduct,
+                    sessionId: _sessionProvider.Current.Id,
+                    correlationId: Guid.NewGuid(),
                     extraInfo: $"Se eliminó el producto ID: {dto.Id} (Nombre: {dto.Name})"
                 );
                 await _uow.BitacoraRepo.CreateAsync(log);

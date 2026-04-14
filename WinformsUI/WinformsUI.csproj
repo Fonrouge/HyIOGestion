@@ -197,6 +197,7 @@
     <Compile Include="Infrastructure\Factories\FormsFactory.cs" />
     <Compile Include="Infrastructure\Factories\IFormsFactory.cs" />
     <Compile Include="Infrastructure\Localization\ILocalizationService.cs" />
+    <Compile Include="Infrastructure\Localization\LanguageInfo.cs" />
     <Compile Include="Infrastructure\Localization\LocalizationService.cs" />
     <Compile Include="Infrastructure\Shells\AppEnvironment.cs" />
     <Compile Include="Infrastructure\Shells\FormTypeEnum.cs" />
@@ -225,21 +226,28 @@
     <Compile Include="UserControls\CustomDGV\CustomDGVForm.Designer.cs">
       <DependentUpon>CustomDGVForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\CustomDGV\CustomDGVFunctions.cs">
+    <Compile Include="UserControls\CustomDGV\ZoomManager.cs" />
+    <Compile Include="UserControls\Ribbon\CommunicationRibbon.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UserControls\CustomDGV\CustomDGVFunctions.Designer.cs">
-      <DependentUpon>CustomDGVFunctions.cs</DependentUpon>
+    <Compile Include="UserControls\Ribbon\CommunicationRibbon.Designer.cs">
+      <DependentUpon>CommunicationRibbon.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\Ribbon\CustomDGVRibbon.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\Ribbon\CustomDGVRibbon.Designer.cs">
+      <DependentUpon>CustomDGVRibbon.cs</DependentUpon>
     </Compile>
     <Compile Include="UserControls\CustomDGV\DGVCellsStyle.cs" />
     <Compile Include="UserControls\CustomDGV\ICustomDGVFactory.cs" />
-    <Compile Include="UserControls\CustomDGV\IICustomDGVFormII.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UserControls\CustomDGV\IICustomDGVFormII.Designer.cs">
-      <DependentUpon>IICustomDGVFormII.cs</DependentUpon>
-    </Compile>
     <Compile Include="Helpers\DoubleBuffering.cs" />
+    <Compile Include="UserControls\Ribbon\EyeRestRibbon.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\Ribbon\EyeRestRibbon.Designer.cs">
+      <DependentUpon>EyeRestRibbon.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\SearchBar\SearchBehavior.cs" />
     <Compile Include="UserControls\Wizard\IWizardPanelNavigator.cs" />
     <Compile Include="UserControls\Wizard\WizardPanelNavigator.cs" />
@@ -320,11 +328,14 @@
     <EmbeddedResource Include="UserControls\CustomDGV\CustomDGVForm.resx">
       <DependentUpon>CustomDGVForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\CustomDGV\CustomDGVFunctions.resx">
-      <DependentUpon>CustomDGVFunctions.cs</DependentUpon>
+    <EmbeddedResource Include="UserControls\Ribbon\CommunicationRibbon.resx">
+      <DependentUpon>CommunicationRibbon.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UserControls\CustomDGV\IICustomDGVFormII.resx">
-      <DependentUpon>IICustomDGVFormII.cs</DependentUpon>
+    <EmbeddedResource Include="UserControls\Ribbon\CustomDGVRibbon.resx">
+      <DependentUpon>CustomDGVRibbon.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\Ribbon\EyeRestRibbon.resx">
+      <DependentUpon>EyeRestRibbon.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

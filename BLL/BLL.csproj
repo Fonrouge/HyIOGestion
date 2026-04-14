@@ -60,9 +60,11 @@
     <Compile Include="Infrastructure\Errors\IErrorsFactory.cs" />
     <Compile Include="LogicLayers\Clients\UseCases\IUCCreateClient.cs" />
     <Compile Include="LogicLayers\Clients\UseCases\IUCDeleteClient.cs" />
+    <Compile Include="LogicLayers\Clients\UseCases\IUCGetClientById.cs" />
     <Compile Include="LogicLayers\Clients\UseCases\IUCUpdateClient.cs" />
     <Compile Include="LogicLayers\Clients\UseCases\UCCreateClient.cs" />
     <Compile Include="LogicLayers\Clients\UseCases\UCDeleteClient.cs" />
+    <Compile Include="LogicLayers\Clients\UseCases\UCGetClientById.cs" />
     <Compile Include="LogicLayers\Clients\UseCases\UCUpdateClient.cs" />
     <Compile Include="LogicLayers\Employees\UseCases\IUCCreateEmployee.cs" />
     <Compile Include="LogicLayers\Employees\UseCases\IUCDeleteEmployee.cs" />
@@ -72,6 +74,7 @@
     <Compile Include="LogicLayers\Employees\UseCases\UCDeleteEmployee.cs" />
     <Compile Include="LogicLayers\Employees\UseCases\UCGetAllEmployees.cs" />
     <Compile Include="LogicLayers\Employees\UseCases\UCUpdateEmployee.cs" />
+    <Compile Include="LogicLayers\IntegrityFacade.cs" />
     <Compile Include="LogicLayers\Payments\UseCases\IUCCreatePayment.cs" />
     <Compile Include="LogicLayers\Payments\UseCases\IUCDeletePayment.cs" />
     <Compile Include="LogicLayers\Payments\UseCases\IUCGetAllPayments.cs" />
@@ -113,9 +116,11 @@
     <Compile Include="LogicLayers\Suppliers\UseCases\UCGetAllSuppliers.cs" />
     <Compile Include="LogicLayers\Suppliers\UseCases\UCUpdateSupplier.cs" />
     <Compile Include="LogicLayers\Clients\UseCases\IUCGetAllClients.cs" />
-    <Compile Include="LogicLayers\User\UseCases\IUCModifyUser.cs" />
+    <Compile Include="LogicLayers\User\UseCases\IUCGetUserById.cs" />
+    <Compile Include="LogicLayers\User\UseCases\IUCUpdateUser.cs" />
     <Compile Include="LogicLayers\Clients\UseCases\UCGetAllClients.cs" />
-    <Compile Include="LogicLayers\User\UseCases\UCModifyUser.cs" />
+    <Compile Include="LogicLayers\User\UseCases\UCGetUserById.cs" />
+    <Compile Include="LogicLayers\User\UseCases\UCUpdateUser.cs" />
     <Compile Include="LogicLayers\Products\Categories\CategoryDTO.cs" />
     <Compile Include="LogicLayers\Products\Categories\CategoryMapper.cs" />
     <Compile Include="LogicLayers\Clients\ClientDTO.cs" />
@@ -149,7 +154,7 @@
     <Compile Include="LogicLayers\User\UseCases\IUCCreateUser.cs" />
     <Compile Include="Infrastructure\Integrity\IVerifyDVH.cs" />
     <Compile Include="LogicLayers\User\UseCases\UCCreateUser.cs" />
-    <Compile Include="Infrastructure\Integrity\DVHVerifier.cs" />
+    <Compile Include="Infrastructure\Integrity\VerifyDVH.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.csproj">

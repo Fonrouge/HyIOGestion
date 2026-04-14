@@ -39,12 +39,16 @@ namespace WinformsUI.Forms.SupplierCRUDL
             InitializeComponent();
             AddTranslatables();
             InitializeWizard();
-            ApplyGlobalPalette();
+            ThemingNotifiedByConfigurationsModule();
             WireCommonEvents();
             UpdateFormSize();
 
         }
-        public void ApplyGlobalPalette() => DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
+        public void ThemingNotifiedByConfigurationsModule()
+        {
+            DarkTheme.RedrawBorders = true;
+            DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
+        }
 
         private void InitializeWizard()
         {
@@ -75,7 +79,7 @@ namespace WinformsUI.Forms.SupplierCRUDL
                 Phone = txtPhone.Text,
                 Address = txtAddress.Text,
                 City = txtCity.Text,
-                Observations = txtObservations.Text,                
+                Observations = txtObservations.Text,
             };
 
             CreateSupplierRequested?.Invoke(this, newSupplierDto);

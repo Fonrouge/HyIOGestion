@@ -93,7 +93,16 @@ namespace BLL.LogicLayers.Products
                 await _uow.ProductRepo.CreateAsync(newProduct);
 
                 // 6. Auditoría (Bitácora)            
-                var log = _bitacoraFact.Create(BitacoraCatalogEnum.CreateOnBD, currentUser.Id.ToString(), _tableNameProduct, $"Creado: {newProduct.Name.Value}");
+                var log = _bitacoraFact.Create
+                (
+                    entry: BitacoraCatalogEnum.CreateOnBD, 
+                    currentUser.Id.ToString(),
+                    tableName: _tableNameProduct,
+                    sessionId: _sessionProvider.Current.Id,
+                    correlationId: Guid.NewGuid(),
+                    extraInfo: $"Creado: {newProduct.Name.Value}"
+                );
+
                 await _uow.BitacoraRepo.CreateAsync(log);
 
                 await _uow.CommitAsync();

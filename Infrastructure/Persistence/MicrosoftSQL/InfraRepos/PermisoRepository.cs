@@ -92,6 +92,121 @@ namespace DAL.Persistence.MicrosoftSQL
             return lista;
         }
 
+        public async Task<IEnumerable<PermisoComponente>> GetAllAsync()
+        {
+            var lista = new List<PermisoComponente>();
+            SqlConnection conn = _currentTransaction?.Connection ?? new SqlConnection(_appSettings.SecurityConnection);
+            bool isExternalConn = _currentTransaction?.Connection != null;
+
+            try
+            {
+                // Traemos solo los permisos raíz (o todos los de la tabla según tu lógica de negocio)
+                // que coincidan con el estado de borrado lógico.
+                string query = @"SELECT Id, Nombre, Permiso, EsFamilia, DVH 
+                         FROM [HSecurity].[dbo].[Permiso]";
+
+                using (var cmd = new SqlCommand(query, conn))
+                {
+                    if (isExternalConn) cmd.Transaction = _currentTransaction;
+                    if (!isExternalConn) await conn.OpenAsync();
+
+                    var tempRows = new List<(Guid Id, string Nombre, string Codigo, bool EsFamilia, string Dvh)>();
+
+                    using (var reader = await cmd.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            tempRows.Add((
+                                Id: (Guid)reader["Id"],
+                                Nombre: reader["Nombre"].ToString(),
+                                Codigo: reader["Permiso"].ToString(),
+                                EsFamilia: (bool)reader["EsFamilia"],
+                                Dvh: reader["DVH"].ToString()
+                            ));
+                        }
+                    }
+
+                    foreach (var row in tempRows)
+                    {
+                        PermisoComponente c;
+                        if (row.EsFamilia)
+                        {
+                            c = new Familia { Id = row.Id, Nombre = row.Nombre, PermisoCode = row.Codigo };
+                        }
+                        else
+                        {
+                            c = new Patente { Id = row.Id, Nombre = row.Nombre, PermisoCode = row.Codigo };
+                        }
+
+                        c.DVH = !string.IsNullOrEmpty(row.Dvh) ? DvhVo.Create(row.Dvh) : null;
+
+                        // Si es familia, cargamos sus hijos recursivamente
+                        // Nota: Los hijos suelen cargarse sin importar su IsDeleted o 
+                        // podrías filtrar también dentro de FillFamilyChildrenAsync
+                        if (row.EsFamilia)
+                        {
+                            await FillFamilyChildrenAsync(c, conn);
+                        }
+
+                        lista.Add(c);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                var x = ex.Message;
+            }
+            finally
+            {
+                if (!isExternalConn) conn.Dispose();
+            }
+
+            return lista;
+        }
+
+        public async Task<List<PermisoRelacionDTO>> GetAllPermisoPermisoAsync()
+        {
+            var lista = new List<PermisoRelacionDTO>();
+            SqlConnection conn = _currentTransaction?.Connection ?? new SqlConnection(_appSettings.SecurityConnection);
+            bool isExternalConn = _currentTransaction?.Connection != null;
+
+            try
+            {
+                string query = @"SELECT Id_Padre, Id_Hijo, DVH 
+                         FROM [HSecurity].[dbo].[Permiso_Permiso]";
+
+                using (var cmd = new SqlCommand(query, conn))
+                {
+                    if (isExternalConn) cmd.Transaction = _currentTransaction;
+                    if (!isExternalConn) await conn.OpenAsync();
+
+                    using (var reader = await cmd.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            lista.Add(PermisoRelacionDTO.Reconstitute
+                            (
+                                (Guid)reader["Id_Padre"],
+                                (Guid)reader["Id_Hijo"],
+                                reader["DVH"]?.ToString()
+                            ));
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log o manejo de error según tu política
+                throw new Exception("Error al obtener las relaciones Permiso_Permiso", ex);
+            }
+            finally
+            {
+                if (!isExternalConn) conn.Dispose();
+            }
+
+            return lista;
+        }
+
         private async Task FillFamilyChildrenAsync(PermisoComponente padre, SqlConnection conn)
         {
             // Sincronizado con la imagen: Relación en Permiso_Permiso
@@ -125,10 +240,12 @@ namespace DAL.Persistence.MicrosoftSQL
             foreach (var childRow in tempChildren)
             {
                 PermisoComponente hijo;
+
                 if (childRow.EsFamilia)
                 {
                     hijo = new Familia { Id = childRow.Id, Nombre = childRow.Nombre, PermisoCode = childRow.Codigo };
                 }
+
                 else
                 {
                     hijo = new Patente { Id = childRow.Id, Nombre = childRow.Nombre, PermisoCode = childRow.Codigo };

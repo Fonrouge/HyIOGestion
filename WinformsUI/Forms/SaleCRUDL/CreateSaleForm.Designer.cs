@@ -21,9 +21,9 @@
             this.dgvSelectClient = new System.Windows.Forms.DataGridView();
             this.tbSearchBarClient = new System.Windows.Forms.TextBox();
             this.tlpSelectProds = new System.Windows.Forms.TableLayoutPanel();
+            this.btnBackPnl2 = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.tbSearchBarProducts = new System.Windows.Forms.TextBox();
-            this.dgvSelectProduct = new System.Windows.Forms.DataGridView();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.label8 = new System.Windows.Forms.Label();
             this.lbAddedProds = new System.Windows.Forms.ListBox();
@@ -35,8 +35,11 @@
             this.label10 = new System.Windows.Forms.Label();
             this.tbSubTotal = new System.Windows.Forms.TextBox();
             this.btnFinish = new System.Windows.Forms.Button();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.dgvSelectProduct = new System.Windows.Forms.DataGridView();
             this.tlpAddPayment = new System.Windows.Forms.TableLayoutPanel();
             this.button1 = new System.Windows.Forms.Button();
+            this.btnBackContact = new System.Windows.Forms.Button();
             this.label9 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.txtReference = new System.Windows.Forms.TextBox();
@@ -48,14 +51,13 @@
             this.txtClientsummary = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
             this.cbPaymentMethods = new System.Windows.Forms.ComboBox();
-            this.btnBackContact = new System.Windows.Forms.Button();
-            this.btnBackPnl2 = new System.Windows.Forms.Button();
             this.tlpSelectClient.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvSelectClient)).BeginInit();
             this.tlpSelectProds.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvSelectProduct)).BeginInit();
             this.tableLayoutPanel4.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.panel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvSelectProduct)).BeginInit();
             this.tlpAddPayment.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -130,9 +132,9 @@
             this.tlpSelectProds.Controls.Add(this.btnBackPnl2, 0, 0);
             this.tlpSelectProds.Controls.Add(this.label2, 1, 0);
             this.tlpSelectProds.Controls.Add(this.tbSearchBarProducts, 0, 1);
-            this.tlpSelectProds.Controls.Add(this.dgvSelectProduct, 0, 2);
             this.tlpSelectProds.Controls.Add(this.tableLayoutPanel4, 0, 3);
             this.tlpSelectProds.Controls.Add(this.btnFinish, 0, 4);
+            this.tlpSelectProds.Controls.Add(this.panel2, 0, 2);
             this.tlpSelectProds.Location = new System.Drawing.Point(983, 0);
             this.tlpSelectProds.Name = "tlpSelectProds";
             this.tlpSelectProds.RowCount = 5;
@@ -143,6 +145,22 @@
             this.tlpSelectProds.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 54F));
             this.tlpSelectProds.Size = new System.Drawing.Size(977, 751);
             this.tlpSelectProds.TabIndex = 9;
+            // 
+            // btnBackPnl2
+            // 
+            this.btnBackPnl2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnBackPnl2.BackColor = System.Drawing.Color.Transparent;
+            this.btnBackPnl2.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnBackPnl2.FlatAppearance.BorderSize = 0;
+            this.btnBackPnl2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnBackPnl2.Image = global::WinformsUI.Properties.Resources.BackArrow;
+            this.btnBackPnl2.Location = new System.Drawing.Point(4, 18);
+            this.btnBackPnl2.Margin = new System.Windows.Forms.Padding(4);
+            this.btnBackPnl2.Name = "btnBackPnl2";
+            this.btnBackPnl2.Size = new System.Drawing.Size(94, 79);
+            this.btnBackPnl2.TabIndex = 10;
+            this.btnBackPnl2.Tag = "IsImageColorable";
+            this.btnBackPnl2.UseVisualStyleBackColor = false;
             // 
             // label2
             // 
@@ -167,24 +185,13 @@
             this.tbSearchBarProducts.Size = new System.Drawing.Size(939, 20);
             this.tbSearchBarProducts.TabIndex = 7;
             // 
-            // dgvSelectProduct
-            // 
-            this.dgvSelectProduct.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.tlpSelectProds.SetColumnSpan(this.dgvSelectProduct, 2);
-            this.dgvSelectProduct.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgvSelectProduct.Location = new System.Drawing.Point(19, 160);
-            this.dgvSelectProduct.Margin = new System.Windows.Forms.Padding(19, 3, 19, 3);
-            this.dgvSelectProduct.Name = "dgvSelectProduct";
-            this.dgvSelectProduct.Size = new System.Drawing.Size(939, 249);
-            this.dgvSelectProduct.TabIndex = 9;
-            // 
             // tableLayoutPanel4
             // 
             this.tableLayoutPanel4.ColumnCount = 3;
             this.tlpSelectProds.SetColumnSpan(this.tableLayoutPanel4, 2);
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 13.55499F));
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 86.44501F));
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 116F));
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 118F));
             this.tableLayoutPanel4.Controls.Add(this.label8, 0, 1);
             this.tableLayoutPanel4.Controls.Add(this.lbAddedProds, 1, 1);
             this.tableLayoutPanel4.Controls.Add(this.btnAddProd, 2, 0);
@@ -224,34 +231,34 @@
             this.lbAddedProds.Location = new System.Drawing.Point(134, 55);
             this.lbAddedProds.Margin = new System.Windows.Forms.Padding(19, 3, 19, 3);
             this.lbAddedProds.Name = "lbAddedProds";
-            this.lbAddedProds.Size = new System.Drawing.Size(701, 114);
+            this.lbAddedProds.Size = new System.Drawing.Size(699, 114);
             this.lbAddedProds.TabIndex = 16;
             // 
             // btnAddProd
             // 
-            this.btnAddProd.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnAddProd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.btnAddProd.FlatAppearance.BorderSize = 0;
             this.btnAddProd.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnAddProd.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F);
-            this.btnAddProd.Location = new System.Drawing.Point(857, 3);
-            this.btnAddProd.Margin = new System.Windows.Forms.Padding(3, 3, 15, 3);
+            this.btnAddProd.Location = new System.Drawing.Point(855, 8);
             this.btnAddProd.Name = "btnAddProd";
-            this.btnAddProd.Size = new System.Drawing.Size(99, 46);
+            this.btnAddProd.Size = new System.Drawing.Size(113, 35);
             this.btnAddProd.TabIndex = 14;
+            this.btnAddProd.Tag = "LowAccented";
             this.btnAddProd.Text = "Agregar";
             this.btnAddProd.UseVisualStyleBackColor = true;
             // 
             // btnRemoveProd
             // 
-            this.btnRemoveProd.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnRemoveProd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.btnRemoveProd.FlatAppearance.BorderSize = 0;
             this.btnRemoveProd.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnRemoveProd.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F);
-            this.btnRemoveProd.Location = new System.Drawing.Point(857, 55);
-            this.btnRemoveProd.Margin = new System.Windows.Forms.Padding(3, 3, 15, 3);
+            this.btnRemoveProd.Location = new System.Drawing.Point(855, 94);
             this.btnRemoveProd.Name = "btnRemoveProd";
-            this.btnRemoveProd.Size = new System.Drawing.Size(99, 114);
+            this.btnRemoveProd.Size = new System.Drawing.Size(113, 35);
             this.btnRemoveProd.TabIndex = 13;
+            this.btnRemoveProd.Tag = "LowAccented";
             this.btnRemoveProd.Text = "Quitar";
             this.btnRemoveProd.UseVisualStyleBackColor = true;
             // 
@@ -262,7 +269,7 @@
             this.tbQuantity.Location = new System.Drawing.Point(134, 14);
             this.tbQuantity.Margin = new System.Windows.Forms.Padding(19, 3, 19, 3);
             this.tbQuantity.Name = "tbQuantity";
-            this.tbQuantity.Size = new System.Drawing.Size(701, 24);
+            this.tbQuantity.Size = new System.Drawing.Size(699, 24);
             this.tbQuantity.TabIndex = 10;
             // 
             // label7
@@ -280,13 +287,15 @@
             // 
             // panel1
             // 
+            this.panel1.BackColor = System.Drawing.Color.Transparent;
             this.panel1.Controls.Add(this.label10);
             this.panel1.Controls.Add(this.tbSubTotal);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(118, 175);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(733, 30);
+            this.panel1.Size = new System.Drawing.Size(731, 30);
             this.panel1.TabIndex = 18;
+            this.panel1.Tag = "NonPaintable";
             // 
             // label10
             // 
@@ -306,7 +315,7 @@
             this.tbSubTotal.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.tbSubTotal.Enabled = false;
             this.tbSubTotal.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F);
-            this.tbSubTotal.Location = new System.Drawing.Point(588, 3);
+            this.tbSubTotal.Location = new System.Drawing.Point(586, 3);
             this.tbSubTotal.Margin = new System.Windows.Forms.Padding(19, 3, 19, 3);
             this.tbSubTotal.Name = "tbSubTotal";
             this.tbSubTotal.ReadOnly = true;
@@ -325,6 +334,26 @@
             this.btnFinish.Tag = "Accentuable";
             this.btnFinish.Text = "Finalizar";
             this.btnFinish.UseVisualStyleBackColor = true;
+            // 
+            // panel2
+            // 
+            this.tlpSelectProds.SetColumnSpan(this.panel2, 2);
+            this.panel2.Controls.Add(this.dgvSelectProduct);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel2.Location = new System.Drawing.Point(3, 160);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(971, 249);
+            this.panel2.TabIndex = 11;
+            // 
+            // dgvSelectProduct
+            // 
+            this.dgvSelectProduct.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvSelectProduct.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgvSelectProduct.Location = new System.Drawing.Point(0, 0);
+            this.dgvSelectProduct.Margin = new System.Windows.Forms.Padding(19, 3, 19, 3);
+            this.dgvSelectProduct.Name = "dgvSelectProduct";
+            this.dgvSelectProduct.Size = new System.Drawing.Size(971, 249);
+            this.dgvSelectProduct.TabIndex = 10;
             // 
             // tlpAddPayment
             // 
@@ -373,6 +402,22 @@
             this.button1.Tag = "Accentuable";
             this.button1.Text = "Finalizar";
             this.button1.UseVisualStyleBackColor = true;
+            // 
+            // btnBackContact
+            // 
+            this.btnBackContact.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnBackContact.BackColor = System.Drawing.Color.Transparent;
+            this.btnBackContact.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnBackContact.FlatAppearance.BorderSize = 0;
+            this.btnBackContact.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnBackContact.Image = global::WinformsUI.Properties.Resources.BackArrow;
+            this.btnBackContact.Location = new System.Drawing.Point(4, 34);
+            this.btnBackContact.Margin = new System.Windows.Forms.Padding(4);
+            this.btnBackContact.Name = "btnBackContact";
+            this.btnBackContact.Size = new System.Drawing.Size(78, 79);
+            this.btnBackContact.TabIndex = 7;
+            this.btnBackContact.Tag = "IsImageColorable";
+            this.btnBackContact.UseVisualStyleBackColor = false;
             // 
             // label9
             // 
@@ -503,38 +548,6 @@
             this.cbPaymentMethods.Size = new System.Drawing.Size(357, 27);
             this.cbPaymentMethods.TabIndex = 9;
             // 
-            // btnBackContact
-            // 
-            this.btnBackContact.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnBackContact.BackColor = System.Drawing.Color.Transparent;
-            this.btnBackContact.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnBackContact.FlatAppearance.BorderSize = 0;
-            this.btnBackContact.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnBackContact.Image = global::WinformsUI.Properties.Resources.BackArrow;
-            this.btnBackContact.Location = new System.Drawing.Point(4, 34);
-            this.btnBackContact.Margin = new System.Windows.Forms.Padding(4);
-            this.btnBackContact.Name = "btnBackContact";
-            this.btnBackContact.Size = new System.Drawing.Size(78, 79);
-            this.btnBackContact.TabIndex = 7;
-            this.btnBackContact.Tag = "IsImageColorable";
-            this.btnBackContact.UseVisualStyleBackColor = false;
-            // 
-            // btnBackPnl2
-            // 
-            this.btnBackPnl2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnBackPnl2.BackColor = System.Drawing.Color.Transparent;
-            this.btnBackPnl2.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnBackPnl2.FlatAppearance.BorderSize = 0;
-            this.btnBackPnl2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnBackPnl2.Image = global::WinformsUI.Properties.Resources.BackArrow;
-            this.btnBackPnl2.Location = new System.Drawing.Point(4, 18);
-            this.btnBackPnl2.Margin = new System.Windows.Forms.Padding(4);
-            this.btnBackPnl2.Name = "btnBackPnl2";
-            this.btnBackPnl2.Size = new System.Drawing.Size(94, 79);
-            this.btnBackPnl2.TabIndex = 10;
-            this.btnBackPnl2.Tag = "IsImageColorable";
-            this.btnBackPnl2.UseVisualStyleBackColor = false;
-            // 
             // CreateSaleForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -551,11 +564,12 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgvSelectClient)).EndInit();
             this.tlpSelectProds.ResumeLayout(false);
             this.tlpSelectProds.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvSelectProduct)).EndInit();
             this.tableLayoutPanel4.ResumeLayout(false);
             this.tableLayoutPanel4.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dgvSelectProduct)).EndInit();
             this.tlpAddPayment.ResumeLayout(false);
             this.tlpAddPayment.PerformLayout();
             this.ResumeLayout(false);
@@ -582,7 +596,6 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.TextBox tbSubTotal;
-        private System.Windows.Forms.DataGridView dgvSelectProduct;
         private System.Windows.Forms.Button btnBackPnl2;
         private System.Windows.Forms.TableLayoutPanel tlpAddPayment;
         private System.Windows.Forms.Button button1;
@@ -598,5 +611,7 @@
         private System.Windows.Forms.TextBox txtClientsummary;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.ComboBox cbPaymentMethods;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.DataGridView dgvSelectProduct;
     }
 }

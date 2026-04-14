@@ -1,4 +1,6 @@
-﻿using System;
+﻿using BLL.LogicLayers;
+using Presenter.Messaging;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -16,7 +18,7 @@ namespace WinformsUI.Forms.ConfigurationsMenu
     {
         private readonly ITranslatableControlsManager _transMgr;
         private readonly ICultureSwitcher _cultureSwitcher;
-        private readonly ILocalizationService _localServ;
+        private readonly IMessenger _messenger;
 
         private bool _syncing;
         private DarkTheme.Palette? _pendingPalette;
@@ -26,28 +28,20 @@ namespace WinformsUI.Forms.ConfigurationsMenu
         (
             ITranslatableControlsManager transMgr,
             ICultureSwitcher cultureSwitcher,
-            ILocalizationService localServ
+            IMessenger messenger
         )
         {
 
             _transMgr = transMgr;
             _cultureSwitcher = cultureSwitcher;
-            _localServ = localServ;
-
+            _messenger = messenger;
 
             InitializeComponent();
+            TehmingPanel();
+            LanguagePanel();
+            ApplyGlobalTheme();
 
-            List<string> langCodes = new List<string>() {"es", "en" };            
-            cbLang.DataSource = langCodes;
 
-
-            cbLang.SelectedIndexChanged += (sender, e) => SelectedIndesChanged();
-            AddTranslatables();
-            InitializeLists();
-            WirePalettesSelectionEvents();
-            ApplyTheme();
-            lbLightPalettes.ClearSelected();
-            lbDarkPalettes.ClearSelected();
 
 
             this.FormClosed += (s, e) =>
@@ -57,49 +51,26 @@ namespace WinformsUI.Forms.ConfigurationsMenu
                 lbLightPalettes.SelectedIndexChanged -= LbLightPalettes_SelectedIndexChanged;
             };
 
-            btnApply.Click += (s, e) =>
-            {
-                if (_pendingPalette.HasValue)
-                {
-                    DarkTheme.SetGlobalPalette(_pendingPalette.Value);
-                    ApplyToOpenForms(true);
-                }
-            };
-            btnTry.Click += (s, e) =>
-            {
-                if (_pendingPalette.HasValue)
-                {
-                    ApplyInternal(this, _pendingPalette.Value, VisualDepth.ThreeD);
-                }
-            };
 
+
+            _messenger.Subscribe<TranslationRequestMessage>(SelectedIndexChanged);
         }
+        private void ApplyGlobalTheme() => DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
 
 
-
-        private void AddTranslatables()  //Se desuscribe en la clase padre BaseManagementForm FormClosed() => _transMgr.RemoveFormNotify(this);
+        //========================================================
+        //                       THEMING
+        //========================================================
+        #region Theming
+        private void TehmingPanel()
         {
-            _transMgr.AddParentedObjects<Label>(this.Controls, "Text");
-            _transMgr.AddParentedObjects<Button>(this.Controls, "Text");
-
-            _transMgr.AddFormNotify(this);
-
-            ApplyTranslation();
+            InitializeThemingLists();
+            WireThemingEvents();
+         
+            InitializeListBoxes();
         }
 
-        //Notified by reflection on TranslatorManager class. That's why it has 0 references.
-        public void NotifiedByTranslationManager() => ApplyTranslation();
-        public void ApplyTranslation() => _transMgr.Apply();
-
-
-        private void SelectedIndesChanged()
-        {
-            _cultureSwitcher.SetUICulture(cbLang.SelectedValue.ToString());
-            _transMgr.Apply();
-            _transMgr.Notify();
-        }
-
-        private void InitializeLists()
+        private void InitializeThemingLists()
         {
             // Lista Oscura: Agregadas Volcanic, Nordic, Cyber y DeepContrast
             var srcDark = new BindingSource(DarkTheme.GetAllPalettes().Where(kv => new[]
@@ -108,9 +79,9 @@ namespace WinformsUI.Forms.ConfigurationsMenu
                 "Oceanic",
                 "Forest",
                 "Aubergine",
-                "Volcanic",    
-                "Nordic",      
-                "Cyber",       
+                "Volcanic",
+                "Nordic",
+                "Cyber",
                 "DeepContrast",
                 "EyeRestDark",
                 "Obsidian"
@@ -122,9 +93,9 @@ namespace WinformsUI.Forms.ConfigurationsMenu
             {
                 "Classic",
                 "Paper",
-                "Solar",       
+                "Solar",
                 "Mint",
-                "Berry",       
+                "Berry",
                 "Grape",
                 "HighContrast",
                 "EyeRestLight"
@@ -136,62 +107,46 @@ namespace WinformsUI.Forms.ConfigurationsMenu
         private void FillListBoxes(BindingSource darkPalettes, BindingSource lightPalettes)
         {
             lbDarkPalettes.DataSource = darkPalettes;
-            lbDarkPalettes.DisplayMember = "Key"; 
-            lbDarkPalettes.ValueMember = "Value"; 
+            lbDarkPalettes.DisplayMember = "Key";
+            lbDarkPalettes.ValueMember = "Value";
 
             lbLightPalettes.DataSource = lightPalettes;
             lbLightPalettes.DisplayMember = "Key";
             lbLightPalettes.ValueMember = "Value";
         }
 
-
-        private void ApplyTheme() => DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());   
-        private void WirePalettesSelectionEvents()
+        private void WireThemingEvents()
         {
             lbDarkPalettes.SelectedIndexChanged += LbDarkPalettes_SelectedIndexChanged;
             lbLightPalettes.SelectedIndexChanged += LbLightPalettes_SelectedIndexChanged;
+
+            btnApply.Click += ClickThemingApply;
+            btnTry.Click += ClickThemingTry;
         }
 
-        private void LbDarkPalettes_SelectedIndexChanged(object sender, EventArgs e)
+        private void InitializeListBoxes()
         {
-            if (_syncing) return;
-            if (lbDarkPalettes.SelectedIndex < 0) { _pendingPalette = null; return; }
-
-            _syncing = true;
-            try
-            {
-                lbLightPalettes.ClearSelected();
-
-                var val = lbDarkPalettes.SelectedValue;        // <-- NO usar SelectedItem
-                if (val is DarkTheme.Palette pal)
-                {
-                    _pendingPalette = pal;
-                    _pendingPaletteName = ResolvePaletteName(pal);   // no depende del texto traducido
-                }
-            }
-            finally { _syncing = false; }
+            lbLightPalettes.ClearSelected();
+            lbDarkPalettes.ClearSelected();
         }
 
-        private void LbLightPalettes_SelectedIndexChanged(object sender, EventArgs e)
+
+        private void ClickThemingApply(object sender, EventArgs e)
         {
-            if (_syncing) return;
-            if (lbLightPalettes.SelectedIndex < 0) { _pendingPalette = null; return; }
-
-            _syncing = true;
-            try
+            if (_pendingPalette.HasValue)
             {
-                lbDarkPalettes.SelectedIndex = -1;
-
-                var val = lbLightPalettes.SelectedValue;       
-                if (val is DarkTheme.Palette pal)
-                {
-                    _pendingPalette = pal;
-                    _pendingPaletteName = ResolvePaletteName(pal);
-                }
+                DarkTheme.SetGlobalPalette(_pendingPalette.Value);
+                ApplyToOpenForms(true);
             }
-            finally { _syncing = false; }
         }
 
+        private void ClickThemingTry(object sender, EventArgs e)
+        {
+            if (_pendingPalette.HasValue)
+            {
+                ApplyInternal(this, _pendingPalette.Value, VisualDepth.ThreeD);
+            }
+        }
 
         private static string ResolvePaletteName(DarkTheme.Palette pal)
         {
@@ -199,15 +154,18 @@ namespace WinformsUI.Forms.ConfigurationsMenu
             return kv.Equals(default(KeyValuePair<string, DarkTheme.Palette>)) ? null : kv.Key;
         }
 
+
         private void ApplyToOpenForms(bool forceOverride)
         {
+            
+
             var forms = Application.OpenForms.Cast<Form>().ToList();
 
             foreach (var form in forms)
             {
                 var type = form.GetType();
 
-                var mi = type.GetMethod("ApplyGlobalPalette",
+                var mi = type.GetMethod("ThemingNotifiedByConfigurationsModule",
                                         BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
                 if (mi != null)
@@ -234,6 +192,102 @@ namespace WinformsUI.Forms.ConfigurationsMenu
                 DarkTheme.Apply(root, p, d);
             }
         }
+
+        private void LbDarkPalettes_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (_syncing) return;
+            if (lbDarkPalettes.SelectedIndex < 0) { _pendingPalette = null; return; }
+
+            _syncing = true;
+
+            try
+            {
+                lbLightPalettes.ClearSelected();
+
+                var val = lbDarkPalettes.SelectedValue;
+
+                if (val is DarkTheme.Palette pal)
+                {
+                    _pendingPalette = pal;
+                    _pendingPaletteName = ResolvePaletteName(pal);
+                }
+            }
+
+            finally { _syncing = false; }
+        }
+
+        private void LbLightPalettes_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (_syncing) return;
+            if (lbLightPalettes.SelectedIndex < 0) { _pendingPalette = null; return; }
+
+            _syncing = true;
+
+            try
+            {
+                lbDarkPalettes.SelectedIndex = -1;
+
+                var val = lbLightPalettes.SelectedValue;
+                if (val is DarkTheme.Palette pal)
+                {
+                    _pendingPalette = pal;
+                    _pendingPaletteName = ResolvePaletteName(pal);
+                }
+            }
+            finally { _syncing = false; }
+        }
+
+        #endregion
+
+
+        //========================================================
+        //                      LANGUAGE
+        //========================================================
+        #region Language
+        private void LanguagePanel()
+        {
+            List<LanguageInfo> langCodes = _transMgr.GetAvailableLanguages();
+           
+
+            cbLang.DataSource = langCodes;
+            cbLang.DisplayMember = "DisplayName";
+            cbLang.ValueMember = "LangCode";
+
+            cbLang.SelectedIndexChanged += (sender, e) => SelectedIndexChanged();
+            AddTranslatables();
+        }
+
+
+        private void AddTranslatables()  //Se desuscribe en la clase padre BaseManagementForm FormClosed() => _transMgr.RemoveFormNotify(this);
+        {
+            _transMgr.AddParentedObjects<Label>(this.Controls, "Text");
+            _transMgr.AddParentedObjects<Button>(this.Controls, "Text");
+
+            _transMgr.AddFormNotify(this);
+
+            ApplyTranslation();
+        }
+
+        //Notified by reflection on TranslatorManager class. That's why it has 0 references.
+        public void ApplyTranslation() => _transMgr.Apply();
+        public void NotifiedByTranslationManager() => ApplyTranslation();
+
+
+        private void SelectedIndexChanged(TranslationRequestMessage message = null)
+        {
+            if (message == null)
+                _cultureSwitcher.SetUICulture(cbLang.SelectedValue.ToString());
+
+            else
+                _cultureSwitcher.SetUICulture(message.Payload);
+
+            _transMgr.Apply();
+            _transMgr.Notify();
+        }
+        #endregion
+
+
+
 
 
     }

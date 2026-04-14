@@ -112,10 +112,13 @@ namespace BLL.LogicLayers.Payments
                 // --- FIN BLOQUE DE INTEGRIDAD CRIPTOGRÁFICA ---
 
                 // 9. Auditoría (Bitácora)
-                var log = _bitacoraFact.Create(
+                var log = _bitacoraFact.Create
+                (
                     entry: BitacoraCatalogEnum.CreateOnBD,
                     user: currentUser.Id.ToString(),
                     tableName: _tableNamePayment,
+                    sessionId: _sessionProvider.Current.Id,
+                    correlationId: Guid.NewGuid(),
                     extraInfo: $"Se registró un pago de $ {newPayment.Amount.Value} para el Cliente ID: {newPayment.SaleId} (Ref: {newPayment.Reference.Value})"
                 );
                 await _uow.BitacoraRepo.CreateAsync(log);

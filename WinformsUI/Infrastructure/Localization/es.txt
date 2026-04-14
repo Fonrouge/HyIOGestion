@@ -1,4 +1,6 @@
-﻿
+﻿LanguageDisplayName=Español
+LanguageCode=es
+
 =============MAIN FORM=============
 Clientes=Clientes
 Empleados=Empleados

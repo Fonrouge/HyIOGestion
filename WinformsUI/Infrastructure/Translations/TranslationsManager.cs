@@ -43,6 +43,11 @@ namespace WinformsUI.Infrastructure.Translations
         private readonly Dictionary<ListBox, ListBoxSnapshot> _listBoxes =
             new Dictionary<ListBox, ListBoxSnapshot>(new ReferenceEqualityComparer<ListBox>());
 
+        public List<LanguageInfo> GetAvailableLanguages()
+        {
+            return _loc.GetAvailableLanguages();
+        }
+
         private sealed class ReferenceEqualityComparer<T> : IEqualityComparer<T> where T : class
         {
             public bool Equals(T x, T y) => ReferenceEquals(x, y);

@@ -444,5 +444,34 @@ namespace WinformsUI.UserControls.CustomDGV
 
         public void AlignCellsRight(bool onlySelected = false, bool includeHeader = false)
             => ApplyAlignment(HAlign.Right, onlySelected, includeHeader);
+
+
+
+        public void ZoomGrid(DataGridView dgv, float delta)
+        {
+            if (dgv == null) return;
+
+            // 1. Obtenemos la fuente actual (usamos la de celdas como base)
+            var currentFont = dgv.DefaultCellStyle.Font ?? dgv.Font;
+
+            // 2. Calculamos el nuevo tamaño con límites (ej: entre 6 y 30 puntos)
+            float newSize = currentFont.Size + delta;
+            if (newSize < 6) newSize = 6;
+            if (newSize > 30) newSize = 30;
+
+            if (newSize == currentFont.Size) return;
+
+            var newFont = new Font(currentFont.FontFamily, newSize, currentFont.Style);
+
+            // 3. Aplicamos a celdas y headers
+            dgv.DefaultCellStyle.Font = newFont;
+            dgv.ColumnHeadersDefaultCellStyle.Font = newFont;
+            dgv.RowHeadersDefaultCellStyle.Font = newFont;
+
+            // 4. OPCIONAL: "Nudge" automático de la altura de filas para que acompañe el texto
+            // Si la letra crece, necesitamos que la fila crezca proporcionalmente (aprox delta * 1.5)
+            int rowDelta = (int)Math.Ceiling(delta * 1.5f);
+            NudgeHeights(rowDelta, alsoHeader: true, deltaHeaderPx: rowDelta);
+        }
     }
 }

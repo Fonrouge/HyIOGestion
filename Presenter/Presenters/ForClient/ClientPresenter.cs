@@ -1,19 +1,18 @@
-﻿using BLL.DTOs;
+﻿using SharedAbstractions.ArchitecturalMarkers;
 using BLL.LogicLayers.Clients;
-using Presenter.Messaging;
-using SharedAbstractions.ArchitecturalMarkers;
-using System;
 using System.Threading.Tasks;
+using Presenter.Messaging;
+using BLL.DTOs;
+using System;
 
 namespace Presenter.ForClient
 {
     public class ClientPresenter : IPresenter, IDisposable
     {
         private readonly IClientView _view;
-        private readonly IUCGetAllClients _ucGetAll;       
+        private readonly IUCGetAllClients _ucGetAll;
         private readonly IUCDeleteClient _ucDelete;
         private readonly IMessenger _messenger;
-
 
         public ClientPresenter
         (
@@ -30,16 +29,25 @@ namespace Presenter.ForClient
 
             WireViewEvents();
             ApplyDarkTheme();
-            SubscribeToMessenger();
+            SubscribeMessages();
         }
 
+
         // =========================================================
-        // SUSCRIPCIÓN A MENSAJERÍA GLOBAL
+        // Mensajería global
         // =========================================================
-        private void SubscribeToMessenger() => _messenger.Subscribe<RelistClientsMessage>(OnGetAllRequested);
+        private void SubscribeMessages()
+        {
+            _messenger.Subscribe<ClientsRelistRequestMessage>(OnGetAllRequested);            
+            //Ready for more...
+        }
+        private void CloseHostFormMessage(object viewId) => _messenger.Send(new HostFormCloseRequestMessage((Guid)viewId, this));
 
 
-        private void ApplyDarkTheme() => _view.ApplyGlobalPalette();
+        // =============================================================
+        // Estética general
+        // =============================================================
+        private void ApplyDarkTheme() => _view.ThemingNotifiedByConfigurationsModule();
 
 
         // =============================================================
@@ -52,6 +60,7 @@ namespace Presenter.ForClient
             _view.DeleteRequested += HandleDeleteRequested;
             _view.ListAllRequested += HandleListAllRequested;
             _view.CloseRequested += HandleCloseRequested;
+            _view.OnceLoadedAdvice += HandleLoadedOperations;
         }
 
 
@@ -59,16 +68,22 @@ namespace Presenter.ForClient
         // Event Handlers (Orquestación de UI)
         // =========================================================
         private void HandleCreateRequested(object sender, EventArgs e) => _view.OpenCreationView();
-        private async void HandleUpdateRequested(object sender, ClientDTO e) => await OnUpdateRequested(e);
+        private void HandleUpdateRequested(object sender, ClientDTO e) => OnUpdateRequested(e);
         private async void HandleDeleteRequested(object sender, ClientDTO e) => await OnDeleteRequested(e);
         private async void HandleListAllRequested(object sender, EventArgs e) => await OnGetAllRequested();
-        private void HandleCloseRequested(object sender, EventArgs e) => Dispose();
+        private void HandleCloseRequested(object sender, EventArgs e)
+        {
+            CloseHostFormMessage((Guid)sender);
+            Dispose();
+            _view.Dispose();
+        }
+
+        private void HandleLoadedOperations(object sender, EventArgs e) => _view.SelectFirstGridRow();
 
 
         // =========================================================
         // Lógica de Casos de Uso
         // =========================================================
-
         private async Task OnDeleteRequested(ClientDTO client)
         {
             var opRes = await _ucDelete.ExecuteAsync(client);
@@ -77,7 +92,8 @@ namespace Presenter.ForClient
             if (opRes.Success) await OnGetAllRequested();
         }
 
-        private async void OnGetAllRequested(RelistClientsMessage message) => await OnGetAllRequested();
+        private async void OnGetAllRequested(ClientsRelistRequestMessage message) => await OnGetAllRequested();
+
         private async Task OnGetAllRequested()
         {
             var (clients, opResult) = await _ucGetAll.ExecuteAsync();
@@ -93,8 +109,7 @@ namespace Presenter.ForClient
             }
         }
 
-        private async Task OnUpdateRequested(ClientDTO client) => await _view.OpenUpdateView();
-
+        private void OnUpdateRequested(ClientDTO client) => _view.OpenUpdateView();
 
 
         // =========================================================
@@ -109,6 +124,7 @@ namespace Presenter.ForClient
                 _view.DeleteRequested -= HandleDeleteRequested;
                 _view.ListAllRequested -= HandleListAllRequested;
                 _view.CloseRequested -= HandleCloseRequested;
+                _messenger.Unsubscribe<ClientsRelistRequestMessage>(OnGetAllRequested);
             }
         }
     }

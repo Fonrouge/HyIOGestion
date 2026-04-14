@@ -1,7 +1,9 @@
-﻿using BLL.LogicLayers.Products;
-using BLL.DTOs;
-using System;
+﻿using BLL.DTOs;
+using BLL.LogicLayers.Products;
 using BLL.LogicLayers.Products.Categories.UseCases;
+using Presenter.Messaging;
+using System;
+using System.Threading.Tasks;
 
 namespace Presenter.ForProducts
 {
@@ -10,56 +12,80 @@ namespace Presenter.ForProducts
 
         private readonly IProductView _view;
         private readonly IUCGetAllProducts _ucGetAll;
-        private readonly IUCUpdateProduct _ucUpdate;
         private readonly IUCDeleteProduct _ucDelete;
         private readonly IUCGetAllCategories _uCGetAllCategories;
+        private readonly IMessenger _messenger;
 
         public ProductPresenter
         (
             IProductView view,
             IUCGetAllProducts ucGetAll,
-            IUCUpdateProduct ucUpdate,
             IUCDeleteProduct ucDelete,
-            IUCGetAllCategories uCGetAllCategories
+            IUCGetAllCategories uCGetAllCategories,
+            IMessenger messenger
         )
         {
-            _view = view;
-            _ucGetAll = ucGetAll;
-            _ucUpdate = ucUpdate;
-            _ucDelete = ucDelete;
-            _uCGetAllCategories = uCGetAllCategories;
+            _view = view ?? throw new ArgumentNullException(nameof(view));
+            _ucGetAll = ucGetAll ?? throw new ArgumentNullException(nameof(ucGetAll));
+            _ucDelete = ucDelete ?? throw new ArgumentNullException(nameof(ucDelete));
+            _uCGetAllCategories = uCGetAllCategories ?? throw new ArgumentNullException(nameof(uCGetAllCategories));
+            _messenger = messenger ?? throw new ArgumentNullException(nameof(messenger));
 
-            WireEvents();
-            ApplyDarkTheme(); 
+            WireViewEvents();
+            ApplyDarkTheme();
+            SubscribeRelistMessage();
         }
 
-        private void ApplyDarkTheme() => _view.ApplyGlobalPalette();
+        // =========================================================
+        // Estética general
+        // =========================================================
+        private void ApplyDarkTheme() => _view.ThemingNotifiedByConfigurationsModule();
 
-        private void WireEvents()
+
+        // =========================================================
+        // Suscripción a mensajería global
+        // =========================================================
+        private void SubscribeRelistMessage() => _messenger.Subscribe<ProductsRelistRequestMessage>(OnGetAllRequested);
+        private void CloseHostFormMessage(object viewId) => _messenger.Send(new HostFormCloseRequestMessage((Guid)viewId, this));
+
+
+        // =========================================================
+        // Estética general
+        // =========================================================
+        private void WireViewEvents()
         {
-            _view.CreateRequested += (s, e) => OnOpenCreationForm();
-            _view.UpdateRequested += (s, e) => UpdateProduct(e);
-            _view.DeleteRequested += (s, e) => DeleteProduct(e);
-            _view.ListAllRequested += (s, e) => GetAllProducts();
+            _view.CreateRequested += HandleCreateRequested;
+            _view.UpdateRequested += HandleUpdateRequested;
+            _view.DeleteRequested += HandleDeleteRequested;
+            _view.ListAllRequested += HandleListAllRequested;
+            _view.CloseRequested += HandleCloseRequested;
         }
 
-        private void OnOpenCreationForm() => _view.OpenCreationView();
+        private void HandleCreateRequested(object sender, EventArgs e) => _view.OpenCreationView();
+        private void HandleUpdateRequested(object sender, ProductDTO e) => OnUpdateRequested(e);
+        private async void HandleDeleteRequested(object sender, ProductDTO e) => await OnDeleteRequested(e);
+        private async void HandleListAllRequested(object sender, EventArgs e) => await OnGetAllRequested();
 
-        private async void UpdateProduct(ProductDTO e) => await _view.OpenUpdateView();
-        private async void DeleteProduct(ProductDTO e)
+        private void HandleCloseRequested(object sender, EventArgs e)
         {
-            if (e == null) throw new ArgumentNullException(nameof(e));
-
-            var opRes = await _ucDelete.ExecuteAsync(e);
-            ShowResult(opRes);
-
-            if (opRes.Success)
-            {
-                GetAllProducts();
-            }
+            CloseHostFormMessage((Guid)sender);
+            Dispose();
         }
 
-        private async void GetAllProducts()
+        // =========================================================
+        // Lógica de Casos de Uso
+        // =========================================================
+        private async Task OnDeleteRequested(ProductDTO product)
+        {
+            var opRes = await _ucDelete.ExecuteAsync(product);
+            _view.ShowOperationResult(opRes);
+
+            if (opRes.Success) await OnGetAllRequested();
+        }
+
+        private async void OnGetAllRequested(ProductsRelistRequestMessage message) => await OnGetAllRequested();
+
+        private async Task OnGetAllRequested()
         {
             var tuple = await _ucGetAll.ExecuteAsync();
 
@@ -87,7 +113,30 @@ namespace Presenter.ForProducts
                 ShowResult(opResult);
             }
         }
+        private void OnUpdateRequested(ProductDTO product) => _view.OpenUpdateView();
 
+
+        // =========================================================
+        // Aplicación del patrón OperationResult para UI
+        // =========================================================
         private void ShowResult(OperationResult<ProductDTO> opRes) => _view.ShowOperationResult(opRes);
+
+
+        // =========================================================
+        // Limpieza de RAM
+        // =========================================================
+        public void Dispose()
+        {
+            if (_view != null)
+            {
+                _view.CreateRequested += HandleCreateRequested;
+                _view.UpdateRequested += HandleUpdateRequested;
+                _view.DeleteRequested += HandleDeleteRequested;
+                _view.ListAllRequested += HandleListAllRequested;
+                _view.CloseRequested += HandleCloseRequested;
+            }
+
+            _view.Dispose();
+        }
     }
 }

@@ -41,7 +41,9 @@ namespace WinformsUI.Infrastructure.DI
     {
         public static IServiceCollection AddUILayer(this IServiceCollection services)
         {
-            
+            services.AddTransient<ConfigurationsForm>();
+
+
             services.AddTransient<IAppEnvironment, AppEnvironment>();
             services.AddSingleton<IAppEnvironmentFactory, AppEnvironmentFactory>();
 
@@ -80,6 +82,11 @@ namespace WinformsUI.Infrastructure.DI
         {
             //Messaging
             services.AddSingleton<IMessenger, Messenger>();
+
+
+            //Tools
+            services.AddTransient<CustomDGVForm>();
+            
 
 
             //Infrastructure
@@ -151,10 +158,7 @@ namespace WinformsUI.Infrastructure.DI
             services.AddTransient<SupplierPresenter>();
 
 
-            //Tools
-            services.AddTransient<CustomDGVForm>();
-            services.AddTransient<CustomDGVForm>();
-            services.AddTransient<ConfigurationsForm>();
+
 
             return services;
         }

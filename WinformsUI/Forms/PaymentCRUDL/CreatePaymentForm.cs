@@ -31,6 +31,8 @@ namespace WinformsUI.Forms.PaymentCRUDL
         private BindingList<SaleDTO> _catchedAllSales;
         private SaleDTO _selectedSaleDTO;
 
+        public Guid ViewId { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
         public event EventHandler<PaymentDTO> CreatePaymentRequested;
         public event EventHandler GetAllSalesRequested;
         public event EventHandler CloseRequested;
@@ -57,7 +59,7 @@ namespace WinformsUI.Forms.PaymentCRUDL
             ApplyDarkTheme();
             InitializeWizard();
             WireFlowButtonsEvents();
-            ApplyGlobalPalette();
+            ThemingNotifiedByConfigurationsModule();
 
             //   UpdateFormSize();
 
@@ -69,7 +71,7 @@ namespace WinformsUI.Forms.PaymentCRUDL
 
         }
 
-        public void ApplyGlobalPalette() => DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
+        public void ThemingNotifiedByConfigurationsModule() => DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
         private void UpdateFormSize() => this.ClientSize = _wizard.GetPanelSize();
 
         private void GetAllSales() => GetAllSalesRequested?.Invoke(this, EventArgs.Empty); //El presenter pega en InitializeGrid

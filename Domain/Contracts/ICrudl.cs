@@ -11,7 +11,8 @@ namespace Domain.Contracts
         Task UpdateAsync(T entity);
         Task DeleteAsync(Guid entityId);
         Task<T> GetByIdAsync(Guid id);
-        Task<IEnumerable<T>> GetAllAsync(); 
+        Task<IEnumerable<T>> GetAllAsync();
+        Task<IEnumerable<T>> GetAllDeletedAsync();
         void SetTransaction(object transaction);
     }
 }

@@ -105,7 +105,9 @@
     <Compile Include="Infrastructure\Permisos\Abstracts\PermisoComponente.cs" />
     <Compile Include="Infrastructure\Permisos\Concrete\Familia.cs" />
     <Compile Include="Infrastructure\Permisos\Concrete\Patente.cs" />
+    <Compile Include="Infrastructure\Permisos\Concrete\PermisoRelacionDTO.cs" />
     <Compile Include="Infrastructure\Permisos\Concrete\PermisosEnum.cs" />
+    <Compile Include="Entities\Products\ProductCategoryRelacionDTO.cs" />
     <Compile Include="Infrastructure\Permisos\Concrete\Usuario.cs" />
     <Compile Include="Infrastructure\Exceptions\BaseException.cs" />
     <Compile Include="Infrastructure\Errors\ErrorLogAttributes.cs" />

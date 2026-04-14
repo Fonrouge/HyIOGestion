@@ -2,7 +2,6 @@
 using BLL.DTOs; 
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace SharedAbstractions.Interfaces
 {
@@ -15,13 +14,16 @@ namespace SharedAbstractions.Interfaces
         event EventHandler<T> DeleteRequested;
         event EventHandler ListAllRequested; 
         event EventHandler CloseRequested; 
+        event EventHandler OnceLoadedAdvice; 
 
         // --- Métodos Comunes ---
         void ShowOperationResult(OperationResult<T> opRes);
         void CachingList(IEnumerable<T> list); // Nombre genérico
         void FillDGV();
         void OpenCreationView();
-        Task OpenUpdateView();
-        void CloseView();        
+        void OpenUpdateView();
+        void CloseView();
+        void Dispose();
+        void SelectFirstGridRow();
     }
 }

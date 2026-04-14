@@ -40,10 +40,10 @@ namespace Presenter.ForSupplier
         // =========================================================
         // SUSCRIPCIÓN A MENSAJERÍA GLOBAL
         // =========================================================
-        private void SubscribeToMessenger() => _messenger.Subscribe<RelistSuppliersMessage>(OnGetAllRequested);
+        private void SubscribeToMessenger() => _messenger.Subscribe<SuppliersRelistRequestMessage>(OnGetAllRequested);
 
 
-        private void ApplyDarkTheme() => _view.ApplyGlobalPalette();
+        private void ApplyDarkTheme() => _view.ThemingNotifiedByConfigurationsModule();
 
 
         // =============================================================
@@ -63,7 +63,7 @@ namespace Presenter.ForSupplier
         // Event Handlers (Orquestación de UI)
         // =========================================================
         private void HandleCreateRequested(object sender, EventArgs e) => _view.OpenCreationView();
-        private async void HandleUpdateRequested(object sender, SupplierDTO e) => await OnUpdateRequested(e);
+        private void HandleUpdateRequested(object sender, SupplierDTO e) => OnUpdateRequested(e);
         private async void HandleDeleteRequested(object sender, SupplierDTO e) => await OnDeleteRequested(e);
         private async void HandleListAllRequested(object sender, EventArgs e) => await OnGetAllRequested();
         private void HandleCloseRequested(object sender, EventArgs e) => Dispose();
@@ -81,7 +81,7 @@ namespace Presenter.ForSupplier
             if (opRes.Success) await OnGetAllRequested();
         }
 
-        private async void OnGetAllRequested(RelistSuppliersMessage message) => await OnGetAllRequested();
+        private async void OnGetAllRequested(SuppliersRelistRequestMessage message) => await OnGetAllRequested();
 
         private async Task OnGetAllRequested()
         {
@@ -98,7 +98,7 @@ namespace Presenter.ForSupplier
             }
         }
 
-        private async Task OnUpdateRequested(SupplierDTO client) => await _view.OpenUpdateView();
+        private void OnUpdateRequested(SupplierDTO client) =>  _view.OpenUpdateView();
 
 
 

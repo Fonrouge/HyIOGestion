@@ -4,11 +4,12 @@ using SharedAbstractions.ArchitecturalMarkers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Windows.Forms;
+using WinformsUI.Infrastructure.Shortcuts;
 using WinformsUI.Infrastructure.Translations;
 using WinformsUI.UserControls;
 using WinformsUI.UserControls.CustomDGV;
+using WinformsUI.UserControls.Ribbon;
 
 namespace WinformsUI.Forms.Base
 {
@@ -19,15 +20,19 @@ namespace WinformsUI.Forms.Base
     /// <typeparam name="TEntity">El tipo de DTO que gestiona este formulario.</typeparam>
     public class BaseManagementForm<TEntity> : Form, IView where TEntity : IDto
     {
+        // Dependencias inyectadas
         protected readonly IApplicationSettings _appSettings;
         protected readonly ITranslatableControlsManager _transMgr;
         protected readonly ICustomDGVFactory _dgvFactory;
 
-        protected CustomDGVFunctions _dgvControls;
+        // Controles comunes 
+        protected CustomDGVRibbon _dgvRibbonControls;
+        protected EyeRestRibbon _eyeRestRibbonControls;
         protected CustomDGVForm _dgvForm;
         protected BindingList<TEntity> _entitiesList;
         protected TEntity _currentSelectedEntity;
 
+        // Mensaje estándar para operaciones 
         protected string _successOperationMessage;
 
         // Eventos estándar
@@ -36,8 +41,11 @@ namespace WinformsUI.Forms.Base
         public event EventHandler<TEntity> DeleteRequested;
         public event EventHandler ListAllRequested;
         public event EventHandler CloseRequested;
+        public virtual event EventHandler OnceLoadedAdvice;
 
-
+        // Atajos de teclado
+        private ShortcutManager _shortcutMgr;
+        public Guid ViewId { get; set; } = Guid.NewGuid();
 
         public BaseManagementForm() { }
 
@@ -51,20 +59,77 @@ namespace WinformsUI.Forms.Base
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             _transMgr = transMgr ?? throw new ArgumentNullException(nameof(transMgr));
             _dgvFactory = dgvFact ?? throw new ArgumentNullException(nameof(dgvFact));
-
             _successOperationMessage = _appSettings.SuccessOnOperation;
             _entitiesList = new BindingList<TEntity>();
 
-            // Suscripción automática al cierre para notificar al Presenter
-            this.FormClosed += HandleBaseFormClosed;
-
-
-
+            SetShortcuts();
         }
 
-        public void ApplyGlobalPalette() { }
+        //====================================================
+        //                  ESTÉTICA GENERAL
+        //====================================================
+        public virtual void ThemingNotifiedByConfigurationsModule() { }
 
-     
+
+        //====================================================
+        //                     SHORTCUTS
+        //====================================================
+        private void SetShortcuts() => _shortcutMgr = ShortcutManager.Attach(this)
+
+       .Add("Ctrl+B", () => ConditionalSearchBarBehavior()) //B - (B)uscar cliente
+       .Add("Ctrl+A", () => OnCreateRequest(null, null)) //A - (A)gregar cliente
+       .Add("Ctrl+E", () => OnDeleteRequest(null, null)) //E - (E)liminar cliente
+       .Add("Ctrl+M", () => OnUpdateRequest(null, null)) //M - (M)odificar cliente
+       .Add("Ctrl+R", () => OnListAllRequest(null, null)) //R - (R)efrescar lista de clientes
+
+       .Add("Ctrl+N", () => OnCreateRequest(null, null)) //Ctrl+N - Agregar cliente (congruencia con estándar de Windows)
+       .Add("Delete", () => OnDeleteRequest(null, null)) //Del - Eliminar cliente (congruencia con estándar de Windows)
+       .Add("F2", () => OnUpdateRequest(null, null)) //F2 - Modificar cliente (congruencia con estándar de Windows)
+       .Add("F5", () => OnListAllRequest(null, null)) //F5 - Refrescar lista de clientes (congruencia con estándar de Windows)
+
+       .Add("Alt+right", () => _dgvForm.NudgeColumnWidth(16)) //Dirección natural para "alargar" columna
+       .Add("Alt+left", () => _dgvForm.NudgeColumnWidth(-16)) //Dirección contraria a "alargar" = contraer
+       .Add("Alt+up", () => _dgvForm.NudgeRowHeight(4)) //Dirección natural para aumentar altura
+       .Add("Alt+down", () => _dgvForm.NudgeRowHeight(-4)) //Dirección natural para disminuiraltura
+       .Add("Alt+shift+up", () => _dgvForm.AutoFitRowAndHeader()) //Pudiendo tomarse como referencia arriba o abajo, se elige arriba para indicar altura en "positivo"
+       .Add("Alt+shift+right", () => _dgvForm.AutoFitColumns()) //Misma lógica que para filas pero con derecha como referencia para indicar "positivo" en ancho de columnas
+       .Add("Ctrl+W+", () => HandleBaseFormClosed(this, null)) //Al ser un form inyectado dentro de otro (HostForm en esta implementación) debe poder notificarlo "hacia afuera", por tanto se termina enviando un pedido al Messenger.
+       .Add("Ctrl+plus", () => _dgvForm.ZoomIn())
+       .Add("Ctrl+minus", () => _dgvForm.ZoomOut())
+       .Add("Ctrl+H", () => ToolStripsPanelToggle(toolStripsPanel))
+       .Add("Ctrl+F", () => _dgvForm.ToggleFiltersPanel())
+       .BindWheelZoom(() => _dgvForm.ZoomIn(), () => _dgvForm.ZoomOut()) // Ctrl + rueda
+       ;
+
+        private byte _conditionalSearchBarStates = 0;
+        private Panel toolStripsPanel;
+        public void ToolStripsPanelToggle(Panel tsPanel = null)
+        {
+            if (tsPanel == null) return;
+            toolStripsPanel = tsPanel;
+
+            toolStripsPanel.Visible = !toolStripsPanel.Visible;
+        }
+        public void ConditionalSearchBarBehavior()
+        {
+            if (_dgvForm.IsToggleSearchBarVisible() && _conditionalSearchBarStates < 1)
+            {
+                _dgvForm.FocusSearchBar();
+                _conditionalSearchBarStates++;
+            }
+            else if (_conditionalSearchBarStates != 0)
+            {
+                _dgvForm.ToggleSearchBar();
+                _conditionalSearchBarStates = 0;
+            }
+            else if (_conditionalSearchBarStates == 0)
+            {
+                _dgvForm.ToggleSearchBar();
+                _dgvForm.FocusSearchBar();
+            }
+        }
+
+
         //====================================================
         //          CICLO DE VIDA Y CONFIGURACIÓN
         //====================================================
@@ -83,6 +148,7 @@ namespace WinformsUI.Forms.Base
         protected override void OnShown(EventArgs e)
         {
             base.OnShown(e);
+
             if (!DesignMode)
             {
                 OnListAllRequest(null, e);
@@ -94,11 +160,6 @@ namespace WinformsUI.Forms.Base
             this.FormBorderStyle = FormBorderStyle.None;
             this.DoubleBuffered = true;
             this.Dock = DockStyle.Fill;
-        }
-
-        private void HandleBaseFormClosed(object sender, FormClosedEventArgs e)
-        {
-            CloseRequested?.Invoke(this, EventArgs.Empty);
         }
 
 
@@ -118,7 +179,11 @@ namespace WinformsUI.Forms.Base
             }
         }
 
-        protected void InitializeDGVControls() => _dgvControls.TargetDGV = _dgvForm;
+        protected void InitializeRibbonControls()
+        {
+            _dgvRibbonControls.TargetDGV = _dgvForm;
+            _eyeRestRibbonControls.TargetForm = this;
+        }
 
         public void ShowOperationResult(OperationResult<TEntity> opRes)
         {
@@ -143,10 +208,9 @@ namespace WinformsUI.Forms.Base
             }
         }
 
+        public void SelectFirstGridRow() => _dgvForm.EnsureDgvRowSelection();
         public void NotifiedByTranslationManager() => ApplyTranslation();
-
         public void ApplyTranslation() => _transMgr.Apply();
-
 
 
         //====================================================
@@ -165,6 +229,8 @@ namespace WinformsUI.Forms.Base
             containerPanel.Controls.Add((Form)_dgvForm);
             _dgvForm.Show();
 
+
+
             _dgvForm.SelectedRowChanged += (s, entity) =>
             {
                 _dgvForm.EnsureDgvRowSelection();
@@ -178,6 +244,7 @@ namespace WinformsUI.Forms.Base
         }
 
 
+
         //====================================================
         //              DISPARADORES DE EVENTOS
         //====================================================
@@ -186,6 +253,7 @@ namespace WinformsUI.Forms.Base
         protected void OnUpdateRequest(object sender, EventArgs e)
         {
             _dgvForm.EnsureDgvRowSelection();
+
             if (_currentSelectedEntity != null)
                 UpdateRequested?.Invoke(this, _currentSelectedEntity);
         }
@@ -193,6 +261,7 @@ namespace WinformsUI.Forms.Base
         protected void OnDeleteRequest(object sender, EventArgs e)
         {
             _dgvForm.EnsureDgvRowSelection();
+
             if (_currentSelectedEntity != null)
                 DeleteRequested?.Invoke(this, _currentSelectedEntity);
         }
@@ -209,6 +278,10 @@ namespace WinformsUI.Forms.Base
                 this.Cursor = Cursors.Default;
             }
         }
+        protected void HandleBaseFormClosed(object sender, FormClosedEventArgs e)
+        {
+            CloseRequested?.Invoke(this.ViewId, EventArgs.Empty);
+        }
 
 
         //====================================================
@@ -218,9 +291,9 @@ namespace WinformsUI.Forms.Base
         {
             if (disposing)
             {
-                this.FormClosed -= HandleBaseFormClosed;
                 _entitiesList = null;
                 _dgvForm = null;
+
             }
             base.Dispose(disposing);
         }

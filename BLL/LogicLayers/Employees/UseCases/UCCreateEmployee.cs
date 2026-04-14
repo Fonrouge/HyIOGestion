@@ -105,10 +105,13 @@ namespace BLL.LogicLayers.Employees //==========================================
        //         await UpdateDVVAsync(_tableNameEmployee, _appSettings.EntitiesConnection);
 
                 // 8. Auditoría
-                var log = _bitacoraFact.Create(
+                var log = _bitacoraFact.Create
+                (
                     entry: BitacoraCatalogEnum.CreateOnBD,
                     user: currentUser.Id.ToString(),
                     tableName: _tableNameEmployee,
+                    sessionId: _sessionProvider.Current.Id,
+                    correlationId: Guid.NewGuid(),
                     extraInfo: $"Se creó el empleado: {newEmployee.LastName}, {newEmployee.FirstName} (Legajo: {newEmployee.FileNumber})"
                 );
                 await _uow.BitacoraRepo.CreateAsync(log);

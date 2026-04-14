@@ -56,9 +56,7 @@ namespace Domain.Entities
             );
         }
 
-        public void UpdateDVH(string dvh)
-        {
-            DVH = DvhVo.Create(dvh ?? string.Empty);
-        }
+        public void UpdateDVH(string dvh) => DVH = DvhVo.Create(dvh ?? string.Empty);
+        
     }
 }

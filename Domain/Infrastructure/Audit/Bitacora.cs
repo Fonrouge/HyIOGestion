@@ -5,10 +5,13 @@ using System;
 
 namespace Domain.Exceptions.Base
 {
-    public class Bitacora
+    public class Bitacora: IIntegrityCheckable
     {
         // En la DB es INT (PK)
-        public int Id { get; private set; }
+        public Guid Id { get; private set; } = Guid.NewGuid();
+        public Guid SessionId { get; private set; } 
+        public Guid CorrelationId { get; private set; }
+        public string HostName { get; private set; }
         public DateTime Timestamp { get; private set; } = DateTime.UtcNow;
         public string User { get; private set; }
         public string Message { get; private set; }
@@ -31,12 +34,16 @@ namespace Domain.Exceptions.Base
         (
             string user,
             string message,
+            Guid sessionId,
+            Guid correlationId,
             BitacoraTypeEnum type,
             SeverityEnum severity,
             bool success,
+            string hostName = null,
             string tableName = null,
             string exceptionType = null,
             string stackTrace = null
+            //string dvh > Una entidad recién creada no puede tener DVH calculado hasta ingresar en BBDD.
         )
         {
             return new Bitacora
@@ -44,13 +51,15 @@ namespace Domain.Exceptions.Base
                 Timestamp = DateTime.UtcNow,
                 User = user,
                 Message = message,
+                SessionId = sessionId,
+                CorrelationId = correlationId, 
+                HostName = hostName,       
                 BitacoraType = type,
                 Severity = severity,
                 Success = success,
                 TableName = tableName,
                 ExceptionType = exceptionType,
-                StackTrace = stackTrace,
-                DVH = DvhVo.Create("")
+                StackTrace = stackTrace
             };
         }
 
@@ -59,17 +68,20 @@ namespace Domain.Exceptions.Base
         /// </summary>
         public static Bitacora Reconstitute
         (
-            int id,
+            Guid id,
             DateTime timestamp,
             string user,
             string message,
+            Guid sessionId,
+            Guid correlationId,
             int type,
             int severity,
+            string hostName,
             bool success,
             string tableName,
             string exceptionType,
             string stackTrace,
-            string dvh
+            string dvh 
         )
         {
             return new Bitacora
@@ -81,11 +93,35 @@ namespace Domain.Exceptions.Base
                 BitacoraType = (BitacoraTypeEnum)type,
                 Severity = (SeverityEnum)severity,
                 Success = success,
+                HostName = hostName,
                 TableName = tableName,
                 ExceptionType = exceptionType,
                 StackTrace = stackTrace,
-                DVH = !string.IsNullOrEmpty(dvh) ? DvhVo.Create(dvh) : null
+                DVH =  DvhVo.Create(dvh)
             };
         }
+
+
+        /// <summary>
+        /// Genera la cadena de serialización para el cálculo del Dígito Verificador Horizontal.
+        /// Protege la integridad de los datos filiatorios y de contacto del cliente.
+        /// </summary>
+        public string GetDvhSerialization()
+        {
+            // Mantenemos la consistencia con cultura invariante para el ID (Guid)
+            var culture = System.Globalization.CultureInfo.InvariantCulture;
+
+            return string.Join("|",
+                Timestamp.ToString("yyyy-MM-dd HH:mm:ss.fff", culture),
+                User ?? string.Empty,
+                Message ?? string.Empty,                
+                ((int)BitacoraType).ToString(culture),
+                ((int)Severity).ToString(culture)
+            );
+        }
+
+
+        public void UpdateDVH(string dvh) => this.DVH = DvhVo.Create(dvh);
+
     }
 }

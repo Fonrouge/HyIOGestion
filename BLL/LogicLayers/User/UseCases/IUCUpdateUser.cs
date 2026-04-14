@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace BLL.LogicLayers
 {
-    public interface IUCModifyUser
+    public interface IUCUpdateUser
     {
         Task<OperationResult<UsuarioDTO>> ExecuteAsync(UsuarioDTO userDto);
     }

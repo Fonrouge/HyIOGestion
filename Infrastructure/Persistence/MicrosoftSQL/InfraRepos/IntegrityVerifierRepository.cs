@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace DAL.Persistence.MicrosoftSQL
@@ -37,10 +38,7 @@ namespace DAL.Persistence.MicrosoftSQL
 
             try
             {
-                // NOTA: Como el nombre de la tabla no puede parametrizarse con @, se inyecta directamente.
-                // Asegúrate de que tableName provenga de tus appSettings y NUNCA de un input de usuario 
-                // para evitar SQL Injection.
-                string query = $"SELECT DVH FROM [{tableName}] ORDER BY Id_{tableName}";
+                string query = $"SELECT DVH FROM [{tableName}] ORDER BY Id";
 
                 using (var cmd = new SqlCommand(query, conn))
                 {
@@ -91,6 +89,10 @@ namespace DAL.Persistence.MicrosoftSQL
 
                     await cmd.ExecuteNonQueryAsync(); // Asíncrono
                 }
+            }
+            catch (Exception ex)
+            {
+                Debugger.Break();
             }
             finally
             {

@@ -66,11 +66,22 @@ namespace DAL.Persistence.MicrosoftSQL
         {
             var details = new List<SaleDetail>();
             string query = @"SELECT Id, SaleId, ProductId, Quantity, UnitPrice, SubTotal, IsDeleted, DVH 
-                             FROM SaleDetails";
+                             FROM SaleDetails sd WHERE sd.IsDeleted = 0";
 
             await ExecuteReaderAsync(query, null, reader => details.Add(Map(reader)));
             return details;
         }
+
+        public async Task<IEnumerable<SaleDetail>> GetAllDeletedAsync()
+        {
+            var details = new List<SaleDetail>();
+            string query = @"SELECT Id, SaleId, ProductId, Quantity, UnitPrice, SubTotal, IsDeleted, DVH 
+                             FROM SaleDetails sd WHERE sd.IsDeleted = 1";
+
+            await ExecuteReaderAsync(query, null, reader => details.Add(Map(reader)));
+            return details;
+        }
+
 
         // --- MAPEO Y PARÁMETROS ---
 

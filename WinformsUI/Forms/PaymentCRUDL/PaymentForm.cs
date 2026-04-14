@@ -2,7 +2,6 @@
 using Presenter.ForPayments;
 using Shared;
 using System;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Winforms.Theme;
 using WinformsUI.Forms.Base;
@@ -15,6 +14,7 @@ namespace WinformsUI.Forms.PaymentCRUDL
     public partial class PaymentForm : BaseManagementForm<PaymentDTO>, IPaymentView
     {
         private readonly IFormsFactory _formsFactory;
+        public override event EventHandler OnceLoadedAdvice;
 
         public PaymentForm
         (
@@ -27,46 +27,17 @@ namespace WinformsUI.Forms.PaymentCRUDL
             _formsFactory = formsFact;
 
             InitializeComponent();
-            InitializeDGV(this.dgvPanel);
-
+            InitializeDGV();
             WireSpecificEvents();
             AddTranslatables();
+
+            InitializeRibbonControls();
+            InitializePanelToggle();
+
+            this.Load += OnceLoaded;
         }
 
-
-        // =========================================================
-        // IMPLEMENTACIÓN DE IPaymentView (Mapeo de Eventos a Base)
-        // =========================================================
-        public event EventHandler CreatePaymentRequested
-        {
-            add => CreateRequested += value;
-            remove => CreateRequested -= value;
-        }
-
-        public event EventHandler<PaymentDTO> UpdatePaymentRequested
-        {
-            add => UpdateRequested += value;
-            remove => UpdateRequested -= value;
-        }
-
-        public event EventHandler<PaymentDTO> DeletePaymentRequested
-        {
-            add => DeleteRequested += value;
-            remove => DeleteRequested -= value;
-        }
-
-        public event EventHandler CachingAllPaymentsRequested
-        {
-            add => ListAllRequested += value;
-            remove => ListAllRequested -= value;
-        }
-
-        public event EventHandler ClosePaymentRequested
-        {
-            add => CloseRequested += value;
-            remove => CloseRequested -= value;
-        }
-
+        private void OnceLoaded(object sender, EventArgs e) => OnceLoadedAdvice?.Invoke(this, EventArgs.Empty);
 
         // =========================================================
         // TRADUCCIONES Y PALETA
@@ -86,13 +57,22 @@ namespace WinformsUI.Forms.PaymentCRUDL
             base.ApplyTranslation();
         }
 
-        public new void ApplyGlobalPalette() => DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
+        public override void ThemingNotifiedByConfigurationsModule()
+        {
+            DarkTheme.RedrawBorders = true;
+            DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
+        }
 
 
         // =========================================================
         // LÓGICA ESPECÍFICA DE PAGO
         // =========================================================
         public void OpenCreationView() => ((Form)_formsFactory.PaymentCreationForm()).ShowDialog();
+
+        protected override void OnEntitySelected(PaymentDTO entity)
+        {
+            // Hook opcional para acciones dependientes de selección
+        }
 
         private void WireSpecificEvents()
         {
@@ -103,11 +83,24 @@ namespace WinformsUI.Forms.PaymentCRUDL
         }
 
 
+        // =============================================================================================================
+        // LINKEO DE CONTROLES (instancia genérica -de BaseForm- ahora apunta a instancia específica de este formulario)
+        // =============================================================================================================
+        private void InitializeDGV() => base.InitializeDGV(this.dgvPanel);
+
+        private new void InitializeRibbonControls()
+        {
+            _dgvRibbonControls = DGVFunctionsControl;
+            _eyeRestRibbonControls = eyeRestRibbon;
+            base.InitializeRibbonControls();
+        }
+
+        public void InitializePanelToggle() => base.ToolStripsPanelToggle(toolStripsPanel);
+
+
         // =========================================================
         // CICLO DE VIDA (Lifecycle)
         // =========================================================
-
-        // CloseView(): Eliminado por redundancia (implementado en BaseManagementForm)
 
         protected override void Dispose(bool disposing)
         {
@@ -132,7 +125,7 @@ namespace WinformsUI.Forms.PaymentCRUDL
             base.Dispose(disposing); // La base se encarga de desuscribir el evento de cierre global
         }
 
-        public Task OpenUpdateView()
+        public void OpenUpdateView()
         {
             throw new NotImplementedException();
         }

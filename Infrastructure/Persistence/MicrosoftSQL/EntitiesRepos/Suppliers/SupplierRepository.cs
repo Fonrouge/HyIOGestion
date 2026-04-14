@@ -27,7 +27,8 @@ namespace DAL.Persistence.MicrosoftSQL
 
         private const string SQL_HARD_DELETE = "DELETE FROM {0} WHERE Id = @Id";
         private const string SQL_SELECT_BY_ID = "SELECT * FROM {0} WHERE Id = @Id";
-        private const string SQL_SELECT_ALL = "SELECT * FROM {0}";
+        private const string SQL_SELECT_ALL = "SELECT * FROM {0} s WHERE s.IsDeleted = 0";
+        private const string SQL_SELECT_ALL_DELETED = "SELECT * FROM {0} s.IsDeleted = 1";
         private const string SQL_SELECT_BY_TAXID = "SELECT * FROM {0} WHERE TaxNumber = @TaxNumber"; 
 
         public SupplierRepository(IApplicationSettings appSettings)
@@ -77,6 +78,14 @@ namespace DAL.Persistence.MicrosoftSQL
         {
             var suppliers = new List<Supplier>();
             await ExecuteReaderAsync(string.Format(SQL_SELECT_ALL, _appSettings.SupplierTableName),
+                null, reader => suppliers.Add(Map(reader)));
+            return suppliers;
+        }
+
+        public async Task<IEnumerable<Supplier>> GetAllDeletedAsync()
+        {
+            var suppliers = new List<Supplier>();
+            await ExecuteReaderAsync(string.Format(SQL_SELECT_ALL_DELETED, _appSettings.SupplierTableName),
                 null, reader => suppliers.Add(Map(reader)));
             return suppliers;
         }

@@ -149,5 +149,7 @@ namespace Domain.Entities
 
         public override string ToString()
             => $"{LastName.Value}, {FirstName.Value} ({FileNumber.Value})";
+
+        
     }
 }

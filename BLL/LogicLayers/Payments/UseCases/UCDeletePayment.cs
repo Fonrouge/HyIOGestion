@@ -111,9 +111,11 @@ namespace BLL.LogicLayers.Payments
                 // 7. Auditoría (Bitácora)
                 // Dejamos un log muy claro de qué se voló físicamente
                 var log = _bitacoraFact.Create(
-                    entry: BitacoraCatalogEnum.DeleteOnBD,
+                    entry: BitacoraCatalogEnum.SoftDeleteOnBD,
                     user: currentUser.Id.ToString(),
                     tableName: _tableNamePayment,
+                    sessionId: _sessionProvider.Current.Id,
+                    correlationId: Guid.NewGuid(),
                     extraInfo: $"Se eliminó FÍSICAMENTE el pago ID: {dto.Id} (Monto original: $ {entity.Amount.Value}, Cliente: {entity.SaleId})"
                 );
                 await _uow.BitacoraRepo.CreateAsync(log);

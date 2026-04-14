@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
+using WinformsUI.Infrastructure.Localization;
 
 namespace WinformsUI.Infrastructure.Translations
 {
@@ -62,7 +64,8 @@ namespace WinformsUI.Infrastructure.Translations
         void Apply();
 
         void UnsubscribeTarget(ISynchronizeInvoke target, string specificId = null);
-        
-        
+        List<LanguageInfo> GetAvailableLanguages();
+
+
     }
 }

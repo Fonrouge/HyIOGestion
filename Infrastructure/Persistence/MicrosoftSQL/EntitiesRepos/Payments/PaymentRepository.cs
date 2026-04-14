@@ -71,7 +71,17 @@ namespace DAL.Persistence.MicrosoftSQL
         public async Task<IEnumerable<Payment>> GetAllAsync()
         {
             var payments = new List<Payment>();
-            string query = "SELECT Id, Amount, CreationDate, EffectiveDate, SaleId, Method, Reference, DVH, IsDeleted FROM Payments";
+            string query = "SELECT Id, Amount, CreationDate, EffectiveDate, SaleId, Method, Reference, DVH, IsDeleted FROM Payments p WHERE p.IsDeleted = 0";
+
+            await ExecuteReaderAsync(query, null, reader => payments.Add(Map(reader)));
+
+            return payments;
+        }
+
+        public async Task<IEnumerable<Payment>> GetAllDeletedAsync()
+        {
+            var payments = new List<Payment>();
+            string query = "SELECT Id, Amount, CreationDate, EffectiveDate, SaleId, Method, Reference, DVH, IsDeleted FROM Payments p WHERE p.IsDeleted = 1";
 
             await ExecuteReaderAsync(query, null, reader => payments.Add(Map(reader)));
 

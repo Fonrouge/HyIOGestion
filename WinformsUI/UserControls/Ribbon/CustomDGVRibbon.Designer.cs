@@ -1,6 +1,6 @@
 ﻿namespace WinformsUI.UserControls.CustomDGV
 {
-    partial class CustomDGVFunctions
+    partial class CustomDGVRibbon
     {
         /// <summary> 
         /// Variable del diseñador necesaria.

@@ -137,6 +137,8 @@ namespace BLL.LogicLayers.Sales
                     entry: BitacoraCatalogEnum.CreateOnBD,
                     user: currentUser.Id.ToString(),
                     tableName: _tableNameSale,
+                    sessionId: _sessionProvider.Current.Id,
+                    correlationId: Guid.NewGuid(),
                     extraInfo: $"Venta #{newSale.Id} - Total: {newSale.TotalAmount.Value:C2}"
                 );
                 await _uow.BitacoraRepo.CreateAsync(log);

@@ -1,9 +1,12 @@
 ﻿
+using System;
+
 namespace SharedAbstractions.ArchitecturalMarkers
 {
-    public interface IView 
+    public interface IView
     {
         void ApplyTranslation();
-        void ApplyGlobalPalette();        
+        void ThemingNotifiedByConfigurationsModule();
+        Guid ViewId { get; set; }
     }
 }

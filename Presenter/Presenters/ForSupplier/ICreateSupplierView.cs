@@ -9,6 +9,6 @@ namespace Presenter.ForSupplier
         event EventHandler<SupplierDTO> CreateSupplierRequested;
         event EventHandler CloseRequested;
         void ShowOperationResult(OperationResult<SupplierDTO> opRes);
-        void ApplyGlobalPalette();
+        void ThemingNotifiedByConfigurationsModule();
     }
 }

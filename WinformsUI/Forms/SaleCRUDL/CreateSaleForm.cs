@@ -64,7 +64,7 @@ namespace WinformsUI.Forms.SaleCRUDL
             InitializeWizard();
             WireCommonEvents();
             WireFlowEvents();
-            ApplyGlobalPalette();
+            ThemingNotifiedByConfigurationsModule();
             UpdateClientSize();
         }
        
@@ -275,8 +275,11 @@ namespace WinformsUI.Forms.SaleCRUDL
         public void NotifiedByTranslationManager() => ApplyTranslation();
         public void ApplyTranslation() => _transMgr.Apply();
 
-        private void ApplyGlobalPalette() => DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
-
+        private void ThemingNotifiedByConfigurationsModule()
+        {
+            DarkTheme.RedrawBorders = true;
+            DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
+        }
         public void DisposeForm() => this.Dispose(true);
 
         protected override void Dispose(bool disposing)

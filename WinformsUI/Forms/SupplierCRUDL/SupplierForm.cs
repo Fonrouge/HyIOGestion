@@ -1,15 +1,11 @@
 ﻿using BLL.DTOs;
-using Presenter.ForClient;
 using Presenter.ForSupplier;
-using Presenter.Presenters.ForClient;
 using Presenter.Presenters.ForSupplier;
 using Shared;
 using System;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Winforms.Theme;
 using WinformsUI.Forms.Base;
-using WinformsUI.Forms.ClientCRUDL;
 using WinformsUI.Infrastructure.Factories;
 using WinformsUI.Infrastructure.Translations;
 using WinformsUI.UserControls.CustomDGV;
@@ -18,8 +14,8 @@ namespace WinformsUI.Forms.SupplierCRUDL
 {
     public partial class SupplierForm : BaseManagementForm<SupplierDTO>, ISupplierView
     {
-        public event EventHandler CloseRequested;
         private readonly IFormsFactory _formsFact;
+        public override event EventHandler OnceLoadedAdvice;
 
         public SupplierForm
         (
@@ -32,12 +28,22 @@ namespace WinformsUI.Forms.SupplierCRUDL
             _formsFact = formsFact;
 
             InitializeComponent();
-            InitializeDGV(this.dgvPanel);
-
+            InitializeDGV();
             WireSpecificEvents();
             AddTranslatables();
+
+            InitializeRibbonControls();
+            InitializePanelToggle();
+
+            this.Load += OnceLoaded;
         }
 
+        private void OnceLoaded(object sender, EventArgs e) => OnceLoadedAdvice?.Invoke(this, EventArgs.Empty);
+
+
+        // =========================================================
+        // TRADUCCIONES Y PALETA
+        // =========================================================
         private void AddTranslatables()
         {
             _transMgr.AddParentedObjects<Label>(this.Controls, "Text");
@@ -52,48 +58,36 @@ namespace WinformsUI.Forms.SupplierCRUDL
 
             base.ApplyTranslation();
         }
+        public override void ThemingNotifiedByConfigurationsModule()
+        {
+            DarkTheme.RedrawBorders = true;
+            DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
+        }
+
 
         // =========================================================
-        // IMPLEMENTACIÓN DE ISupplierView (Mapeo de Eventos a Base)
+        // LÓGICA ESPECÍFICA DE PROVEEDORES
         // =========================================================
-
-        public event EventHandler CreateSupplierRequested
-        {
-            add => CreateRequested += value;
-            remove => CreateRequested -= value;
-        }
-
-        public event EventHandler<SupplierDTO> UpdateSupplierRequested
-        {
-            add => UpdateRequested += value;
-            remove => UpdateRequested -= value;
-        }
-
-        public event EventHandler<SupplierDTO> DeleteSupplierRequested
-        {
-            add => DeleteRequested += value;
-            remove => DeleteRequested -= value;
-        }
-
-        public event EventHandler CachingAllSupplierRequested
-        {
-            add => ListAllRequested += value;
-            remove => ListAllRequested -= value;
-        }
-
-        public event EventHandler CloseSupplierRequested
-        {
-            add => CloseRequested += value;
-            remove => CloseRequested -= value;
-        }
-
-        // =========================================================
-        // LÓGICA DE UI Y CONTROL
-        // =========================================================
-
-        public new void ApplyGlobalPalette() => DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
 
         public void OpenCreationView() => ((Form)_formsFact.SupplierCreationForm()).Show();
+
+        public void OpenUpdateView()
+        {
+            if (_currentSelectedEntity == null)
+            {
+                MessageBox.Show("Primero seleccione un proveedor en la grilla");
+            }
+
+            var newUpdateForm = (UpdateSupplierForm)_formsFact.SupplierUpdateForm<IUpdateSupplierView>();
+            newUpdateForm.SetSupplierData(_currentSelectedEntity);
+            newUpdateForm.ShowDialog();
+
+        }
+
+        protected override void OnEntitySelected(SupplierDTO entity)
+        {
+            // Hook opcional para acciones dependientes de selección
+        }
 
         private void WireSpecificEvents()
         {
@@ -101,33 +95,32 @@ namespace WinformsUI.Forms.SupplierCRUDL
             btnUpdate.Click += OnUpdateRequest;
             btnDelete.Click += OnDeleteRequest;
             btnRefresh.Click += OnListAllRequest;
-
-            // Suscribimos al cierre para avisar al Presenter
-            this.FormClosed += HandleFormClosed;
         }
 
-        private void HandleFormClosed(object sender, FormClosedEventArgs e)
-            => CloseRequested?.Invoke(this, EventArgs.Empty);
 
-        public void CloseView()
+        // =============================================================================================================
+        // LINKEO DE CONTROLES (instancia genérica -de BaseForm- ahora apunta a instancia específica de este formulario)
+        // =============================================================================================================
+        private void InitializeDGV() => base.InitializeDGV(this.dgvPanel);
+
+        private new void InitializeRibbonControls()
         {
-            // Verificamos que no esté ya en proceso de eliminación
-            if (!this.IsDisposed)
-            {
-                this.Close(); // Close es más seguro que Dispose directo en WinForms
-            }
+            _dgvRibbonControls = DGVFunctionsControl;
+            _eyeRestRibbonControls = eyeRestRibbon;
+            base.InitializeRibbonControls();
         }
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
+        public void InitializePanelToggle() => base.ToolStripsPanelToggle(toolStripsPanel);
+
+
+        // =========================================================
+        // CICLO DE VIDA (Lifecycle)
+        // =========================================================
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
                 // 1. Desuscripción de eventos de controles internos
-                this.FormClosed -= HandleFormClosed;
-
                 if (btnCreate != null) btnCreate.Click -= OnCreateRequest;
                 if (btnUpdate != null) btnUpdate.Click -= OnUpdateRequest;
                 if (btnDelete != null) btnDelete.Click -= OnDeleteRequest;
@@ -146,19 +139,6 @@ namespace WinformsUI.Forms.SupplierCRUDL
             base.Dispose(disposing);
         }
 
-        public Task OpenUpdateView()
-        {
-            if (_currentSelectedEntity == null)
-            {
-                MessageBox.Show("Primero seleccione un proveedor en la grilla");
-                return Task.CompletedTask;
-            }
 
-            var newUpdateForm = (UpdateSupplierForm)_formsFact.SupplierUpdateForm<IUpdateSupplierView>();
-            newUpdateForm.SetSupplierData(_currentSelectedEntity);
-            newUpdateForm.ShowDialog();
-
-            return Task.CompletedTask;
-        }
     }
 }

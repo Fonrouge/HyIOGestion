@@ -82,6 +82,17 @@ namespace DAL.Persistence.MicrosoftSQL
             await ExecuteReaderAsync(query, null, reader => clients.Add(Map(reader)));
             return clients;
         }
+        public async Task<IEnumerable<Client>> GetAllDeletedAsync()
+        {
+            var clients = new List<Client>();
+            // Agregado el campo DVH al SELECT
+            string query = @"SELECT Id, Name, LastName, ShipAddress, Email, Phone, TaxId, DocNumber, IsDeleted, DVH 
+                             FROM Clients c
+                             WHERE c.IsDeleted = 1";
+
+            await ExecuteReaderAsync(query, null, reader => clients.Add(Map(reader)));
+            return clients;
+        }
 
         public async Task<Client> GetByDocNumberAsync(string taxId)
         {

@@ -2,6 +2,7 @@
 using BLL.DTOs.Errors;
 using BLL.Infrastructure.AuditLogs;
 using BLL.Infrastructure.Errors;
+using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Infrastructure;
 using Domain.Infrastructure.Audit;
@@ -95,25 +96,24 @@ namespace BLL.LogicLayers.Clients //============================================
                 // 5. Mapeo a Entidad (Recordamos que tu EntityBase ya no requiere que toquemos el ID, el DTO ya lo trae)
                 var clientEntityToUpdate = ClientMapper.ToEntity(dto);
 
-           //     // OPCIONAL SI CRECE: Integridad Horizontal (DVH): CRÍTICO recalcularlo porque los datos cambiaron
-           //     clientEntityToUpdate.DVH = IntegrityService.GetIntegrityHash
-           //     (
-           //         clientEntityToUpdate.Id,
-           //         clientEntityToUpdate.TaxId,
-           //         clientEntityToUpdate.Name
-           //     );
 
+                // 6. Se recalcula el hash a partir de los nuevos datos de la entidad.
+                IntegrityFacade.RecalculateEntityDVH(clientEntityToUpdate);
+                               
                 // 6. Persistencia
                 await _uow.ClientRepo.UpdateAsync(clientEntityToUpdate);
 
                 // 7. Integridad Vertical (DVV)
-          //      await UpdateDVVAsync(_tableNameClient, _appSettings.EntitiesConnection);
+                await UpdateDVVAsync(_tableNameClient, _appSettings.EntitiesConnection);
 
                 // 8. Auditoría (Bitácora)
-                var log = _bitacoraFact.Create(
+                var log = _bitacoraFact.Create
+                (
                     entry: BitacoraCatalogEnum.UpdateOnBD,
                     user: currentUser.Id.ToString(),
                     tableName: _tableNameClient,
+                    sessionId: _sessionProvider.Current.Id,
+                    correlationId: Guid.NewGuid(),
                     extraInfo: $"Se actualizó el cliente ID: {clientEntityToUpdate.Id} (Nuevo TaxId: {clientEntityToUpdate.TaxId})"
                 );
                 await _uow.BitacoraRepo.CreateAsync(log);

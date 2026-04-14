@@ -108,10 +108,13 @@ namespace BLL.LogicLayers.Products
              //   await UpdateDVVAsync(_tableNameProduct, _appSettings.EntitiesConnection);
 
                 // 9. Auditoría (Bitácora)
-                var log = _bitacoraFact.Create(
+                var log = _bitacoraFact.Create
+                (
                     entry: BitacoraCatalogEnum.UpdateOnBD,
                     user: currentUser.Id.ToString(),
                     tableName: _tableNameProduct,
+                    sessionId: _sessionProvider.Current.Id,
+                    correlationId: Guid.NewGuid(),
                     extraInfo: $"Se actualizó el producto ID: {productToUpdate.Id} (Nombre: {productToUpdate.Name.Value})"
                 );
                 await _uow.BitacoraRepo.CreateAsync(log);

@@ -5,12 +5,14 @@ using BLL.LogicLayer;
 using BLL.LogicLayers;
 using BLL.LogicLayers.Categories;
 using BLL.LogicLayers.Clients;
+using BLL.LogicLayers.Clients.UseCases;
 using BLL.LogicLayers.Employees;
 using BLL.LogicLayers.Payments;
 using BLL.LogicLayers.Products;
 using BLL.LogicLayers.Products.Categories.UseCases;
 using BLL.LogicLayers.Sales;
 using BLL.LogicLayers.Suppliers;
+using BLL.LogicLayers.User.UseCases;
 using BLL.SessionInfo;
 using BLL.UseCases;
 using DAL.Persistence;
@@ -45,26 +47,26 @@ namespace Bootstrapper
             //===================================
 
             //Client
-            services.AddTransient<IClientRepository, ClientRepository>();
+            services.AddScoped<IClientRepository, ClientRepository>();
 
             //Employee
-            services.AddTransient<IEmployeeRepository, EmployeeRepository>();
+            services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 
             //Payment
-            services.AddTransient<IPaymentRepository, PaymentRepository>();
+            services.AddScoped<IPaymentRepository, PaymentRepository>();
 
             //Product
-            services.AddTransient<IProductRepository, ProductRepository>();
+            services.AddScoped<IProductRepository, ProductRepository>();
 
             //Sale
-            services.AddTransient<ISaleRepository, SaleRepository>();
-            services.AddTransient<ISaleDetailRepository, SaleDetailRepository>();
+            services.AddScoped<ISaleRepository, SaleRepository>();
+            services.AddScoped<ISaleDetailRepository, SaleDetailRepository>();
 
             //Supplier
-            services.AddTransient<ISupplierRepository, SupplierRepository>();
+            services.AddScoped<ISupplierRepository, SupplierRepository>();
 
             //Category
-            services.AddTransient<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
 
 
             //===================================
@@ -72,16 +74,16 @@ namespace Bootstrapper
             //===================================
 
             //INFRA - Security
-            services.AddTransient<IErrorsFactory, ErrorsFactory>();
-            services.AddTransient<IErrorsRepository, ErrorsRepository>();
+            services.AddScoped<IErrorsFactory, ErrorsFactory>();
+            services.AddScoped<IErrorsRepository, ErrorsRepository>();
 
             //Infra - Errors
-            services.AddTransient<IBitacoraRepository, BitacoraRepository>();
-            services.AddTransient<IIntegrityVerifierRepository, IntegrityVerifierRepository>();
+            services.AddScoped<IBitacoraRepository, BitacoraRepository>();
+            services.AddScoped<IIntegrityVerifierRepository, IntegrityVerifierRepository>();
 
             //Infra - Users
-            services.AddTransient<IUserRepository, UserRepository>();
-            services.AddTransient<IPermisoRepository, PermisoRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IPermisoRepository, PermisoRepository>();
 
 
             //===================================
@@ -107,17 +109,18 @@ namespace Bootstrapper
             services.AddSingleton<ISessionProvider, GlobalSessionProvider>();
 
             //INFRA - Security
-            services.AddTransient<IVerifyDVV, VerifyDVV>();
-            services.AddTransient<IVerifyDVH, DVHVerifier>();
+            services.AddScoped<IVerifyDVV, VerifyDVV>();
+            services.AddScoped<IVerifyDVH, VerifyDVH>();
 
             //INFRA - Registers
 //            services.AddSingleton<IBitacoraMapper, BitacoraMapper>();
             services.AddSingleton<IBitacoraFactory, BitacoraFactory>();
 
             //Login (User) 
-            services.AddTransient<IUCLogin, UCLogin>();
-            services.AddTransient<IUCModifyUser, UCModifyUser>();
-            services.AddTransient<IUCCreateUser, UCCreateUser>();
+            services.AddScoped<IUCLogin, UCLogin>();
+            services.AddScoped<IUCUpdateUser, UCUpdateUser>();
+            services.AddScoped<IUCCreateUser, UCCreateUser>();
+            services.AddScoped<IUCGetUserById, UCGetUserById>();
 
 
             //===================================
@@ -125,47 +128,48 @@ namespace Bootstrapper
             //===================================
 
             //Client
-            services.AddTransient<IUCGetAllClients, UCGetAllClients>();
-            services.AddTransient<IUCCreateClient, UCCreateClient>();
-            services.AddTransient<IUCUpdateClient, UCUpdateClient>();
-            services.AddTransient<IUCDeleteClient, UCDeleteClient>();
-
+            services.AddScoped<IUCGetAllClients, UCGetAllClients>();
+            services.AddScoped<IUCCreateClient, UCCreateClient>();
+            services.AddScoped<IUCUpdateClient, UCUpdateClient>();
+            services.AddScoped<IUCDeleteClient, UCDeleteClient>();
+            services.AddScoped<IUCGetClientById, UCGetClientById>();
+        
 
             //Employee
-            services.AddTransient<IUCGetAllEmployees, UCGetAllEmployees>();
-            services.AddTransient<IUCCreateEmployee, UCCreateEmployee>();
-            services.AddTransient<IUCUpdateEmployee, UCUpdateEmployee>();
-            services.AddTransient<IUCDeleteEmployee, UCDeleteEmployee>();
+            services.AddScoped<IUCGetAllEmployees, UCGetAllEmployees>();
+            services.AddScoped<IUCCreateEmployee, UCCreateEmployee>();
+            services.AddScoped<IUCUpdateEmployee, UCUpdateEmployee>();
+            services.AddScoped<IUCDeleteEmployee, UCDeleteEmployee>();
 
 
             //Payment
-            services.AddTransient<IUCGetAllPayments, UCGetAllPayments>();
-            services.AddTransient<IUCCreatePayment, UCCreatePayment>();
-            services.AddTransient<IUCUpdatePayment, UCUpdatePayment>();
-            services.AddTransient<IUCDeletePayment, UCDeletePayment>();
+            services.AddScoped<IUCGetAllPayments, UCGetAllPayments>();
+            services.AddScoped<IUCCreatePayment, UCCreatePayment>();
+            services.AddScoped<IUCUpdatePayment, UCUpdatePayment>();
+            services.AddScoped<IUCDeletePayment, UCDeletePayment>();
 
 
             //Products + it's categories
-            services.AddTransient<IUCGetAllProducts, UCGetAllProducts>();
-            services.AddTransient<IUCCreateProduct, UCCreateProduct>();
-            services.AddTransient<IUCUpdateProduct, UCUpdateProduct>();
-            services.AddTransient<IUCDeleteProduct, UCDeleteProduct>();
+            services.AddScoped<IUCGetAllProducts, UCGetAllProducts>();
+            services.AddScoped<IUCCreateProduct, UCCreateProduct>();
+            services.AddScoped<IUCUpdateProduct, UCUpdateProduct>();
+            services.AddScoped<IUCDeleteProduct, UCDeleteProduct>();
             
-            services.AddTransient<IUCCreateCategory, UCCreateCategory>();
-            services.AddTransient<IUCGetAllCategories, UCGetAllCategories>();
-            services.AddTransient<IUCDeleteCategory, UCDeleteCategory>();
+            services.AddScoped<IUCCreateCategory, UCCreateCategory>();
+            services.AddScoped<IUCGetAllCategories, UCGetAllCategories>();
+            services.AddScoped<IUCDeleteCategory, UCDeleteCategory>();
 
             //Sale
-            services.AddTransient<IUCGetAllSales, UCGetAllSales>();
-            services.AddTransient<IUCCreateSale, UCCreateSale>();
-            services.AddTransient<IUCUpdateSale, UCUpdateSale>();
-            services.AddTransient<IUCDeleteSale, UCDeleteSale>();
+            services.AddScoped<IUCGetAllSales, UCGetAllSales>();
+            services.AddScoped<IUCCreateSale, UCCreateSale>();
+            services.AddScoped<IUCUpdateSale, UCUpdateSale>();
+            services.AddScoped<IUCDeleteSale, UCDeleteSale>();
 
             //Suppliers
-            services.AddTransient<IUCGetAllSuppliers, UCGetAllSuppliers>();
-            services.AddTransient<IUCCreateSupplier, UCCreateSupplier>();
-            services.AddTransient<IUCUpdateSupplier, UCUpdateSupplier>();
-            services.AddTransient<IUCDeleteSupplier, UCDeleteSupplier>();
+            services.AddScoped<IUCGetAllSuppliers, UCGetAllSuppliers>();
+            services.AddScoped<IUCCreateSupplier, UCCreateSupplier>();
+            services.AddScoped<IUCUpdateSupplier, UCUpdateSupplier>();
+            services.AddScoped<IUCDeleteSupplier, UCDeleteSupplier>();
         }
 
 

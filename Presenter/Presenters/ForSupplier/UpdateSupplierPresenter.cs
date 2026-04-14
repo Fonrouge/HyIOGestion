@@ -12,7 +12,6 @@ namespace Presenter.Presenters.ForSupplier
         private readonly IUCUpdateSupplier _ucUpdate;
         private readonly IMessenger _messenger;
 
-        private readonly Guid _messageId = Guid.NewGuid();
 
         public UpdateSupplierPresenter
         (
@@ -47,7 +46,7 @@ namespace Presenter.Presenters.ForSupplier
         }
         private void SendRelistAsk()
         {
-            var relistSuppliersAsk   = new RelistClientsMessage(_messageId, this);
+            var relistSuppliersAsk = new ClientsRelistRequestMessage(this);
             _messenger.Send(relistSuppliersAsk);
         }
 

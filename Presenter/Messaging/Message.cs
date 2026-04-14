@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Presenter.Messaging  // Ajusta a tu namespace en Shared
+namespace Presenter.Messaging  
 {
     /// <summary>
     /// Clase base abstracta para todos los mensajes en el sistema de mensajería.

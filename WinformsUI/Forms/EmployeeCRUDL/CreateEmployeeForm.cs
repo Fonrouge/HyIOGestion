@@ -36,7 +36,7 @@ namespace WinformsUI.Forms.EmployeeCRUDL
             InitializeWizard();
             WireEvents();
             AddTranslatables();
-            ApplyGlobalPalette();
+            ThemingNotifiedByConfigurationsModule();
             UpdateClientSize();
 
         }
@@ -59,8 +59,11 @@ namespace WinformsUI.Forms.EmployeeCRUDL
         }
 
         private void InitializeWizard() => _wizard.Initialize(new Panel[] { pnlIdentification, pnlContact });
-        public void ApplyGlobalPalette() => DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
-
+        public void ThemingNotifiedByConfigurationsModule()
+        {
+            DarkTheme.RedrawBorders = true;
+            DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
+        }
         public void NotifiedByTranslationManager() => ApplyTranslation();
         public void ApplyTranslation() => _transMgr.Apply();
 

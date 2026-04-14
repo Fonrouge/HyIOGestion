@@ -1,35 +1,46 @@
-﻿using Shared.ArchitecturalMarkers;
+﻿using Presenter.Messaging;
+using Shared.ArchitecturalMarkers;
 using SharedAbstractions.ArchitecturalMarkers;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Presenter.HostFormActions
 {
     public class HostFormActionsPresenter : IHostFormActionPresenter, IPresenter
-    { //entonces, ihostformactionpresenter como nueva interfaz de la que hereda hoistformactionpresenter para que pueda escuchar imainformnavigationpresenter y enterarme cuando se cierra un hostform para sacarlo de la lista de presenters añadidos cuando se abre unopa nuievo
+    {
 
         private readonly IHostFormActions _view;
-        public EventHandler OnMinimizingWindow;
-        public EventHandler OnRestoringFromMinimized;
-        public EventHandler OnExpandingWindow;
-        public EventHandler OnContractingWindow;
-        public Guid FormId { get; }  // Nuevo: Reemplaza FormTitle, usa GUID
+
+        private readonly IMessenger _messenger;
+        public IHostFormActions View => _view;
+        
+        public EventHandler OnMinimizingWindow { get; set; }
+        public EventHandler OnRestoringFromMinimized { get; set; }
+        public EventHandler OnExpandingWindow { get; set; }
+        public EventHandler OnContractingWindow { get; set; }
         public EventHandler OnClosingHostForm { get; set; }
+        
 
-        public HostFormActionsPresenter(IHostFormActions view)
+        public HostFormActionsPresenter(IHostFormActions view, IMessenger messenger)
         {
+            //Servicios inyectados
             _view = view ?? throw new ArgumentNullException(nameof(view));
-            FormId = _view.Id;  // Nuevo: Set desde view
+            _messenger = messenger ?? throw new ArgumentNullException(nameof(messenger));
+            
 
-            _view.MinimizeWindowRequested += (s, e) => MinimizeWindow();
-            _view.RestoreWindowFromMinimizedRequested += (s, e) => RestoreWindowFromMinimized();
-
+            //Acciones de la view
+            _view.MinimizeRequested += (s, e) => MinimizeWindow();
+            _view.RestoreFromMinimizedRequested += (s, e) => RestoreWindowFromMinimized();
             _view.ExpandRequested += (s, e) => ExpandWindow();
-            _view.ContractRequested += (s, e) => ContractWindow();
+            _view.ContractRequested += (s, e) => ContractWindow();                       
             _view.CloseWindowRequested += (s, e) => _view.CloseWindow();
+
+            //Para llamados exteriores vía Messenger
+            _messenger.Subscribe<HostFormCloseRequestMessage>(CloseHostForm);
+        }
+
+        private void CloseHostForm(HostFormCloseRequestMessage payload)
+        {
+            _view.CloseWholeForm(payload);
         }
 
         public void MinimizeWindow()
@@ -56,14 +67,11 @@ namespace Presenter.HostFormActions
             OnRestoringFromMinimized?.Invoke(this, EventArgs.Empty);
         }
 
-        public bool IsMinimized => _view.IsMinimized;
-
-
-
         public void SetMinimizeStatus(bool isMin)
         {
             _view.IsMinimized = isMin;
         }
+
         public void SetMaximizeStatus(bool isMax)
         {
             _view.IsMaximized = isMax;

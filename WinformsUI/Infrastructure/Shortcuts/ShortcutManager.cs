@@ -90,6 +90,26 @@ namespace WinformsUI.Infrastructure.Shortcuts
             _wheelDeltaAccumulator = 0;
         }
 
+
+
+        private static bool IsDescendantOfOurForm(Control control, Form ourForm)
+        {
+            if (control == null || ourForm == null)
+                return false;
+
+            Control current = control;
+
+            while (current != null)
+            {
+                if (current == ourForm)           // ¡Encontramos exactamente nuestro ClientForm!
+                    return true;
+
+                current = current.Parent;         // Subimos por .Parent (no .ParentForm)
+            }
+            return false;
+        }
+
+
         /// <summary>
         /// Maneja mensajes antes de que los reciban los controles.
         /// Retorna true si el atajo fue manejado (consume el mensaje).
@@ -107,8 +127,7 @@ namespace WinformsUI.Infrastructure.Shortcuts
                 var target = Control.FromHandle(m.HWnd);
                 if (target == null) return false;
 
-                var ownerForm = target.FindForm();
-                if (ownerForm == null || ownerForm != _form)
+                if (!IsDescendantOfOurForm(target, _form))
                     return false;
 
                 var key = (Keys)((int)m.WParam) & Keys.KeyCode;

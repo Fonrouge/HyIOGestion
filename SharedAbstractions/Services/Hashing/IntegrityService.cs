@@ -24,6 +24,8 @@ namespace Shared.Services
             }
         }
 
+
+
         /// <summary>
         /// Recibe N parámetros, los concatena y devuelve el hash resultante.
         /// Ideal para generar el DVH de cualquier entidad.

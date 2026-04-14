@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.IO;
-using WinformsUI.Infrastructure.Localization;
 
 namespace WinformsUI.Infrastructure.Localization
 {
@@ -39,6 +38,41 @@ namespace WinformsUI.Infrastructure.Localization
             string translated = FindValueByKey(targetLangPath, key);
 
             return translated ?? originalValue;
+        }
+
+        public List<LanguageInfo> GetAvailableLanguages()
+        {
+            var languages = new List<LanguageInfo>();
+            string basePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Infrastructure\\Localization");
+
+            if (!Directory.Exists(basePath)) return languages;
+
+            // Buscamos todos los archivos .txt
+            string[] files = Directory.GetFiles(basePath, "*.txt");
+
+            foreach (var file in files)
+            {
+                string langCode = Path.GetFileNameWithoutExtension(file);
+                string displayName = null;
+
+                // Leemos el archivo buscando la etiqueta LanguageDisplayName
+                foreach (var line in File.ReadLines(file))
+                {
+                    if (line.Contains("LanguageDisplayName="))
+                    {
+                        displayName = line.Split('=')[1].Trim();
+                        break;
+                    }
+                }
+
+                languages.Add(new LanguageInfo
+                {
+                    LangCode = langCode,
+                    DisplayName = displayName ?? langCode // Fallback al código si no hay nombre
+                });
+            }
+
+            return languages;
         }
 
         /// <summary>

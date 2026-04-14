@@ -106,9 +106,12 @@ namespace BLL.LogicLayers.Payments
                 await UpdateDVVAsync(_tableNamePayment, _appSettings.EntitiesConnection);
 
                 // 8. Auditoría (Bitácora)
-                var log = _bitacoraFact.Create(
+                var log = _bitacoraFact.Create
+                (
                     entry: BitacoraCatalogEnum.UpdateOnBD,
                     user: currentUser.Id.ToString(),
+                    sessionId: _sessionProvider.Current.Id,
+                    correlationId: Guid.NewGuid(),
                     tableName: _tableNamePayment,
                     extraInfo: $"Se actualizó el pago ID: {paymentToUpdate.Id} (Monto: $ {paymentToUpdate.Amount.Value}, Ref: {paymentToUpdate.Reference.Value})"
                 );

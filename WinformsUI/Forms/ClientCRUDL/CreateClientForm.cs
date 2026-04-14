@@ -18,6 +18,8 @@ namespace WinformsUI.Forms.ClientCRUDL
         private readonly string _errorMsg;
         private readonly string _successMsg;
 
+        public Guid ViewId { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
         public event EventHandler<ClientDTO> CreateClientRequested;
 
 
@@ -41,7 +43,7 @@ namespace WinformsUI.Forms.ClientCRUDL
             InitializeWizard();
             WireFlowButtonsEvents();
             UpdateFormSize();
-            ApplyGlobalPalette();
+            ThemingNotifiedByConfigurationsModule();
             AddTranslatables();
 
 
@@ -93,9 +95,9 @@ namespace WinformsUI.Forms.ClientCRUDL
 
         public void ApplyTranslation() => _transMgr.Apply();
 
-        public void ApplyGlobalPalette()
+        public void ThemingNotifiedByConfigurationsModule()
         {
-            DarkTheme.RedrawBorders = false;
+            DarkTheme.RedrawBorders = true;
             DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
         }
         private void UpdateFormSize()

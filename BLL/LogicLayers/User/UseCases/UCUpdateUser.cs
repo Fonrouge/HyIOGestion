@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace BLL.LogicLayers //=======================================================================REFACTORIZADO AL 27/02=======================================================================
 {
-    public class UCModifyUser : IUCModifyUser
+    public class UCUpdateUser : IUCUpdateUser
     {
         private readonly IUnitOfWork _uow;
         private readonly IApplicationSettings _appSettings;
@@ -30,7 +30,7 @@ namespace BLL.LogicLayers //====================================================
         private readonly string _tableNameUser;
         private readonly string _tableNameEmployee;
 
-        public UCModifyUser
+        public UCUpdateUser
         (
             IUnitOfWork uow,
             IApplicationSettings appSettings,
@@ -49,7 +49,7 @@ namespace BLL.LogicLayers //====================================================
             _errorsRepository = errorsRepository ?? throw new ArgumentNullException(nameof(errorsRepository));
             _encryptionSvc = encryptionSvc ?? throw new ArgumentNullException(nameof(encryptionSvc));
 
-            _tableNameUser = _appSettings.UserTableName ?? "Users";
+            _tableNameUser = _appSettings.UsuarioTableName ?? "Users";
             _tableNameEmployee = _appSettings.EmployeeTableName ?? "Employee";
         }
 
@@ -144,10 +144,13 @@ namespace BLL.LogicLayers //====================================================
                 await _uow.UserRepo.UpdateAsync(userEntity);
                 await UpdateDVVAsync(_tableNameUser, _appSettings.SecurityConnection);
 
-                var log = _bitacoraFact.Create(
+                var log = _bitacoraFact.Create
+                (
                     entry: BitacoraCatalogEnum.UpdateOnBD,
                     user: currentUser.Id.ToString(),
                     tableName: _tableNameUser,
+                    sessionId: _sessionProvider.Current.Id,
+                    correlationId: Guid.NewGuid(),
                     extraInfo: $"Se modificó el usuario {userEntity.Username}."
                 );
                 await _uow.BitacoraRepo.CreateAsync(log);

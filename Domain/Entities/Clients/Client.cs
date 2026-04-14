@@ -69,7 +69,7 @@ namespace Domain.Entities
                 ShipAddress = ShipAddressVO.Create(rawShipAddress?.ToUpper() ?? string.Empty),
                 Email = ClientEmailVO.Create(rawEmail?.ToUpper() ?? string.Empty),
                 Phone = ClientPhoneVO.Create(rawPhone?.ToUpper() ?? string.Empty),
-                TaxId = ClientTaxIdVO.Create(rawTaxId?.ToUpper() ?? string.Empty), 
+                TaxId = ClientTaxIdVO.Create(rawTaxId?.ToUpper() ?? string.Empty),
                 DocNumber = DocNumberVO.Create(rawDocNumber?.ToUpper() ?? string.Empty),
                 IsDeleted = isDeleted,
                 DVH = !string.IsNullOrEmpty(dvh) ? DvhVo.Create(dvh) : null
@@ -106,7 +106,7 @@ namespace Domain.Entities
         }
 
         public override string ToString() => string.Format($"{LastName.Value}, {Name.Value} ({DocNumber.Value})");
-       
-        public void UpdateDvh(string dvh) => this.DVH = DvhVo.Create(dvh);
+
+        public void UpdateDVH(string dvh) => this.DVH = DvhVo.Create(dvh);
     }
 }

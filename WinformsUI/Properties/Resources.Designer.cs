@@ -63,6 +63,16 @@ namespace WinformsUI.Properties {
         /// <summary>
         ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap accesibilityIcon {
+            get {
+                object obj = ResourceManager.GetObject("accesibilityIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap AddIcon {
             get {
                 object obj = ResourceManager.GetObject("AddIcon", resourceCulture);
@@ -123,16 +133,6 @@ namespace WinformsUI.Properties {
         /// <summary>
         ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap bigcongri {
-            get {
-                object obj = ResourceManager.GetObject("bigcongri", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap BigDBIcon {
             get {
                 object obj = ResourceManager.GetObject("BigDBIcon", resourceCulture);
@@ -143,9 +143,29 @@ namespace WinformsUI.Properties {
         /// <summary>
         ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap BigEyeIcon {
+            get {
+                object obj = ResourceManager.GetObject("BigEyeIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap BigIconAddUser {
             get {
                 object obj = ResourceManager.GetObject("BigIconAddUser", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap BigIconAt {
+            get {
+                object obj = ResourceManager.GetObject("BigIconAt", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -196,6 +216,16 @@ namespace WinformsUI.Properties {
         internal static System.Drawing.Bitmap BigIconText {
             get {
                 object obj = ResourceManager.GetObject("BigIconText", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap BigIconWhatsApp {
+            get {
+                object obj = ResourceManager.GetObject("BigIconWhatsApp", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -353,6 +383,16 @@ namespace WinformsUI.Properties {
         /// <summary>
         ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap DarkModeIcon {
+            get {
+                object obj = ResourceManager.GetObject("DarkModeIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap EditIcon {
             get {
                 object obj = ResourceManager.GetObject("EditIcon", resourceCulture);
@@ -366,6 +406,16 @@ namespace WinformsUI.Properties {
         internal static System.Drawing.Bitmap EmployeeIcon {
             get {
                 object obj = ResourceManager.GetObject("EmployeeIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ErrorsIcon {
+            get {
+                object obj = ResourceManager.GetObject("ErrorsIcon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -456,6 +506,26 @@ namespace WinformsUI.Properties {
         internal static System.Drawing.Bitmap IconUnLogo {
             get {
                 object obj = ResourceManager.GetObject("IconUnLogo", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap LanguageIcon {
+            get {
+                object obj = ResourceManager.GetObject("LanguageIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap LogsIcon {
+            get {
+                object obj = ResourceManager.GetObject("LogsIcon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

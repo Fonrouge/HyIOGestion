@@ -49,7 +49,7 @@ namespace Presenter.ForClient
             _view.FillCountries(datasourceCountries);
         }
 
-        private void ApplyDarkTheme() => _view.ApplyGlobalPalette();
+        private void ApplyDarkTheme() => _view.ThemingNotifiedByConfigurationsModule();
         private async Task OnCreateClientRequested(ClientDTO clientData)
         {
             var opRes = await _useCaseCreate.ExecuteAsync(clientData);

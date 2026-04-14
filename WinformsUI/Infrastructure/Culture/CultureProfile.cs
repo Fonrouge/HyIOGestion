@@ -4,7 +4,6 @@ using System.Globalization;
 namespace WinformsUI.Infrastructure.Culture
 {
 
-
     public class CultureProfile : ICultureSwitcher
     {
         private CultureInfo _currentUICulture;

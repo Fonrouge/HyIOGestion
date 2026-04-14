@@ -3,9 +3,13 @@ using Bootstrapper;
 using Microsoft.Extensions.DependencyInjection;
 using Presenter.LoginScreen;
 using Presenter.MainFormNavigation;
+using Shared.Services;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using WinformsUI.Forms.ConfigurationsMenu;
 using WinformsUI.Forms.Login;
 using WinformsUI.Forms.Main;
 using WinformsUI.Infrastructure.DI;
@@ -20,6 +24,32 @@ namespace Winforms.Theme
         [STAThread]
         static void Main()
         {
+        //  List<string> dvhs = new List<string>()
+        //  {
+        //      "8c317ae4d9443c542540fc4e7215c4abd96bf2d9ea496e553fb51ce6d2963dc9",
+        //      "90706ce7b37ebdb19ad7f997371dd46053deb151b82179898abaad06b5500ca8",
+        //      "edddbde47942bc7497b7bfb62f889e958e6cae4c9a5aaeb4bf0250a71b5bc630",
+        //      "596ec69321b4bc9afc8b7d4cf80d5c6bb695580afca86da39cd0ba0e81df78e7",
+        //      "39e0a5d60cd67e1e2106271483a75b69d14f6b9ffb23b1b0f0e000f59f490bf2",
+        //      "ee8475f8b486fdf1d2c3dd3b545e9ade1212290d9f8149e402500e40101d2ae7",
+        //
+        //  };
+        //
+        //
+        //
+        //  Console.Write(IntegrityService.CalculateDVV(dvhs));
+        //
+        //  Debugger.Break();
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //  Debugger.Break();
+
             // 1. Configuración básica de WinForms
             InitializeWinForms();
 
@@ -28,7 +58,7 @@ namespace Winforms.Theme
             _serviceProvider = CreateServiceProvider();
 
             // 3. Flujo de Integridad (Ahora sí es esperado/awaited)
-            //           if (!await RunIntegrityCheckAsync()) return;
+      //      if (!RunIntegrityCheckAsync()) return;
 
             // 4. Flujo de Login
             if (!RunLoginFlow()) return;
@@ -60,14 +90,14 @@ namespace Winforms.Theme
             return services.BuildServiceProvider();
         }
 
-        private static async Task<bool> RunIntegrityCheckAsync()
+        private static bool RunIntegrityCheckAsync()
         {
             // IMPORTANTE: En fase de prueba esto podría retornar true directamente
             // pero mantenemos la lógica asíncrona corregida.
             try
             {
                 var checker = _serviceProvider.GetRequiredService<IVerifyDVH>();
-                await checker.ExecuteAsync();
+                checker.ExecuteAsync();
                 return true;
             }
             catch (Exception ex)
@@ -81,6 +111,8 @@ namespace Winforms.Theme
         private static bool RunLoginFlow()
         {
             var factory = _serviceProvider.GetRequiredService<IFormsFactory>();
+            ActivatorUtilities.CreateInstance<ConfigurationsForm>(_serviceProvider);
+
 
             // Usamos 'using' para asegurar que el Form se libere
             using (var loginForm = factory.CreateGeneric<LoginFrm>())

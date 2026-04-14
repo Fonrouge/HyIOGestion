@@ -2,7 +2,6 @@
 using Presenter.ForSale;
 using Shared;
 using System;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Winforms.Theme;
 using WinformsUI.Forms.Base;
@@ -15,6 +14,7 @@ namespace WinformsUI.Forms.SaleCRUDL
     public partial class SaleForm : BaseManagementForm<SaleDTO>, ISaleView
     {
         private readonly IFormsFactory _formsFactory;
+        public override event EventHandler OnceLoadedAdvice;
 
         public SaleForm
         (
@@ -27,45 +27,17 @@ namespace WinformsUI.Forms.SaleCRUDL
             _formsFactory = formsFact;
 
             InitializeComponent();
-            InitializeDGV(this.dgvPanel);
-
+            InitializeDGV();
             WireSpecificEvents();
             AddTranslatables();
+
+            InitializeRibbonControls();
+            InitializePanelToggle();
+
+            this.Load += OnceLoaded;
         }
 
-
-        // =========================================================
-        // IMPLEMENTACIÓN DE ISaleView (Mapeo de Eventos a Base)
-        // =========================================================
-        public event EventHandler CreateSaleRequested
-        {
-            add => CreateRequested += value;
-            remove => CreateRequested -= value;
-        }
-
-        public event EventHandler<SaleDTO> UpdateSaleRequested
-        {
-            add => UpdateRequested += value;
-            remove => UpdateRequested -= value;
-        }
-
-        public event EventHandler<SaleDTO> DeleteSaleRequested
-        {
-            add => DeleteRequested += value;
-            remove => DeleteRequested -= value;
-        }
-
-        public event EventHandler CachingAllSaleRequested
-        {
-            add => ListAllRequested += value;
-            remove => ListAllRequested -= value;
-        }
-
-        public event EventHandler CloseSaleRequested
-        {
-            add => CloseRequested += value;
-            remove => CloseRequested -= value;
-        }
+        private void OnceLoaded(object sender, EventArgs e) => OnceLoadedAdvice?.Invoke(this, EventArgs.Empty);
 
 
         // =========================================================
@@ -86,13 +58,24 @@ namespace WinformsUI.Forms.SaleCRUDL
             base.ApplyTranslation();
         }
 
-        public new void ApplyGlobalPalette() => DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
+        public new void ThemingNotifiedByConfigurationsModule() => DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
 
 
         // =========================================================
         // LÓGICA ESPECÍFICA DE VENTA
         // =========================================================
         public void OpenCreationView() => ((Form)_formsFactory.SaleCreationForm()).Show();
+
+        public void OpenUpdateView()
+        {
+            MessageBox.Show("Un pago, por ahora, no puede editarse. Esta funcionalidad se implementará en el futuro.");
+            //throw new NotImplementedException(); //Un pago, por ahora, no puede editarse. Se quita la expceción para evitar corte de programa.
+        }
+
+        protected override void OnEntitySelected(SaleDTO entity)
+        {
+            // Hook opcional para acciones dependientes de selección
+        }
 
         private void WireSpecificEvents()
         {
@@ -101,6 +84,21 @@ namespace WinformsUI.Forms.SaleCRUDL
             btnDelete.Click += OnDeleteRequest;
             btnRefresh.Click += OnListAllRequest;
         }
+
+
+        // =============================================================================================================
+        // LINKEO DE CONTROLES (instancia genérica -de BaseForm- ahora apunta a instancia específica de este formulario)
+        // =============================================================================================================
+        private void InitializeDGV() => base.InitializeDGV(this.dgvPanel);
+
+        private new void InitializeRibbonControls()
+        {
+            _dgvRibbonControls = DGVFunctionsControl;
+            _eyeRestRibbonControls = eyeRestRibbon;
+            base.InitializeRibbonControls();
+        }
+
+        public void InitializePanelToggle() => base.ToolStripsPanelToggle(toolStripsPanel);
 
 
         // =========================================================
@@ -129,9 +127,6 @@ namespace WinformsUI.Forms.SaleCRUDL
             base.Dispose(disposing); // La base se encarga de desuscribir el cierre
         }
 
-        public Task OpenUpdateView()
-        {
-            throw new NotImplementedException();
-        }
+      
     }
 }

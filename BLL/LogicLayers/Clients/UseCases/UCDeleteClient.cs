@@ -105,10 +105,13 @@ namespace BLL.LogicLayers.Clients //============================================
    //             await UpdateDVVAsync(_tableNameClient, _appSettings.EntitiesConnection);
 
                 // 7. Auditoría (Bitácora)
-                var log = _bitacoraFact.Create(
-                    entry: BitacoraCatalogEnum.DeleteOnBD,
+                var log = _bitacoraFact.Create
+                (
+                    entry: BitacoraCatalogEnum.SoftDeleteOnBD,
                     user: currentUser.Id.ToString(),
                     tableName: _tableNameClient,
+                    sessionId: _sessionProvider.Current.Id,
+                    correlationId: Guid.NewGuid(),
                     extraInfo: $"Se eliminó el cliente ID: {dto.Id} (Nombre Ref: {dto.Name})"
                 );
                 await _uow.BitacoraRepo.CreateAsync(log);

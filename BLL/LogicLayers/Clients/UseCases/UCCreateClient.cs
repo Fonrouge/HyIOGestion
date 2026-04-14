@@ -26,6 +26,8 @@ namespace BLL.LogicLayers.Clients  //===========================================
         private readonly IErrorsRepository _errorsRepository;
 
         private readonly string _tableNameClient;
+        private readonly Guid _correlationId;
+
 
         public UCCreateClient
         (
@@ -38,26 +40,27 @@ namespace BLL.LogicLayers.Clients  //===========================================
         )
         {
             _uow = uow ?? throw new ArgumentNullException(nameof(uow));
-            _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings)); 
-            _bitacoraFact = bitacoraFact ?? throw new ArgumentNullException(nameof(bitacoraFact)); 
-            _sessionProvider = sessionProvider ?? throw new ArgumentNullException(nameof(sessionProvider)); 
-            _errorsFactory = errorsFactory ?? throw new ArgumentNullException(nameof(errorsFactory)); 
-            _errorsRepository = errorsRepository ?? throw new ArgumentNullException(nameof(errorsRepository)); 
+            _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
+            _bitacoraFact = bitacoraFact ?? throw new ArgumentNullException(nameof(bitacoraFact));
+            _sessionProvider = sessionProvider ?? throw new ArgumentNullException(nameof(sessionProvider));
+            _errorsFactory = errorsFactory ?? throw new ArgumentNullException(nameof(errorsFactory));
+            _errorsRepository = errorsRepository ?? throw new ArgumentNullException(nameof(errorsRepository));
 
             _tableNameClient = appSettings.ClientTableName ?? "Clients";
+            _correlationId = Guid.NewGuid();
         }
 
         public async Task<OperationResult<ClientDTO>> ExecuteAsync(ClientDTO dto)
         {
             var opRes = new OperationResult<ClientDTO>();
-            
+
             try
             {
                 // 1. Validar Sesión Activa (Fail Fast)
                 if (_sessionProvider.Current == null)
                 {
-                    var newError = _errorsFactory.Create(ErrorCatalogEnum.SessionExpired);        
-                    
+                    var newError = _errorsFactory.Create(ErrorCatalogEnum.SessionExpired);
+
                     opRes.Errors.Add(ErrorMapper.ToDTO(newError));
                     return opRes;
                 }
@@ -66,7 +69,7 @@ namespace BLL.LogicLayers.Clients  //===========================================
                 // 2. Configurar conexión y abrir transacción
                 _uow.SetConnectionString(_appSettings.EntitiesConnection);
                 await _uow.BeginTransactionAsync();
-                
+
 
                 // 3. Validar Permisos (Ahora funcionará porque las queries son Cross-DB o usan SecurityConnection)
                 var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
@@ -83,7 +86,7 @@ namespace BLL.LogicLayers.Clients  //===========================================
 
                 // 4. Validar unicidad}
                 var existingClient = await _uow.ClientRepo.GetByDocNumberAsync(dto.DocNumber);
-               
+
                 if (existingClient != null)
                 {
                     var dupError = _errorsFactory.Create(ErrorCatalogEnum.DuplicateEntry, _tableNameClient);
@@ -94,20 +97,17 @@ namespace BLL.LogicLayers.Clients  //===========================================
                 // 5. Mapeo a Entidad
                 var newClientEntity = ClientMapper.ToEntity(dto);
 
-           
+
                 //  Podría optarse por incluir DVH de ser necesario
-                //  
-                //  newClientEntity.DVH = IntegrityService.GetIntegrityHash(
-                //      newClientEntity.Id,
-                //      newClientEntity.TaxId,
-                //      newClientEntity.Name);
+
+                newClientEntity.UpdateDVH(IntegrityService.GetIntegrityHash(newClientEntity.GetDvhSerialization()));
 
 
                 // 6. Persistencia principal
                 await _uow.ClientRepo.CreateAsync(newClientEntity);
 
                 // 7. Integridad Vertical (DVV)
-         //       await UpdateDVVAsync(_tableNameClient, _appSettings.EntitiesConnection);
+                //       await UpdateDVVAsync(_tableNameClient, _appSettings.EntitiesConnection);
 
                 // 8. Registrar Bitácora
                 var log = _bitacoraFact.Create
@@ -115,9 +115,13 @@ namespace BLL.LogicLayers.Clients  //===========================================
                     entry: BitacoraCatalogEnum.CreateOnBD,
                     user: currentUser.Id.ToString(),
                     tableName: _tableNameClient,
-                    extraInfo: $"Se creó el cliente {newClientEntity.Name} (TaxId: {newClientEntity.TaxId})"
+                    sessionId: _sessionProvider.Current.Id,
+                    correlationId: _correlationId,
+                    extraInfo: $"Se creó el cliente {newClientEntity.Id} (N° Documento: {newClientEntity.DocNumber})"
                 );
-                await _uow.BitacoraRepo.CreateAsync(log); 
+
+
+                await _uow.BitacoraRepo.CreateAsync(log);
 
                 // 9. Confirmar Transacción
                 await _uow.CommitAsync();
@@ -147,7 +151,7 @@ namespace BLL.LogicLayers.Clients  //===========================================
 
                 // Emitimos error limpio a la UI
                 var uiError = _errorsFactory.Create(ErrorCatalogEnum.InternalError, _tableNameClient);
-                                
+
                 opRes.Errors.Add(new ErrorLogDTO
                 {
                     Code = uiError.Code,

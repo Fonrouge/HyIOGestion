@@ -58,13 +58,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Messaging\HostFormClosedMessage.cs" />
+    <Compile Include="Messaging\HostFormCloseRequestMessage.cs" />
+    <Compile Include="Messaging\HostFormClosedNotificationMessage.cs" />
     <Compile Include="Messaging\IMessage.cs" />
     <Compile Include="Messaging\IMessenger.cs" />
-    <Compile Include="Messaging\Meesage.cs" />
+    <Compile Include="Messaging\Message.cs" />
     <Compile Include="Messaging\Messenger.cs" />
-    <Compile Include="Messaging\RelistClientsMessage.cs" />
-    <Compile Include="Messaging\RelistSuppliersMessage.cs" />
+    <Compile Include="Messaging\ClientsRelistRequestMessage.cs" />
+    <Compile Include="Messaging\EmployeesRelistRequestMessage.cs" />
+    <Compile Include="Messaging\ProductsRelistRequestMessage.cs" />
+    <Compile Include="Messaging\SuppliersRelistRequestMessage.cs" />
+    <Compile Include="Messaging\TranslationNotificationMessage.cs" />
+    <Compile Include="Messaging\TranslationRequestMessage.cs" />
     <Compile Include="Presenters\ForClient\ClientPresenter.cs" />
     <Compile Include="Presenters\ForClient\CreateClientPresenter.cs" />
     <Compile Include="Presenters\ForClient\IClientView.cs" />
@@ -97,6 +102,7 @@
     <Compile Include="Presenters\ForSupplier\IUpdateSupplierView.cs" />
     <Compile Include="Presenters\ForSupplier\SupplierPresenter.cs" />
     <Compile Include="Presenters\ForSupplier\UpdateSupplierPresenter.cs" />
+    <Compile Include="Presenters\ForUser\UserPresenter.cs" />
     <Compile Include="Presenters\HostFormActions\HostFormActionsPresenter.cs" />
     <Compile Include="Presenters\HostFormActions\IHostFormActionPresenter.cs" />
     <Compile Include="Presenters\HostFormActions\IHostFormActions.cs" />

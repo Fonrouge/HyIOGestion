@@ -29,7 +29,7 @@ namespace Presenter.ForProducts
             ApplyDarkTheme();
         }
 
-        private void ApplyDarkTheme() => _view.ApplyGlobalPalette();
+        private void ApplyDarkTheme() => _view.ThemingNotifiedByConfigurationsModule();
 
         private void WireViewEvents()
         {

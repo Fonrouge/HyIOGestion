@@ -5,7 +5,6 @@ using Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Winforms.Theme;
 using WinformsUI.Forms.Base;
@@ -18,6 +17,7 @@ namespace WinformsUI.Forms.ProductCRUDL
     public partial class ProductForm : BaseManagementForm<ProductDTO>, IProductView
     {
         private readonly IFormsFactory _formsFactory;
+        public override event EventHandler OnceLoadedAdvice;
 
         public ProductForm
         (
@@ -29,47 +29,19 @@ namespace WinformsUI.Forms.ProductCRUDL
         {
             _formsFactory = formsFact;
             InitializeComponent();
-            InitializeDGV(this.dgvPanel);
-
+            InitializeDGV();
             WireSpecificEvents();
             AddTranslatables();
+
+            InitializeRibbonControls();
+            InitializePanelToggle();
+
+            this.Load += OnceLoaded;
         }
 
+        private void OnceLoaded(object sender, EventArgs e) => OnceLoadedAdvice?.Invoke(this, EventArgs.Empty);
 
-        // =========================================================
-        // IMPLEMENTACIÓN DE IProductView (Mapeo de Eventos a Base)
-        // =========================================================
-        public event EventHandler CreateProductRequested
-        {
-            add => CreateRequested += value;
-            remove => CreateRequested -= value;
-        }
-
-        public event EventHandler<ProductDTO> UpdateProductRequested
-        {
-            add => UpdateRequested += value;
-            remove => UpdateRequested -= value;
-        }
-
-        public event EventHandler<ProductDTO> DeleteProductRequested
-        {
-            add => DeleteRequested += value;
-            remove => DeleteRequested -= value;
-        }
-
-        public event EventHandler CachingAllProductsRequested
-        {
-            add => ListAllRequested += value;
-            remove => ListAllRequested -= value;
-        }
-
-        public event EventHandler CloseProductRequested
-        {
-            add => CloseRequested += value;
-            remove => CloseRequested -= value;
-        }
-
-
+        
         // =========================================================
         // TRADUCCIONES Y PALETA
         // =========================================================
@@ -88,7 +60,7 @@ namespace WinformsUI.Forms.ProductCRUDL
             base.ApplyTranslation();
         }
 
-        public new void ApplyGlobalPalette()
+        public new void ThemingNotifiedByConfigurationsModule()
         {
             DarkTheme.RedrawBorders = true;
             DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
@@ -98,24 +70,27 @@ namespace WinformsUI.Forms.ProductCRUDL
         // =========================================================
         // LÓGICA ESPECÍFICA DE PRODUCTO
         // =========================================================
-
         public void SetSearchFilters<T>(IEnumerable<T> categories) where T : CategoryDTO
             => _dgvForm.ConfigureFilters<CategoryDTO>(categories.ToList());
 
         public void OpenCreationView() => ((Form)_formsFactory.ProductCreationForm()).Show();
-        public Task OpenUpdateView()
+        public void OpenUpdateView()
         {
             if (_currentSelectedEntity == null)
             {
                 MessageBox.Show("Primero seleccione un producto en la grilla");
-                return Task.CompletedTask;
             }
 
             var newUpdateForm = (UpdateProductForm)_formsFactory.ProductUpdateForm<IUpdateProductView>();
             newUpdateForm.SetProductData(_currentSelectedEntity);
             newUpdateForm.ShowDialog();
-            return Task.CompletedTask;
         }
+
+        protected override void OnEntitySelected(ProductDTO entity)
+        {
+            // Hook opcional para acciones dependientes de selección
+        }
+
         private void WireSpecificEvents()
         {
             btnCreate.Click += OnCreateRequest;
@@ -123,6 +98,21 @@ namespace WinformsUI.Forms.ProductCRUDL
             btnDelete.Click += OnDeleteRequest;
             btnRefresh.Click += OnListAllRequest;
         }
+
+
+        // =============================================================================================================
+        // LINKEO DE CONTROLES (instancia genérica -de BaseForm- ahora apunta a instancia específica de este formulario)
+        // =============================================================================================================
+        private void InitializeDGV() => base.InitializeDGV(this.dgvPanel);
+
+        private new void InitializeRibbonControls()
+        {
+            _dgvRibbonControls = DGVFunctionsControl;
+            _eyeRestRibbonControls = eyeRestRibbon;
+            base.InitializeRibbonControls();
+        }
+
+        public void InitializePanelToggle() => base.ToolStripsPanelToggle(toolStripsPanel);
 
 
         // =========================================================

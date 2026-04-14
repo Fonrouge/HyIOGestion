@@ -108,10 +108,13 @@ namespace BLL.LogicLayers.Suppliers
           //      await UpdateDVVAsync(_tableNameSupplier, _appSettings.EntitiesConnection);
 
                 // 7. Auditoría (Bitácora)
-                var log = _bitacoraFact.Create(
-                    entry: BitacoraCatalogEnum.DeleteOnBD,
+                var log = _bitacoraFact.Create
+                (
+                    entry: BitacoraCatalogEnum.SoftDeleteOnBD,
                     user: currentUser.Id.ToString(),
                     tableName: _tableNameSupplier,
+                    sessionId: _sessionProvider.Current.Id,
+                    correlationId: Guid.NewGuid(),
                     extraInfo: $"Se eliminó el proveedor ID: {dto.Id} (Nombre Ref: {dto.CompanyName})"
                 );
                 await _uow.BitacoraRepo.CreateAsync(log);

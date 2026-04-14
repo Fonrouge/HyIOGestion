@@ -1,6 +1,4 @@
-﻿using BLL.DTOs;
-using BLL.LogicLayers.Employees;
-using BLL.LogicLayers.Products;
+﻿using BLL.LogicLayers.Products;
 using BLL.LogicLayers.Products.Categories.UseCases;
 using Presenter.Messaging;
 using System;
@@ -15,7 +13,6 @@ namespace Presenter.Presenters.ForProducts
         private readonly IUCGetAllCategories _ucGetAllCategories;
         private readonly IMessenger _messenger;
 
-        private readonly Guid _messageId = Guid.NewGuid();
 
         public UpdateProductPresenter
         (
@@ -71,7 +68,7 @@ namespace Presenter.Presenters.ForProducts
         }
         private void SendRelistAsk()
         {
-            var relistSuppliersAsk = new RelistClientsMessage(_messageId, this);
+            var relistSuppliersAsk = new ClientsRelistRequestMessage(this);
             _messenger.Send(relistSuppliersAsk);
         }
 

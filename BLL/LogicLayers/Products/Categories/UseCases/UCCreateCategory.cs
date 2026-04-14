@@ -84,7 +84,15 @@ namespace BLL.LogicLayers.Categories
                 await UpdateDVVAsync(_tableNameCategory, _appSettings.EntitiesConnection);
 
                 // 5. Auditoría
-                var log = _bitacoraFact.Create(BitacoraCatalogEnum.CreateOnBD, currentUser.Id.ToString(), _tableNameCategory, $"Categoría creada: {newCategory.Name}");
+                var log = _bitacoraFact.Create
+                (
+                    entry: BitacoraCatalogEnum.CreateOnBD,
+                    tableName: _tableNameCategory,
+                    user: currentUser.Id.ToString(),
+                    sessionId: _sessionProvider.Current.Id,
+                    correlationId: Guid.NewGuid(),
+                    extraInfo: $"Categoría creada: {newCategory.Name}"
+                );
                 await _uow.BitacoraRepo.CreateAsync(log);
 
                 await _uow.CommitAsync();

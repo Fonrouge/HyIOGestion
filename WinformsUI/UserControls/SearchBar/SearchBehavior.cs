@@ -21,6 +21,11 @@ namespace WinformsUI.UserControls.SearchBar
     /// </summary>
     public sealed class SearchBehavior<T> : IDisposable where T : IDto
     {
+        // --- Tamaños de fuente ---
+        private float _searchBarPlaceholderSize = 9.5f;
+        private float _searchBarTextSize = 11.0f;
+
+
         // --- Dependencias / UI ---
         private readonly DataGridView _dgv;
         private TextBox _tb;
@@ -338,9 +343,11 @@ namespace WinformsUI.UserControls.SearchBar
                 isPassword: false,
                 normalForeColor: DarkTheme.GetCurrentPalette().TextSecondary,
                 placeholderForeColor: null,
-                fontSize: 11.00f
+                fontSize: _searchBarPlaceholderSize
             );
         }
+
+   
 
         private void RemovePlaceholder()
         {
@@ -355,7 +362,7 @@ namespace WinformsUI.UserControls.SearchBar
                 isPassword: false,
                 normalForeColor: DarkTheme.GetCurrentPalette().TextPrimary, // Corrección sugerida de UI
                 placeholderForeColor: null,
-                fontSize: 11.00f
+                fontSize: _searchBarTextSize
             );
         }
 

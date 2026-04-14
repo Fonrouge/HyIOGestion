@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Presenter.Messaging  // Ajusta si moviste a Shared
+namespace Presenter.Messaging  
 {
     public class Messenger : IMessenger
     {

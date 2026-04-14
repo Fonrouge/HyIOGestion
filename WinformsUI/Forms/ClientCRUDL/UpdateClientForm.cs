@@ -46,7 +46,7 @@ namespace WinformsUI.Forms.ClientCRUDL
             _errorMsg = _appSettings.ErrorOnOperation;
 
             InitializeComponent();
-            ApplyGlobalPalette();
+            ThemingNotifiedByConfigurationsModule();
             AddTranslatables();
             InitEditButtonsList();
             SetInitialControlsState();
@@ -68,7 +68,7 @@ namespace WinformsUI.Forms.ClientCRUDL
         // =========================================================
         // TRADUCCIONES Y PALETA
         // =========================================================
-        private void ApplyGlobalPalette()
+        private void ThemingNotifiedByConfigurationsModule()
         {
             DarkTheme.RedrawBorders = true;
             DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());

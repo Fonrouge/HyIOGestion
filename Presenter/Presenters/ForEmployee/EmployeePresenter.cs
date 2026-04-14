@@ -1,8 +1,8 @@
-﻿using BLL.LogicLayers.Employees;
-using BLL.DTOs;
+﻿using BLL.DTOs;
+using BLL.LogicLayers.Employees;
+using Presenter.Messaging;
 using SharedAbstractions.ArchitecturalMarkers;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Presenter.ForEmployee
@@ -11,31 +11,46 @@ namespace Presenter.ForEmployee
     {
         private readonly IEmployeeView _view;
         private readonly IUCGetAllEmployees _ucGetAll;
-        private readonly IUCUpdateEmployee _ucUpdate;
         private readonly IUCDeleteEmployee _ucDelete;
+        private readonly IMessenger _messenger;
 
         public EmployeePresenter
         (
             IEmployeeView view,
             IUCGetAllEmployees ucGetAll,
-            IUCUpdateEmployee ucUpdate,
-            IUCDeleteEmployee ucDelete
+            IUCDeleteEmployee ucDelete,
+            IMessenger messenger
         )
         {
             _view = view ?? throw new ArgumentNullException(nameof(view));
             _ucGetAll = ucGetAll ?? throw new ArgumentNullException(nameof(ucGetAll));
-            _ucUpdate = ucUpdate ?? throw new ArgumentNullException(nameof(ucUpdate));
             _ucDelete = ucDelete ?? throw new ArgumentNullException(nameof(ucDelete));
+            _messenger = messenger ?? throw new ArgumentNullException(nameof(messenger));
 
             WireViewEvents();
             ApplyDarkTheme();
+            SubscribeRelistMessage();
         }
 
-        private void ApplyDarkTheme() => _view.ApplyGlobalPalette();
+        
+        // =========================================================
+        // Suscripción a mensajería global
+        // =========================================================
+        private void SubscribeRelistMessage() => _messenger.Subscribe<EmployeesRelistRequestMessage>(OnGetAllRequested);
+        private void CloseHostFormMessage(object viewId) => _messenger.Send(new HostFormCloseRequestMessage((Guid)viewId, this));
 
+
+        // =========================================================
+        // Estética general
+        // =========================================================
+        private void ApplyDarkTheme() => _view.ThemingNotifiedByConfigurationsModule();
+
+
+        // =========================================================
+        // Mapeo de eventos de View
+        // =========================================================
         private void WireViewEvents()
         {
-            // Usamos nombres explícitos de métodos para poder desuscribir en Dispose
             _view.CreateRequested += HandleCreateRequested;
             _view.UpdateRequested += HandleUpdateRequested;
             _view.DeleteRequested += HandleDeleteRequested;
@@ -43,21 +58,21 @@ namespace Presenter.ForEmployee
             _view.CloseRequested += HandleCloseRequested;
         }
 
-
-        // =========================================================
-        // Event Handlers (Orquestación de UI)
-        // =========================================================
         private void HandleCreateRequested(object sender, EventArgs e) => _view.OpenCreationView();
-        private async void HandleUpdateRequested(object sender, EmployeeDTO e) => await OnUpdateRequested(e);
+        private void HandleUpdateRequested(object sender, EmployeeDTO e) => OnUpdateRequested(e);
         private async void HandleDeleteRequested(object sender, EmployeeDTO e) => await OnDeleteRequested(e);
         private async void HandleListAllRequested(object sender, EventArgs e) => await OnGetAllRequested();
-        private void HandleCloseRequested(object sender, EventArgs e) => Dispose();
+        private void HandleCloseRequested(object sender, EventArgs e)
+        {
+            CloseHostFormMessage((Guid)sender);
+            Dispose();
+        }
 
 
         // =========================================================
         // Lógica de Casos de Uso (Task-based)
         // =========================================================
-        private async Task OnUpdateRequested(EmployeeDTO employee) => await _view.OpenUpdateView();
+        private void OnUpdateRequested(EmployeeDTO employee) => _view.OpenUpdateView();
 
         private async Task OnDeleteRequested(EmployeeDTO employee)
         {
@@ -67,14 +82,15 @@ namespace Presenter.ForEmployee
             if (opRes.Success) await OnGetAllRequested();
         }
 
+        private async void OnGetAllRequested(EmployeesRelistRequestMessage message) => await OnGetAllRequested();
+
         private async Task OnGetAllRequested()
         {
-            // Deconstrucción de tuplas (C# 7.0+)
-            var (employees, opResult) = await _ucGetAll.ExecuteAsync();
+            var (clients, opResult) = await _ucGetAll.ExecuteAsync();
 
             if (opResult.Success)
             {
-                _view.CachingList(employees);
+                _view.CachingList(clients);
                 _view.FillDGV();
             }
             else
@@ -85,7 +101,7 @@ namespace Presenter.ForEmployee
 
 
         // =========================================================
-        // IDisposable (Limpieza de "Alumbrado")
+        // Limpieza de RAM
         // =========================================================
         public void Dispose()
         {
@@ -97,6 +113,8 @@ namespace Presenter.ForEmployee
                 _view.ListAllRequested -= HandleListAllRequested;
                 _view.CloseRequested -= HandleCloseRequested;
             }
+
+            _view.Dispose();
         }
     }
 }

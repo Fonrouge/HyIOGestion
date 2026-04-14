@@ -95,6 +95,8 @@ namespace BLL.LogicLayers.Sales
                     entry: BitacoraCatalogEnum.UpdateOnBD,
                     user: currentUser.Id.ToString(),
                     tableName: _tableNameSale,
+                    sessionId: _sessionProvider.Current.Id,
+                    correlationId: Guid.NewGuid(),
                     extraInfo: $"Se actualizó la venta ID: {saleEntityToUpdate.Id} - Total: {saleEntityToUpdate.TotalAmount.Value:C2} ({saleEntityToUpdate.Items.Count()} ítems)"
                 );
                 await _uow.BitacoraRepo.CreateAsync(log);

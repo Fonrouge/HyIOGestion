@@ -15,7 +15,7 @@ namespace BLL.DTOs
         [Browsable(false)] // No queremos mostrar el hash en las grillas
         public string Password { get; set; }
 
-        public string Language { get; set; }
+        public string LanguageCode { get; set; }
 
         [Browsable(false)]
         public string DVH { get; set; }

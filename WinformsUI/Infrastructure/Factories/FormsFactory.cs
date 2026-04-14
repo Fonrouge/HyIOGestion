@@ -9,7 +9,7 @@ using Presenter.Presenters.ForClient;
 using Presenter.Presenters.ForEmployee;
 using Presenter.Presenters.ForProducts;
 using Presenter.Presenters.ForSupplier;
-using Shared.ArchitecturalMarkers; // Asumiendo que aquí están las interfaces de View
+using Shared.ArchitecturalMarkers; 
 using System;
 
 namespace WinformsUI.Infrastructure.Factories
@@ -46,12 +46,24 @@ namespace WinformsUI.Infrastructure.Factories
         // ==============================================================
         public T ClientForm<T>() where T : IClientView
         {
-            // 1. Obtenemos la Vista desde el DI (ya que Form suele registrarse)
             var view = _sp.GetRequiredService<T>();
 
             ActivatorUtilities.CreateInstance<ClientPresenter>(_sp, view);
 
             return view;
+            /*
+             
+             
+            var view = _sp.GetRequiredService<T>();
+
+            var nuevoForm = ActivatorUtilities.CreateInstance<ClientPresenter>(_sp, view);
+
+            var casteado = view as BaseManagementForm<ClientDTO>;
+            Guid id = casteado.ViewId;
+
+            return view;
+             
+             */
         }
         public T ClientCreationForm<T>() where T : ICreateClientView
         {

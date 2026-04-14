@@ -28,7 +28,7 @@ namespace Presenter.ForSale
             WireEvents();
             ApplyDarkTheme();
         }
-        private void ApplyDarkTheme() => _view.ApplyGlobalPalette();
+        private void ApplyDarkTheme() => _view.ThemingNotifiedByConfigurationsModule();
         private void WireEvents()
         {
             _view.CreateRequested += (s, e) => OnOpenCreationForm();

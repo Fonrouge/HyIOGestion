@@ -41,14 +41,21 @@ namespace Shared
 
 
 
-        public string UserTableName { get; } = "Users";
+        public string UsuarioTableName { get; } = "Users";
         public string EmployeeTableName { get; } = "Employees";
         public string ClientTableName { get; } = "Clients";
         public string SupplierTableName { get; } = "Suppliers";
         public string SaleTableName { get; } = "Sales";
+        public string SaleDetailTableName { get; } = "SaleDetails";
         public string PaymentTableName { get; } = "Payments";
         public string ProductTableName { get; } = "Products";
+        public string ProductCategoryTableName { get; } = "ProductsCategories";
         public string CategoryTableName { get; } = "Categories";
+        public string BitacoraTableName { get; } = "Bitacora";
+        public string UsuarioPermisoTableName { get; } = "Usuario_Permiso";
+        public string PermisoPermisoTableName { get; } = "Permiso_Permiso";
+        public string PermisoTableName { get; } = "Permiso";
+
 
         public string SearchBarPlaceHolder { get; } = "Búsqueda";
         public string SuccessOnOperation { get; } = "Operación existosa.";
@@ -56,7 +63,8 @@ namespace Shared
         public string DefaultLanguage { get; } = "es";
         public string ComboBoxPlaceholder { get; } = "Seleccionar columna";
 
-        public ApplicationSettings()
+
+    public ApplicationSettings()
         {
             //Bajar connection strings desde un archivo de configuraciones
         }

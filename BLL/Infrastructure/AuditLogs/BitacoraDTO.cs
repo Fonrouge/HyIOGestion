@@ -6,7 +6,10 @@ namespace BLL.Infrastructure.AuditLogs
 {
     public class BitacoraDTO
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
+        public Guid SessionId { get; set; }
+        public Guid CorrelationId { get; set; }
+        public string HostName { get; set; }
         public DateTime Timestamp { get; set; }
         public string User { get; set; }
         public string Message { get; set; }
@@ -17,7 +20,9 @@ namespace BLL.Infrastructure.AuditLogs
         public string TableName { get; set; }
         public string StackTrace { get; set; }
 
-        // El DVH suele ser transparente para la UI, pero lo mantenemos para validaciones
+        /// <summary>
+        /// Valor del Dígito Verificador Horizontal en formato string para transporte o validación.
+        /// </summary>
         public string DVH { get; set; }
     }
 }

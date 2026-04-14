@@ -1,4 +1,5 @@
-﻿using Shared.ArchitecturalMarkers;
+﻿using BLL.DTOs;
+using Shared.ArchitecturalMarkers;
 using Shared.Enums;
 using System;
 using System.Collections.Generic;
@@ -69,11 +70,17 @@ namespace Presenter.MainFormNavigation
         /// <summary>Occurs when the view needs to refresh its display title based on the application's current context.</summary>
         event EventHandler UpdatingTitleRequested;
 
-
-        event EventHandler Showed;
+        /// <summary>Fired when the form is fully charged.</summary>
+        event EventHandler OnceLoadedAdvice;
 
 
         // --- View Action Methods ---
+        
+        /// <summary>
+        /// Displays the outcome of a use case execution, presenting any specific validation or business rules errors for the Client.
+        /// </summary>
+        /// <param name="opRes">The operation result object to be evaluated and displayed.</param>
+        void ShowOperationResult(OperationResult<UsuarioDTO> opRes);
 
         /// <summary>Sets the text for the main window's title bar.</summary>
         /// <param name="title">The string value for the window title.</param>

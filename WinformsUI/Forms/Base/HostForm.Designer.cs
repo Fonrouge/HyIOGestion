@@ -30,9 +30,9 @@
             // 
             this.internalContainer.BackColor = System.Drawing.Color.DimGray;
             this.internalContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.internalContainer.Location = new System.Drawing.Point(0, 31);
+            this.internalContainer.Location = new System.Drawing.Point(0, 26);
             this.internalContainer.Name = "internalContainer";
-            this.internalContainer.Size = new System.Drawing.Size(1057, 511);
+            this.internalContainer.Size = new System.Drawing.Size(1057, 516);
             this.internalContainer.TabIndex = 7;
             this.internalContainer.Tag = "InternalTitleBar";
             // 
@@ -48,7 +48,7 @@
             this.btnClose.Location = new System.Drawing.Point(1025, 2);
             this.btnClose.Margin = new System.Windows.Forms.Padding(2);
             this.btnClose.Name = "btnClose";
-            this.btnClose.Size = new System.Drawing.Size(30, 27);
+            this.btnClose.Size = new System.Drawing.Size(30, 22);
             this.btnClose.TabIndex = 0;
             this.btnClose.Tag = "NonPaintable";
             this.btnClose.UseVisualStyleBackColor = false;
@@ -65,7 +65,7 @@
             this.btnExpand.Location = new System.Drawing.Point(991, 2);
             this.btnExpand.Margin = new System.Windows.Forms.Padding(2);
             this.btnExpand.Name = "btnExpand";
-            this.btnExpand.Size = new System.Drawing.Size(30, 27);
+            this.btnExpand.Size = new System.Drawing.Size(30, 22);
             this.btnExpand.TabIndex = 0;
             this.btnExpand.Tag = "NonPaintable";
             this.btnExpand.UseVisualStyleBackColor = false;
@@ -82,21 +82,21 @@
             this.btnMinimize.Location = new System.Drawing.Point(957, 2);
             this.btnMinimize.Margin = new System.Windows.Forms.Padding(2);
             this.btnMinimize.Name = "btnMinimize";
-            this.btnMinimize.Size = new System.Drawing.Size(30, 27);
+            this.btnMinimize.Size = new System.Drawing.Size(30, 22);
             this.btnMinimize.TabIndex = 0;
             this.btnMinimize.Tag = "NonPaintable";
             this.btnMinimize.UseVisualStyleBackColor = false;
             // 
             // lblTitle
             // 
-            this.lblTitle.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
             this.lblTitle.AutoSize = true;
-            this.lblTitle.Font = new System.Drawing.Font("Cambria", 9.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTitle.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblTitle.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblTitle.Location = new System.Drawing.Point(4, 0);
             this.lblTitle.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(46, 31);
+            this.lblTitle.Padding = new System.Windows.Forms.Padding(81, 0, 0, 0);
+            this.lblTitle.Size = new System.Drawing.Size(947, 26);
             this.lblTitle.TabIndex = 6;
             this.lblTitle.Tag = "InternalTitleBar";
             this.lblTitle.Text = "Título ";
@@ -121,7 +121,7 @@
             this.tlpTitleBar.Name = "tlpTitleBar";
             this.tlpTitleBar.RowCount = 1;
             this.tlpTitleBar.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tlpTitleBar.Size = new System.Drawing.Size(1057, 31);
+            this.tlpTitleBar.Size = new System.Drawing.Size(1057, 26);
             this.tlpTitleBar.TabIndex = 12;
             this.tlpTitleBar.Tag = "InternalTitleBar";
             // 

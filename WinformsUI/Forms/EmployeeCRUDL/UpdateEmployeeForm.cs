@@ -1,5 +1,5 @@
 ﻿using BLL.DTOs;
-using Presenter.Presenters.ForEmployee;
+using Presenter.ForEmployee;
 using Shared;
 using System;
 using System.Collections.Generic;
@@ -46,7 +46,7 @@ namespace WinformsUI.Forms.EmployeeCRUDL
             _errorMsg = _appSettings.ErrorOnOperation;
 
             InitializeComponent();
-            ApplyGlobalPalette();
+            ThemingNotifiedByConfigurationsModule();
             AddTranslatables();
             InitEditButtonsList();
             SetInitialControlsState();
@@ -68,7 +68,7 @@ namespace WinformsUI.Forms.EmployeeCRUDL
         // =========================================================
         // TRADUCCIONES Y PALETA
         // =========================================================
-        private void ApplyGlobalPalette()
+        private void ThemingNotifiedByConfigurationsModule()
         {
             DarkTheme.RedrawBorders = true;
             DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());

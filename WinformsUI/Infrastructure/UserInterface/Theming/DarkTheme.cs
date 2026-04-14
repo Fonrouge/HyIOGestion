@@ -65,26 +65,30 @@ namespace Winforms.Theme
 
         public struct Palette
         {
+            public string Name;
             public readonly Color Background, SurfaceAlt, Surface, Border;
             public readonly Color TextPrimary, TextSecondary;
             public Color Accent, AccentHover, LowAccent, HighAccent, GridLine;
 
             public Palette
             (
-                string bg, string sf, string sfAlt, string brd,
+                string name, string bg, string sf, string sfAlt, string brd,
                 string txt, string txt2, string acc, string accHover, string grid,
                 string accDark = null,
                 string accLight = null
             )
             {
+                Name = name;
                 Background = ColorTranslator.FromHtml(bg);
                 Surface = ColorTranslator.FromHtml(sf);
                 SurfaceAlt = ColorTranslator.FromHtml(sfAlt);
                 Border = ColorTranslator.FromHtml(brd);
                 TextPrimary = ColorTranslator.FromHtml(txt);
                 TextSecondary = ColorTranslator.FromHtml(txt2);
+
                 Accent = ColorTranslator.FromHtml(acc);
                 AccentHover = ColorTranslator.FromHtml(accHover);
+
                 GridLine = ColorTranslator.FromHtml(grid);
 
                 LowAccent = accDark != null ? ColorTranslator.FromHtml(accDark) : Darken(Accent, 0.18);
@@ -94,30 +98,30 @@ namespace Winforms.Theme
 
         public static class PalettesDark
         {
-            public static Palette Graphite() => new Palette("#16191F", "#171A21", "#1F2430", "#2B3240", "#E6EAF0", "#9AA4B2", "#6EA8FE", "#8DBBFF", "#2B3240", "#3B82F6");
-            public static Palette Oceanic() => new Palette("#161C26", "#161B22", "#1E2630", "#2A3441", "#E3E8EF", "#97A3B6", "#3DA1FF", "#69B6FF", "#2A3441", "#1E7EEB");
-            public static Palette Forest() => new Palette("#0E1210", "#1F2620", "#2E3831", "#293128", "#E7EFE8", "#9DB3A4", "#44D18D", "#63E2A4", "#293128", "#1FA971");
-            public static Palette Aubergine() => new Palette("#18151F", "#0A060D", "#1F1B2B", "#302A40", "#EEE9F8", "#B6A9D0", "#C07DFF", "#D29EFF", "#302A40", "#9B5AE6");
-            public static Palette EyeRest() => new Palette("#282420", "#3A3531", "#312D2A", "#4A443E", "#D8CFC3", "#8A7F72", "#D9A265", "#EAC189", "#4A443E");
-            public static Palette Volcanic() => new Palette("#120B0B", "#1F1616", "#2B1E1E", "#402E2E", "#F0E6E6", "#A89292", "#FF5F57", "#FF7B75", "#402E2E", "#D13830");
-            public static Palette Nordic() => new Palette("#2E3440", "#3B4252", "#434C5E", "#4C566A", "#ECEFF4", "#D8DEE9", "#88C0D0", "#81A1C1", "#4C566A", "#5E81AC");
-            public static Palette Obsidian() => new Palette("#09090B", "#18181B", "#27272A", "#3F3F46", "#FAFAFA", "#A1A1AA", "#6366F1", "#818CF8", "#27272A", "#4F46E5");
-            public static Palette Amber() => new Palette("#14110F", "#1F1A16", "#2E2621", "#453A32", "#FFF8E1", "#BCAAA4", "#FFC107", "#FFD54F", "#453A32", "#FF8F00");
-            public static Palette Cyber() => new Palette("#0F0B14", "#181221", "#21192E", "#362947", "#EAE0F5", "#9D8BA3", "#F72585", "#B5179E", "#362947", "#7209B7");
-            public static Palette DeepHighContrast() => new Palette("#000000", "#000000", "#121212", "#333333", "#FFFFFF", "#B3B3B3", "#00E5FF", "#69F0AE", "#333333", "#00B8D4");
+            public static Palette Graphite() => new Palette("Graphite", "#16191F", "#171A21", "#1F2430", "#2B3240", "#E6EAF0", "#9AA4B2", "#6EA8FE", "#8DBBFF", "#2B3240", "#3B82F6");
+            public static Palette Oceanic() => new Palette("Oceanic", "#161C26", "#161B22", "#1E2630", "#2A3441", "#E3E8EF", "#97A3B6", "#3DA1FF", "#69B6FF", "#2A3441", "#1E7EEB");
+            public static Palette Forest() => new Palette("Forest", "#0E1210", "#1F2620", "#2E3831", "#293128", "#E7EFE8", "#9DB3A4", "#44D18D", "#63E2A4", "#293128", "#1FA971");
+            public static Palette Aubergine() => new Palette("Aubergine", "#18151F", "#0A060D", "#1F1B2B", "#302A40", "#EEE9F8", "#B6A9D0", "#C07DFF", "#D29EFF", "#302A40", "#9B5AE6");
+            public static Palette EyeRest() => new Palette("DarkEyeRest", "#282420", "#3A3531", "#312D2A", "#4A443E", "#D8CFC3", "#8A7F72", "#D9A265", "#EAC189", "#4A443E");
+            public static Palette Volcanic() => new Palette("Volcanic", "#120B0B", "#1F1616", "#2B1E1E", "#402E2E", "#F0E6E6", "#A89292", "#FF5F57", "#FF7B75", "#402E2E", "#D13830");
+            public static Palette Nordic() => new Palette("Nordic", "#2E3440", "#3B4252", "#434C5E", "#4C566A", "#ECEFF4", "#D8DEE9", "#88C0D0", "#81A1C1", "#4C566A", "#5E81AC");
+            public static Palette Obsidian() => new Palette("Obsidian", "#09090B", "#18181B", "#27272A", "#3F3F46", "#FAFAFA", "#A1A1AA", "#6366F1", "#818CF8", "#27272A", "#4F46E5");
+            public static Palette Amber() => new Palette("Amber", "#14110F", "#1F1A16", "#2E2621", "#453A32", "#FFF8E1", "#BCAAA4", "#FFC107", "#FFD54F", "#453A32", "#FF8F00");
+            public static Palette Cyber() => new Palette("Cyber", "#0F0B14", "#181221", "#21192E", "#362947", "#EAE0F5", "#9D8BA3", "#F72585", "#B5179E", "#362947", "#7209B7");
+            public static Palette DeepHighContrast() => new Palette("DarkContrast", "#000000", "#000000", "#121212", "#333333", "#FFFFFF", "#B3B3B3", "#00E5FF", "#69F0AE", "#333333", "#00B8D4");
         }
 
         public static class PalettesLight
         {
-            public static Palette Classic() => new Palette("#F5F7FA", "#FFFFFF", "#F0F2F5", "#D8DEE7", "#0F172A", "#475569", "#2563EB", "#1D4ED8", "#E5E7EB", "#1E40AF");
-            public static Palette Paper() => new Palette("#FAFAF7", "#FFFFFF", "#F8F7F4", "#E8E5DA", "#2B2B2B", "#6B7280", "#0EA5E9", "#0284C7", "#EAEAEA", "#0369A1");
-            public static Palette Mint() => new Palette("#F6FBF8", "#FFFFFF", "#F0FAF4", "#DAE7DF", "#111827", "#64748B", "#10B981", "#059669", "#E5E7EB", "#047857");
-            public static Palette Grape() => new Palette("#F8F7FB", "#FFFFFF", "#F3F1F9", "#E2E0EA", "#1F2937", "#6B7280", "#8B5CF6", "#7C3AED", "#E5E7EB", "#5B21B6");
-            public static Palette HighContrast() => new Palette("#FFFFFF", "#FFFFFF", "#F2F2F2", "#A3A3A3", "#000000", "#333333", "#0A84FF", "#0066CC", "#D9D9D9", "#0052A3");
-            public static Palette Citrine() => new Palette("#FEFCE8", "#FFFFFF", "#FFFBEB", "#EDE9D5", "#422006", "#854D0E", "#D97706", "#B45309", "#E5E7EB", "#92400E");
-            public static Palette EyeRest() => new Palette("#F5F0E8", "#F9F7F3", "#FFFFFF", "#DCD5CB", "#4A443E", "#9E9489", "#8A9A5B", "#A0B26B", "#DCD5CB");
-            public static Palette Berry() => new Palette("#FFF5F7", "#FFFFFF", "#FFF0F3", "#F3D9E2", "#4A1522", "#8A4D5D", "#D6336C", "#C2255C", "#F3D9E2", "#A61E4D");
-            public static Palette Solar() => new Palette("#FDF6E3", "#EEE8D5", "#EEE8D5", "#D3CDBC", "#657B83", "#93A1A1", "#B58900", "#CB4B16", "#D3CDBC", "#859900");
+            public static Palette Classic() => new Palette("Classic", "#F5F7FA", "#FFFFFF", "#F0F2F5", "#D8DEE7", "#0F172A", "#475569", "#2563EB", "#1D4ED8", "#E5E7EB", "#1E40AF");
+            public static Palette Paper() => new Palette("Paper", "#FAFAF7", "#FFFFFF", "#F8F7F4", "#E8E5DA", "#2B2B2B", "#6B7280", "#0EA5E9", "#0284C7", "#EAEAEA", "#0369A1");
+            public static Palette Mint() => new Palette("Mint", "#F6FBF8", "#FFFFFF", "#F0FAF4", "#DAE7DF", "#111827", "#64748B", "#10B981", "#059669", "#E5E7EB", "#047857");
+            public static Palette Grape() => new Palette("Grape", "#F8F7FB", "#FFFFFF", "#F3F1F9", "#E2E0EA", "#1F2937", "#6B7280", "#8B5CF6", "#7C3AED", "#E5E7EB", "#5B21B6");
+            public static Palette HighContrast() => new Palette("LightContrast", "#FFFFFF", "#FFFFFF", "#F2F2F2", "#A3A3A3", "#000000", "#333333", "#0A84FF", "#0066CC", "#D9D9D9", "#0052A3");
+            public static Palette Citrine() => new Palette("Citrine", "#FEFCE8", "#FFFFFF", "#FFFBEB", "#EDE9D5", "#422006", "#854D0E", "#D97706", "#B45309", "#E5E7EB", "#92400E");
+            public static Palette EyeRest() => new Palette("LightEyeRest", "#F5F0E8", "#F9F7F3", "#FFFFFF", "#DCD5CB", "#4A443E", "#9E9489", "#8A9A5B", "#A0B26B", "#DCD5CB");
+            public static Palette Berry() => new Palette("Berry", "#FFF5F7", "#FFFFFF", "#FFF0F3", "#F3D9E2", "#4A1522", "#8A4D5D", "#D6336C", "#C2255C", "#F3D9E2", "#A61E4D");
+            public static Palette Solar() => new Palette("Solar", "#FDF6E3", "#EEE8D5", "#EEE8D5", "#D3CDBC", "#657B83", "#93A1A1", "#B58900", "#CB4B16", "#D3CDBC", "#859900");
         }
 
         // ============================
@@ -175,6 +179,12 @@ namespace Winforms.Theme
                 DataGridViewThemer.StyleDgv(dgv, p, depth);
 
             form.ResumeLayout();//Reanudación de dibujado de UI.
+
+
+
+            RedrawBorders = false; //Al ser una clase estática "singleton" de facto, es necesario resetear el flag para que cada formulario lo pueda usar libremente
+                                   //sin depender de si otro formulario lo usó antes o no. Se asume que el uso típico será:
+                                   //1) Seteo el flag, 2) Aplico el tema a un formulario, 3) El flag se resetea automáticamente para que no afecte a otros formularios.
         }
 
 
@@ -199,6 +209,13 @@ namespace Winforms.Theme
             }
 
             foreach (var dgv in FindAll<DataGridView>(root)) DataGridViewThemer.StyleDgv(dgv, p, depth);
+
+
+
+
+            RedrawBorders = false; //Al ser una clase estática "singleton" de facto, es necesario resetear el flag para que cada formulario lo pueda usar libremente
+                                   //sin depender de si otro formulario lo usó antes o no. Se asume que el uso típico será:
+                                   //1) Seteo el flag, 2) Aplico el tema a un formulario, 3) El flag se resetea automáticamente para que no afecte a otros formularios.
         }
 
         private static void OnFormDisposed(object sender, EventArgs e)
@@ -324,7 +341,7 @@ namespace Winforms.Theme
                         b.FlatAppearance.BorderColor = p.HighAccent;
                         b.FlatAppearance.BorderSize = 1;
                         b.BackColor = p.HighAccent;
-                        b.ForeColor = p.TextSecondary;
+                        b.ForeColor = Darken(ChooseReadableForeground(p.TextSecondary), -0.25);
                         continue;
                     }
 
@@ -506,7 +523,7 @@ namespace Winforms.Theme
                     WireAndStyleContextMenu(c.ContextMenuStrip, p, GetCurrentDepth(c.FindForm()));
 
 
-                //Si el control tiene hijos
+                //Si el control tiene hijos se aplica de forma recursiva
                 HasChildren(c, p);
 
                 var dgv = c as DataGridView;
@@ -516,6 +533,8 @@ namespace Winforms.Theme
                     DataGridViewThemer.AccentDgvColumns(dgv, p);
                     dgv.ScrollBars = ScrollBars.None;
                 }
+
+
 
             }
         }
@@ -852,6 +871,14 @@ namespace Winforms.Theme
                         ApplyGradientBackground(pnl, Darken(p.Accent, 0.6), Darken(p.LowAccent, 0.6), LinearGradientMode.Horizontal, false);
                     else
                         ApplyGradientBackground(pnl, Darken(p.Accent, 0.6), Darken(p.LowAccent, 0.6), LinearGradientMode.Horizontal, false);
+                }
+
+                if (pnl.Tag is "SearchBar")
+                            {
+                    if (isDarkPalette)
+                        ApplyGradientBackground(pnl, Darken(p.Surface, -0.05), Darken(p.Surface, 0.2), LinearGradientMode.Vertical, false);
+                    else
+                        ApplyGradientBackground(pnl, Darken(p.Surface, 0.03), Darken(p.SurfaceAlt, -0.01), LinearGradientMode.Vertical, false);
                 }
 
                 else if (pnl.Tag is "InternalTitleBar")

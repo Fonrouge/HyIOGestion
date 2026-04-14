@@ -1,5 +1,6 @@
 ﻿using BLL.DTOs;
 using BLL.LogicLayers.Employees;
+using Presenter.ForEmployee;
 using Presenter.Messaging;
 using System;
 
@@ -12,7 +13,6 @@ namespace Presenter.Presenters.ForEmployee
         private readonly IUCUpdateEmployee _ucUpdate;
         private readonly IMessenger _messenger;
 
-        private readonly Guid _messageId = Guid.NewGuid();
 
         public UpdateEmployeePresenter
         (
@@ -47,7 +47,7 @@ namespace Presenter.Presenters.ForEmployee
         }
         private void SendRelistAsk()
         {
-            var relistSuppliersAsk = new RelistClientsMessage(_messageId, this);
+            var relistSuppliersAsk = new ClientsRelistRequestMessage(this);
             _messenger.Send(relistSuppliersAsk);
         }
 

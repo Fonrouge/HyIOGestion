@@ -73,7 +73,17 @@ namespace DAL.Persistence.MicrosoftSQL
         public async Task<IEnumerable<Category>> GetAllAsync()
         {
             var categories = new List<Category>();
-            string query = "SELECT Id, Name, Description, DVH FROM Categories";
+            string query = "SELECT Id, Name, Description, DVH FROM Categories c WHERE c.IsDeleted = 0";
+
+            await ExecuteReaderAsync(query, null, reader => categories.Add(Map(reader)));
+
+            return categories;
+        }
+
+        public async Task<IEnumerable<Category>> GetAllDeletedAsync()
+        {
+            var categories = new List<Category>();
+            string query = "SELECT Id, Name, Description, DVH FROM Categories c WHERE c.IsDeleted = 1";
 
             await ExecuteReaderAsync(query, null, reader => categories.Add(Map(reader)));
 

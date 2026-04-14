@@ -106,10 +106,13 @@ namespace BLL.LogicLayers.Employees
  //               await UpdateDVVAsync(_tableNameEmployee, _appSettings.EntitiesConnection);
 
                 // 7. Auditoría (Bitácora)
-                var log = _bitacoraFact.Create(
-                    entry: BitacoraCatalogEnum.DeleteOnBD,
+                var log = _bitacoraFact.Create
+                (
+                    entry: BitacoraCatalogEnum.SoftDeleteOnBD,
                     user: currentUser.Id.ToString(),
                     tableName: _tableNameEmployee,
+                    sessionId: _sessionProvider.Current.Id,
+                    correlationId: Guid.NewGuid(),
                     extraInfo: $"Se eliminó el empleado ID: {dto.Id}" // Podés sumar dto.Name si lo tenés a mano
                 );
                 await _uow.BitacoraRepo.CreateAsync(log);

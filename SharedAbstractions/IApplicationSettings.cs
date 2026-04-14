@@ -2,20 +2,26 @@
 {
     public interface IApplicationSettings
     {
-        
+
         //Connection strings
         string SecurityConnection { get; }
         string EntitiesConnection { get; }
 
         //Tables
         string ClientTableName { get; }
-        string UserTableName { get; }
+        string UsuarioTableName { get; }
         string EmployeeTableName { get; }
         string SupplierTableName { get; }
         string SaleTableName { get; }
+        string SaleDetailTableName { get; }
         string PaymentTableName { get; }
         string ProductTableName { get; }
+        string ProductCategoryTableName { get; }
         string CategoryTableName { get; }
+        string BitacoraTableName { get; }
+        string UsuarioPermisoTableName { get; }
+        string PermisoPermisoTableName { get; }
+        string PermisoTableName { get; }
 
         //UI
         string SearchBarPlaceHolder { get; }
@@ -26,7 +32,7 @@
 
         //Configurations
         string DefaultLanguage { get; }
-        
+
 
     }
 }

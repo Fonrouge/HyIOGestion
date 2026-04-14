@@ -12,9 +12,6 @@ namespace Presenter.Presenters.ForClient
         private readonly IUCUpdateClient _ucUpdate;
         private readonly IMessenger _messenger;
 
-        private readonly Guid _messageId = Guid.NewGuid();
-
-
         public UpdateClientPresenter
         (
             IUpdateClientView view,
@@ -47,9 +44,10 @@ namespace Presenter.Presenters.ForClient
                 SendRelistAsk();
             }
         }
+        
         private void SendRelistAsk()
         {
-            var relistClientsAsk = new RelistClientsMessage(_messageId, this);
+            var relistClientsAsk = new ClientsRelistRequestMessage(this);
             _messenger.Send(relistClientsAsk);
         }
 

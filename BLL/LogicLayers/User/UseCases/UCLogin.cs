@@ -3,9 +3,8 @@ using BLL.DTOs.Errors;
 using BLL.DTOs.Mappers;
 using BLL.Infrastructure.AuditLogs;
 using BLL.Infrastructure.Errors;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using BLL.LogicLayers;
+using Domain.Entities.Permisos.Concrete;
 using Domain.Exceptions;
 using Domain.Exceptions.Base;
 using Domain.Infrastructure;
@@ -14,9 +13,11 @@ using Domain.Repositories;
 using Shared;
 using Shared.Services;
 using Shared.Sessions;
+using System;
+using System.Collections.Generic;
 using System.Linq;
-using Domain.Entities.Permisos.Concrete;
-using BLL.LogicLayers;
+using System.Threading.Tasks;
+using static System.Collections.Specialized.BitVector32;
 
 namespace BLL.UseCases
 {
@@ -37,7 +38,7 @@ namespace BLL.UseCases
         private readonly IBitacoraFactory _bitacoraFact;
         private readonly IErrorsFactory _errorsFactory;
 
-
+        
 
         public UCLogin
         (
@@ -70,6 +71,7 @@ namespace BLL.UseCases
 
             try
             {
+                
                 // 1. FASE DE LECTURA (Seguridad): Buscamos al usuario
                 _uow.SetConnectionString(_appSettings.SecurityConnection);
                 var user = await GetValidatedUserAsync(userName, result);
@@ -97,11 +99,11 @@ namespace BLL.UseCases
                     return result;
 
                 // AHORA SÍ abrimos la transacción de Seguridad (seguros de que no leeremos de Negocio)
-                await _uow.BeginTransactionAsync();
+               // await _uow.BeginTransactionAsync();
 
                 if (!await LoadPermissionsAndEmployeeAsync(user, result))
                 {
-                    await _uow.RollbackAsync();
+                  //  await _uow.RollbackAsync();
                     return result;
                 }
 
@@ -127,8 +129,8 @@ namespace BLL.UseCases
                 await AuditLoginAsync(currentSession);
 
          
-                if (_uow.HasActiveTransaction)
-                    await _uow.RollbackAsync();
+                //if (_uow.HasActiveTransaction)
+                //    await _uow.RollbackAsync();
 
             }
             catch (Exception ex)
@@ -215,9 +217,11 @@ namespace BLL.UseCases
             var log = _bitacoraFact.Create
             (
                 entry: BitacoraCatalogEnum.LoginAttempt,
-                user: $"User ID: {session.CurrentUserId}",
-                tableName: _appSettings.UserTableName,
-                extraInfo: $"Session ID: {session.Id}"
+                user: session.CurrentUserId.ToString(),
+                tableName: _appSettings.UsuarioTableName,
+                sessionId: _sessionProvider.Current.Id,
+                correlationId: Guid.NewGuid(),
+                extraInfo: ""
             );
 
             await _uow.BitacoraRepo.CreateAsync(log);
@@ -236,6 +240,20 @@ namespace BLL.UseCases
         private async Task LogSystemErrorAsync(Exception ex)
         {
             if (ex == null) return;
+
+            var log = _bitacoraFact.Create
+            (
+                entry: BitacoraCatalogEnum.LoginAttempt,
+                user: _sessionProvider.Current.CurrentUserId.ToString(),
+                tableName: _appSettings.UsuarioTableName,
+                sessionId: _sessionProvider.Current.Id,
+                correlationId: Guid.NewGuid(),
+                extraInfo: $"",
+                ex: ex
+            );
+
+            await _uow.BitacoraRepo.CreateAsync(log);
+
             await _errorsRepo.CreateAsync(_errorsFactory.CreateFromException(ex));
         }
     }

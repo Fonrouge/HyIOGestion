@@ -89,7 +89,7 @@ namespace DAL.Persistence.MicrosoftSQL
         {
             var headers = new List<SaleHeader>();
             string query = @"SELECT Id, SaleDate, ClientId, EmployeeId, TotalAmount, Active, CreatedAt, IsDeleted, DVH
-                             FROM Sales ORDER BY SaleDate DESC";
+                             FROM Sales s WHERE s.IsDeleted = 0 ORDER BY SaleDate DESC";
 
             await ExecuteReaderAsync(query, null, reader => headers.Add(MapHeader(reader)));
 
@@ -99,6 +99,22 @@ namespace DAL.Persistence.MicrosoftSQL
 
             return sales;
         }
+
+        public async Task<IEnumerable<Sale>> GetAllDeletedAsync()
+        {
+            var headers = new List<SaleHeader>();
+            string query = @"SELECT Id, SaleDate, ClientId, EmployeeId, TotalAmount, Active, CreatedAt, IsDeleted, DVH
+                             FROM Sales s WHERE s.IsDeleted = 1 ORDER BY SaleDate DESC";
+
+            await ExecuteReaderAsync(query, null, reader => headers.Add(MapHeader(reader)));
+
+            var sales = new List<Sale>();
+            foreach (var h in headers)
+                sales.Add(await LoadFullAggregate(h));
+
+            return sales;
+        }
+
 
         // ====================== PRIVADOS ======================
         private async Task ExecuteNonQueryAsync(string query, Action<SqlCommand> setParams)

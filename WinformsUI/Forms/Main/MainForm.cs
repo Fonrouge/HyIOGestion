@@ -1,5 +1,4 @@
-﻿using BLL.SessionInfo;
-using Presenter.ForClient;
+﻿using Presenter.ForClient;
 using Presenter.ForEmployee;
 using Presenter.ForPayments;
 using Presenter.ForProducts;
@@ -25,6 +24,8 @@ using WinformsUI.Infrastructure.UserInterface.Windowing;
 using WinformsUI.Properties;
 using WinformsUI.UserControls.CustomDGV;
 using static Winforms.Theme.DarkTheme;
+using WinformsUI.UserControls;
+using BLL.DTOs;
 
 namespace WinformsUI.Forms.Main
 {
@@ -49,8 +50,11 @@ namespace WinformsUI.Forms.Main
         private readonly string _defaultTitle = "<EXAMPLE TITLE>";
 
 
+
         //ON PRODUCTION, THESE STRINGS SHOULD BE RETRIEVED FROM A RESOURCE FILE FOR LOCALIZATION PURPOSES. THEY ARE HARDCODED HERE FOR SIMPLICITY AND DEMONSTRATION.
 #pragma warning disable IDE0044 // These fields are translated at runtime
+        private string _errorMsg = "Error al comunicarse con la base de datos. Se recomienda reiniciar la aplicación.";
+
         private string _employeeTitle = "Empleados";
         private string _paymentsTitle = "Pagos";
         private string _salesTitle = "Ventas";
@@ -80,6 +84,7 @@ namespace WinformsUI.Forms.Main
 
         /// <summary>Fired when a window tiling layout is requested.</summary>
         public event EventHandler<LayoutTypeEnum> ApplyLayoutRequested;
+        
 
         //Fired when a module is requested        
         public event EventHandler OpenClientModuleRequested;
@@ -90,13 +95,14 @@ namespace WinformsUI.Forms.Main
         public event EventHandler OpenSuppliersModuleRequested;
         public event EventHandler OpenConfigsModuleRequested;
 
+
         /// <summary>Notifcation on creation of a form to wire it to it's forms events on Presenter layer </summary>
         public event EventHandler<IHostFormActions> InternalWindowCreated;
 
         public event EventHandler ChangeWindowManagementMode;
         public event EventHandler OnResizingWindow;
         public event EventHandler UpdatingTitleRequested;
-        public event EventHandler Showed;
+        public event EventHandler OnceLoadedAdvice;
 
         #endregion
 
@@ -124,18 +130,19 @@ namespace WinformsUI.Forms.Main
 
             InitializeComponent();
 
+            DoubleBuffering.TryForAllControls(this.Controls);
             InitializeEnvironment();
-            ApplyGlobalPalette();
+            ThemingNotifiedByConfigurationsModule();
             ConfigureInitialState();
             WireGeneralEvents();
             AddTranslatables();
 
-
-            this.Load += (sender, e) => Showed?.Invoke(this, EventArgs.Empty);
+            this.Load += OnceLoadedNotify;
             this.FormClosed += (sender, e) => _transMgr.RemoveFormNotify(this);
 
         }
 
+        private void OnceLoadedNotify (object sender, EventArgs e) => OnceLoadedAdvice?.Invoke(this, EventArgs.Empty);
 
         public void SetStatusBarInfo(string loggedUserName, string currentUserName) //Probando
         {
@@ -163,7 +170,6 @@ namespace WinformsUI.Forms.Main
             _transMgr.AddString("MainForm._productsTitle", _productsTitle);
             _transMgr.AddString("MainForm._suppliersTitle", _suppliersTitle);
 
-            _transMgr.AddSingleObject(txtSuppliers, "Text");
 
             //Para después hacer el OnClose(); ---> _transMgr.RemoveFormNotify(this);
 
@@ -197,7 +203,7 @@ namespace WinformsUI.Forms.Main
             _autoArrangement = _transMgr.GetString("MainForm._autoArrangement");
             this.BeginInvoke(new Action(MakeItShort));
 
-            btnVerticalTileWindows.TextChanged += (s, e) =>
+            btnAutoArragement.TextChanged += (s, e) =>
             {
                 this.BeginInvoke(new Action(MakeItShort));
             };
@@ -223,18 +229,18 @@ namespace WinformsUI.Forms.Main
 
         /// <summary>Initializes the UI environment (Dashboard and Side Panels) through the environment factory.</summary>
         private void InitializeEnvironment() =>
-            _appEnvFactory.SetMainContainers(DashboardPnl, FLPsideTools);
+            _appEnvFactory.SetMainContainers(pnlDashboard, pnlSlotForTabs);
 
 
         /// <summary>Applies the global dark theme palette to the form. Static class on purpose, it's a Drag&Drop library.</summary>
-        private void ApplyGlobalPalette()
+        private void ThemingNotifiedByConfigurationsModule()
         {
             SuspendLayout();
             Color darkerAccent = Darken(DarkTheme.GetCurrentPalette().LowAccent, 0.85);
 
             DarkTheme.RedrawBorders = false;
             PaintControlTree(tlpMenu, GetCurrentPalette());
-            PaintControlTree(FLPsideTools, GetCurrentPalette());
+            PaintControlTree(pnlSlotForTabs, GetCurrentPalette());
 
             DarkTheme.ApplyGradientBackground(tlpMenu, darkerAccent, darkerAccent, System.Drawing.Drawing2D.LinearGradientMode.Vertical);
             DarkTheme.ApplyGradientBackground(tableLayoutPanel1, darkerAccent, darkerAccent, System.Drawing.Drawing2D.LinearGradientMode.Vertical);
@@ -261,7 +267,7 @@ namespace WinformsUI.Forms.Main
             btnMenu.Click += (s, e) => CollapseExpandMenu();
 
             // Window management actions
-            btnVerticalTileWindows.Click += (s, e) => ExecuteSingleInvoke(() => ApplyLayoutRequested?.Invoke(this, LayoutTypeEnum.VerticalTile));
+            btnAutoArragement.Click += (s, e) => ExecuteSingleInvoke(() => ApplyLayoutRequested?.Invoke(this, LayoutTypeEnum.VerticalTile));
 
             btnChangeWindowManagementMode.Click += (s, e) => ExecuteSingleInvoke(() => ChangeWindowManagementMode?.Invoke(this, EventArgs.Empty));
 
@@ -315,9 +321,6 @@ namespace WinformsUI.Forms.Main
                 ApplyLayoutRequested?.Invoke(this, CurrentLayoutType);
                 ResumeLayout();
             };
-
-            this.Resize += (s, e) => ExecuteSingleInvoke(() => OnResizingWindow?.Invoke(this, EventArgs.Empty));
-
         }
 
         #endregion
@@ -344,10 +347,10 @@ namespace WinformsUI.Forms.Main
             if (!_isMenuCollapsed)
             {
                 btnChangeWindowManagementMode.Text = InitialsExtracter(btnChangeWindowManagementMode.Text);
-                btnVerticalTileWindows.Text = InitialsExtracter(btnVerticalTileWindows.Text);
+                btnAutoArragement.Text = InitialsExtracter(btnAutoArragement.Text);
 
                 btnChangeWindowManagementMode.TextAlign = ContentAlignment.MiddleCenter;
-                btnVerticalTileWindows.TextAlign = ContentAlignment.MiddleCenter;
+                btnAutoArragement.TextAlign = ContentAlignment.MiddleCenter;
             }
 
             else
@@ -358,22 +361,20 @@ namespace WinformsUI.Forms.Main
                 else if (WindowManageMode == WindowManagementModeEnum.Tabbed)
                     btnChangeWindowManagementMode.Text = _tabbedModeText;
 
-                btnVerticalTileWindows.Text = _autoArrangement;
+                btnAutoArragement.Text = _autoArrangement;
                 btnChangeWindowManagementMode.TextAlign = ContentAlignment.MiddleRight;
-                btnVerticalTileWindows.TextAlign = ContentAlignment.MiddleRight;
+                btnAutoArragement.TextAlign = ContentAlignment.MiddleRight;
             }
             ResumeLayout();
         }
 
         private string InitialsExtracter(string words)
         {
-            string[] shortName = words.Split(' ');
+            string[] shortName = words.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
             if (shortName.Length < 2) return words;
 
-            char firstLetter = shortName[0].ToArray()[0];
-            char secondLetter = shortName[1].ToArray()[0];
-
-            return $"{firstLetter + "."}{secondLetter + "."}";
+            return $"{shortName[0][0]}.{shortName[1][0]}.";
         }
 
         #region UI Logic
@@ -390,9 +391,11 @@ namespace WinformsUI.Forms.Main
                 : tlpMenu.MinimumSize;
 
             UpdateWindowManageText();
+            this.BeginInvoke(new Action(CallForApplyLayout));
             ResumeLayout();
         }
 
+        public void CallForApplyLayout() => ApplyLayoutRequested?.Invoke(this, LayoutTypeEnum.VerticalTile);
 
 
         #endregion
@@ -422,7 +425,7 @@ namespace WinformsUI.Forms.Main
         public void TileWindows(LayoutTypeEnum layoutType, IEnumerable<IHostFormActions> objsForTiling)
         {
             SuspendLayout();
-            _layoutFactory.Create(layoutType).Arrange(DashboardPnl.Bounds, (IEnumerable<Form>)objsForTiling);
+            _layoutFactory.Create(layoutType).Arrange(pnlDashboard.Bounds, (IEnumerable<Form>)objsForTiling);
             ResumeLayout();
         }
 
@@ -434,7 +437,7 @@ namespace WinformsUI.Forms.Main
         /// <returns>A collection of active, non-disposed internal windows.</returns>
         public IEnumerable<IHostFormActions> GetActiveInternalWindows()
         {
-            return DashboardPnl.Controls.OfType<HostForm>()
+            return pnlDashboard.Controls.OfType<HostForm>()
                 .Where(hf => hf.Visible && !hf.IsDisposed && !hf.IsMinimized)
                 .Cast<IHostFormActions>();
         }
@@ -530,30 +533,39 @@ namespace WinformsUI.Forms.Main
             ResumeLayout();
         }
 
+
         public void CreateForm<TView>
         (
             DarkTheme.Palette p,
             FormTypeEnum fte,
             Bitmap icon,
             string translationKey,
-            Func<TView> viewProvider) where TView : class, IView
+            Func<TView> viewProvider
+
+        ) where TView : class, IView
+
         {
+            //Ejecuta la Func que crea mediante factory la instancia necesaria del formulario
             TView view = viewProvider();
+
+            //Asegura que la vista herede de Form (es acople puro de Winforms>Winforms, no hay problema)
             if (!(view is Form content))
                 throw new InvalidOperationException($"La vista {typeof(TView).Name} no hereda de Form");
 
+            //Se obtiene el título traducido (no hardcodeado) que actuara de título en la Barra de Título de cada Hostform
             string currentTitle = _transMgr.GetString(translationKey) ?? translationKey;
 
-            System.Diagnostics.Trace.WriteLine($"Creando form con título: {currentTitle}");  // Log para debug
-
+            //AppEnvironment = Encapsula controles relevantes para su correcta presentación (dashboard donde estará la ventana, panel de minimizado/pestañeo, color de módulo, tipo de módulo y su ícono)
             IAppEnvironment environment = _appEnvFactory.CreateCustom
             (
-                DashBoard: DashboardPnl,
-                SlotForTabs: FLPsideTools,
+                DashBoard: pnlDashboard,
+                SlotForTabs: pnlSlotForTabs,
                 Palette: p,
                 FormType: (int)fte,
                 Icon: icon
             );
+
+            //HostForm actions DEBE tener un environment donde sus métodos coloquen/retiren las pestañas o ventanas, además de su título para la Barra de título.
             IHostFormActions hostFrm = _formsFactory.CreateHFA
             (
                 Title: currentTitle,
@@ -561,10 +573,29 @@ namespace WinformsUI.Forms.Main
             );
             hostFrm.SetTitle(currentTitle);
 
+            //Se añade información variable a cada formulario, así como el Id del formulario (fundamental para identificar ante un mensaje Broadcast de cierre, cuál es el formulario que debe cerrarse)
             _formTranslationKeys.Add(hostFrm, translationKey);
-            InternalWindowCreated?.Invoke(this, hostFrm);
             hostFrm.SetContent(content);
+            hostFrm.SetViewId(view.ViewId);
+
+            //Se anuncia al presenter la creación del formulario para que acomode el layout y se suscriba a los eventos del mismo, además de tareas que puedan agregarse.
+            InternalWindowCreated?.Invoke(this, hostFrm);
+
+            //Finalmente se exhibe el nuevo formulario.
             this.ShowForm(hostFrm);
+        }
+
+        /// <summary>
+        /// Use it, in this particulary case, to explain the user if we had a problem with the DB connection in order to get the User information ("Welcome {user}! Logging time: XX:XXh"
+        /// </summary>
+        /// <param name="opRes">The OperationResult<T> class which contains the clean information to show in UI</param>
+        public void ShowOperationResult(OperationResult<UsuarioDTO> opRes)
+        {
+            if (!opRes.Success)
+            {
+                string errors = string.Join(Environment.NewLine, opRes.Errors);
+                MessageBox.Show($"{_errorMsg}{Environment.NewLine}{errors}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         /// <summary>Injects a form into the dashboard container and displays it.</summary>
@@ -575,7 +606,7 @@ namespace WinformsUI.Forms.Main
             if (F is Form form)
             {
                 form.TopLevel = false;
-                DashboardPnl.Controls.Add(form);
+                pnlDashboard.Controls.Add(form);
                 form.BringToFront();
                 form.Show();
             }

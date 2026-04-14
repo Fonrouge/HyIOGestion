@@ -24,6 +24,8 @@ namespace WinformsUI.Forms.ProductCRUDL
         private readonly BindingList<CategoryDTO> _availableCategories = new BindingList<CategoryDTO>();
         private readonly BindingList<CategoryDTO> _selectedCategories = new BindingList<CategoryDTO>();
 
+        public Guid ViewId { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
         public CreateProductForm
         (
             ITranslatableControlsManager transMgr,
@@ -245,10 +247,14 @@ namespace WinformsUI.Forms.ProductCRUDL
 
         public void NotifiedByTranslationManager() => ApplyTranslation();
         public void ApplyTranslation() => _transMgr.Apply();
-        public void ApplyGlobalPalette() => DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
+        public void ThemingNotifiedByConfigurationsModule()
+        {
+            DarkTheme.RedrawBorders = true;
+            DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
+        }
         private void UpdateClientSize() => this.ClientSize = _wizard.GetPanelSize();
         private void InitializeWizard() => _wizard.Initialize(new Panel[] { pnlCreation, pnlCategories });
 
-    
+
     }
 }

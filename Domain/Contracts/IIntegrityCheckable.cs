@@ -6,5 +6,6 @@ namespace Domain.Contracts
     {
         DvhVo DVH { get; }
         string GetDvhSerialization();
+        void UpdateDVH(string dvh);
     }
 }

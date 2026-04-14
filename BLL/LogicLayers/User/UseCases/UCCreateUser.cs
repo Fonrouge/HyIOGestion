@@ -49,7 +49,7 @@ namespace BLL.UseCases
             _errorsFactory = errorsFactory;
             _errorsRepository = errorsRepository;
             _encryptionSvc = encryptionSvc;
-            _tableNameUser = _appSettings.UserTableName ?? "User";
+            _tableNameUser = _appSettings.UsuarioTableName ?? "User";
             _tableNameEmployee = _appSettings.EmployeeTableName ?? "Employees";
         }
 
@@ -133,10 +133,13 @@ namespace BLL.UseCases
                     await _uow.UserRepo.CreateAsync(userEntity);
                     await UpdateDVVAsync(_tableNameUser, _appSettings.SecurityConnection);
 
-                    var log = _bitacoraFact.Create(
+                    var log = _bitacoraFact.Create
+                    (
                         entry: BitacoraCatalogEnum.CreateOnBD,
                         user: currentSession.CurrentUserId.ToString(),
                         tableName: _tableNameUser,
+                        sessionId: _sessionProvider.Current.Id,
+                        correlationId: Guid.NewGuid(),
                         extraInfo: $"Se creó el usuario {userEntity.Username}."
                     );
                     await _uow.BitacoraRepo.CreateAsync(log);

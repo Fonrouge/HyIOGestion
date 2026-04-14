@@ -61,7 +61,7 @@ namespace DAL.Persistence.MicrosoftSQL
         {
             Usuario user = null;
             string query = @"
-                SELECT Id, Username, [Password], DVH, [Language], Id_Employee, IsDeleted
+                SELECT Id, Username, [Password], DVH, [Language], Id_Employee, DVH, IsDeleted
                 FROM [dbo].[User]
                 WHERE Id = @Id";
 
@@ -77,7 +77,18 @@ namespace DAL.Persistence.MicrosoftSQL
             var users = new List<Usuario>();
             string query = @"
                 SELECT Id, Username, [Password], DVH, [Language], Id_Employee, IsDeleted
-                FROM [dbo].[User]";
+                FROM [dbo].[User] u WHERE u.IsDeleted = 0";
+
+            await ExecuteReaderAsync(query, null, reader => users.Add(Map(reader)));
+            return users;
+        }
+
+        public async Task<IEnumerable<Usuario>> GetAllDeletedAsync()
+        {
+            var users = new List<Usuario>();
+            string query = @"
+                SELECT Id, Username, [Password], DVH, [Language], Id_Employee, IsDeleted
+                FROM [dbo].[User] u WHERE u.IsDeleted = 0";
 
             await ExecuteReaderAsync(query, null, reader => users.Add(Map(reader)));
             return users;

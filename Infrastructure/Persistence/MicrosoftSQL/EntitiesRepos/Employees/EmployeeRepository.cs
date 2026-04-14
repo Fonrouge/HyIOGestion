@@ -17,6 +17,7 @@ namespace DAL.Persistence.MicrosoftSQL
         // Queries optimizadas y sincronizadas con los nombres de columna
         private const string SQL_SELECT_BY_ID = "SELECT Id, FileNumber, FirstName, LastName, NationalId, Email, PhoneNumber, HomeAddress, Active, IsDeleted, DVH FROM {0} WHERE Id = @Id";
         private const string SQL_SELECT_ALL = "SELECT Id, FileNumber, FirstName, LastName, NationalId, Email, PhoneNumber, HomeAddress, Active, IsDeleted, DVH FROM {0} WHERE IsDeleted = 0";
+        private const string SQL_SELECT_ALL_DELETED = "SELECT Id, FileNumber, FirstName, LastName, NationalId, Email, PhoneNumber, HomeAddress, Active, IsDeleted, DVH FROM {0} WHERE IsDeleted = 1";
         private const string SQL_SELECT_BY_FILE_NUMBER = "SELECT Id, FileNumber, FirstName, LastName, NationalId, Email, PhoneNumber, HomeAddress, Active, IsDeleted, DVH FROM {0} WHERE FileNumber = @FileNumber";
         private const string SQL_SELECT_BY_NATIONALID = "SELECT Id, FileNumber, FirstName, LastName, NationalId, Email, PhoneNumber, HomeAddress, Active, IsDeleted, DVH FROM {0} WHERE NationalId = @NationalId";
 
@@ -70,6 +71,15 @@ namespace DAL.Persistence.MicrosoftSQL
         {
             var employees = new List<Employee>();
             string query = string.Format(SQL_SELECT_ALL, _appSettings.EmployeeTableName);
+
+            await ExecuteReaderAsync(query, null, reader => employees.Add(Map(reader)));
+            return employees;
+        }
+
+        public async Task<IEnumerable<Employee>> GetAllDeletedAsync()
+        {
+            var employees = new List<Employee>();
+            string query = string.Format(SQL_SELECT_ALL_DELETED, _appSettings.EmployeeTableName);
 
             await ExecuteReaderAsync(query, null, reader => employees.Add(Map(reader)));
             return employees;

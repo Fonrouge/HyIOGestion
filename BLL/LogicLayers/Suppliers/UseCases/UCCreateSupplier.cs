@@ -118,13 +118,15 @@ namespace BLL.LogicLayers.Suppliers
                 await _uow.SupplierRepo.CreateAsync(newSupplierEntity);
 
                 // 7. Integridad Vertical (DVV)
-   //             await UpdateDVVAsync(_tableNameSupplier, _appSettings.EntitiesConnection);
+                //             await UpdateDVVAsync(_tableNameSupplier, _appSettings.EntitiesConnection);
 
                 // 8. Registrar Bitácora
                 var log = _bitacoraFact.Create(
                     entry: BitacoraCatalogEnum.CreateOnBD,
                     user: currentUser.Id.ToString(),
                     tableName: _tableNameSupplier,
+                    sessionId: _sessionProvider.Current.Id,
+                    correlationId: Guid.NewGuid(), 
                     extraInfo: $"Se creó el proveedor {newSupplierEntity.CompanyName} (TaxId: {newSupplierEntity.TaxId})"
                 );
                 await _uow.BitacoraRepo.CreateAsync(log);

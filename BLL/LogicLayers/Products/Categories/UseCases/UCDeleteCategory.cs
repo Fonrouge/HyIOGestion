@@ -93,9 +93,11 @@ namespace BLL.LogicLayers.Products.Categories.UseCases
 
                 // 7. Auditoría (Bitácora)
                 var log = _bitacoraFact.Create(
-                    entry: BitacoraCatalogEnum.DeleteOnBD,
+                    entry: BitacoraCatalogEnum.SoftDeleteOnBD,
                     user: currentUser.Id.ToString(),
                     tableName: _tableNameCategory,
+                    sessionId: _sessionProvider.Current.Id,
+                    correlationId: Guid.NewGuid(),
                     extraInfo: $"Se eliminó la categoría ID: {dto.Id} (Nombre: {existingCategory.Name})"
                 );
                 await _uow.BitacoraRepo.CreateAsync(log);

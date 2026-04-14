@@ -99,10 +99,13 @@ namespace BLL.LogicLayers.Employees
                 await _uow.EmployeeRepo.UpdateAsync(employeeEntityToUpdate);
 
                 // 8. Auditoría (Bitácora)
-                var log = _bitacoraFact.Create(
+                var log = _bitacoraFact.Create
+                (
+                    tableName: _tableNameEmployee,
                     entry: BitacoraCatalogEnum.UpdateOnBD,
                     user: currentUser.Id.ToString(),
-                    tableName: _tableNameEmployee,
+                    sessionId: _sessionProvider.Current.Id,
+                    correlationId: Guid.NewGuid(),
                     extraInfo: $"Se actualizó el empleado ID: {employeeEntityToUpdate.Id} (Nuevo TaxId: {employeeEntityToUpdate.NationalId})"
                 );
                 await _uow.BitacoraRepo.CreateAsync(log);
