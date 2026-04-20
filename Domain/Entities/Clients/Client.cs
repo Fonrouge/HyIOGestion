@@ -1,5 +1,6 @@
 ﻿using Domain.Contracts;
 using Domain.Entities.Clients.ValueObjects;
+using Domain.Entities.Suppliers.ValueObjects;
 using System;
 
 namespace Domain.Entities
@@ -13,6 +14,10 @@ namespace Domain.Entities
         public ClientPhoneVO Phone { get; private set; }
         public ClientTaxIdVO TaxId { get; private set; }
         public DocNumberVO DocNumber { get; private set; }
+        public ClientObservationsVO Observations { get; private set; }
+        public string ShipCountry { get; set; }
+        public string ShipState { get; set; }
+        public ZipCodeVO ShipZipCode { get; set; }
         public DvhVo DVH { get; private set; }
 
         public bool IsDeleted { get; private set; }
@@ -28,6 +33,10 @@ namespace Domain.Entities
             string rawPhone,
             string rawTaxId,
             string rawDocNumber,
+            string rawObservations,
+            string shipCountry,
+            string shipState,
+            string shipZipCode,
             string dvh = null
         )
         {
@@ -40,6 +49,10 @@ namespace Domain.Entities
             client.Phone = ClientPhoneVO.Create(rawPhone?.ToUpper() ?? string.Empty);
             client.TaxId = ClientTaxIdVO.Create(rawTaxId?.ToUpper() ?? string.Empty);
             client.DocNumber = DocNumberVO.Create(rawDocNumber?.ToUpper() ?? string.Empty);
+            client.Observations = ClientObservationsVO.Create(rawObservations?.ToUpper() ?? string.Empty);
+            client.ShipCountry = shipCountry.ToUpper() ?? string.Empty;
+            client.ShipState = shipState.ToUpper() ?? string.Empty;
+            client.ShipZipCode = ZipCodeVO.Create(shipZipCode?.ToUpper() ?? string.Empty);
 
             client.IsDeleted = false;
             client.DVH = null;
@@ -57,6 +70,10 @@ namespace Domain.Entities
             string rawPhone,
             string rawTaxId,
             string rawDocNumber,
+            string rawObservations,
+            string shipCountry,
+            string shipState,
+            string shipZipCode,
             bool isDeleted,
             string dvh
         )
@@ -71,7 +88,11 @@ namespace Domain.Entities
                 Phone = ClientPhoneVO.Create(rawPhone?.ToUpper() ?? string.Empty),
                 TaxId = ClientTaxIdVO.Create(rawTaxId?.ToUpper() ?? string.Empty),
                 DocNumber = DocNumberVO.Create(rawDocNumber?.ToUpper() ?? string.Empty),
+                Observations = ClientObservationsVO.Create(rawObservations?.ToUpper() ?? string.Empty),
                 IsDeleted = isDeleted,
+                ShipCountry = shipCountry.ToUpper() ?? string.Empty,
+                ShipState = shipState.ToUpper() ?? string.Empty,
+                ShipZipCode = ZipCodeVO.Create(shipZipCode?.ToUpper() ?? string.Empty),
                 DVH = !string.IsNullOrEmpty(dvh) ? DvhVo.Create(dvh) : null
             };
         }

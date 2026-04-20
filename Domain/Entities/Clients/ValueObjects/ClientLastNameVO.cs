@@ -5,7 +5,7 @@ namespace Domain.Entities.Clients.ValueObjects
 {
     public class ClientLastNameVO : IValueObject
     {
-        public string Value { get; private set; }
+        public object Value { get; private set; }
 
         private ClientLastNameVO(string value)
         {
@@ -50,7 +50,7 @@ namespace Domain.Entities.Clients.ValueObjects
             return Value.GetHashCode();
         }
 
-        public override string ToString() => Value;
+        public override string ToString() => Value.ToString();
 
         public static bool operator ==(ClientLastNameVO left, ClientLastNameVO right)
         {

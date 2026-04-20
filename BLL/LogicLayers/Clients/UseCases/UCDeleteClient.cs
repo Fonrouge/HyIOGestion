@@ -17,7 +17,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BLL.LogicLayers.Clients //=======================================================================REFACTORIZADO AL 27/02=======================================================================
+namespace BLL.LogicLayers.Clients //=======================================================================REFACTORIZADO AL 14/04=======================================================================
 {
     public class UCDeleteClient : IUCDeleteClient
     {
@@ -29,6 +29,7 @@ namespace BLL.LogicLayers.Clients //============================================
         private readonly IErrorsRepository _errorsRepository;
 
         private readonly string _tableNameClient;
+        private Guid _correlationId;
 
         public UCDeleteClient
         (
@@ -47,7 +48,8 @@ namespace BLL.LogicLayers.Clients //============================================
             _errorsFactory = errorsFactory ?? throw new ArgumentNullException(nameof(errorsFactory));
             _errorsRepository = errorsRepository ?? throw new ArgumentNullException(nameof(errorsRepository));
 
-            _tableNameClient = appSettings.ClientTableName ?? "Client";
+            _tableNameClient = appSettings.ClientTableName ?? "Clients";
+            _correlationId = Guid.NewGuid();
         }
         public async Task<OperationResult<ClientDTO>> ExecuteAsync(ClientDTO dto)
         {
@@ -82,7 +84,7 @@ namespace BLL.LogicLayers.Clients //============================================
                 // 4. Acción Principal: Buscar Entidad
                 Client entity = await _uow.ClientRepo.GetByIdAsync(dto.Id);
 
-                if (entity == null | entity.IsDeleted)
+                if (entity == null || entity.IsDeleted)
                 {
                     // Manejo elegante si no se encuentra el registro
                     result.Errors.Add(new ErrorLogDTO { InformativeMessage = "El cliente no existe o ya fue eliminado." });
@@ -93,8 +95,14 @@ namespace BLL.LogicLayers.Clients //============================================
                 // 5. Eliminación (Hard o Soft) + ACTUALIZACIÓN DE DVH
                 if (entity is ISoftDeletable)
                 {
+                    // 5.1. Se marca como borrada lógicamente
                     entity.MarkAsDeleted();
-                    await _uow.ClientRepo.UpdateAsync(entity); // Sin calcular DVH, directo a guardar
+
+                    // 5.2. Se recalcula Hash por cambio de datos previo persistir
+                    IntegrityFacade.RecalculateAndSetEntityDVH(entity);
+
+                    //5.3. Se persiste la entidad ya modificada tanto en dato como DVH
+                    await _uow.ClientRepo.UpdateAsync(entity);                   
                 }
                 else
                 {
@@ -102,7 +110,7 @@ namespace BLL.LogicLayers.Clients //============================================
                 }
 
                 // 6. Integridad Vertical (DVV): Obligatorio porque la tabla perdió/modificó una fila
-   //             await UpdateDVVAsync(_tableNameClient, _appSettings.EntitiesConnection);
+                await UpdateDVVAsync(_tableNameClient, _appSettings.EntitiesConnection);
 
                 // 7. Auditoría (Bitácora)
                 var log = _bitacoraFact.Create
@@ -111,9 +119,10 @@ namespace BLL.LogicLayers.Clients //============================================
                     user: currentUser.Id.ToString(),
                     tableName: _tableNameClient,
                     sessionId: _sessionProvider.Current.Id,
-                    correlationId: Guid.NewGuid(),
-                    extraInfo: $"Se eliminó el cliente ID: {dto.Id} (Nombre Ref: {dto.Name})"
+                    correlationId: _correlationId,
+                    extraInfo: $"Se borró el cliente {entity.Id} (N° Documento: {entity.DocNumber})"
                 );
+
                 await _uow.BitacoraRepo.CreateAsync(log);
 
                 // 8. Confirmación

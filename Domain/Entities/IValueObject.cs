@@ -1,4 +1,7 @@
 ﻿namespace Domain.Entities
 {
-    internal interface IValueObject { }
+    public interface IValueObject 
+    {
+        object Value { get; }
+    }
 }

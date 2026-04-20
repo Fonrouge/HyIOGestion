@@ -20,18 +20,18 @@ namespace DAL.Persistence.MicrosoftSQL
 
         public Task CreateAsync(Client entity)
         {
-            // Agregado el campo DVH
             string query = @"INSERT INTO Clients 
-                             (Id, Name, LastName, ShipAddress, Email, Phone, TaxId, DocNumber, IsDeleted, DVH) 
+                             (Id, Name, LastName, ShipAddress, Email, Phone, TaxId, DocNumber, 
+                              Observations, ShipCountry, ShipState, ShipZipCode, IsDeleted, DVH) 
                              VALUES 
-                             (@Id, @Name, @LastName, @ShipAddress, @Email, @Phone, @TaxId, @DocNumber, @IsDeleted, @DVH)";
+                             (@Id, @Name, @LastName, @ShipAddress, @Email, @Phone, @TaxId, @DocNumber, 
+                              @Observations, @ShipCountry, @ShipState, @ShipZipCode, @IsDeleted, @DVH)";
 
             return ExecuteNonQueryAsync(query, cmd => SetParameters(cmd, entity));
         }
 
         public Task UpdateAsync(Client entity)
         {
-            // Agregado el campo DVH
             string query = @"UPDATE Clients 
                              SET Name = @Name, 
                                  LastName = @LastName, 
@@ -39,7 +39,11 @@ namespace DAL.Persistence.MicrosoftSQL
                                  Email = @Email, 
                                  Phone = @Phone, 
                                  TaxId = @TaxId, 
-                                 DocNumber = @DocNumber, 
+                                 DocNumber = @DocNumber,
+                                 Observations = @Observations,
+                                 ShipCountry = @ShipCountry,
+                                 ShipState = @ShipState,
+                                 ShipZipCode = @ShipZipCode,
                                  IsDeleted = @IsDeleted,
                                  DVH = @DVH
                              WHERE Id = @Id";
@@ -49,18 +53,16 @@ namespace DAL.Persistence.MicrosoftSQL
 
         public async Task DeleteAsync(Guid entityId)
         {
-            // El borrado lógico se mantiene igual. 
-            // OJO: Si calculás DVH de forma global (Digito Verificador Vertical), 
-            // a veces es necesario recalcular el DVH del registro borrado para mantener la consistencia.
-            string query = "UPDATE Clients SET IsDeleted = 1 = 0 WHERE Id = @Id";
+            // Corregido el typo: "SET IsDeleted = 1 = 0" -> "SET IsDeleted = 1"
+            string query = "UPDATE Clients SET IsDeleted = 1 WHERE Id = @Id";
             await ExecuteNonQueryAsync(query, cmd => cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = entityId }));
         }
 
         public async Task<Client> GetByIdAsync(Guid id)
         {
             Client client = null;
-            // Agregado el campo DVH al SELECT
-            string query = @"SELECT Id, Name, LastName, ShipAddress, Email, Phone, TaxId, DocNumber, IsDeleted, DVH 
+            string query = @"SELECT Id, Name, LastName, ShipAddress, Email, Phone, TaxId, DocNumber, 
+                                    Observations, ShipCountry, ShipState, ShipZipCode, IsDeleted, DVH 
                              FROM Clients 
                              WHERE Id = @Id AND IsDeleted = 0";
 
@@ -74,19 +76,20 @@ namespace DAL.Persistence.MicrosoftSQL
         public async Task<IEnumerable<Client>> GetAllAsync()
         {
             var clients = new List<Client>();
-            // Agregado el campo DVH al SELECT
-            string query = @"SELECT Id, Name, LastName, ShipAddress, Email, Phone, TaxId, DocNumber, IsDeleted, DVH 
+            string query = @"SELECT Id, Name, LastName, ShipAddress, Email, Phone, TaxId, DocNumber, 
+                                    Observations, ShipCountry, ShipState, ShipZipCode, IsDeleted, DVH 
                              FROM Clients c
                              WHERE c.IsDeleted = 0";
 
             await ExecuteReaderAsync(query, null, reader => clients.Add(Map(reader)));
             return clients;
         }
+
         public async Task<IEnumerable<Client>> GetAllDeletedAsync()
         {
             var clients = new List<Client>();
-            // Agregado el campo DVH al SELECT
-            string query = @"SELECT Id, Name, LastName, ShipAddress, Email, Phone, TaxId, DocNumber, IsDeleted, DVH 
+            string query = @"SELECT Id, Name, LastName, ShipAddress, Email, Phone, TaxId, DocNumber, 
+                                    Observations, ShipCountry, ShipState, ShipZipCode, IsDeleted, DVH 
                              FROM Clients c
                              WHERE c.IsDeleted = 1";
 
@@ -97,9 +100,8 @@ namespace DAL.Persistence.MicrosoftSQL
         public async Task<Client> GetByDocNumberAsync(string taxId)
         {
             Client client = null;
-
-            // Agregado el campo DVH al SELECT
-            string query = @"SELECT Id, Name, LastName, ShipAddress, Email, Phone, TaxId, DocNumber, IsDeleted, DVH 
+            string query = @"SELECT Id, Name, LastName, ShipAddress, Email, Phone, TaxId, DocNumber, 
+                                    Observations, ShipCountry, ShipState, ShipZipCode, IsDeleted, DVH 
                              FROM dbo.Clients 
                              WHERE DocNumber = @DocNumber";
 
@@ -114,7 +116,6 @@ namespace DAL.Persistence.MicrosoftSQL
         private void SetParameters(SqlCommand cmd, Client entity)
         {
             cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = entity.Id });
-
             cmd.Parameters.Add(new SqlParameter("@Name", SqlDbType.NVarChar) { Value = entity.Name.Value });
             cmd.Parameters.Add(new SqlParameter("@LastName", SqlDbType.NVarChar) { Value = entity.LastName.Value });
             cmd.Parameters.Add(new SqlParameter("@ShipAddress", SqlDbType.NVarChar) { Value = entity.ShipAddress.Value });
@@ -122,9 +123,15 @@ namespace DAL.Persistence.MicrosoftSQL
             cmd.Parameters.Add(new SqlParameter("@Phone", SqlDbType.NVarChar) { Value = entity.Phone.Value });
             cmd.Parameters.Add(new SqlParameter("@TaxId", SqlDbType.NVarChar) { Value = entity.TaxId.Value });
             cmd.Parameters.Add(new SqlParameter("@DocNumber", SqlDbType.NVarChar) { Value = entity.DocNumber.Value });
+
+            // Nuevos campos
+            cmd.Parameters.Add(new SqlParameter("@Observations", SqlDbType.NVarChar) { Value = (object)entity.Observations?.Value ?? DBNull.Value });
+            cmd.Parameters.Add(new SqlParameter("@ShipCountry", SqlDbType.NVarChar) { Value = (object)entity.ShipCountry ?? DBNull.Value });
+            cmd.Parameters.Add(new SqlParameter("@ShipState", SqlDbType.NVarChar) { Value = (object)entity.ShipState ?? DBNull.Value });
+            cmd.Parameters.Add(new SqlParameter("@ShipZipCode", SqlDbType.NVarChar) { Value = (object)entity.ShipZipCode?.Value ?? DBNull.Value });
+
             cmd.Parameters.Add(new SqlParameter("@IsDeleted", SqlDbType.Bit) { Value = entity.IsDeleted });
 
-            // Agregado el parámetro del DVH validando si es null por las dudas
             cmd.Parameters.Add(new SqlParameter("@DVH", SqlDbType.VarChar)
             {
                 Value = (object)entity.DVH?.Value ?? string.Empty
@@ -132,7 +139,7 @@ namespace DAL.Persistence.MicrosoftSQL
         }
 
         private Client Map(SqlDataReader reader)
-        {           
+        {
             return Client.Reconstitute
             (
                 (Guid)reader["Id"],
@@ -143,11 +150,16 @@ namespace DAL.Persistence.MicrosoftSQL
                 reader["Phone"]?.ToString(),
                 reader["TaxId"]?.ToString(),
                 reader["DocNumber"]?.ToString(),
+                reader["Observations"]?.ToString(),
+                reader["ShipCountry"]?.ToString(),
+                reader["ShipState"]?.ToString(),
+                reader["ShipZipCode"]?.ToString(),
                 (bool)reader["IsDeleted"],
                 reader["DVH"].ToString()
             );
         }
 
+        // Métodos ExecuteNonQueryAsync y ExecuteReaderAsync se mantienen iguales...
         private async Task ExecuteNonQueryAsync(string query, Action<SqlCommand> parameterSetter)
         {
             SqlConnection conn = _currentTransaction?.Connection;
@@ -160,7 +172,7 @@ namespace DAL.Persistence.MicrosoftSQL
                 {
                     if (isExternalConn) cmd.Transaction = _currentTransaction;
                     parameterSetter?.Invoke(cmd);
-                   
+
                     if (!isExternalConn) await conn.OpenAsync();
                     await cmd.ExecuteNonQueryAsync();
                 }

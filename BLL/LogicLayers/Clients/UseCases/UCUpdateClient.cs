@@ -15,7 +15,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BLL.LogicLayers.Clients //=======================================================================REFACTORIZADO AL 27/02=======================================================================
+namespace BLL.LogicLayers.Clients //=======================================================================REFACTORIZADO AL 14/04=======================================================================
 {
     public class UCUpdateClient : IUCUpdateClient
     {
@@ -27,6 +27,7 @@ namespace BLL.LogicLayers.Clients //============================================
         private readonly IErrorsRepository _errorsRepository;
 
         private readonly string _tableNameClient;
+        private readonly Guid _logsCorrelationId;
 
         public UCUpdateClient
         (
@@ -46,6 +47,7 @@ namespace BLL.LogicLayers.Clients //============================================
             _errorsRepository = errorsRepository ?? throw new ArgumentNullException(nameof(errorsRepository));
 
             _tableNameClient = appSettings.ClientTableName ?? "Clients";
+            _logsCorrelationId = Guid.NewGuid();
         }
 
         public async Task<OperationResult<ClientDTO>> ExecuteAsync(ClientDTO dto)
@@ -62,6 +64,8 @@ namespace BLL.LogicLayers.Clients //============================================
                     return result;
                 }
 
+                await _uow.BeginTransactionAsync();
+
                 // 2. Validar Permisos
                 var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
                 var permissionsList = await _uow.PermisoRepo.GetPermissionsByUserAsync(_sessionProvider.Current.CurrentUserId);
@@ -73,19 +77,11 @@ namespace BLL.LogicLayers.Clients //============================================
                     result.Errors.Add(ErrorMapper.ToDTO(_errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameClient)));
                     return result;
                 }
-
-                // 4. Validaciones de Negocio
-                if (string.IsNullOrWhiteSpace(dto.TaxId) || string.IsNullOrWhiteSpace(dto.Name))
-                {
-                    // Como este es un error de input directo, lo podemos armar a mano o agregarlo al catálogo como 'InvalidInput'
-                    result.Errors.Add(new ErrorLogDTO { Message = "El Nombre y el Documento/CUIT son obligatorios para actualizar." });
-                    return result;
-                }
-
-                // --- TRAMPA DEL UPDATE: Validación de Duplicados ---
+                
+                // 3. Verificar duplicidad de Nro de Documento, teniendo en cuenta que que "técnicamente" estaría siempre duplicado por este mismo registro.
                 var existingClientWithTaxId = await _uow.ClientRepo.GetByDocNumberAsync(dto.DocNumber);
 
-                // Si el CUIT existe y NO es el del cliente que estoy editando, entonces es un duplicado ilegal.
+                // Si el CUIT existe y NO es el del cliente que se está editando, entonces es un duplicado ilegal.
                 if (existingClientWithTaxId != null && existingClientWithTaxId.Id != dto.Id)
                 {
                     var dupError = _errorsFactory.Create(ErrorCatalogEnum.DuplicateEntry, _tableNameClient);
@@ -93,13 +89,12 @@ namespace BLL.LogicLayers.Clients //============================================
                     return result;
                 }
 
-                // 5. Mapeo a Entidad (Recordamos que tu EntityBase ya no requiere que toquemos el ID, el DTO ya lo trae)
+                // 4. Mapeo a Entidad
                 var clientEntityToUpdate = ClientMapper.ToEntity(dto);
 
+                // 5. Se recalcula el hash a partir de los nuevos datos de la entidad.
+                IntegrityFacade.RecalculateAndSetEntityDVH(clientEntityToUpdate);
 
-                // 6. Se recalcula el hash a partir de los nuevos datos de la entidad.
-                IntegrityFacade.RecalculateEntityDVH(clientEntityToUpdate);
-                               
                 // 6. Persistencia
                 await _uow.ClientRepo.UpdateAsync(clientEntityToUpdate);
 
@@ -113,11 +108,11 @@ namespace BLL.LogicLayers.Clients //============================================
                     user: currentUser.Id.ToString(),
                     tableName: _tableNameClient,
                     sessionId: _sessionProvider.Current.Id,
-                    correlationId: Guid.NewGuid(),
-                    extraInfo: $"Se actualizó el cliente ID: {clientEntityToUpdate.Id} (Nuevo TaxId: {clientEntityToUpdate.TaxId})"
+                    correlationId: _logsCorrelationId,
+                    extraInfo: $"Se actualizó el cliente ID: {clientEntityToUpdate.Id} (Documento N°: {clientEntityToUpdate.DocNumber})"
                 );
                 await _uow.BitacoraRepo.CreateAsync(log);
-
+               
                 // 9. Confirmación
                 await _uow.CommitAsync();
 

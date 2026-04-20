@@ -7,6 +7,7 @@ using System.Drawing.Drawing2D;
 using System.Text;
 using System.Windows.Forms;
 using Winforms.Theme;
+using WinformsUI.Infrastructure.Shortcuts;
 using WinformsUI.Infrastructure.Translations;
 using static Winforms.Theme.DarkTheme;
 
@@ -31,7 +32,7 @@ namespace WinformsUI.Forms.ClientCRUDL
         
         private readonly ITranslatableControlsManager _transMgr;
         private readonly IApplicationSettings _appSettings;
-
+        private ShortcutManager _shortcutMgr;
 
         public UpdateClientForm
         (
@@ -51,7 +52,21 @@ namespace WinformsUI.Forms.ClientCRUDL
             InitEditButtonsList();
             SetInitialControlsState();
             WireEvents();
+            SetShortcuts();
         }
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            // Si el ShortcutManager logra manejar la tecla, retornamos true para "consumirla"
+            if (_shortcutMgr.TryHandle(keyData))
+            {
+                return true;
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+        private void SetShortcuts() => _shortcutMgr = ShortcutManager.Attach(this)
+                                        .Add("Esc", () => MessageBox.Show("I WAS LIVING FOR A DREAM"))
+                                        .Add("Ctrl+W", () => MessageBox.Show("LOVING FOR A MOMENT"))
+                                        .Add("Ctrl+H", () => MessageBox.Show("HAT AWS JUST MY STYLE"));
 
         // =================================================================
         // SUSCRIPCIÓN DE EVENTOS NO ANÓNIMOS (para desuscribir al cerrar)

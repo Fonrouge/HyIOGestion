@@ -14,7 +14,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BLL.LogicLayers.Clients  //=======================================================================REFACTORIZADO AL 27/02=======================================================================
+namespace BLL.LogicLayers.Clients  //=======================================================================REFACTORIZADO AL 14/04=======================================================================
 {
     public class UCCreateClient : IUCCreateClient
     {
@@ -27,7 +27,6 @@ namespace BLL.LogicLayers.Clients  //===========================================
 
         private readonly string _tableNameClient;
         private readonly Guid _correlationId;
-
 
         public UCCreateClient
         (
@@ -77,39 +76,43 @@ namespace BLL.LogicLayers.Clients  //===========================================
 
                 bool hasAccess = permissionsList.Any(p => p.PermisoCode == PermisosEnum.CLIENT_CREATE.ToString()
                                                        || p.PermisoCode == PermisosEnum.ADMIN_ACCESS.ToString());
-
                 if (!hasAccess)
                 {
                     opRes.Errors.Add(ErrorMapper.ToDTO(_errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameClient)));
+
+                    if (_uow.HasActiveTransaction) await _uow.RollbackAsync();
                     return opRes;
                 }
 
-                // 4. Validar unicidad}
+                // 4. Validar unicidad
                 var existingClient = await _uow.ClientRepo.GetByDocNumberAsync(dto.DocNumber);
-
+           
                 if (existingClient != null)
                 {
                     var dupError = _errorsFactory.Create(ErrorCatalogEnum.DuplicateEntry, _tableNameClient);
                     opRes.Errors.Add(ErrorMapper.ToDTO(dupError));
+
+                    if (_uow.HasActiveTransaction) await _uow.RollbackAsync();
                     return opRes;
                 }
 
                 // 5. Mapeo a Entidad
-                var newClientEntity = ClientMapper.ToEntity(dto);
+                var newEntity = ClientMapper.ToEntity(dto);
 
 
-                //  Podría optarse por incluir DVH de ser necesario
+                // 6. Se calcula y setea el DVH.
+                IntegrityFacade.RecalculateAndSetEntityDVH(newEntity);
 
-                newClientEntity.UpdateDVH(IntegrityService.GetIntegrityHash(newClientEntity.GetDvhSerialization()));
+                
+                // 7. Se persiste entidad
+                await _uow.ClientRepo.CreateAsync(newEntity);
+
+                
+                // 8. Integridad Vertical (DVV)
+                await UpdateDVVAsync(_tableNameClient, _appSettings.EntitiesConnection);
 
 
-                // 6. Persistencia principal
-                await _uow.ClientRepo.CreateAsync(newClientEntity);
-
-                // 7. Integridad Vertical (DVV)
-                //       await UpdateDVVAsync(_tableNameClient, _appSettings.EntitiesConnection);
-
-                // 8. Registrar Bitácora
+                // 9. Se registra Bitácora
                 var log = _bitacoraFact.Create
                 (
                     entry: BitacoraCatalogEnum.CreateOnBD,
@@ -117,17 +120,16 @@ namespace BLL.LogicLayers.Clients  //===========================================
                     tableName: _tableNameClient,
                     sessionId: _sessionProvider.Current.Id,
                     correlationId: _correlationId,
-                    extraInfo: $"Se creó el cliente {newClientEntity.Id} (N° Documento: {newClientEntity.DocNumber})"
+                    extraInfo: $"Se creó el cliente {newEntity.Id} (N° Documento: {newEntity.DocNumber})"
                 );
-
 
                 await _uow.BitacoraRepo.CreateAsync(log);
 
-                // 9. Confirmar Transacción
+                // 10. Confirmar Transacción
                 await _uow.CommitAsync();
 
-                // 10. Retornamos el DTO actualizado (ej. con su nuevo ID)
-                opRes.Value = ClientMapper.ToDto(newClientEntity);
+                // 11. Retornamos el DTO actualizado (ej. con su nuevo ID)
+                opRes.Value = ClientMapper.ToDto(newEntity);
                 return opRes;
             }
 
@@ -152,12 +154,9 @@ namespace BLL.LogicLayers.Clients  //===========================================
                 // Emitimos error limpio a la UI
                 var uiError = _errorsFactory.Create(ErrorCatalogEnum.InternalError, _tableNameClient);
 
-                opRes.Errors.Add(new ErrorLogDTO
-                {
-                    Code = uiError.Code,
-                    Message = uiError.Message,
-                    RecommendedAction = uiError.RecommendedAction
-                });
+                var errorDto = ErrorMapper.ToDTO(uiError);
+
+                opRes.Errors.Add(errorDto);
 
                 return opRes;
             }

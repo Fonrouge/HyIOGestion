@@ -227,6 +227,12 @@
       <DependentUpon>CustomDGVForm.cs</DependentUpon>
     </Compile>
     <Compile Include="UserControls\CustomDGV\ZoomManager.cs" />
+    <Compile Include="UserControls\CustomStatusBar\CustomStatusBar.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\CustomStatusBar\CustomStatusBar.Designer.cs">
+      <DependentUpon>CustomStatusBar.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\Ribbon\CommunicationRibbon.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -327,6 +333,9 @@
     </Compile>
     <EmbeddedResource Include="UserControls\CustomDGV\CustomDGVForm.resx">
       <DependentUpon>CustomDGVForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\CustomStatusBar\CustomStatusBar.resx">
+      <DependentUpon>CustomStatusBar.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\Ribbon\CommunicationRibbon.resx">
       <DependentUpon>CommunicationRibbon.cs</DependentUpon>

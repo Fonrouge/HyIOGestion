@@ -80,9 +80,9 @@
             this.tableLayoutPanel1.Controls.Add(this.label2, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.txtName, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.txtLastName, 1, 2);
-            this.tableLayoutPanel1.Controls.Add(this.cbTaxId, 1, 3);
             this.tableLayoutPanel1.Controls.Add(this.label9, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.txtDocNumber, 1, 4);
+            this.tableLayoutPanel1.Controls.Add(this.cbTaxId, 1, 3);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4);
@@ -181,7 +181,7 @@
             // 
             this.cbTaxId.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.cbTaxId.FormattingEnabled = true;
-            this.cbTaxId.Location = new System.Drawing.Point(79, 306);
+            this.cbTaxId.Location = new System.Drawing.Point(79, 303);
             this.cbTaxId.Margin = new System.Windows.Forms.Padding(4);
             this.cbTaxId.Name = "cbTaxId";
             this.cbTaxId.Size = new System.Drawing.Size(399, 27);
@@ -352,7 +352,7 @@
             // 
             this.cbCountrySelector.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.cbCountrySelector.FormattingEnabled = true;
-            this.cbCountrySelector.Location = new System.Drawing.Point(79, 158);
+            this.cbCountrySelector.Location = new System.Drawing.Point(79, 161);
             this.cbCountrySelector.Margin = new System.Windows.Forms.Padding(4);
             this.cbCountrySelector.Name = "cbCountrySelector";
             this.cbCountrySelector.Size = new System.Drawing.Size(399, 27);

@@ -67,7 +67,7 @@ namespace WinformsUI.Forms.SaleCRUDL
             ThemingNotifiedByConfigurationsModule();
             UpdateClientSize();
         }
-       
+
         private void InitializeWizard() => _wizard.Initialize(new TableLayoutPanel[] { tlpSelectClient, tlpSelectProds });
 
         private void WireCommonEvents()
@@ -134,6 +134,11 @@ namespace WinformsUI.Forms.SaleCRUDL
 
         public SaleDTO GetMappedSaleDTO()
         {
+            if (_selectedClient == null)
+            {
+                EnsureDGVSelection();
+            }
+
             return new SaleDTO()
             {
                 ClientId = _selectedClient?.Id ?? Guid.Empty,
@@ -165,14 +170,7 @@ namespace WinformsUI.Forms.SaleCRUDL
             CreateSaleRequested?.Invoke(this, EventArgs.Empty);
         }
 
-        public void UpdateSubTotal(string subTotal)
-        {
-            var formatedSubTotal = $"${subTotal}";
-
-            tbSubTotal.Text = formatedSubTotal;
-            txtSummaryAmount.Text = formatedSubTotal;
-
-        }
+       
         public void AddViewTranslatables() => AddTranslatables();
 
         private void AddTranslatables()
@@ -206,17 +204,24 @@ namespace WinformsUI.Forms.SaleCRUDL
 
             DgvFormat.Apply(dgvSelectClient, isMiniDgv: true);
 
+
+
+            if (dgvSelectClient.Rows.Count > 0)
+                dgvSelectClient.Rows[0].Selected = true;
+
             dgvSelectClient.SelectionChanged += (sender, e) =>
             {
                 if (dgvSelectClient.SelectedRows.Count > 0)
                 {
-                    _selectedClient = dgvSelectClient.SelectedRows[0].DataBoundItem as ClientDTO;
-                    txtClientsummary.Text = _selectedClient.ToString();
+                    EnsureDGVSelection();
                 }
             };
+        }
 
-            if (dgvSelectClient.Rows.Count > 0)
-                dgvSelectClient.Rows[0].Selected = true;
+        private void EnsureDGVSelection()
+        {
+            _selectedClient = dgvSelectClient.SelectedRows[0].DataBoundItem as ClientDTO;
+            txtClientsummary.Text = _selectedClient.ToString();
         }
 
         public void InitializeProductsGrid(List<ProductDTO> allProductsList)

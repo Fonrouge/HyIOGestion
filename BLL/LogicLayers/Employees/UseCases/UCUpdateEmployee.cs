@@ -10,12 +10,13 @@ using Domain.Infrastructure.Audit;
 using Domain.Infrastructure.Permisos.Concrete;
 using Domain.Repositories;
 using Shared;
+using Shared.Services;
 using Shared.Sessions;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BLL.LogicLayers.Employees
+namespace BLL.LogicLayers.Employees //=======================================================================REFACTORIZADO AL 14/04=======================================================================
 {
     public class UCUpdateEmployee : IUCUpdateEmployee
     {
@@ -27,6 +28,7 @@ namespace BLL.LogicLayers.Employees
         private readonly IErrorsRepository _errorsRepository;
 
         private readonly string _tableNameEmployee;
+        private Guid _correlationId;
 
         public UCUpdateEmployee
         (
@@ -46,6 +48,7 @@ namespace BLL.LogicLayers.Employees
             _errorsRepository = errorsRepository ?? throw new ArgumentNullException(nameof(errorsRepository));
 
             _tableNameEmployee = appSettings.EmployeeTableName ?? "Employees";
+            _correlationId = Guid.NewGuid();
         }
 
         public async Task<OperationResult<EmployeeDTO>> ExecuteAsync(EmployeeDTO dto)
@@ -62,6 +65,7 @@ namespace BLL.LogicLayers.Employees
                     return result;
                 }
 
+
                 // 2. Validar Permisos
                 var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
                 var permissionsList = await _uow.PermisoRepo.GetPermissionsByUserAsync(_sessionProvider.Current.CurrentUserId);
@@ -75,17 +79,22 @@ namespace BLL.LogicLayers.Employees
                 }
 
 
-                // 3. Seteamos la conexión para las consultas de validación (Aún SIN abrir transacción)
+                // 3. Seteamos la conexión para las consultas de validación
                 _uow.SetConnectionString(_appSettings.EntitiesConnection);
 
 
-                // 4. Validación de Duplicados (Contra DB)
-                var existingEmployeeWithTaxId = await _uow.EmployeeRepo.GetByNationalIdAsync(dto.NationalId);
-
-                if (existingEmployeeWithTaxId != null && existingEmployeeWithTaxId.Id != dto.Id)
+                // 4. Validación de Duplicados (DNI y Legajo)
+                var employeeWithSameDni = await _uow.EmployeeRepo.GetByNationalIdAsync(dto.NationalId);
+                if (employeeWithSameDni != null && employeeWithSameDni.Id != dto.Id)
                 {
-                    var dupError = _errorsFactory.Create(ErrorCatalogEnum.DuplicateEntry, _tableNameEmployee);
-                    result.Errors.Add(ErrorMapper.ToDTO(dupError));
+                    result.Errors.Add(ErrorMapper.ToDTO(_errorsFactory.Create(ErrorCatalogEnum.DuplicateEntry, "El DNI ya pertenece a otro empleado")));
+                    return result;
+                }
+
+                var employeeWithSameFile = await _uow.EmployeeRepo.GetByFileNumberAsync(dto.FileNumber);
+                if (employeeWithSameFile != null && employeeWithSameFile.Id != dto.Id)
+                {
+                    result.Errors.Add(ErrorMapper.ToDTO(_errorsFactory.Create(ErrorCatalogEnum.DuplicateEntry, "El número de legajo ya está en uso")));
                     return result;
                 }
 
@@ -95,25 +104,31 @@ namespace BLL.LogicLayers.Employees
                 // 6. Mapeo a Entidad (Fail Fast de VOs ocurre acá adentro)
                 var employeeEntityToUpdate = EmployeeMapper.ToEntity(dto);
 
-                // 7. Persistencia
+                // 7. Recalcular DVH después de una modificación
+                IntegrityFacade.RecalculateAndSetEntityDVH(employeeEntityToUpdate);
+
+                // 8. Persistencia
                 await _uow.EmployeeRepo.UpdateAsync(employeeEntityToUpdate);
 
-                // 8. Auditoría (Bitácora)
+                // 9. Recálculo de DVV una vez persistida la entidad
+                await UpdateDVVAsync(_tableNameEmployee, _appSettings.EntitiesConnection);
+
+                // 10. Auditoría (Bitácora)
                 var log = _bitacoraFact.Create
                 (
                     tableName: _tableNameEmployee,
                     entry: BitacoraCatalogEnum.UpdateOnBD,
                     user: currentUser.Id.ToString(),
                     sessionId: _sessionProvider.Current.Id,
-                    correlationId: Guid.NewGuid(),
+                    correlationId: _correlationId,
                     extraInfo: $"Se actualizó el empleado ID: {employeeEntityToUpdate.Id} (Nuevo TaxId: {employeeEntityToUpdate.NationalId})"
                 );
                 await _uow.BitacoraRepo.CreateAsync(log);
 
-                // 9. Confirmación
+                // 11. Confirmación
                 await _uow.CommitAsync();
 
-                // 10. Retorno
+                // 12. Retorno
                 result.Value = EmployeeMapper.ToDto(employeeEntityToUpdate);
                 return result;
             }
@@ -145,6 +160,13 @@ namespace BLL.LogicLayers.Employees
                 result.Errors.Add(errorDto);
                 return result;
             }
+        }
+
+        private async Task UpdateDVVAsync(string nombreTabla, string connectionString)
+        {
+            var hashes = await _uow.IntegrityRepo.GetVerticalHashesAsync(nombreTabla, connectionString);
+            var dvvFinal = IntegrityService.CalculateDVV(hashes);
+            await _uow.IntegrityRepo.UpdateDVVAsync(nombreTabla, dvvFinal, connectionString);
         }
     }
 }

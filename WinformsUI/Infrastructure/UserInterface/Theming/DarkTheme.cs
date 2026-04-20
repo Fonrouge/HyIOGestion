@@ -1805,7 +1805,7 @@ namespace Winforms.Theme
                 ReleaseHandle();
             }
 
-            // Interceptamos los mensabmlopjes del sistema
+            // Interceptamos los mensajes del sistema
             protected override void WndProc(ref Message m)
             {
                 base.WndProc(ref m); // Dejar que el control haga su trabajo primero

@@ -50,7 +50,7 @@ namespace Presenter.MainFormNavigation
 
         private void OnHostFormClosed(HostFormClosedNotificationMessage message)
         {
-            var closedFormId = message.Payload;            
+            var closedFormId = message.Payload;
             var toRemove = _hostPresenters.FirstOrDefault(p => p.View.GetViewId() == closedFormId);
 
             if (toRemove != null)
@@ -77,27 +77,23 @@ namespace Presenter.MainFormNavigation
                 _view.ShowOperationResult(opRes);
                 return;
             }
+            finally
+            {
+                if (userDto != null)
+                {
+                    var requestTranslation = new TranslationRequestMessage(userDto.LanguageCode, this);
+                    _messenger.Send(requestTranslation);
 
-            if (userDto != null)
-            {
-                _view.SetStatusBarInfo
-                (
-                   loggedUserName: userDto.Username,
-                   currentUserName: _sessionProvider.Current.LoginTime.ToString()
-                );
-                _userDto = userDto;
-            }
-            else
-            {
-                _view.SetStatusBarInfo
-                (
-                   loggedUserName: "",
-                   currentUserName: _sessionProvider.Current.LoginTime.ToString()
-                );
+                    _view.SetStatusBarInfo
+                    (
+                       loggedUserName: userDto.Username,
+                       currentUserName: _sessionProvider.Current.LoginTime.ToString()
+                    );
+
+                    _userDto = userDto;
+                }
             }
 
-            var requestTranslation = new TranslationRequestMessage(userDto.LanguageCode, this);
-            _messenger.Send(requestTranslation);
         }
 
         private void WireViewEvents()

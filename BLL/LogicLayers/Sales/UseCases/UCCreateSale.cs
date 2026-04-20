@@ -3,6 +3,7 @@ using BLL.DTOs.Errors;
 using BLL.DTOs.Mappers;
 using BLL.Infrastructure.AuditLogs;
 using BLL.Infrastructure.Errors;
+using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Infrastructure;
 using Domain.Infrastructure.Audit;
@@ -25,7 +26,9 @@ namespace BLL.LogicLayers.Sales
         private readonly ISessionProvider _sessionProvider;
         private readonly IErrorsFactory _errorsFactory;
         private readonly IErrorsRepository _errorsRepository;
+        
         private readonly string _tableNameSale;
+        private Guid _correlationId;
 
         public UCCreateSale
         (
@@ -43,6 +46,7 @@ namespace BLL.LogicLayers.Sales
             _errorsFactory = errorsFactory ?? throw new ArgumentNullException(nameof(errorsFactory));
             _errorsRepository = errorsRepository ?? throw new ArgumentNullException(nameof(errorsRepository));
             _tableNameSale = _appSettings.SaleTableName ?? "Sales";
+            _correlationId = Guid.NewGuid();
         }
 
         public async Task<OperationResult<SaleDTO>> ExecuteAsync(SaleDTO dto)
@@ -58,7 +62,7 @@ namespace BLL.LogicLayers.Sales
                     return result;
                 }
 
-                // 2. Validar Input Básico (No vender aire)
+                // 2. Regla de negocio mínima (vender algo)
                 if (dto.Items == null || !dto.Items.Any())
                 {
                     result.Errors.Add(new ErrorLogDTO { InformativeMessage = "No se puede crear una venta sin productos." });
@@ -68,7 +72,6 @@ namespace BLL.LogicLayers.Sales
                 _uow.SetConnectionString(_appSettings.EntitiesConnection);
 
                 // 2. Validar Permisos
-                var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
                 var permissionsList = await _uow.PermisoRepo.GetPermissionsByUserAsync(_sessionProvider.Current.CurrentUserId);
 
                 bool hasAccess = permissionsList.Any(p => p.PermisoCode == PermisosEnum.SALE_CREATE.ToString()
@@ -102,18 +105,19 @@ namespace BLL.LogicLayers.Sales
 
                     try
                     {
-                        // 1. El Producto valida su propio stock e invariantes internamente
-                        // Si no hay stock, lanza una InvalidOperationException con el mensaje que definimos
-                        product.ReduceStock(item.Quantity.Value);
+                        // 1. El Producto valida su propio stock e invariantes internamente. Si no hay stock, lanza una InvalidOperationException con el mensaje definido
+                        product.ReduceStock((decimal)item.Quantity.Value);
 
-                        // 2. Si pasó la línea anterior, el stock ya se restó en memoria del objeto.
-                        // Persistimos el cambio de estado del producto dentro de la misma transacción.
+                        // 2. Producto mmodificado = Parámetros modificados = Recálculo de DVH
+                        IntegrityFacade.RecalculateAndSetEntityDVH(product);
+
+                        // 2. Si pasó el punto uno, significa que el stock es válido y ya se restó en memoria..
+                        // Se persiste el cambio de estado del producto dentro de la misma transacción.
                         await _uow.ProductRepo.UpdateAsync(product);
                     }
                     catch (InvalidOperationException ex)
                     {
                         // 3. Atrapamos el error de negocio del dominio y lo transformamos en un error de UI
-                        // Usamos InternalError o podrías usar uno nuevo como 'BusinessRuleViolation'
                         var stockError = _errorsFactory.Create(ErrorCatalogEnum.InternalError, "Products");
                         var errorDto = ErrorMapper.ToDTO(stockError);
 
@@ -126,36 +130,73 @@ namespace BLL.LogicLayers.Sales
                     }
                 }
 
-                // 7. Persistencia de la Venta
+                // 7. Se firma TODA la estructura antes de que toque el Repo (Sale + SaleDetails + Products)
+                
+                // 7.1. Primero a los hijos -los detalles- > (El producto actualiza su DVH en el bloque 6)
+                foreach (var item in newSale.Items)
+                {
+                    IntegrityFacade.RecalculateAndSetEntityDVH(item);
+                }
+
+                // Luego el padre (la venta)
+                IntegrityFacade.RecalculateAndSetEntityDVH(newSale);
+                
+                               
+                // 8. Persistencia de la Venta (que internamente guardará los detalles ya firmados)
                 await _uow.SaleRepo.CreateAsync(newSale);
 
-                // 8. Integridad Vertical (DVV) - ¡ACTIVALO! Es dinero.
-    //            await UpdateDVVAsync(_tableNameSale, _appSettings.EntitiesConnection);
 
-                // 9. Auditoría
-                var log = _bitacoraFact.Create(
+                // 9. Integridad Vertical (DVV) de todas las tablas involucradasx1
+                await UpdateDVVAsync(_tableNameSale, _appSettings.EntitiesConnection);
+                await UpdateDVVAsync(_appSettings.SaleDetailTableName, _appSettings.EntitiesConnection);
+                await UpdateDVVAsync(_appSettings.ProductTableName, _appSettings.EntitiesConnection);
+
+
+                // 10. Auditoría
+                var log = _bitacoraFact.Create
+                (
                     entry: BitacoraCatalogEnum.CreateOnBD,
-                    user: currentUser.Id.ToString(),
+                    user: _sessionProvider.Current.CurrentUserId.ToString(),
                     tableName: _tableNameSale,
                     sessionId: _sessionProvider.Current.Id,
-                    correlationId: Guid.NewGuid(),
-                    extraInfo: $"Venta #{newSale.Id} - Total: {newSale.TotalAmount.Value:C2}"
+                    correlationId: _correlationId,
+                    extraInfo: $"Venta Id {newSale.Id} - Total: ${newSale.TotalAmount.Value:C2}"
                 );
+
                 await _uow.BitacoraRepo.CreateAsync(log);
 
-                // 10. Confirmación
+                // 11. Confirmación
                 await _uow.CommitAsync();
 
                 result.Value = SaleMapper.ToDto(newSale);
-                return result;
             }
+
             catch (Exception ex)
             {
                 if (_uow.HasActiveTransaction) await _uow.RollbackAsync();
 
-                // todavía me falta hacer esto
-                return result;
+                var dbError = _errorsFactory.CreateFromException(ex);
+                dbError.Table = _tableNameSale;
+
+                try
+                {
+                    await _errorsRepository.CreateAsync(dbError);
+                }
+                catch { }
+
+
+                // Emitimos error limpio a la UI
+                var uiError = _errorsFactory.Create(ErrorCatalogEnum.InternalError, _tableNameSale);
+                var errorDto = ErrorMapper.ToDTO(uiError);
+                errorDto.LogId = dbError.Id;
+                errorDto.InformativeMessage = $"Hubo un problema técnico al procesar la venta. " +
+                    $"Por favor, contacte a soporte e indique el código: {dbError.Id}." +
+                    $"Si en este momento no puede contactarse, por favor reinicie la aplicación e intente nuevamente.";
+
+                result.Errors.Add(errorDto);
             }
+
+            return result;
         }
 
         private async Task UpdateDVVAsync(string nombreTabla, string connectionString)

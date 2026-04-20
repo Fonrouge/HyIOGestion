@@ -7,7 +7,7 @@ namespace Domain.Entities.Suppliers.ValueObjects
 {
     public sealed class SupplierTaxIdVO : IValueObject
     {
-        public string Value { get; private set; }
+        public object Value { get; private set; }
 
         private SupplierTaxIdVO(string value)
         {
@@ -55,9 +55,7 @@ namespace Domain.Entities.Suppliers.ValueObjects
             return Value.GetHashCode();
         }
 
-        public override string ToString()
-        {
-            return Value;
-        }
+        public override string ToString() => Value.ToString();
+        
     }
 }

@@ -89,8 +89,8 @@ namespace Domain.Entities
                 Id.ToString(),
                 SaleId.ToString(),       // Crucial para evitar "huérfanos" o traslados entre ventas
                 ProductId.ToString(),
-                Quantity.Value.ToString("F3", culture),  // F3 por si vendes por peso/volumen
-                UnitPrice.Value.ToString("F2", culture), // F2 estándar moneda
+                ((decimal)Quantity.Value).ToString("F3", culture),  // F3 por si vendes por peso/volumen
+                ((decimal)UnitPrice.Value).ToString("F2", culture), // F2 estándar moneda
                 Subtotal.ToString("F2", culture),
                 IsDeleted ? "1" : "0"
             );
@@ -98,7 +98,7 @@ namespace Domain.Entities
 
 
         // --- COMPORTAMIENTO ---
-        private void CalculateSubtotal() => Subtotal = Quantity.Value * UnitPrice.Value;
+        private void CalculateSubtotal() => Subtotal = (decimal)Quantity.Value * (decimal)UnitPrice.Value;
 
         public void MarkAsDeleted()
         {

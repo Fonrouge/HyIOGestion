@@ -20,13 +20,13 @@ namespace BLL.LogicLayers.Sales
                 Id = detail.Id,
                 SaleId = detail.SaleId,
                 ProductId = detail.ProductId,
-                Quantity = detail.Quantity.Value,
-                UnitPrice = detail.UnitPrice.Value,
+                Quantity = (decimal)detail.Quantity.Value,
+                UnitPrice = (decimal)detail.UnitPrice.Value,
                 Subtotal = detail.Subtotal,
 
                 // --- CAMPOS TÉCNICOS SINCRONIZADOS ---
                 IsDeleted = detail.IsDeleted,
-                DVH = detail.DVH?.Value ?? string.Empty
+                DVH = (string)(detail.DVH?.Value ?? string.Empty)
             };
         }
 

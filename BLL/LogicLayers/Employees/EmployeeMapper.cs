@@ -17,17 +17,17 @@ namespace BLL.DTOs.Mappers
             return new EmployeeDTO()
             {
                 Id = entity.Id,
-                FileNumber = entity.FileNumber != null ? entity.FileNumber.Value : string.Empty,
-                FirstName = entity.FirstName != null ? entity.FirstName.Value : string.Empty,
-                LastName = entity.LastName != null ? entity.LastName.Value : string.Empty,
-                NationalId = entity.NationalId != null ? entity.NationalId.Value : string.Empty,
-                Email = entity.Email != null ? entity.Email.Value : string.Empty,
-                PhoneNumber = entity.PhoneNumber != null ? entity.PhoneNumber.Value : string.Empty,
-                HomeAddress = entity.HomeAddress != null ? entity.HomeAddress.Value : string.Empty,
+                FileNumber = (string)(entity.FileNumber != null ? entity.FileNumber.Value : string.Empty),
+                FirstName = (string)(entity.FirstName != null ? entity.FirstName.Value : string.Empty),
+                LastName = (string)(entity.LastName != null ? entity.LastName.Value : string.Empty),
+                NationalId = (string)(entity.NationalId != null ? entity.NationalId.Value : string.Empty),
+                Email = (string)(entity.Email != null ? entity.Email.Value : string.Empty),
+                PhoneNumber = (string)(entity.PhoneNumber != null ? entity.PhoneNumber.Value : string.Empty),
+                HomeAddress = (string)(entity.HomeAddress != null ? entity.HomeAddress.Value : string.Empty),
 
                 IsDeleted = entity.IsDeleted,
                 Active = entity.Active,
-                DVH = entity.DVH != null ? entity.DVH.Value : string.Empty
+                DVH = (string)(entity.DVH != null ? entity.DVH.Value : string.Empty)
             };
         }
 

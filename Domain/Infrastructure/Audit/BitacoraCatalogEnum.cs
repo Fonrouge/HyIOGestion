@@ -57,7 +57,7 @@ namespace Domain.Infrastructure.Audit
                      Type = BitacoraTypeEnum.Activity,
                      DefaultSeverity = SeverityEnum.INFO)]
 
-        GetFromDB,
+        GetAllFromDB,
 
 
 

@@ -40,7 +40,7 @@ namespace WinformsUI.Forms.PaymentCRUDL
         private void OnceLoaded(object sender, EventArgs e) => OnceLoadedAdvice?.Invoke(this, EventArgs.Empty);
 
         // =========================================================
-        // TRADUCCIONES Y PALETA
+        // TRADUCCIONES
         // =========================================================
         private void AddTranslatables()
         {
@@ -55,12 +55,6 @@ namespace WinformsUI.Forms.PaymentCRUDL
             _transMgr.AddFormNotify(this);
 
             base.ApplyTranslation();
-        }
-
-        public override void ThemingNotifiedByConfigurationsModule()
-        {
-            DarkTheme.RedrawBorders = true;
-            DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
         }
 
 

@@ -5,7 +5,7 @@ namespace Domain.Entities.Payments.ValueObjects
 {
     public sealed class PaymentMethodVO : IValueObject
     {
-        public string Value { get; }
+        public object Value { get; }
 
 
         private PaymentMethodVO(string value)
@@ -32,7 +32,7 @@ namespace Domain.Entities.Payments.ValueObjects
                 return false;
 
             var other = (PaymentMethodVO)obj;
-            return string.Equals(Value, other.Value, StringComparison.OrdinalIgnoreCase);
+            return string.Equals(Value.ToString(), other.Value.ToString(), StringComparison.OrdinalIgnoreCase);
         }
 
         public override int GetHashCode()
@@ -50,6 +50,6 @@ namespace Domain.Entities.Payments.ValueObjects
         public static bool operator !=(PaymentMethodVO left, PaymentMethodVO right)
             => !(left == right);
 
-        public override string ToString() => Value;
+        public override string ToString() => Value.ToString();
     }
 }

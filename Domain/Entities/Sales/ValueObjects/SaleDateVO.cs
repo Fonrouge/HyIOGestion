@@ -4,7 +4,7 @@ namespace Domain.Entities.Sales.ValueObjects
 {
     public sealed class SaleDateVO : IValueObject
     {
-        public DateTime Value { get; }
+        public object Value { get; }
 
         private SaleDateVO(DateTime value) => Value = value;
 

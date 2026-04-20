@@ -5,7 +5,7 @@ namespace Domain.Exceptions.Base
     [AttributeUsage(AttributeTargets.Field)]
     public class ErrorLog : Attribute
     {
-     public Guid Id { get; set; } = Guid.NewGuid();
+        public Guid Id { get; set; } = Guid.NewGuid();
         public string Code { get; set; }
         public string Message { get; set; }
         public string RecommendedAction { get; set; }

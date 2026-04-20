@@ -7,6 +7,8 @@ using Shared.Services;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WinformsUI.Forms.ConfigurationsMenu;
@@ -24,31 +26,16 @@ namespace Winforms.Theme
         [STAThread]
         static void Main()
         {
-        //  List<string> dvhs = new List<string>()
-        //  {
-        //      "8c317ae4d9443c542540fc4e7215c4abd96bf2d9ea496e553fb51ce6d2963dc9",
-        //      "90706ce7b37ebdb19ad7f997371dd46053deb151b82179898abaad06b5500ca8",
-        //      "edddbde47942bc7497b7bfb62f889e958e6cae4c9a5aaeb4bf0250a71b5bc630",
-        //      "596ec69321b4bc9afc8b7d4cf80d5c6bb695580afca86da39cd0ba0e81df78e7",
-        //      "39e0a5d60cd67e1e2106271483a75b69d14f6b9ffb23b1b0f0e000f59f490bf2",
-        //      "ee8475f8b486fdf1d2c3dd3b545e9ade1212290d9f8149e402500e40101d2ae7",
-        //
-        //  };
-        //
-        //
-        //
-        //  Console.Write(IntegrityService.CalculateDVV(dvhs));
-        //
-        //  Debugger.Break();
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //  Debugger.Break();
+      
+
+
+      //      var aver= BLL.LogicLayers.IntegrityFacade.ProductsCategoriesDVHCalculator(Guid.Parse("e187fda9-19c0-459c-8e94-986d948bc844"), Guid.Parse("50e4beb0-bcd1-4e63-8a6c-a9dc94f01f93"));
+      //      Debugger.Break();
+
+
+
+
+
 
             // 1. Configuración básica de WinForms
             InitializeWinForms();
@@ -58,11 +45,14 @@ namespace Winforms.Theme
             _serviceProvider = CreateServiceProvider();
 
             // 3. Flujo de Integridad (Ahora sí es esperado/awaited)
-      //      if (!RunIntegrityCheckAsync()) return;
+            bool xxx = !RunIntegrityCheckAsync();
+            if (xxx) return;
+
+        //    Debugger.Break();
 
             // 4. Flujo de Login
             if (!RunLoginFlow()) return;
-
+        
             // 5. Flujo Principal (Main Form)
             RunMainFlow();
 
@@ -94,10 +84,10 @@ namespace Winforms.Theme
         {
             // IMPORTANTE: En fase de prueba esto podría retornar true directamente
             // pero mantenemos la lógica asíncrona corregida.
+            var checker =  _serviceProvider.GetRequiredService<IVerifyDVH>();
             try
             {
-                var checker = _serviceProvider.GetRequiredService<IVerifyDVH>();
-                checker.ExecuteAsync();
+                Task.WaitAll(checker.ExecuteAsync());
                 return true;
             }
             catch (Exception ex)
@@ -106,6 +96,8 @@ namespace Winforms.Theme
                     "ALERTA DE SEGURIDAD", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return false;
             }
+
+            
         }
 
         private static bool RunLoginFlow()
@@ -137,5 +129,35 @@ namespace Winforms.Theme
                 Application.Run(mainForm);
             }
         }
+
+
+
     }
 }
+
+
+//  List<string> dvhs = new List<string>()
+//  {
+//      "8c317ae4d9443c542540fc4e7215c4abd96bf2d9ea496e553fb51ce6d2963dc9",
+//      "90706ce7b37ebdb19ad7f997371dd46053deb151b82179898abaad06b5500ca8",
+//      "edddbde47942bc7497b7bfb62f889e958e6cae4c9a5aaeb4bf0250a71b5bc630",
+//      "596ec69321b4bc9afc8b7d4cf80d5c6bb695580afca86da39cd0ba0e81df78e7",
+//      "39e0a5d60cd67e1e2106271483a75b69d14f6b9ffb23b1b0f0e000f59f490bf2",
+//      "ee8475f8b486fdf1d2c3dd3b545e9ade1212290d9f8149e402500e40101d2ae7",
+//
+//  };
+//
+//
+//
+//  Console.Write(IntegrityService.CalculateDVV(dvhs));
+//
+//  Debugger.Break();
+//
+//
+//
+//
+//
+//
+//
+//
+//  Debugger.Break();

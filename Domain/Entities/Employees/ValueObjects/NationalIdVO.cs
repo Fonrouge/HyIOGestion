@@ -5,7 +5,7 @@ namespace Domain.Entities.Employees.ValueObjects
 {
     public sealed class NationalIdVO : IValueObject
     {
-        public string Value { get; }
+        public object Value { get; }
 
         private NationalIdVO(string value) => Value = value;
 

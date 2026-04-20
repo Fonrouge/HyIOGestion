@@ -4,7 +4,7 @@ using System;
 
 public sealed class HomeAddressVO : IValueObject
 {
-    public string Value { get; }
+    public object Value { get; }
 
     private HomeAddressVO(string value) => Value = value;
 

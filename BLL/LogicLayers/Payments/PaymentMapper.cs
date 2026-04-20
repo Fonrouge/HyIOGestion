@@ -18,14 +18,14 @@ namespace BLL.LogicLayers
             return new PaymentDTO
             {
                 Id = entity.Id,
-                Amount = entity.Amount != null ? entity.Amount.Value : 0m,
+                Amount = (decimal)(entity.Amount != null ? entity.Amount.Value : 0m),
                 CreationDate = entity.CreationDate,
                 EffectiveDate = entity.EffectiveDate,
                 SaleId = entity.SaleId,
-                Method = entity.Method != null ? entity.Method.Value : string.Empty,
-                Reference = entity.Reference != null ? entity.Reference.Value : string.Empty,
+                Method = (string)(entity.Method != null ? entity.Method.Value : string.Empty),
+                Reference = (string)(entity.Reference != null ? entity.Reference.Value : string.Empty),
                 IsDeleted = entity.IsDeleted,
-                DVH = entity.DVH != null ? entity.DVH.Value : string.Empty
+                DVH = (string)(entity.DVH != null ? entity.DVH.Value : string.Empty)
             };
         }
 

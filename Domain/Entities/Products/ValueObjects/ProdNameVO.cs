@@ -5,7 +5,7 @@ namespace Domain.Entities.Products.ValueObjects
 {
     public class ProdNameVO : IValueObject
     {
-        public string Value { get; }
+        public object Value { get; }
 
         private ProdNameVO(string value) => Value = value;
 
@@ -28,6 +28,6 @@ namespace Domain.Entities.Products.ValueObjects
             return new ProdNameVO(cleanName.Trim().ToUpper());
         }
 
-        public override string ToString() => Value;
+        public override string ToString() => Value.ToString();
     }
 }

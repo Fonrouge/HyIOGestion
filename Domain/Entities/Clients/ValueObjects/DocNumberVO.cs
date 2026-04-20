@@ -5,7 +5,7 @@ namespace Domain.Entities.Clients.ValueObjects
 {
     public sealed class DocNumberVO : IValueObject
     {
-        public string Value { get; private set; }
+        public object Value { get; private set; }
 
         private DocNumberVO(string value)
         {
@@ -55,9 +55,7 @@ namespace Domain.Entities.Clients.ValueObjects
             return Value.GetHashCode();
         }
 
-        public override string ToString()
-        {
-            return Value;
-        }
+        public override string ToString() => Value.ToString();
+
     }
 }

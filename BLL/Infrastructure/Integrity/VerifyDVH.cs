@@ -1,10 +1,13 @@
 ﻿using BLL.Infrastructure.Errors;
 using BLL.LogicLayer;
+using BLL.LogicLayers;
 using Domain.Contracts;
 using Domain.Entities;
 using Domain.Entities.Permisos.Abstracts;
 using Domain.Entities.Permisos.Concrete;
+using Domain.Entities.Products;
 using Domain.Exceptions;
+using Domain.Exceptions.Base;
 using Domain.Infrastructure;
 using Domain.Repositories;
 using Shared;
@@ -65,80 +68,90 @@ namespace BLL.UseCases
             // 1. Validar integridad fila por fila (DVH)
 
 
-            //   //Clients
-            //   await ValidateUsersDVHAsync((await _uow.ClientRepo.GetAllAsync()).ToList());
-            //   await ValidateUsersDVHAsync((await _uow.ClientRepo.GetAllDeletedAsync()).ToList());
-            //
-            //   //Employees
-            //   await ValidateUsersDVHAsync((await _uow.EmployeeRepo.GetAllAsync()).ToList());
-            //   await ValidateUsersDVHAsync((await _uow.EmployeeRepo.GetAllDeletedAsync()).ToList());
-            //
-            //   //Payments
-            //   await ValidateUsersDVHAsync((await _uow.PaymentRepo.GetAllAsync()).ToList());
-            //   await ValidateUsersDVHAsync((await _uow.PaymentRepo.GetAllDeletedAsync()).ToList());
-            //
-            //   //Products + Relateds
-            //   await ValidateUsersDVHAsync((await _uow.ProductRepo.GetAllAsync()).ToList());
-            //   await ValidateUsersDVHAsync((await _uow.ProductRepo.GetAllDeletedAsync()).ToList());
-            //   await ValidateUsersDVHAsync((await _uow.ProductRepo.GetAllProductCategoryAsync()).ToList());
-            //   await ValidateUsersDVHAsync((await _uow.CategoryRepo.GetAllAsync()).ToList());
-            //   await ValidateUsersDVHAsync((await _uow.CategoryRepo.GetAllDeletedAsync()).ToList());
-            //
-            //   //Sale + Relateds
-            //   await ValidateUsersDVHAsync((await _uow.SaleRepo.GetAllAsync()).ToList());
-            //   await ValidateUsersDVHAsync((await _uow.SaleRepo.GetAllDeletedAsync()).ToList());
-            //
-            //   await ValidateUsersDVHAsync((await _uow.SaleDetailRepo.GetAllAsync()).ToList());
-            //   await ValidateUsersDVHAsync((await _uow.SaleDetailRepo.GetAllDeletedAsync()).ToList());           
-            //
-            //   //Suppliers
-            //   await ValidateUsersDVHAsync((await _uow.SupplierRepo.GetAllAsync()).ToList());
-            //   await ValidateUsersDVHAsync((await _uow.SupplierRepo.GetAllDeletedAsync()).ToList());
-            //
-            //   //User + Relateds
-            //   await ValidateUsersDVHAsync((await _uow.UserRepo.GetAllAsync()).ToList());
-            //   await ValidateUsersDVHAsync((await _uow.UserRepo.GetAllDeletedAsync()).ToList());
-            //
-            //   await ValidateUsersDVHAsync((await _uow.PermisoRepo.GetAllAsync()).ToList());
-            //   await ValidateUsersDVHAsync((await _uow.PermisoRepo.GetAllPermisoPermisoAsync()).ToList());
-            //
 
-         //   await ValidateUsersDVHAsync((await _uow.BitacoraRepo.GetAllAsync()).ToList());
 
+
+            //Clients
+            await ValidateUsersDVHAsync((await _uow.ClientRepo.GetAllAsync()).ToList());
+            await ValidateUsersDVHAsync((await _uow.ClientRepo.GetAllDeletedAsync()).ToList());
+
+            //Employees
+            await ValidateUsersDVHAsync((await _uow.EmployeeRepo.GetAllAsync()).ToList());
+            await ValidateUsersDVHAsync((await _uow.EmployeeRepo.GetAllDeletedAsync()).ToList());
+
+            //Payments
+            await ValidateUsersDVHAsync((await _uow.PaymentRepo.GetAllAsync()).ToList());
+            await ValidateUsersDVHAsync((await _uow.PaymentRepo.GetAllDeletedAsync()).ToList());
+
+            //Products + Relateds
+            await ValidateUsersDVHAsync((await _uow.ProductRepo.GetAllAsync()).ToList());
+            await ValidateUsersDVHAsync((await _uow.ProductRepo.GetAllDeletedAsync()).ToList());
+            await ValidateUsersDVHAsync((await _uow.ProductRepo.GetAllProductCategoryAsync()).ToList());
+
+            await ValidateUsersDVHAsync((await _uow.CategoryRepo.GetAllAsync()).ToList());
+            await ValidateUsersDVHAsync((await _uow.CategoryRepo.GetAllDeletedAsync()).ToList());
+
+            //Sale + Relateds
+            await ValidateUsersDVHAsync((await _uow.SaleRepo.GetAllAsync()).ToList());
+            await ValidateUsersDVHAsync((await _uow.SaleRepo.GetAllDeletedAsync()).ToList());
+
+            await ValidateUsersDVHAsync((await _uow.SaleDetailRepo.GetAllAsync()).ToList());
+            await ValidateUsersDVHAsync((await _uow.SaleDetailRepo.GetAllDeletedAsync()).ToList());
+
+            //Suppliers
+            await ValidateUsersDVHAsync((await _uow.SupplierRepo.GetAllAsync()).ToList());
+
+            await ValidateUsersDVHAsync((await _uow.SupplierRepo.GetAllDeletedAsync()).ToList());
+
+            //User + Relateds
+            await ValidateUsersDVHAsync((await _uow.UserRepo.GetAllAsync()).ToList());
+            await ValidateUsersDVHAsync((await _uow.UserRepo.GetAllDeletedAsync()).ToList());
+
+            await ValidateUsersDVHAsync((await _uow.PermisoRepo.GetAllAsync()).ToList());
+            await ValidateUsersDVHAsync((await _uow.PermisoRepo.GetAllPermisoPermisoAsync()).ToList());
+
+
+
+
+            await ValidateUsersDVHAsync((await _uow.BitacoraRepo.GetAllAsync()).ToList());
+
+
+
+            /*
             // 2. Validar integridad de tablas completas (DVV)
-     //     var dvvChecks = new[]
-     //     {
-     //         (Table: _appSettings.ClientTableName, Conn: _appSettings.EntitiesConnection),
-     //         (Table: _appSettings.EmployeeTableName, Conn: _appSettings.EntitiesConnection),
-     //         (Table: _appSettings.PaymentTableName, Conn: _appSettings.EntitiesConnection),
-     //         (Table: _appSettings.ProductTableName, Conn: _appSettings.EntitiesConnection),
-     //         (Table: _appSettings.CategoryTableName, Conn: _appSettings.EntitiesConnection),
-     //         (Table: _appSettings.ProductCategoryTableName, Conn: _appSettings.EntitiesConnection),
-     //         (Table: _appSettings.SaleTableName, Conn: _appSettings.EntitiesConnection),
-     //         (Table: _appSettings.SaleDetailTableName, Conn: _appSettings.EntitiesConnection),
-     //         (Table: _appSettings.SupplierTableName, Conn: _appSettings.EntitiesConnection),
-     //
-     //         (Table: _appSettings.UsuarioTableName, Conn: _appSettings.SecurityConnection),
-     //         (Table: _appSettings.UsuarioPermisoTableName, Conn: _appSettings.SecurityConnection),
-     //         (Table: _appSettings.PermisoTableName, Conn: _appSettings.SecurityConnection),
-     //         (Table: _appSettings.PermisoPermisoTableName, Conn: _appSettings.SecurityConnection),
-     //         (Table: _appSettings.BitacoraTableName, Conn: _appSettings.SecurityConnection)
-     //
-     //     };
-     //
-     //     foreach (var check in dvvChecks)
-     //     {
-     //         if (!await _verifyDVV.ExecuteAsync(check.Table, check.Conn))
-     //         {
-     //             await HandleIntegrityErrorAsync(
-     //                 check.Table,
-     //                 Guid.Empty,
-     //                 "Falla de DVV: El número de registros o el orden han sido alterados.",
-     //                 ErrorCatalogEnum.InconsistentTableIntegrity
-     //             );
-     //         }
-     //     }
+            var dvvChecks = new[]
+            {
+              (Table: _appSettings.ClientTableName, Conn: _appSettings.EntitiesConnection),
+              (Table: _appSettings.EmployeeTableName, Conn: _appSettings.EntitiesConnection),
+              (Table: _appSettings.PaymentTableName, Conn: _appSettings.EntitiesConnection),
+              (Table: _appSettings.ProductTableName, Conn: _appSettings.EntitiesConnection),
+              (Table: _appSettings.CategoryTableName, Conn: _appSettings.EntitiesConnection),
+              (Table: _appSettings.ProductCategoryTableName, Conn: _appSettings.EntitiesConnection),
+              (Table: _appSettings.SaleTableName, Conn: _appSettings.EntitiesConnection),
+              (Table: _appSettings.SaleDetailTableName, Conn: _appSettings.EntitiesConnection),
+              (Table: _appSettings.SupplierTableName, Conn: _appSettings.EntitiesConnection),
 
+              (Table: _appSettings.UsuarioTableName, Conn: _appSettings.SecurityConnection),
+              (Table: _appSettings.UsuarioPermisoTableName, Conn: _appSettings.SecurityConnection),
+              (Table: _appSettings.PermisoTableName, Conn: _appSettings.SecurityConnection),
+              (Table: _appSettings.PermisoPermisoTableName, Conn: _appSettings.SecurityConnection),
+              (Table: _appSettings.BitacoraTableName, Conn: _appSettings.SecurityConnection)
+
+          };
+            
+            foreach (var check in dvvChecks)
+            {
+                if (!await _verifyDVV.ExecuteAsync(check.Table, check.Conn))
+                {
+                    await HandleIntegrityErrorAsync(
+                        check.Table,
+                        Guid.Empty,
+                        "Falla de DVV: El número de registros o el orden han sido alterados.",
+                        ErrorCatalogEnum.InconsistentTableIntegrity
+                    );
+                }
+            }
+            */
             return true;
         }
 
@@ -147,6 +160,9 @@ namespace BLL.UseCases
         /// </summary>
         private async Task ValidateUsersDVHAsync<TEntity>(IEnumerable<TEntity> allEntities) where TEntity : IIntegrityCheckable
         {
+            if (allEntities == null)
+                return;
+
             if (!allEntities.Any())
                 return;
 
@@ -155,11 +171,14 @@ namespace BLL.UseCases
                 // El cálculo de hash es de CPU (memoria pura), así que se mantiene síncrono.
                 var calculatedDVH = IntegrityService.GetIntegrityHash(u.GetDvhSerialization());
 
-                if (u is ProductCategoryRelacionDTO user)
-                    Console.Write($"{user.IdCategory} > {calculatedDVH}\n");
+                //Activar para càlculo manual
+                //if (u is Client c)
+                //    Console.WriteLine($"{c.Id} {calculatedDVH}");
 
 
-                if (u.DVH.Value != calculatedDVH)
+
+                //Desactivar para càlculo manual
+                if (u.DVH.Value.ToString() != calculatedDVH)
                 {
                     Guid entityId = Guid.Empty;
 
@@ -172,6 +191,9 @@ namespace BLL.UseCases
                 }
 
             }
+
+            //Activar para càlculo manual
+            //Debugger.Break();
 
         }
 

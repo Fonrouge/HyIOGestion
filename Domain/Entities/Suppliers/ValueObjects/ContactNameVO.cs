@@ -5,7 +5,7 @@ namespace Domain.Entities.Suppliers.ValueObjects
 {
     public sealed class ContactNameVO : IValueObject
     {
-        public string Value { get; private set; }
+        public object Value { get; private set; }
 
         private ContactNameVO(string value)
         {
@@ -47,7 +47,7 @@ namespace Domain.Entities.Suppliers.ValueObjects
             return Value.GetHashCode();
         }
 
-        public override string ToString() => Value;
+        public override string ToString() => Value.ToString();
 
    
     }

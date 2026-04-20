@@ -25,7 +25,7 @@ namespace BLL.Infrastructure.AuditLogs
                 ExceptionType = entity.ExceptionType,
                 TableName = entity.TableName,
                 StackTrace = entity.StackTrace,
-                DVH = entity.DVH?.Value
+                DVH = (string)(entity.DVH?.Value)
             };
         }
 

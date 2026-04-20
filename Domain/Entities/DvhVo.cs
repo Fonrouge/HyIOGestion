@@ -2,7 +2,7 @@
 {
     public class DvhVo : IValueObject
     {
-        public string Value { get; }
+        public object Value { get; }
 
         private DvhVo(string value)
         {

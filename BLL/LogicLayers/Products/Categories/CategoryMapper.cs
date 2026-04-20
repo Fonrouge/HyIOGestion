@@ -16,7 +16,7 @@ namespace BLL.LogicLayers
                 Id = entity.Id,
                 Name = entity.Name,
                 Description = entity.Description,
-                DVH = entity.DVH?.Value ?? string.Empty
+                DVH = (string)(entity.DVH?.Value ?? string.Empty)
             };
         }
 

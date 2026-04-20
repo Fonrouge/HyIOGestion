@@ -3,6 +3,7 @@ using Shared.Services.Searching;
 using SharedAbstractions.ArchitecturalMarkers;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -65,6 +66,20 @@ namespace WinformsUI.UserControls.CustomDGV
             ResumeLayout();
         }
         public DataGridView MainDGV => mainDGV;
+        public TextBox AskForSearchBar()
+        {
+            tableLayoutPanelSearchControls.Controls.Remove(tbSearchBar);
+            tableLayoutPanelSearchControls.Visible = false;
+            return tbSearchBar;
+        }
+        public void ReturnSearchBar(TextBox sb)
+        {
+            tbSearchBar = sb;
+            tableLayoutPanelSearchControls.Controls.Add(tbSearchBar);
+            tableLayoutPanelSearchControls.Visible = true;
+        }
+        bool searchBarIsGone = false;
+
         private void SetShortcuts() => _shortcutMgr = ShortcutManager.Attach(this)
                .BindWheelZoom(() => this.ZoomIn(), () => this.ZoomOut())
                .Add("Ctrl+H", () => ToggleSearchBar())
@@ -171,6 +186,10 @@ namespace WinformsUI.UserControls.CustomDGV
             else
                 FocusFirstDGVRow();
         }
+        public void RepaintSearchBarPlaceHolder(Color c) => tbSearchBar.ForeColor = c;
+
+
+
 
         #region For choose CheckedListBox items height
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
@@ -280,7 +299,7 @@ namespace WinformsUI.UserControls.CustomDGV
         }
 
         /// <summary>
-        /// Método profiláctico que asegura que siempre haya una fila seleccionada en el DataGridView (si tiene filas), para evitar ecepciones sobre objetos potencialmente nulos.
+        /// Método profiláctico que asegura que siempre haya una fila seleccionada en el DataGridView (si tiene filas), para evitar excepciones sobre objetos potencialmente nulos.
         /// </summary>
         public void EnsureDgvRowSelection()
         {

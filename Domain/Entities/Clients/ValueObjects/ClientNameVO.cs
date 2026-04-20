@@ -6,7 +6,7 @@ namespace Domain.Entities.Clients.ValueObjects
     public sealed class ClientNameVO : IValueObject
     {
         // Propiedad de solo lectura
-        public string Value { get; private set; }
+        public object Value { get; private set; }
 
         // Constructor privado para forzar el uso del Factory Method
         private ClientNameVO(string value)
@@ -56,7 +56,7 @@ namespace Domain.Entities.Clients.ValueObjects
             return Value.GetHashCode();
         }
 
-        public override string ToString() => Value;
+        public override string ToString() => Value.ToString();
 
         // Sobrecarga de operadores opcional pero recomendada para VOs
         public static bool operator ==(ClientNameVO left, ClientNameVO right)

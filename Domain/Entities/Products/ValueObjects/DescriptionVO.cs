@@ -4,7 +4,7 @@ namespace Domain.Entities.Products.ValueObjects
 {
     public class DescriptionVO : IValueObject
     {
-        public string Value { get; }
+        public object Value { get; }
 
         private DescriptionVO(string value) => Value = value;
 

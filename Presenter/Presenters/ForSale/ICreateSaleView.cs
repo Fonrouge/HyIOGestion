@@ -24,7 +24,6 @@ namespace Presenter.ForSale
         void ShowOperationResultClients(OperationResult<ClientDTO> opRes);
         void ShowOperationResultProducts(OperationResult<ProductDTO> opRes);
         void ShowOperationResultSales(OperationResult<SaleDTO> opRes);
-        void UpdateSubTotal(string subTotal);
         void ShowWarning(string message);
         SaleDTO GetMappedSaleDTO();
 

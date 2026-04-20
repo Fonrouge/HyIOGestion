@@ -15,20 +15,20 @@ namespace BLL.LogicLayers
             return new SupplierDTO
             {
                 Id = supplier.Id,
-                CompanyName = supplier.CompanyName?.Value,
-                ContactName = supplier.ContactName?.Value,
-                TaxId = supplier.TaxId?.Value,
-                TaxNumber = supplier.TaxNumber?.Value, // <--- AGREGADO
-                Phone = supplier.Phone?.Value,
-                Mail = supplier.Mail?.Value,
-                Address = supplier.Address?.Value,
-                City = supplier.City?.Value,
-                Observations = supplier.Observations?.Value,
+                CompanyName = (string)(supplier.CompanyName?.Value),
+                ContactName = (string)(supplier.ContactName?.Value),
+                TaxId = (string)(supplier.TaxId?.Value),
+                TaxNumber = (string)(supplier.TaxNumber?.Value), // <--- AGREGADO
+                Phone = (string)(supplier.Phone?.Value),
+                Mail = (string)(supplier.Mail?.Value),
+                Address = (string)(supplier.Address?.Value),
+                City = (string)(supplier.City?.Value),
+                Observations = (string)(supplier.Observations?.Value),
 
                 // --- MAPEO DE ESTADO Y CONTROL ---
                 Active = supplier.Active,
                 IsDeleted = supplier.IsDeleted,
-                DVH = supplier.DVH?.Value ?? string.Empty
+                DVH = (string)(supplier.DVH?.Value ?? string.Empty)
             };
         }
 

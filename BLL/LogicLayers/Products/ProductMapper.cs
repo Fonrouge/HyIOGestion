@@ -14,15 +14,15 @@ namespace BLL.LogicLayers
             return new ProductDTO()
             {
                 Id = entity.Id,
-                Name = entity.Name.Value,
-                Description = entity.Description.Value,
+                Name = (string)entity.Name.Value,
+                Description = (string)entity.Description.Value,
                 Price = entity.Price.Value,
                 Stock = entity.Stock.Value, // Sin casteo, mantenemos precisión
                 Categories = CategoryMapper.ToListDTO(entity.Categories).ToList(),
                 IsActive = entity.Active,
                 CreatedAt = entity.CreatedAt,
                 IsDeleted = entity.IsDeleted,
-                DVH = entity.DVH?.Value ?? string.Empty // Mapeamos el Value Object a string
+                DVH = (string)(entity.DVH?.Value ?? string.Empty) // Mapeamos el Value Object a string
             };
         }
 
@@ -32,7 +32,8 @@ namespace BLL.LogicLayers
 
             if (dto.Id == Guid.Empty)
             {
-                return Product.Create(
+                return Product.Create
+                (
                     dto.Name,
                     dto.Description,
                     dto.Price,

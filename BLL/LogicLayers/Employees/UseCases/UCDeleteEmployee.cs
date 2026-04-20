@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace BLL.LogicLayers.Employees
 {
-    public class UCDeleteEmployee : IUCDeleteEmployee //=======================================================================REFACTORIZADO AL 05/03=======================================================================
+    public class UCDeleteEmployee : IUCDeleteEmployee //=======================================================================REFACTORIZADO AL 14/04=======================================================================
     {
         private readonly IUnitOfWork _uow;
         private readonly IApplicationSettings _appSettings;
@@ -29,6 +29,8 @@ namespace BLL.LogicLayers.Employees
         private readonly IErrorsRepository _errorsRepository;
 
         private readonly string _tableNameEmployee;
+        private Guid _correlationId;
+
 
         public UCDeleteEmployee
         (
@@ -48,6 +50,7 @@ namespace BLL.LogicLayers.Employees
             _errorsRepository = errorsRepository ?? throw new ArgumentNullException(nameof(errorsRepository));
 
             _tableNameEmployee = appSettings.EmployeeTableName ?? "Employees";
+            _correlationId = Guid.NewGuid();
         }
 
         // Respeto la firma "Execute" que tenías en el MOCK, aunque idealmente se llamaría "ExecuteAsync"
@@ -84,7 +87,7 @@ namespace BLL.LogicLayers.Employees
                 // 4. Buscar Entidad a Eliminar
                 Employee entity = await _uow.EmployeeRepo.GetByIdAsync(dto.Id);
 
-                if (entity == null)
+                if (entity == null || entity.IsDeleted)
                 {
                     result.Errors.Add(new ErrorLogDTO { InformativeMessage = "El empleado no existe o ya fue eliminado." });
                     await _uow.RollbackAsync();
@@ -95,6 +98,8 @@ namespace BLL.LogicLayers.Employees
                 if (entity is ISoftDeletable)
                 {
                     entity.MarkAsDeleted();
+                    IntegrityFacade.RecalculateAndSetEntityDVH(entity);
+
                     await _uow.EmployeeRepo.UpdateAsync(entity);
                 }
                 else
@@ -103,7 +108,8 @@ namespace BLL.LogicLayers.Employees
                 }
 
                 // 6. Integridad Vertical (DVV) (Obligatorio en tablas críticas)
- //               await UpdateDVVAsync(_tableNameEmployee, _appSettings.EntitiesConnection);
+                await UpdateDVVAsync(_tableNameEmployee, _appSettings.EntitiesConnection);
+
 
                 // 7. Auditoría (Bitácora)
                 var log = _bitacoraFact.Create
@@ -112,8 +118,8 @@ namespace BLL.LogicLayers.Employees
                     user: currentUser.Id.ToString(),
                     tableName: _tableNameEmployee,
                     sessionId: _sessionProvider.Current.Id,
-                    correlationId: Guid.NewGuid(),
-                    extraInfo: $"Se eliminó el empleado ID: {dto.Id}" // Podés sumar dto.Name si lo tenés a mano
+                    correlationId: _correlationId,
+                    extraInfo: $"Se eliminó el empleado ID: {entity.Id} - Documento: {entity.NationalId}" // Podés sumar dto.Name si lo tenés a mano
                 );
                 await _uow.BitacoraRepo.CreateAsync(log);
 
@@ -126,6 +132,7 @@ namespace BLL.LogicLayers.Employees
             }
             catch (Exception ex)
             {
+
                 if (_uow.HasActiveTransaction) await _uow.RollbackAsync();
 
                 // --- LOG TÉCNICO INTERNO ---

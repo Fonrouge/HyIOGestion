@@ -42,27 +42,16 @@
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.btnChangeWindowManagementMode = new System.Windows.Forms.Button();
             this.btnAutoArragement = new System.Windows.Forms.Button();
-            this.mainSs = new System.Windows.Forms.StatusStrip();
-            this.toolStripStatusLabel8 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
-            this.solicitarPermisosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.modificarCuentaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripStatusLabel6 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.txtLoginTime = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripStatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.txtCurrentUserName = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripStatusLabel4 = new System.Windows.Forms.ToolStripStatusLabel();
             this.pnlDashboard = new System.Windows.Forms.Panel();
             this.pnlSlotForTabs = new System.Windows.Forms.FlowLayoutPanel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.btnClose = new System.Windows.Forms.Button();
             this.btnExpand = new System.Windows.Forms.Button();
             this.btnMinimize = new System.Windows.Forms.Button();
+            this.customStatusBar = new WinformsUI.UserControls.CustomStatusBar.CustomStatusBar();
             this.tlpMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
-            this.mainSs.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -353,101 +342,6 @@
             this.btnAutoArragement.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.btnAutoArragement.UseVisualStyleBackColor = false;
             // 
-            // mainSs
-            // 
-            this.mainSs.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.mainSs.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.mainSs.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.mainSs.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabel8,
-            this.toolStripDropDownButton1,
-            this.toolStripStatusLabel6,
-            this.txtLoginTime,
-            this.toolStripStatusLabel1,
-            this.toolStripStatusLabel3,
-            this.txtCurrentUserName,
-            this.toolStripStatusLabel4});
-            this.mainSs.Location = new System.Drawing.Point(165, 811);
-            this.mainSs.Name = "mainSs";
-            this.mainSs.RenderMode = System.Windows.Forms.ToolStripRenderMode.ManagerRenderMode;
-            this.mainSs.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.mainSs.Size = new System.Drawing.Size(1290, 26);
-            this.mainSs.TabIndex = 11;
-            this.mainSs.Text = "statusStrip1";
-            // 
-            // toolStripStatusLabel8
-            // 
-            this.toolStripStatusLabel8.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.toolStripStatusLabel8.Name = "toolStripStatusLabel8";
-            this.toolStripStatusLabel8.Size = new System.Drawing.Size(60, 21);
-            this.toolStripStatusLabel8.Text = "Mi cuenta";
-            // 
-            // toolStripDropDownButton1
-            // 
-            this.toolStripDropDownButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripDropDownButton1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.solicitarPermisosToolStripMenuItem,
-            this.modificarCuentaToolStripMenuItem});
-            this.toolStripDropDownButton1.Image = global::WinformsUI.Properties.Resources.MyProfileIcon;
-            this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripDropDownButton1.Name = "toolStripDropDownButton1";
-            this.toolStripDropDownButton1.Size = new System.Drawing.Size(33, 24);
-            this.toolStripDropDownButton1.Text = "Administrar mi cuenta";
-            // 
-            // solicitarPermisosToolStripMenuItem
-            // 
-            this.solicitarPermisosToolStripMenuItem.Name = "solicitarPermisosToolStripMenuItem";
-            this.solicitarPermisosToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
-            this.solicitarPermisosToolStripMenuItem.Text = "Solicitar permisos";
-            // 
-            // modificarCuentaToolStripMenuItem
-            // 
-            this.modificarCuentaToolStripMenuItem.Name = "modificarCuentaToolStripMenuItem";
-            this.modificarCuentaToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
-            this.modificarCuentaToolStripMenuItem.Text = "Modificar cuenta";
-            // 
-            // toolStripStatusLabel6
-            // 
-            this.toolStripStatusLabel6.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.toolStripStatusLabel6.Name = "toolStripStatusLabel6";
-            this.toolStripStatusLabel6.Size = new System.Drawing.Size(10, 21);
-            this.toolStripStatusLabel6.Text = "|";
-            // 
-            // txtLoginTime
-            // 
-            this.txtLoginTime.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.txtLoginTime.Name = "txtLoginTime";
-            this.txtLoginTime.Size = new System.Drawing.Size(51, 21);
-            this.txtLoginTime.Text = "04:41am";
-            // 
-            // toolStripStatusLabel1
-            // 
-            this.toolStripStatusLabel1.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(134, 21);
-            this.toolStripStatusLabel1.Text = ":Hora de inicio se sesión";
-            // 
-            // toolStripStatusLabel3
-            // 
-            this.toolStripStatusLabel3.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.toolStripStatusLabel3.Name = "toolStripStatusLabel3";
-            this.toolStripStatusLabel3.Size = new System.Drawing.Size(10, 21);
-            this.toolStripStatusLabel3.Text = "|";
-            // 
-            // txtCurrentUserName
-            // 
-            this.txtCurrentUserName.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.txtCurrentUserName.Name = "txtCurrentUserName";
-            this.txtCurrentUserName.Size = new System.Drawing.Size(37, 21);
-            this.txtCurrentUserName.Text = "Julián";
-            // 
-            // toolStripStatusLabel4
-            // 
-            this.toolStripStatusLabel4.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.toolStripStatusLabel4.Name = "toolStripStatusLabel4";
-            this.toolStripStatusLabel4.Size = new System.Drawing.Size(69, 21);
-            this.toolStripStatusLabel4.Text = ":Bienvenido";
-            // 
             // pnlDashboard
             // 
             this.pnlDashboard.BackColor = System.Drawing.Color.DarkGray;
@@ -456,7 +350,7 @@
             this.pnlDashboard.Margin = new System.Windows.Forms.Padding(0);
             this.pnlDashboard.Name = "pnlDashboard";
             this.pnlDashboard.Padding = new System.Windows.Forms.Padding(0, 30, 0, 0);
-            this.pnlDashboard.Size = new System.Drawing.Size(1290, 767);
+            this.pnlDashboard.Size = new System.Drawing.Size(1290, 762);
             this.pnlDashboard.TabIndex = 14;
             this.pnlDashboard.Tag = "NonPaintable";
             // 
@@ -538,6 +432,14 @@
             this.btnMinimize.Tag = "NonPaintable";
             this.btnMinimize.UseVisualStyleBackColor = false;
             // 
+            // customStatusBar
+            // 
+            this.customStatusBar.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.customStatusBar.Location = new System.Drawing.Point(165, 806);
+            this.customStatusBar.Name = "customStatusBar";
+            this.customStatusBar.Size = new System.Drawing.Size(1290, 31);
+            this.customStatusBar.TabIndex = 15;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -546,7 +448,7 @@
             this.ClientSize = new System.Drawing.Size(1455, 837);
             this.Controls.Add(this.pnlDashboard);
             this.Controls.Add(this.tableLayoutPanel1);
-            this.Controls.Add(this.mainSs);
+            this.Controls.Add(this.customStatusBar);
             this.Controls.Add(this.tlpMenu);
             this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
@@ -561,11 +463,8 @@
             this.tlpMenu.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
-            this.mainSs.ResumeLayout(false);
-            this.mainSs.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -575,7 +474,6 @@
         private System.Windows.Forms.Button btnOpenSales;
         private System.Windows.Forms.TableLayoutPanel tlpMenu;
         private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.StatusStrip mainSs;
         private System.Windows.Forms.Button btnMenu;
         private System.Windows.Forms.Panel pnlDashboard;
         private System.Windows.Forms.Button btnOpenProducts;
@@ -583,23 +481,15 @@
         private System.Windows.Forms.Button btnMinimize;
         private System.Windows.Forms.Button btnExpand;
         private System.Windows.Forms.FlowLayoutPanel pnlSlotForTabs;
+        private UserControls.CustomStatusBar.CustomStatusBar customStatusBar;
         private System.Windows.Forms.Button btnClose;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Button btnOpenPayments;
         private System.Windows.Forms.Button btnOpenConfigs;
         private System.Windows.Forms.PictureBox pictureBox2;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel4;
-        private System.Windows.Forms.ToolStripStatusLabel txtCurrentUserName;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel3;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
-        private System.Windows.Forms.ToolStripStatusLabel txtLoginTime;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel6;
-        private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton1;
-        private System.Windows.Forms.ToolStripMenuItem solicitarPermisosToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem modificarCuentaToolStripMenuItem;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel8;
         private System.Windows.Forms.Button btnChangeWindowManagementMode;
         private System.Windows.Forms.Button btnAutoArragement;
+    
     }
 }
 

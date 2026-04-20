@@ -1,45 +1,60 @@
 ﻿using Domain.Contracts;
 using System;
 
-namespace Domain.Entities
+
+namespace Domain.Entities.Products
 {
-    public class ProductCategoryRelacionDTO : IIntegrityCheckable
+    public class ProductCategoryDTO : IIntegrityCheckable
     {
         public Guid IdProduct { get; set; }
         public Guid IdCategory { get; set; }
         public DvhVo DVH { get; set; }
 
-        public static ProductCategoryRelacionDTO Create
+        private ProductCategoryDTO() { }
+
+        public static ProductCategoryDTO Create
         (
             Guid idProduct,
-            Guid idCateogry,
-            string dvh
+            Guid idCategory
         )
         {
-            return new ProductCategoryRelacionDTO()
+            if (idProduct == null) 
+                throw new ArgumentNullException("idPadre cannot be null");
+            if (idCategory == null) 
+                throw new ArgumentNullException("idChild cannot be null");
+
+            return new ProductCategoryDTO()
             {
                 IdProduct = idProduct,
-                IdCategory = idCateogry,
-                DVH = DvhVo.Create(dvh)
+                IdCategory = idCategory,
+                //DVH = DvhVo.Create(dvh) ----> DVH sólo se puede calcular a partir de una entidad ya creada
             };
         }
 
-        public static ProductCategoryRelacionDTO Reconstitute
+        public static ProductCategoryDTO Reconstitute
         (
             Guid idProduct,
-            Guid idCateogry,
+            Guid idCategory,
             string dvh
         )
         {
-            return new ProductCategoryRelacionDTO()
+            if (idProduct == Guid.Empty) 
+                throw new ArgumentNullException("idPadre cannot be null");
+            if (idCategory == Guid.Empty) 
+                throw new ArgumentNullException("idChild cannot be null");
+            if (dvh == null) 
+                throw new ArgumentNullException("dvh cannot be null");
+
+            return new ProductCategoryDTO()
             {
                 IdProduct = idProduct,
-                IdCategory = idCateogry,
+                IdCategory = idCategory,
                 DVH = DvhVo.Create(dvh)
             };
         }
 
         public void UpdateDVH(string dvh) => DVH = DvhVo.Create(dvh ?? string.Empty);
+
 
         /// <summary>
         /// Genera la cadena de serialización para el cálculo del Dígito Verificador Horizontal.

@@ -12,6 +12,9 @@ using WinformsUI.UserControls.CustomDGV;
 
 namespace WinformsUI.Forms.ClientCRUDL
 {
+    /*
+    BaseManagementForm<ClientDTO>
+    */
     public partial class ClientForm : BaseManagementForm<ClientDTO>, IClientView
     {
         private readonly IFormsFactory _formsFact;
@@ -38,13 +41,18 @@ namespace WinformsUI.Forms.ClientCRUDL
             InitializePanelToggle();
 
             this.Load += OnceLoaded;
+            _miniCollapsedBar = miniTableLayoutPanel;
+
+            miniTLP = miniTableLayoutPanel;
+            
+
         }
 
         private void OnceLoaded(object sender, EventArgs e) => OnceLoadedAdvice?.Invoke(this, EventArgs.Empty);
 
 
         // =========================================================
-        // TRADUCCIONES Y PALETA
+        // TRADUCCIONES
         // =========================================================
         private void AddTranslatables()
         {
@@ -59,12 +67,6 @@ namespace WinformsUI.Forms.ClientCRUDL
             _transMgr.AddFormNotify(this);
 
             base.ApplyTranslation();
-        }
-
-        public override void ThemingNotifiedByConfigurationsModule()
-        {
-            DarkTheme.RedrawBorders = true;
-            DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
         }
 
 
@@ -108,6 +110,8 @@ namespace WinformsUI.Forms.ClientCRUDL
             _dgvRibbonControls = DGVFunctionsControl;
             _eyeRestRibbonControls = eyeRestRibbon;
             base.InitializeRibbonControls();
+            
+            
         }
 
         public void InitializePanelToggle() => base.ToolStripsPanelToggle(toolStripsPanel);

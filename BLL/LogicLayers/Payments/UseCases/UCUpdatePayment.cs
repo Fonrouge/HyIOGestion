@@ -16,9 +16,9 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BLL.LogicLayers.Payments
+namespace BLL.LogicLayers.Payments//=======================================================================REFACTORIZADO AL 14/04=======================================================================
 {
-    public class UCUpdatePayment : IUCUpdatePayment // Asumo que tenés la interfaz creada
+    public class UCUpdatePayment : IUCUpdatePayment
     {
         private readonly IUnitOfWork _uow;
         private readonly IApplicationSettings _appSettings;
@@ -28,6 +28,7 @@ namespace BLL.LogicLayers.Payments
         private readonly IErrorsRepository _errorsRepository;
 
         private readonly string _tableNamePayment;
+        private Guid _correlationId;
 
         public UCUpdatePayment
         (
@@ -47,6 +48,7 @@ namespace BLL.LogicLayers.Payments
             _errorsRepository = errorsRepository ?? throw new ArgumentNullException(nameof(errorsRepository));
 
             _tableNamePayment = appSettings.PaymentTableName ?? "Payments";
+            _correlationId = Guid.NewGuid();
         }
 
         public async Task<OperationResult<PaymentDTO>> ExecuteAsync(PaymentDTO dto)
@@ -62,15 +64,16 @@ namespace BLL.LogicLayers.Payments
                     return result;
                 }
 
-                // Seteamos la conexión para lectura
+                // 2. Seteo de conexión para lectura
                 _uow.SetConnectionString(_appSettings.EntitiesConnection);
 
-                // 2. Validar Permisos
+                // 3. Validar Permisos
                 var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
                 var permissionsList = await _uow.PermisoRepo.GetPermissionsByUserAsync(_sessionProvider.Current.CurrentUserId);
 
                 bool hasAccess = permissionsList.Any(p => p.PermisoCode == PermisosEnum.PAYMENT_UPDATE.ToString()
                                                        || p.PermisoCode == PermisosEnum.ADMIN_ACCESS.ToString());
+
                 if (!hasAccess)
                 {
                     result.Errors.Add(ErrorMapper.ToDTO(_errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNamePayment)));
@@ -78,52 +81,53 @@ namespace BLL.LogicLayers.Payments
                 }
 
 
-
-                // 3. Buscar Entidad Existente y Validar Nulidad
+                // 4. Buscar Entidad Existente y Validar Nulidad
                 Payment existingPayment = await _uow.PaymentRepo.GetByIdAsync(dto.Id);
 
-                // Aplicamos tu retoque de seguridad (Asumiendo que le pusiste la interfaz ISoftDeletable o la propiedad IsDeleted a Payment)
-                // Si Payment no tiene IsDeleted en tu dominio, sacá la segunda parte del IF.
-                if (existingPayment == null /* || existingPayment.IsDeleted */)
+                // Aplicamos tu retoque de seguridad 
+                if (existingPayment == null || existingPayment.IsDeleted)
                 {
-                    // Usando la Factory como pediste en lugar del "new ErrorDTO"
                     var notFoundError = _errorsFactory.Create(ErrorCatalogEnum.NotFound, _tableNamePayment);
                     result.Errors.Add(ErrorMapper.ToDTO(notFoundError));
                     return result;
                 }
 
-                // 4. Mapeo a Entidad (Fail Fast de VOs en el Reconstitute)
+
+                // 5. Mapeo a Entidad (Fail Fast de VOs en el Reconstitute)
                 var paymentToUpdate = PaymentMapper.ToEntity(dto);
 
-                // 5. ABRIR TRANSACCIÓN
+                // 6. ABRIR TRANSACCIÓN
                 await _uow.BeginTransactionAsync();
 
-                // 6. Persistencia
+                // 7. Actualización de DVH por cambio de parámetro/s
+                IntegrityFacade.RecalculateAndSetEntityDVH(paymentToUpdate);
+
+                // 7. Persistencia
                 await _uow.PaymentRepo.UpdateAsync(paymentToUpdate);
 
-                // 7. Integridad Vertical (DVV)
-                // Como cambió un DVH de la tabla, la firma de toda la tabla cambió. Hay que recalcular el DVV.
+                // 8. Integridad Vertical (DVV) por cambio de fila
                 await UpdateDVVAsync(_tableNamePayment, _appSettings.EntitiesConnection);
 
-                // 8. Auditoría (Bitácora)
+                // 9. Auditoría (Bitácora)
                 var log = _bitacoraFact.Create
                 (
                     entry: BitacoraCatalogEnum.UpdateOnBD,
                     user: currentUser.Id.ToString(),
                     sessionId: _sessionProvider.Current.Id,
-                    correlationId: Guid.NewGuid(),
+                    correlationId: _correlationId,
                     tableName: _tableNamePayment,
-                    extraInfo: $"Se actualizó el pago ID: {paymentToUpdate.Id} (Monto: $ {paymentToUpdate.Amount.Value}, Ref: {paymentToUpdate.Reference.Value})"
+                    extraInfo: $"Se actualizó el pago ID: {paymentToUpdate.Id} (Monto: $ {paymentToUpdate.Amount.Value}, N° Ref: {paymentToUpdate.Reference.Value})"
                 );
                 await _uow.BitacoraRepo.CreateAsync(log);
 
-                // 9. Confirmación
+                // 10. Confirmación
                 await _uow.CommitAsync();
 
-                // 10. Retorno
+                // 11. Retorno
                 result.Value = PaymentMapper.ToDto(paymentToUpdate);
                 return result;
             }
+
             catch (Exception ex)
             {
                 if (_uow.HasActiveTransaction) await _uow.RollbackAsync();

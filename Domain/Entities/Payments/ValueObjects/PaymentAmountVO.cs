@@ -4,7 +4,7 @@ namespace Domain.Entities.Payments.ValueObjects
 {
     public sealed class PaymentAmountVO : IValueObject
     {
-        public decimal Value { get; }
+        public object Value { get; }
 
         private PaymentAmountVO(decimal value)
         {
@@ -53,6 +53,6 @@ namespace Domain.Entities.Payments.ValueObjects
             => !(left == right);
 
         // Formateamos la salida a dos decimales por defecto (ej: "150.00")
-        public override string ToString() => Value.ToString("F2");
+        public override string ToString() => ((DateTime)Value).ToString("F2");
     }
 }

@@ -6,7 +6,7 @@ namespace Domain.Entities.Suppliers.ValueObjects
     public sealed class CompanyNameVO : IValueObject
     {
         // Propiedad de solo lectura
-        public string Value { get; private set; }
+        public object Value { get; private set; }
 
         // Constructor privado para forzar el uso del Factory Method
         private CompanyNameVO(string value)
@@ -53,7 +53,7 @@ namespace Domain.Entities.Suppliers.ValueObjects
             return Value.GetHashCode();
         }
 
-        public override string ToString() => Value;
+        public override string ToString() => Value.ToString();
 
 
         // Sobrecarga de operadores opcional pero recomendada para VOs

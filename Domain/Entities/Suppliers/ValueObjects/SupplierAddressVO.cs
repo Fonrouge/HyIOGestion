@@ -4,7 +4,7 @@ namespace Domain.Entities.Suppliers.ValueObjects
 {
     public sealed class SupplierAddressVO : IValueObject
     {
-        public string Value { get; }
+        public object Value { get; }
 
         private SupplierAddressVO(string value) => Value = value;
 

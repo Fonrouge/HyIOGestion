@@ -107,11 +107,11 @@ namespace Domain.Entities
 
             var headerData = string.Join("|",
                 Id.ToString(),
-                Date.Value.ToString("yyyyMMddHHmmss", culture),
+                ((DateTime)Date.Value).ToString("yyyyMMddHHmmss", culture),
                 ClientId.ToString(),
                 EmployeeId.ToString(),
                 InvoiceNumber.ToUpper(culture),
-                TotalAmount.Value.ToString("F2", culture),
+                ((decimal)TotalAmount.Value).ToString("F2", culture),
                 Active ? "1" : "0",
                 IsDeleted ? "1" : "0"
             );

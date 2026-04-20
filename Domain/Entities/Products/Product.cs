@@ -161,5 +161,7 @@ namespace Domain.Entities
 
         public override string ToString()
             => $"{Name.Value} ({Price.Value}) - Stock: {Stock.Value}";
+
+      
     }
 }

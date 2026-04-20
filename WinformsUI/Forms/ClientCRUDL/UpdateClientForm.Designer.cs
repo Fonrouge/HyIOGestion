@@ -139,7 +139,7 @@
             this.pnlBackground.Location = new System.Drawing.Point(0, 31);
             this.pnlBackground.Name = "pnlBackground";
             this.pnlBackground.Padding = new System.Windows.Forms.Padding(3, 0, 3, 3);
-            this.pnlBackground.Size = new System.Drawing.Size(567, 596);
+            this.pnlBackground.Size = new System.Drawing.Size(567, 659);
             this.pnlBackground.TabIndex = 25;
             // 
             // tableLayoutPanel1
@@ -199,7 +199,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 112F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(561, 593);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(561, 656);
             this.tableLayoutPanel1.TabIndex = 24;
             // 
             // label2
@@ -582,10 +582,10 @@
             // 
             this.btnConfirm.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel1.SetColumnSpan(this.btnConfirm, 3);
-            this.btnConfirm.Location = new System.Drawing.Point(4, 556);
+            this.btnConfirm.Location = new System.Drawing.Point(4, 562);
             this.btnConfirm.Margin = new System.Windows.Forms.Padding(4);
             this.btnConfirm.Name = "btnConfirm";
-            this.btnConfirm.Size = new System.Drawing.Size(553, 33);
+            this.btnConfirm.Size = new System.Drawing.Size(553, 83);
             this.btnConfirm.TabIndex = 25;
             this.btnConfirm.Tag = "Accentuable";
             this.btnConfirm.Text = "Confirmar";
@@ -595,7 +595,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(567, 627);
+            this.ClientSize = new System.Drawing.Size(567, 690);
             this.Controls.Add(this.pnlBackground);
             this.Controls.Add(this.tlpTitleBar);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;

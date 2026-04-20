@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
+using Winforms.Theme;
 using WinformsUI.Infrastructure.Shortcuts;
 using WinformsUI.Infrastructure.Translations;
 using WinformsUI.UserControls;
@@ -27,6 +28,7 @@ namespace WinformsUI.Forms.Base
 
         // Controles comunes 
         protected CustomDGVRibbon _dgvRibbonControls;
+        protected TableLayoutPanel _miniCollapsedBar;
         protected EyeRestRibbon _eyeRestRibbonControls;
         protected CustomDGVForm _dgvForm;
         protected BindingList<TEntity> _entitiesList;
@@ -63,12 +65,18 @@ namespace WinformsUI.Forms.Base
             _entitiesList = new BindingList<TEntity>();
 
             SetShortcuts();
+
         }
 
         //====================================================
         //                  ESTÉTICA GENERAL
         //====================================================
-        public virtual void ThemingNotifiedByConfigurationsModule() { }
+        public virtual void ThemingNotifiedByConfigurationsModule()
+        {
+            DarkTheme.RedrawBorders = true;
+            DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
+            _dgvForm.RepaintSearchBarPlaceHolder(DarkTheme.GetCurrentPalette().TextSecondary);
+        }
 
 
         //====================================================
@@ -103,29 +111,100 @@ namespace WinformsUI.Forms.Base
 
         private byte _conditionalSearchBarStates = 0;
         private Panel toolStripsPanel;
+        private ToolStripButton btnToggleRibbon;
+
+        private void BtnToggleRibbonClick(object sender, EventArgs e)
+        {
+            ToolStripsPanelToggle(toolStripsPanel);
+
+        }
+
+        public void SetBtnToggleRibbonClick(ToolStripButton btn)
+        {
+            btnToggleRibbon = btn;
+
+            btnToggleRibbon.Click -= BtnToggleRibbon_Click;
+            btnToggleRibbon.Click += BtnToggleRibbon_Click;
+
+
+
+        }
+
+        private void BtnToggleRibbon_Click(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
         public void ToolStripsPanelToggle(Panel tsPanel = null)
         {
             if (tsPanel == null) return;
+
+            SuspendLayout();
             toolStripsPanel = tsPanel;
 
             toolStripsPanel.Visible = !toolStripsPanel.Visible;
+
+            if (_miniCollapsedBar != null)
+                _miniCollapsedBar.Visible = !toolStripsPanel.Visible;
+
+            if (toolStripsPanel.Visible == true)
+            {
+                if (miniTLP != null)
+                {
+                    miniTLP.Visible = false;
+                    _dgvForm.ReturnSearchBar(miniSearchBar);
+                    searchBarIsKidnapped = false;
+                }
+            }
+            else
+            {
+                if (miniTLP != null)
+                {
+                    miniTLP.Visible = true;
+                    miniSearchBar = _dgvForm.AskForSearchBar();
+                    miniTLP.Controls.Add(miniSearchBar);
+                    searchBarIsKidnapped = true;
+                }
+            }
+            ResumeLayout();
         }
+
+        public TableLayoutPanel miniTLP;
+        public TextBox miniSearchBar;
+        public bool searchBarIsKidnapped = false;
+
         public void ConditionalSearchBarBehavior()
         {
-            if (_dgvForm.IsToggleSearchBarVisible() && _conditionalSearchBarStates < 1)
+            if (_dgvForm.IsToggleSearchBarVisible() && _conditionalSearchBarStates < 1) //Si está visible y nada pasó
             {
-                _dgvForm.FocusSearchBar();
-                _conditionalSearchBarStates++;
+                if (!searchBarIsKidnapped)
+                {
+                    _dgvForm.FocusSearchBar();
+                    _conditionalSearchBarStates++;
+                }
             }
-            else if (_conditionalSearchBarStates != 0)
+
+            else if (!_dgvForm.IsToggleSearchBarVisible() && _conditionalSearchBarStates < 1) //Si está visible y nada pasó
             {
-                _dgvForm.ToggleSearchBar();
-                _conditionalSearchBarStates = 0;
+                miniSearchBar.Focus();
             }
-            else if (_conditionalSearchBarStates == 0)
+
+            else if (_conditionalSearchBarStates != 0) //Si está visible y con foco, colapsa
             {
-                _dgvForm.ToggleSearchBar();
-                _dgvForm.FocusSearchBar();
+                if (!searchBarIsKidnapped)
+                {
+                    _dgvForm.ToggleSearchBar();
+                    _conditionalSearchBarStates = 0;
+                }
+            }
+
+            else if (_conditionalSearchBarStates == 0) //Si está colapsada, se activa y hace foco
+            {
+                if (!searchBarIsKidnapped)
+                {
+                    _dgvForm.ToggleSearchBar();
+                    _dgvForm.FocusSearchBar();
+                }
             }
         }
 
@@ -248,14 +327,37 @@ namespace WinformsUI.Forms.Base
         //====================================================
         //              DISPARADORES DE EVENTOS
         //====================================================
-        protected void OnCreateRequest(object sender, EventArgs e) => CreateRequested?.Invoke(this, EventArgs.Empty);
+        protected void OnCreateRequest(object sender, EventArgs e)
+        {
+            try
+            {
+                this.Cursor = Cursors.WaitCursor;
+                CreateRequested?.Invoke(this, EventArgs.Empty);
+            }
+            finally
+            {
+                this.Cursor = Cursors.Default;
+            }
+        }
 
         protected void OnUpdateRequest(object sender, EventArgs e)
         {
             _dgvForm.EnsureDgvRowSelection();
 
             if (_currentSelectedEntity != null)
-                UpdateRequested?.Invoke(this, _currentSelectedEntity);
+            {
+                try
+                {
+                    this.Cursor = Cursors.WaitCursor;
+                    UpdateRequested?.Invoke(this, _currentSelectedEntity);
+                }
+                finally
+                {
+                    this.Cursor = Cursors.Default;
+                }
+
+            }
+
         }
 
         protected void OnDeleteRequest(object sender, EventArgs e)
@@ -263,7 +365,18 @@ namespace WinformsUI.Forms.Base
             _dgvForm.EnsureDgvRowSelection();
 
             if (_currentSelectedEntity != null)
-                DeleteRequested?.Invoke(this, _currentSelectedEntity);
+            {
+                try
+                {
+                    this.Cursor = Cursors.WaitCursor;
+                    DeleteRequested?.Invoke(this, _currentSelectedEntity);
+                }
+                finally
+                {
+                    this.Cursor = Cursors.Default;
+                }
+
+            }
         }
 
         protected void OnListAllRequest(object sender, EventArgs e)
@@ -278,6 +391,7 @@ namespace WinformsUI.Forms.Base
                 this.Cursor = Cursors.Default;
             }
         }
+
         protected void HandleBaseFormClosed(object sender, FormClosedEventArgs e)
         {
             CloseRequested?.Invoke(this.ViewId, EventArgs.Empty);

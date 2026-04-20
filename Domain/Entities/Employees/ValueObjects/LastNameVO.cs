@@ -3,7 +3,7 @@ using System;
 
 public sealed class LastNameVO : IValueObject
 {
-    public string Value { get; }
+    public object Value { get; }
 
     private LastNameVO(string value) => Value = value;
 

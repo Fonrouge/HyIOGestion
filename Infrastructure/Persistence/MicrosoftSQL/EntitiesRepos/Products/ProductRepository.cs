@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Entities.Products;
 using Domain.Repositories;
 using Shared;
 using System;
@@ -25,7 +26,25 @@ namespace DAL.Persistence.MicrosoftSQL
             _currentTransaction = (SqlTransaction)transaction;
         }
 
-        public async Task CreateAsync(Product entity)
+
+        /// <summary>
+        /// "Método dejado por compatibilidad general de ICRUDL. No utilizar. Utilizar CreateAsync(Product entity, IEnumerable<ProductCategoryDTO> relations)" en su lugar.
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public Task CreateAsync(Product entity) => throw new NotImplementedException("Método dejado por compatibilidad general de ICRUDL. No utilizar. Utilizar Create(Product entity, IEnumerable<ProductCategoryDTO> relations)");
+
+        /// <summary>
+        /// "Método dejado por compatibilidad general de ICRUDL. No utilizar. Utilizar UpdateAsync(Product entity, IEnumerable<ProductCategoryDTO> relations)" en su lugar.
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public Task UpdateAsync(Product entity) => throw new NotImplementedException("Método dejado por compatibilidad general de ICRUDL. No utilizar. Utilizar UpdateAsync(Product entity, IEnumerable<ProductCategoryDTO> relations)");
+
+
+        public async Task CreateAsync(Product entity, IEnumerable<ProductCategoryDTO> relations)
         {
             // Nota: Se asume que la columna en la DB es 'Id_Product' según tus screenshots anteriores
             string query = @"
@@ -35,11 +54,12 @@ namespace DAL.Persistence.MicrosoftSQL
                     (@Id, @Name, @Description, @Price, @Stock, @IsActive, @CreatedAt, @IsDeleted, @DVH)";
 
             await ExecuteNonQueryAsync(query, cmd => SetParameters(cmd, entity));
-            await SyncCategories(entity);
+            await SyncCategories(relations);
         }
 
-        public async Task UpdateAsync(Product entity)
+        public async Task UpdateAsync(Product entity, IEnumerable<ProductCategoryDTO> relations)
         {
+
             string query = @"
                 UPDATE Products
                 SET Name = @Name,
@@ -60,7 +80,8 @@ namespace DAL.Persistence.MicrosoftSQL
             await ExecuteNonQueryAsync(deleteRelations, cmd =>
                 cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = entity.Id }));
 
-            await SyncCategories(entity);
+            await SyncCategories(relations);
+
         }
 
         /// <summary>
@@ -274,39 +295,51 @@ namespace DAL.Persistence.MicrosoftSQL
             });
         }
 
-        private async Task SyncCategories(Product product)
+        private async Task SyncCategories(IEnumerable<ProductCategoryDTO> relaciones)
         {
-            if (product.Categories == null || !product.Categories.Any()) return;
+            if (relaciones == null || !relaciones.Any()) return;
 
             string query = @"INSERT INTO ProductsCategories (Id_Product, Id_Category, DVH) 
-                             VALUES (@IdProduct, @IdCategory, @DVH)";
+                     VALUES (@IdProduct, @IdCategory, @DVH)";
 
-            foreach (var category in product.Categories)
+            foreach (var rel in relaciones)
             {
                 await ExecuteNonQueryAsync(query, cmd =>
                 {
-                    cmd.Parameters.Add(new SqlParameter("@IdProduct", SqlDbType.UniqueIdentifier) { Value = product.Id });
-                    cmd.Parameters.Add(new SqlParameter("@IdCategory", SqlDbType.UniqueIdentifier) { Value = category.Id });
+                    cmd.Parameters.Add(new SqlParameter("@IdProduct", SqlDbType.UniqueIdentifier) { Value = rel.IdProduct });
+                    cmd.Parameters.Add(new SqlParameter("@IdCategory", SqlDbType.UniqueIdentifier) { Value = rel.IdCategory });
 
-                    // Aquí la integridad de la relación: 
-                    // Se suele hashear la combinación de ambos IDs o usar el DVH que la BLL asignó a la relación
+                    // IMPORTANTE: Ahora usamos el DVH propio de la relación
                     cmd.Parameters.Add(new SqlParameter("@DVH", SqlDbType.VarChar)
                     {
-                        Value = (object)product.DVH?.Value ?? string.Empty
+                        Value = (object)rel.DVH?.Value ?? string.Empty
                     });
                 });
             }
         }
-        public async Task<IEnumerable<ProductCategoryRelacionDTO>> GetAllProductCategoryAsync()
+
+        public async Task UpdateRelationDVHAsync(Guid productId, Guid categoryId, string newDvh)
         {
-            var relations = new List<ProductCategoryRelacionDTO>();
+            string query = "UPDATE ProductsCategories SET DVH = @DVH WHERE Id_Product = @IdP AND Id_Category = @IdC";
+
+            await ExecuteNonQueryAsync(query, cmd =>
+            {
+                cmd.Parameters.Add(new SqlParameter("@DVH", SqlDbType.VarChar) { Value = newDvh });
+                cmd.Parameters.Add(new SqlParameter("@IdP", SqlDbType.UniqueIdentifier) { Value = productId });
+                cmd.Parameters.Add(new SqlParameter("@IdC", SqlDbType.UniqueIdentifier) { Value = categoryId });
+            });
+        }
+
+        public async Task<IEnumerable<ProductCategoryDTO>> GetAllProductCategoryAsync()
+        {
+            var relations = new List<ProductCategoryDTO>();
 
             // Query simple a la tabla intermedia
             string query = "SELECT Id_Product, Id_Category, DVH FROM ProductsCategories";
 
             await ExecuteReaderAsync(query, null, reader =>
             {
-                relations.Add(ProductCategoryRelacionDTO.Reconstitute(
+                relations.Add(ProductCategoryDTO.Reconstitute(
 
                     (Guid)reader["Id_Product"],
                     (Guid)reader["Id_Category"],
@@ -353,5 +386,6 @@ namespace DAL.Persistence.MicrosoftSQL
                 ((List<Category>)product.Categories).Add(category);
             }
         }
+
     }
 }

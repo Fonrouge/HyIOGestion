@@ -46,7 +46,6 @@ namespace WinformsUI.Forms.ClientCRUDL
             ThemingNotifiedByConfigurationsModule();
             AddTranslatables();
 
-
         }
 
         protected override void Dispose(bool disposing)

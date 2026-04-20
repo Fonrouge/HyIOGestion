@@ -11,7 +11,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BLL.LogicLayers.Clients.UseCases
+namespace BLL.LogicLayers.Clients.UseCases //=======================================================================REFACTORIZADO AL 14/04=======================================================================
 {
 
     public class UCGetClientById : IUCGetClientById
@@ -44,12 +44,22 @@ namespace BLL.LogicLayers.Clients.UseCases
 
         public async Task<(ClientDTO, OperationResult<ClientDTO>)> ExecuteAsync(Guid id)
         {
-            var result = new OperationResult<ClientDTO>();
+            var opRes = new OperationResult<ClientDTO>();
             var clientDto = new ClientDTO();
 
             try
             {
-                // 1. Validar Permisos (Patente específica de Empleados)
+                // 1. Validar Sesión Activa (Fail Fast)
+                if (_sessionProvider.Current == null)
+                {
+                    var newError = _errorsFactory.Create(ErrorCatalogEnum.SessionExpired);
+
+                    opRes.Errors.Add(ErrorMapper.ToDTO(newError));
+                    return (clientDto, opRes);
+                }
+
+
+                // 2. Validar Permisos (Patente específica de Empleados)
                 var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
                 var permissionsList = await _uow.PermisoRepo.GetPermissionsByUserAsync(_sessionProvider.Current.CurrentUserId);
 
@@ -57,18 +67,17 @@ namespace BLL.LogicLayers.Clients.UseCases
                                                        || p.PermisoCode == PermisosEnum.ADMIN_ACCESS.ToString());
                 if (!hasAccess)
                 {
-                    result.Errors.Add(ErrorMapper.ToDTO(_errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameClients)));
-                    return (clientDto, result);
+                    opRes.Errors.Add(ErrorMapper.ToDTO(_errorsFactory.Create(ErrorCatalogEnum.InsufficientPermissions, _tableNameClients)));
+                    return (clientDto, opRes);
 
                 }
 
+                // 3. De tener permisos, recién ahí se conecta a BD.
                 _uow.SetConnectionString(_appSettings.EntitiesConnection);
                 
                 var client = await _uow.ClientRepo.GetByIdAsync(id);
-
                 clientDto = ClientMapper.ToDto(client);
 
-                await _uow.CommitAsync();
             }
 
             catch (Exception ex)
@@ -91,10 +100,10 @@ namespace BLL.LogicLayers.Clients.UseCases
                 errorDto.LogId = dbError.Id; // ¡Clave para rastrear el fallo en la BD!
                 errorDto.InformativeMessage = $"Falla técnica. Reference ID: {dbError.Id}";
 
-                result.Errors.Add(errorDto);
+                opRes.Errors.Add(errorDto);
             }
 
-            return (clientDto, result);
+            return (clientDto, opRes);
         }
 
     }

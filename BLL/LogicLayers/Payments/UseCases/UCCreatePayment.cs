@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace BLL.LogicLayers.Payments
 {
-    public class UCCreatePayment : IUCCreatePayment // Asumo que tenés esta interfaz
+    public class UCCreatePayment : IUCCreatePayment //=======================================================================REFACTORIZADO AL 14/04=======================================================================
     {
         private readonly IUnitOfWork _uow;
         private readonly IApplicationSettings _appSettings;
@@ -28,6 +28,7 @@ namespace BLL.LogicLayers.Payments
         private readonly IErrorsRepository _errorsRepository;
 
         private readonly string _tableNamePayment;
+        private Guid _correlationId;
 
         public UCCreatePayment
         (
@@ -47,6 +48,7 @@ namespace BLL.LogicLayers.Payments
             _errorsRepository = errorsRepository ?? throw new ArgumentNullException(nameof(errorsRepository));
 
             _tableNamePayment = appSettings.PaymentTableName ?? "Payments";
+            _correlationId = Guid.NewGuid();
         }
 
         public async Task<OperationResult<PaymentDTO>> ExecuteAsync(PaymentDTO dto)
@@ -77,17 +79,20 @@ namespace BLL.LogicLayers.Payments
                     return result;
                 }
 
-//                // 3. Validar Negocio: Verificar que el Cliente exista antes de registrarle un pago
-//                var client = await _uow.SaleRepo.GetByIdAsync(dto.SaleId);
-//                if (client == null)
-//                {
-//                    result.Errors.Add(new ErrorLogDTO { InformativeMessage = "El Cliente especificado no existe o fue eliminado." }); //ACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 
-//                    return result;
-//                }
+                // 3. Validar Negocio: Verificar que el Cliente exista antes de registrarle un pago
+                var sale = await _uow.SaleRepo.GetByIdAsync(dto.SaleId);
+
+                if (sale == null)
+                {
+                    var unexistantClient = _errorsFactory.Create(ErrorCatalogEnum.NotFound, _appSettings.ClientTableName);
+                    result.Errors.Add(ErrorMapper.ToDTO(unexistantClient));
+
+                    return result;
+                }
 
                 // 4. Instanciar Entidad (Fail Fast de VOs: Monto negativo, método vacío, etc.)
-                // Como es una creación nueva, NO usamos el Mapper (que usa Reconstitute), usamos el Factory estático
-                var newPayment = Payment.Create(
+                var newPayment = Payment.Create
+                (
                     rawAmount: dto.Amount,
                     saleId: dto.SaleId,
                     rawMethod: dto.Method,
@@ -96,9 +101,8 @@ namespace BLL.LogicLayers.Payments
 
                 // --- INICIO BLOQUE DE INTEGRIDAD CRIPTOGRÁFICA (CORE FINANCIERO) ---
 
-             //   // 5. Calcular DVH (Horizontal) para la nueva fila
-             //   var dvh = IntegrityService.CalculateDVH(newPayment);
-             //   newPayment.UpdateDVH(dvh);
+                // 5. Calcular DVH (Horizontal) para la nueva fila
+                IntegrityFacade.RecalculateAndSetEntityDVH(newPayment);
 
                 // 6. ABRIR TRANSACCIÓN (Solo cuando estamos listos para guardar)
                 await _uow.BeginTransactionAsync();
@@ -106,10 +110,8 @@ namespace BLL.LogicLayers.Payments
                 // 7. Persistencia
                 await _uow.PaymentRepo.CreateAsync(newPayment);
 
-                // 8. Calcular y Actualizar DVV (Vertical) - ¡Fundamental tras un Insert!
-          //      await UpdateDVVAsync(_tableNamePayment, _appSettings.EntitiesConnection);
-
-                // --- FIN BLOQUE DE INTEGRIDAD CRIPTOGRÁFICA ---
+                //8.Calcular y Actualizar DVV después de persistida la entidad
+                await UpdateDVVAsync(_tableNamePayment, _appSettings.EntitiesConnection);
 
                 // 9. Auditoría (Bitácora)
                 var log = _bitacoraFact.Create
@@ -118,7 +120,7 @@ namespace BLL.LogicLayers.Payments
                     user: currentUser.Id.ToString(),
                     tableName: _tableNamePayment,
                     sessionId: _sessionProvider.Current.Id,
-                    correlationId: Guid.NewGuid(),
+                    correlationId: _correlationId,
                     extraInfo: $"Se registró un pago de $ {newPayment.Amount.Value} para el Cliente ID: {newPayment.SaleId} (Ref: {newPayment.Reference.Value})"
                 );
                 await _uow.BitacoraRepo.CreateAsync(log);
@@ -126,10 +128,11 @@ namespace BLL.LogicLayers.Payments
                 // 10. Confirmación
                 await _uow.CommitAsync();
 
-                // 11. Retorno (Actualizamos el DTO con el ID generado y las fechas asignadas por el Dominio)
+                // 11. Retorno 
                 result.Value = PaymentMapper.ToDto(newPayment);
-                return result;
+
             }
+
             catch (Exception ex)
             {
                 if (_uow.HasActiveTransaction) await _uow.RollbackAsync();
@@ -142,22 +145,23 @@ namespace BLL.LogicLayers.Payments
                 // Atrapar excepciones de Dominio (Fail Fast de los VOs del Payment)
                 if (ex is ArgumentException domainEx)
                 {
-                    result.Errors.Add(new ErrorLogDTO { InformativeMessage = domainEx.Message });
+                    result.Errors.Add(ErrorMapper.ToDTO(_errorsFactory.CreateFromException(domainEx)));
                     return result;
                 }
 
-                // Manejo de restricciones FK (Ej: si se coló un ClientId inválido)
+                // Manejo de restricciones FK 
                 ErrorLog uiError = (ex.Message.Contains("REFERENCE constraint") || ex.Message.Contains("FK_"))
-                    ? _errorsFactory.Create(ErrorCatalogEnum.DuplicateEntry, _tableNamePayment) // O un error específico de FK
+                    ? _errorsFactory.Create(ErrorCatalogEnum.NotFound, _tableNamePayment)
                     : _errorsFactory.Create(ErrorCatalogEnum.InternalError, _tableNamePayment);
 
                 var errorDto = ErrorMapper.ToDTO(uiError);
                 errorDto.LogId = dbError.Id;
-                errorDto.InformativeMessage = $"Falla técnica al registrar el pago. Ref ID: {dbError.Id}";
+                errorDto.InformativeMessage = $"Falla técnica al registrar el pago. Contacte a soporte con el siguiente código {dbError.Id} para determinar el error. En caso de no poder hacerlo, por favor reinicie la aplicación e intente nuevamente.";
 
                 result.Errors.Add(errorDto);
-                return result;
             }
+
+            return result;
         }
 
         private async Task UpdateDVVAsync(string nombreTabla, string connectionString)

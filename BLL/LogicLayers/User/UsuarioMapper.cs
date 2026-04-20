@@ -17,7 +17,7 @@ namespace BLL.LogicLayers
                 Username = entity.Username,
                 Password = entity.Password,
                 LanguageCode = entity.Language,
-                DVH = entity.DVH?.Value ?? string.Empty,
+                DVH = (string)(entity.DVH?.Value ?? string.Empty),
                 IsDeleted = entity.IsDeleted,
                 // Aquí podrías inyectar el EmployeeDTO si lo tienes
             };

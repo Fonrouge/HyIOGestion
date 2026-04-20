@@ -43,7 +43,7 @@ namespace WinformsUI.Forms.ProductCRUDL
 
         
         // =========================================================
-        // TRADUCCIONES Y PALETA
+        // TRADUCCIONES
         // =========================================================
         private void AddTranslatables()
         {
@@ -58,12 +58,6 @@ namespace WinformsUI.Forms.ProductCRUDL
             _transMgr.AddFormNotify(this);
 
             base.ApplyTranslation();
-        }
-
-        public new void ThemingNotifiedByConfigurationsModule()
-        {
-            DarkTheme.RedrawBorders = true;
-            DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
         }
 
 

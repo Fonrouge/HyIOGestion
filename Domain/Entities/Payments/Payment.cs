@@ -70,7 +70,7 @@ namespace Domain.Entities
 
             return string.Join("|",
                 Id.ToString(),
-                Amount.Value.ToString("F2", culture),
+                ((decimal)Amount.Value).ToString("F2", culture),
                 CreationDate.ToString("yyyyMMddHHmmss", culture),
                 EffectiveDate.ToString("yyyyMMddHHmmss", culture),
                 SaleId.ToString(),

@@ -113,7 +113,7 @@ namespace Domain.Entities
                 Id.ToString(),
                 CompanyName.Value,
                 ContactName.Value,
-                Mail.Value.ToUpper(culture),
+                Mail.Value.ToString().ToUpper(culture),
                 Phone.Value,
                 TaxId.Value,
                 TaxNumber.Value,

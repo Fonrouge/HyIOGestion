@@ -26,6 +26,7 @@ using WinformsUI.UserControls.CustomDGV;
 using static Winforms.Theme.DarkTheme;
 using WinformsUI.UserControls;
 using BLL.DTOs;
+using System.Drawing.Drawing2D;
 
 namespace WinformsUI.Forms.Main
 {
@@ -146,15 +147,15 @@ namespace WinformsUI.Forms.Main
 
         public void SetStatusBarInfo(string loggedUserName, string currentUserName) //Probando
         {
-            txtLoginTime.Text = currentUserName;
-            txtCurrentUserName.Text = loggedUserName;
+            customStatusBar.TxtUserName.Text = loggedUserName;
+            customStatusBar.TxtLoginTime.Text = currentUserName;
         }
 
         private void AddTranslatables()
         {
-            _transMgr.AddParentedObjects<Label>(this.Controls, "Text");
-            _transMgr.AddParentedObjects<Button>(this.Controls, "Text");
-
+            //_transMgr.AddParentedObjects<Label>(this.Controls, "Text");
+            //_transMgr.AddParentedObjects<Button>(this.Controls, "Text");
+            
 
             //_transMgr.AddString("MainForm.Textbox.tbmt", _tabbedModeText);
 
@@ -240,11 +241,16 @@ namespace WinformsUI.Forms.Main
 
             DarkTheme.RedrawBorders = false;
             PaintControlTree(tlpMenu, GetCurrentPalette());
+            
             PaintControlTree(pnlSlotForTabs, GetCurrentPalette());
+            
+            DarkTheme.ApplyGradientBackground(tlpMenu, darkerAccent, darkerAccent, LinearGradientMode.Vertical);
+            
+            DarkTheme.ApplyGradientBackground(tableLayoutPanel1, darkerAccent, darkerAccent, LinearGradientMode.Vertical);
+            
+            DarkTheme.ApplyGradientBackground(customStatusBar.MainTableLayoutPnl, darkerAccent, Darken(darkerAccent, -0.05), LinearGradientMode.Vertical);
+            customStatusBar.LblBackUpTrafficLight.ForeColor = Color.LimeGreen;
 
-            DarkTheme.ApplyGradientBackground(tlpMenu, darkerAccent, darkerAccent, System.Drawing.Drawing2D.LinearGradientMode.Vertical);
-            DarkTheme.ApplyGradientBackground(tableLayoutPanel1, darkerAccent, darkerAccent, System.Drawing.Drawing2D.LinearGradientMode.Vertical);
-            mainSs.BackColor = darkerAccent;
             ResumeLayout();
         }
 

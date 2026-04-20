@@ -43,6 +43,7 @@ namespace DAL.Persistence.MicrosoftSQL
                     (@Id, @SaleDate, @ClientId, @EmployeeId, @TotalAmount, @Active, @CreatedAt, @IsDeleted, @DVH)";
 
             await ExecuteNonQueryAsync(query, cmd => SetParameters(cmd, entity));
+                       
             await SyncSaleDetails(entity.Id, entity.Items);
         }
 

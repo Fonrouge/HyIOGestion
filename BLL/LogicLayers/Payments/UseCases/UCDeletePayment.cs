@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace BLL.LogicLayers.Payments
 {
-    public class UCDeletePayment : IUCDeletePayment
+    public class UCDeletePayment : IUCDeletePayment //=======================================================================REFACTORIZADO AL 14/04=======================================================================
     {
         private readonly IUnitOfWork _uow;
         private readonly IApplicationSettings _appSettings;
@@ -29,6 +29,7 @@ namespace BLL.LogicLayers.Payments
         private readonly IErrorsRepository _errorsRepository;
 
         private readonly string _tableNamePayment;
+        private Guid _correlationId;
 
         public UCDeletePayment
         (
@@ -48,11 +49,13 @@ namespace BLL.LogicLayers.Payments
             _errorsRepository = errorsRepository ?? throw new ArgumentNullException(nameof(errorsRepository));
 
             _tableNamePayment = appSettings.PaymentTableName ?? "Payments";
+            _correlationId = Guid.NewGuid();
         }
 
         public async Task<OperationResult<PaymentDTO>> ExecuteAsync(PaymentDTO dto)
         {
             var result = new OperationResult<PaymentDTO>();
+
 
             try
             {
@@ -63,10 +66,12 @@ namespace BLL.LogicLayers.Payments
                     return result;
                 }
 
-                // Seteamos la conexión para lectura (Sin abrir transacción aún)
+
+                // 2. Seteamos de conexión para lectura (sin abrir transacción aún)
                 _uow.SetConnectionString(_appSettings.EntitiesConnection);
 
-                // 2. Validar Permisos
+
+                // 3. Validar Permisos
                 var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
                 var permissionsList = await _uow.PermisoRepo.GetPermissionsByUserAsync(_sessionProvider.Current.CurrentUserId);
 
@@ -78,9 +83,14 @@ namespace BLL.LogicLayers.Payments
                     return result;
                 }
 
-                // 3. Buscar Entidad a Eliminar (Para dejar registro en bitácora de qué borramos)
+
+                // 4. ABRIR TRANSACCIÓN
+                await _uow.BeginTransactionAsync();
+
+                // 5. Buscar Entidad a Eliminar (Para dejar registro en bitácora de qué borramos)
                 Payment entity = await _uow.PaymentRepo.GetByIdAsync(dto.Id);
-                if (entity == null | entity.IsDeleted)
+
+                if (entity == null || entity.IsDeleted)
                 {
                     // Manejo elegante si no se encuentra el registro
                     result.Errors.Add(ErrorMapper.ToDTO(_errorsFactory.Create(ErrorCatalogEnum.NotFound, _tableNamePayment)));
@@ -88,15 +98,18 @@ namespace BLL.LogicLayers.Payments
                     return result;
                 }
 
-                // 4. ABRIR TRANSACCIÓN
-                await _uow.BeginTransactionAsync();
-
-
-                // 5. Eliminación (Hard o Soft) 
+          
+                // 6. Eliminación (Hard o Soft) 
                 if (entity is ISoftDeletable)
                 {
+                    // 6.1. Se marca como borrada lógicamente
                     entity.MarkAsDeleted();
-                    await _uow.PaymentRepo.UpdateAsync(entity); // Sin calcular DVH, directo a guardar
+
+                    // 6.2. Se recalcula Hash por cambio de datos previo persistir
+                    IntegrityFacade.RecalculateAndSetEntityDVH(entity);
+
+                    // 6.3. Se persiste la entidad ya modificada tanto en dato como DVH
+                    await _uow.PaymentRepo.UpdateAsync(entity);
                 }
                 else
                 {
@@ -104,29 +117,47 @@ namespace BLL.LogicLayers.Payments
                 }
 
 
-                // 6. Integridad Vertical (DVV) - OBLIGATORIO
-                // Al eliminar físicamente un registro de una tabla blindada, el DVV debe recalcularse.
-          //      await UpdateDVVAsync(_tableNamePayment, _appSettings.EntitiesConnection);
+                // 7. Integridad Vertical (DVV) - OBLIGATORIO
+                await UpdateDVVAsync(_tableNamePayment, _appSettings.EntitiesConnection);
 
-                // 7. Auditoría (Bitácora)
-                // Dejamos un log muy claro de qué se voló físicamente
-                var log = _bitacoraFact.Create(
-                    entry: BitacoraCatalogEnum.SoftDeleteOnBD,
-                    user: currentUser.Id.ToString(),
-                    tableName: _tableNamePayment,
-                    sessionId: _sessionProvider.Current.Id,
-                    correlationId: Guid.NewGuid(),
-                    extraInfo: $"Se eliminó FÍSICAMENTE el pago ID: {dto.Id} (Monto original: $ {entity.Amount.Value}, Cliente: {entity.SaleId})"
-                );
-                await _uow.BitacoraRepo.CreateAsync(log);
+                // 8. Auditoría (Bitácora)
+                if (entity is ISoftDeletable)
+                {
+                    var log = _bitacoraFact.Create
+                    (
+                        entry: BitacoraCatalogEnum.SoftDeleteOnBD,
+                        user: currentUser.Id.ToString(),
+                        tableName: _tableNamePayment,
+                        sessionId: _sessionProvider.Current.Id,
+                        correlationId: _correlationId,
+                        extraInfo: $"Se eliminó LÓGICAMENTE el pago ID: {dto.Id} (Monto original: $ {entity.Amount.Value}, Cliente: {entity.SaleId})"
+                    );
+                    
+                    await _uow.BitacoraRepo.CreateAsync(log);
+                }
+                else
+                {
+                    var log = _bitacoraFact.Create
+                        (
+                            entry: BitacoraCatalogEnum.HardDeleteOnBD,
+                            user: currentUser.Id.ToString(),
+                            tableName: _tableNamePayment,
+                            sessionId: _sessionProvider.Current.Id,
+                            correlationId: _correlationId,
+                            extraInfo: $"Se eliminó FÍSICAMENTE el pago ID: {dto.Id} (Monto original: $ {entity.Amount.Value}, Cliente: {entity.SaleId})"
+                        );
+                    
+                    await _uow.BitacoraRepo.CreateAsync(log);
+                }
 
-                // 8. Confirmación
+                // 9. Confirmación
                 await _uow.CommitAsync();
 
-                // 9. Retorno
+                // 10. Retorno
                 result.Value = dto;
                 return result;
             }
+
             catch (Exception ex)
             {
                 if (_uow.HasActiveTransaction) await _uow.RollbackAsync();

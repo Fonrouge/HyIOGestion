@@ -15,7 +15,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BLL.LogicLayers.Employees //=======================================================================REFACTORIZADO AL 27/02=======================================================================
+namespace BLL.LogicLayers.Employees //=======================================================================REFACTORIZADO AL 14/04=======================================================================
 {
     public class UCCreateEmployee : IUCCreateEmployee
     {
@@ -27,8 +27,10 @@ namespace BLL.LogicLayers.Employees //==========================================
         private readonly IErrorsRepository _errorsRepository;
 
         private readonly string _tableNameEmployee;
+        private Guid _correlationId;
 
-        public UCCreateEmployee(
+        public UCCreateEmployee
+        (
             IUnitOfWork uow,
             IApplicationSettings appSettings,
             IBitacoraFactory bitacoraFact,
@@ -43,7 +45,8 @@ namespace BLL.LogicLayers.Employees //==========================================
             _errorsFactory = errorsFactory ?? throw new ArgumentNullException(nameof(errorsFactory));
             _errorsRepository = errorsRepository ?? throw new ArgumentNullException(nameof(errorsRepository));
 
-            _tableNameEmployee = _appSettings.EmployeeTableName ?? "Employee";
+            _tableNameEmployee = _appSettings.EmployeeTableName ?? "Employees";
+            _correlationId = Guid.NewGuid();
         }
 
         public async Task<OperationResult<EmployeeDTO>> ExecuteAsync(EmployeeDTO dto)
@@ -60,9 +63,10 @@ namespace BLL.LogicLayers.Employees //==========================================
                     return result;
                 }
 
-                // 2. Conexión y Transacción (Base de Datos de Negocio)
+
+                // 2. Conexión y Transacción (Base de Datos de Negocio) Necesaria para poder chequear permisos.
                 _uow.SetConnectionString(_appSettings.EntitiesConnection);
-                await _uow.BeginTransactionAsync();
+
 
                 // 3. Validar Permisos
                 var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
@@ -78,48 +82,62 @@ namespace BLL.LogicLayers.Employees //==========================================
 
 
                 // 4. Validar Duplicados (Por Legajo/FileNumber)
-                // Nota: Asegúrate de tener GetByFileNumberAsync en el repositorio
                 var existing = await _uow.EmployeeRepo.GetByFileNumberAsync(dto.FileNumber);
+
                 if (existing != null)
+                {
+                    var dupError = _errorsFactory.Create(ErrorCatalogEnum.DuplicateEntry, _tableNameEmployee);
+                    result.Errors.Add(ErrorMapper.ToDTO(dupError));
+
+                    return result;
+                }
+
+                // 5. Validación de Duplicados (Contra DB)
+                var existingEmployeeByTaxIdNumber = await _uow.EmployeeRepo.GetByNationalIdAsync(dto.NationalId);
+
+                if (existingEmployeeByTaxIdNumber != null)
                 {
                     var dupError = _errorsFactory.Create(ErrorCatalogEnum.DuplicateEntry, _tableNameEmployee);
                     result.Errors.Add(ErrorMapper.ToDTO(dupError));
                     return result;
                 }
 
-                // 5. Mapeo a Entidad (Recuerda: EntityBase ya maneja el Id)
+                //6. Se abre transacción sólo si se cumplen los requisitos mínimos para poder operar            
+                await _uow.BeginTransactionAsync();
+
+                // 7. Mapeo a Entidad (Recuerda: EntityBase ya maneja el Id)
                 var newEmployee = EmployeeMapper.ToEntity(dto);
 
 
-                // --- OPCIONAL: Integridad Horizontal (DVH) ---
-                // newEmployee.DVH = IntegrityService.GetIntegrityHash(
-                //    newEmployee.Id, 
-                //    newEmployee.FileNumber, 
-                //    newEmployee.NationalId);
+                // 8. Se calcula y setea su DVH
+                IntegrityFacade.RecalculateAndSetEntityDVH(newEmployee);
 
 
-                // 6. Persistencia
+                // 9. Persistencia con DVH ya incluido
                 await _uow.EmployeeRepo.CreateAsync(newEmployee);
 
-                // 7. Integridad Vertical (DVV)
-       //         await UpdateDVVAsync(_tableNameEmployee, _appSettings.EntitiesConnection);
+                // 10. Integridad Vertical (DVV) - Una vez creado el dato
+                await UpdateDVVAsync(_tableNameEmployee, _appSettings.EntitiesConnection);
 
-                // 8. Auditoría
+
+                // 11. Auditoría
                 var log = _bitacoraFact.Create
                 (
                     entry: BitacoraCatalogEnum.CreateOnBD,
                     user: currentUser.Id.ToString(),
                     tableName: _tableNameEmployee,
                     sessionId: _sessionProvider.Current.Id,
-                    correlationId: Guid.NewGuid(),
-                    extraInfo: $"Se creó el empleado: {newEmployee.LastName}, {newEmployee.FirstName} (Legajo: {newEmployee.FileNumber})"
+                    correlationId: _correlationId,
+                    extraInfo: $"Se creó el Empleado Id: {newEmployee.Id}, ({newEmployee.LastName}, {newEmployee.FirstName} - Legajo: {newEmployee.FileNumber})"
                 );
                 await _uow.BitacoraRepo.CreateAsync(log);
 
-                // 9. Confirmar Transacción
+
+                // 12. Confirmar Transacción
                 await _uow.CommitAsync();
 
-                // 10. Retorno
+
+                // 13. Retorno
                 result.Value = EmployeeMapper.ToDto(newEmployee);
                 return result;
             }
@@ -136,7 +154,7 @@ namespace BLL.LogicLayers.Employees //==========================================
                 var uiError = _errorsFactory.Create(ErrorCatalogEnum.InternalError, _tableNameEmployee);
                 var errorDto = ErrorMapper.ToDTO(uiError);
                 errorDto.LogId = dbError.Id;
-                errorDto.InformativeMessage = $"Falla técnica al crear empleado. Ref ID: {dbError.Id}";
+                errorDto.InformativeMessage = $"Falla técnica al crear empleado. Contacte a soporte y brinde el siguiente código para un diagnóstico preciso ({dbError.Id}), en caso de no hacerlo por favor reinicie la aplicación e intente nuevamente.";
 
                 result.Errors.Add(errorDto);
                 return result;

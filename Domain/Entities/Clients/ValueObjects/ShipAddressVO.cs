@@ -5,7 +5,7 @@ namespace Domain.Entities.Clients.ValueObjects
 {
     public sealed class ShipAddressVO : IValueObject
     {
-        public string Value { get; private set; }
+        public object Value { get; private set; }
 
         private ShipAddressVO(string value)
         {
@@ -46,7 +46,7 @@ namespace Domain.Entities.Clients.ValueObjects
             return Value.GetHashCode();
         }
 
-        public override string ToString() => Value;
+        public override string ToString() => Value.ToString();
 
         public static bool operator ==(ShipAddressVO left, ShipAddressVO right)
         {

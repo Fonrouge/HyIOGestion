@@ -4,7 +4,7 @@ namespace Domain.Entities.Employees.ValueObjects
 {
     public sealed class EmployeeEmailVO : IValueObject
     {
-        public string Value { get; }
+        public object Value { get; }
 
         private EmployeeEmailVO(string value) => Value = value;
 

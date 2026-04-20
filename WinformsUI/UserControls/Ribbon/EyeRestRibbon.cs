@@ -1,12 +1,14 @@
-﻿using System;
+﻿using SharedAbstractions.ArchitecturalMarkers;
+using System;
 using System.Windows.Forms;
 using Winforms.Theme;
+using WinformsUI.Forms.Base;
 
 namespace WinformsUI.UserControls.Ribbon
 {
     public partial class EyeRestRibbon : UserControl
     {
-        public Form TargetForm { get; set; }
+        public Form TargetForm { get; set; } 
 
         public EyeRestRibbon()
         {
@@ -21,6 +23,7 @@ namespace WinformsUI.UserControls.Ribbon
             SuspendLayout();
             DarkTheme.RedrawBorders = true;
             DarkTheme.Apply(TargetForm, DarkTheme.PalettesDark.EyeRest());
+          //  TargetForm.ThemingNotifiedByConfigurationsModule();
             ResumeLayout();
         }
         private void ApplyLightPalette(object sender, EventArgs e)

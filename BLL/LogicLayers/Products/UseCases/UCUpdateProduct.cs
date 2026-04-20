@@ -3,6 +3,7 @@ using BLL.DTOs.Errors;
 using BLL.Infrastructure.AuditLogs;
 using BLL.Infrastructure.Errors;
 using Domain.Entities;
+using Domain.Entities.Products;
 using Domain.Exceptions;
 using Domain.Infrastructure;
 using Domain.Infrastructure.Audit;
@@ -12,6 +13,7 @@ using Shared;
 using Shared.Services;
 using Shared.Sessions;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -27,6 +29,8 @@ namespace BLL.LogicLayers.Products
         private readonly IErrorsRepository _errorsRepository;
 
         private readonly string _tableNameProduct;
+        private Guid _correlationId;
+
 
         public UCUpdateProduct
         (
@@ -46,6 +50,7 @@ namespace BLL.LogicLayers.Products
             _errorsRepository = errorsRepository ?? throw new ArgumentNullException(nameof(errorsRepository));
 
             _tableNameProduct = appSettings.ProductTableName ?? "Products";
+            _correlationId = Guid.NewGuid();
         }
 
         public async Task<OperationResult<ProductDTO>> ExecuteAsync(ProductDTO dto)
@@ -61,8 +66,12 @@ namespace BLL.LogicLayers.Products
                     return result;
                 }
 
-                // 2. Validar Permisos
-                var currentUser = await _uow.UserRepo.GetByIdAsync(_sessionProvider.Current.CurrentUserId);
+                
+                // 2.  Seteamos la conexión para validaciones
+                _uow.SetConnectionString(_appSettings.EntitiesConnection);
+
+
+                // 3. Validar Permisos
                 var permissionsList = await _uow.PermisoRepo.GetPermissionsByUserAsync(_sessionProvider.Current.CurrentUserId);
 
                 bool hasAccess = permissionsList.Any(p => p.PermisoCode == PermisosEnum.PRODUCT_UPDATE.ToString()
@@ -74,56 +83,81 @@ namespace BLL.LogicLayers.Products
                 }
 
 
-                // Seteamos la conexión para validaciones
-                _uow.SetConnectionString(_appSettings.EntitiesConnection);
+                // 4. Buscar Entidad y Validar Existencia (Tu patrón: null | IsDeleted)
+                var entity = await _uow.ProductRepo.GetByIdAsync(dto.Id);
 
-                // 3. Buscar Entidad y Validar Existencia (Tu patrón: null | IsDeleted)
-                var existingProduct = await _uow.ProductRepo.GetByIdAsync(dto.Id);
-
-                if (existingProduct == null | existingProduct.IsDeleted)
+                if (entity == null || entity.IsDeleted)
                 {
-                    result.Errors.Add(ErrorMapper.ToDTO(_errorsFactory.Create(ErrorCatalogEnum.NotFound, _tableNameProduct)));
+                    var notFoundError = _errorsFactory.Create(ErrorCatalogEnum.NotFound, _tableNameProduct);
+                    result.Errors.Add(ErrorMapper.ToDTO(notFoundError));
                     return result;
                 }
 
-                // 4. Validación de Negocio: Nombre Duplicado (Si cambió el nombre)
+
+                // 5. Validación de Negocio: Nombre Duplicado (Si cambió el nombre)
                 var productWithSameName = await _uow.ProductRepo.GetByNameAsync(dto.Name);
-                if (productWithSameName != null && productWithSameName.Id != dto.Id)
+
+                if (productWithSameName != null && productWithSameName.Id != dto.Id && !productWithSameName.IsDeleted)
                 {
-                    result.Errors.Add(ErrorMapper.ToDTO(_errorsFactory.Create(ErrorCatalogEnum.DuplicateEntry, _tableNameProduct)));
+                    var dupError = _errorsFactory.Create(ErrorCatalogEnum.DuplicateEntry, _tableNameProduct);
+                    result.Errors.Add(ErrorMapper.ToDTO(dupError));
                     return result;
                 }
 
-                // 5. Mapeo a Entidad (Fail Fast de VOs en el Reconstitute)
-                var productToUpdate = ProductMapper.ToEntity(dto);
 
-                // 6. ABRIR TRANSACCIÓN
+                // 6. Ignoramos campos que no son editables por el usuario o técnicos y obtenemos info detallada de cambios (para bitácora/log)
+                string changedValues = IntegrityFacade.GetDelta(entity, dto, "Id", "DVH");
+
+
+                // 7. Entity, que ya sabemos que existe y no está duplicada, adquiere los datos del nuevo producto proveniente de front.
+                entity = ProductMapper.ToEntity(dto);
+
+
+                // 8. ABRIR TRANSACCIÓN antes de persistir entidades
                 await _uow.BeginTransactionAsync();
 
-                // 7. Persistencia
-                // El Repo actualizará la tabla Products y sincronizará ProductsCategories
-                await _uow.ProductRepo.UpdateAsync(productToUpdate);
 
-                // 8. Integridad Vertical (DVV): Obligatorio al modificar datos de la tabla
-             //   await UpdateDVVAsync(_tableNameProduct, _appSettings.EntitiesConnection);
+                // 9. Como la relación Producto-Categoría tiene DVH, éste debe ser calculado previo persistir.                
+                var relaciones = entity.Categories.Select(cat =>
+                {
+                    var rel = ProductCategoryDTO.Create(entity.Id, cat.Id); // 8.1 - Se linkean las relaciones
+                    IntegrityFacade.RecalculateAndSetEntityDVH(rel); // 8.2 - Se calcula el DVH de cada relación
+                    return rel;
 
-                // 9. Auditoría (Bitácora)
+                }).ToList();
+
+
+
+                // 10. Después de modificada la entidad, se recalcula el DVH.
+                IntegrityFacade.RecalculateAndSetEntityDVH(entity);
+
+
+                // 11. Pasamos todo al repositorio para persistencia
+                await _uow.ProductRepo.UpdateAsync(entity, relaciones);
+          
+
+                // 12. Integridad Vertical (DVV): Obligatorio al modificar datos de la tabla
+                await UpdateDVVAsync(_tableNameProduct, _appSettings.EntitiesConnection);
+                await UpdateDVVAsyncWithNoId(_appSettings.ProductCategoryTableName, _appSettings.EntitiesConnection);
+
+                // 13. Auditoría (Bitácora)
                 var log = _bitacoraFact.Create
                 (
                     entry: BitacoraCatalogEnum.UpdateOnBD,
-                    user: currentUser.Id.ToString(),
+                    user: _sessionProvider.Current.CurrentUserId.ToString(),
                     tableName: _tableNameProduct,
                     sessionId: _sessionProvider.Current.Id,
-                    correlationId: Guid.NewGuid(),
-                    extraInfo: $"Se actualizó el producto ID: {productToUpdate.Id} (Nombre: {productToUpdate.Name.Value})"
+                    correlationId: _correlationId,
+                    extraInfo: $"Se actualizó el producto ID: {entity.Id} - Detalles: {changedValues}"
                 );
+
                 await _uow.BitacoraRepo.CreateAsync(log);
 
-                // 10. Confirmación
+                // 14. Confirmación
                 await _uow.CommitAsync();
 
-                // 11. Retorno
-                result.Value = ProductMapper.ToDto(productToUpdate);
+                // 15. Retorno
+                result.Value = ProductMapper.ToDto(entity);
                 return result;
             }
             catch (Exception ex)
@@ -158,6 +192,12 @@ namespace BLL.LogicLayers.Products
         private async Task UpdateDVVAsync(string nombreTabla, string connectionString)
         {
             var hashes = await _uow.IntegrityRepo.GetVerticalHashesAsync(nombreTabla, connectionString);
+            var dvvFinal = IntegrityService.CalculateDVV(hashes);
+            await _uow.IntegrityRepo.UpdateDVVAsync(nombreTabla, dvvFinal, connectionString);
+        }
+        private async Task UpdateDVVAsyncWithNoId(string nombreTabla, string connectionString)
+        {
+            var hashes = await _uow.IntegrityRepo.GetVerticalHashesAsync(nombreTabla, connectionString, false);
             var dvvFinal = IntegrityService.CalculateDVV(hashes);
             await _uow.IntegrityRepo.UpdateDVVAsync(nombreTabla, dvvFinal, connectionString);
         }

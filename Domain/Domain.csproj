@@ -44,6 +44,8 @@
   <ItemGroup>
     <Compile Include="Contracts\IIntegrityCheckable.cs" />
     <Compile Include="Contracts\ISoftDeletable.cs" />
+    <Compile Include="Entities\Clients\ValueObjects\ClientObservationsVO.cs" />
+    <Compile Include="Entities\Clients\ValueObjects\ZipCodeVO.cs" />
     <Compile Include="Entities\DvhVo.cs" />
     <Compile Include="Entities\Clients\ValueObjects\ClientLastNameVO.cs" />
     <Compile Include="Entities\Clients\ValueObjects\ClientNameVO.cs" />
@@ -63,6 +65,7 @@
     <Compile Include="Entities\Payments\ValueObjects\PaymentMethodVO.cs" />
     <Compile Include="Entities\Payments\ValueObjects\PaymentAmountVO.cs" />
     <Compile Include="Entities\Payments\ValueObjects\PaymentReferenceVO.cs" />
+    <Compile Include="Entities\Products\ProductCategoryDTO.cs" />
     <Compile Include="Entities\Products\ValueObjects\DescriptionVO.cs" />
     <Compile Include="Entities\Products\ValueObjects\ProdNameVO.cs" />
     <Compile Include="Entities\Products\ValueObjects\PriceVO.cs" />
@@ -107,7 +110,6 @@
     <Compile Include="Infrastructure\Permisos\Concrete\Patente.cs" />
     <Compile Include="Infrastructure\Permisos\Concrete\PermisoRelacionDTO.cs" />
     <Compile Include="Infrastructure\Permisos\Concrete\PermisosEnum.cs" />
-    <Compile Include="Entities\Products\ProductCategoryRelacionDTO.cs" />
     <Compile Include="Infrastructure\Permisos\Concrete\Usuario.cs" />
     <Compile Include="Infrastructure\Exceptions\BaseException.cs" />
     <Compile Include="Infrastructure\Errors\ErrorLogAttributes.cs" />

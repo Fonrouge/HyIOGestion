@@ -5,7 +5,7 @@ namespace Domain.Entities.Clients.ValueObjects
 {
     public class WarehouseAddressVO : IValueObject
     {
-        public string Value { get; private set; }
+        public object Value { get; private set; }
 
         private WarehouseAddressVO(string value)
         {
@@ -50,7 +50,7 @@ namespace Domain.Entities.Clients.ValueObjects
             return Value.GetHashCode();
         }
 
-        public override string ToString() => Value;
+        public override string ToString() => Value.ToString();
 
 
     }

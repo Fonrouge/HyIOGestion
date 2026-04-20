@@ -41,7 +41,7 @@ namespace WinformsUI.Forms.SaleCRUDL
 
 
         // =========================================================
-        // TRADUCCIONES Y PALETA
+        // TRADUCCIONES
         // =========================================================
         private void AddTranslatables()
         {
@@ -57,8 +57,6 @@ namespace WinformsUI.Forms.SaleCRUDL
 
             base.ApplyTranslation();
         }
-
-        public new void ThemingNotifiedByConfigurationsModule() => DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
 
 
         // =========================================================

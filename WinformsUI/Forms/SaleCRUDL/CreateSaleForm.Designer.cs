@@ -191,7 +191,7 @@
             this.tlpSelectProds.SetColumnSpan(this.tableLayoutPanel4, 2);
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 13.55499F));
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 86.44501F));
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 118F));
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 119F));
             this.tableLayoutPanel4.Controls.Add(this.label8, 0, 1);
             this.tableLayoutPanel4.Controls.Add(this.lbAddedProds, 1, 1);
             this.tableLayoutPanel4.Controls.Add(this.btnAddProd, 2, 0);
@@ -231,7 +231,7 @@
             this.lbAddedProds.Location = new System.Drawing.Point(134, 55);
             this.lbAddedProds.Margin = new System.Windows.Forms.Padding(19, 3, 19, 3);
             this.lbAddedProds.Name = "lbAddedProds";
-            this.lbAddedProds.Size = new System.Drawing.Size(699, 114);
+            this.lbAddedProds.Size = new System.Drawing.Size(698, 114);
             this.lbAddedProds.TabIndex = 16;
             // 
             // btnAddProd
@@ -240,9 +240,9 @@
             this.btnAddProd.FlatAppearance.BorderSize = 0;
             this.btnAddProd.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnAddProd.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F);
-            this.btnAddProd.Location = new System.Drawing.Point(855, 8);
+            this.btnAddProd.Location = new System.Drawing.Point(854, 8);
             this.btnAddProd.Name = "btnAddProd";
-            this.btnAddProd.Size = new System.Drawing.Size(113, 35);
+            this.btnAddProd.Size = new System.Drawing.Size(114, 35);
             this.btnAddProd.TabIndex = 14;
             this.btnAddProd.Tag = "LowAccented";
             this.btnAddProd.Text = "Agregar";
@@ -254,9 +254,9 @@
             this.btnRemoveProd.FlatAppearance.BorderSize = 0;
             this.btnRemoveProd.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnRemoveProd.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F);
-            this.btnRemoveProd.Location = new System.Drawing.Point(855, 94);
+            this.btnRemoveProd.Location = new System.Drawing.Point(854, 94);
             this.btnRemoveProd.Name = "btnRemoveProd";
-            this.btnRemoveProd.Size = new System.Drawing.Size(113, 35);
+            this.btnRemoveProd.Size = new System.Drawing.Size(114, 35);
             this.btnRemoveProd.TabIndex = 13;
             this.btnRemoveProd.Tag = "LowAccented";
             this.btnRemoveProd.Text = "Quitar";
@@ -269,7 +269,7 @@
             this.tbQuantity.Location = new System.Drawing.Point(134, 14);
             this.tbQuantity.Margin = new System.Windows.Forms.Padding(19, 3, 19, 3);
             this.tbQuantity.Name = "tbQuantity";
-            this.tbQuantity.Size = new System.Drawing.Size(699, 24);
+            this.tbQuantity.Size = new System.Drawing.Size(698, 24);
             this.tbQuantity.TabIndex = 10;
             // 
             // label7
@@ -293,7 +293,7 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(118, 175);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(731, 30);
+            this.panel1.Size = new System.Drawing.Size(730, 30);
             this.panel1.TabIndex = 18;
             this.panel1.Tag = "NonPaintable";
             // 
@@ -315,7 +315,7 @@
             this.tbSubTotal.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.tbSubTotal.Enabled = false;
             this.tbSubTotal.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F);
-            this.tbSubTotal.Location = new System.Drawing.Point(586, 3);
+            this.tbSubTotal.Location = new System.Drawing.Point(585, 3);
             this.tbSubTotal.Margin = new System.Windows.Forms.Padding(19, 3, 19, 3);
             this.tbSubTotal.Name = "tbSubTotal";
             this.tbSubTotal.ReadOnly = true;

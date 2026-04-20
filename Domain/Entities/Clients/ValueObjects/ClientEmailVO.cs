@@ -1,11 +1,10 @@
-﻿using Domain.Entities.Employees.ValueObjects;
-using System;
+﻿using System;
 
 namespace Domain.Entities.Clients.ValueObjects
 {
     public sealed class ClientEmailVO: IValueObject
     {
-        public string Value { get; }
+        public object Value { get; }
 
         private ClientEmailVO(string value) => Value = value;
 

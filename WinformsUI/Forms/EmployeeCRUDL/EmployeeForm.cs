@@ -41,7 +41,7 @@ namespace WinformsUI.Forms.EmployeeCRUDL
 
 
         // =========================================================
-        // TRADUCCIONES Y PALETA
+        // TRADUCCIONES
         // =========================================================
         private void AddTranslatables()
         {
@@ -56,12 +56,6 @@ namespace WinformsUI.Forms.EmployeeCRUDL
             _transMgr.AddFormNotify(this);
 
             base.ApplyTranslation();
-        }
-
-        public override void ThemingNotifiedByConfigurationsModule()
-        {
-            DarkTheme.RedrawBorders = true;
-            DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
         }
 
 

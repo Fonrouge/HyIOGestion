@@ -5,7 +5,7 @@ namespace Domain.Entities.Suppliers.ValueObjects
 {
     public sealed class SupplierPhoneVO : IValueObject
     {
-        public string Value { get; }
+        public object Value { get; }
 
         private SupplierPhoneVO(string value) => Value = value;
 

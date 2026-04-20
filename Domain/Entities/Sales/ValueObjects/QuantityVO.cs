@@ -4,7 +4,7 @@ namespace Domain.Entities.Sales.ValueObjects
 {
     public sealed class QuantityVO : IValueObject
     {
-        public decimal Value { get; }
+        public object Value { get; }
 
         private QuantityVO(decimal value) => Value = value;
 

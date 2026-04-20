@@ -15,14 +15,14 @@ namespace BLL.LogicLayers
             return new SaleDTO
             {
                 Id = sale.Id,
-                Date = sale.Date.Value,
+                Date = (DateTime)sale.Date.Value,
                 ClientId = sale.ClientId,
                 EmployeeId = sale.EmployeeId,
-                TotalAmount = sale.TotalAmount.Value,
+                TotalAmount = (decimal)sale.TotalAmount.Value,
                 IsActive = sale.Active,
                 CreatedAt = sale.CreatedAt,
                 IsDeleted = sale.IsDeleted,
-                DVH = sale.DVH?.Value ?? string.Empty,
+                DVH = (string)(sale.DVH?.Value ?? string.Empty),
 
                 Items = SaleDetailMapper.ToListDto(sale.Items)
             };

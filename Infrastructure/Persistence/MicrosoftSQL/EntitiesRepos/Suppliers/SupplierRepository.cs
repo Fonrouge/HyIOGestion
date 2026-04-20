@@ -28,7 +28,7 @@ namespace DAL.Persistence.MicrosoftSQL
         private const string SQL_HARD_DELETE = "DELETE FROM {0} WHERE Id = @Id";
         private const string SQL_SELECT_BY_ID = "SELECT * FROM {0} WHERE Id = @Id";
         private const string SQL_SELECT_ALL = "SELECT * FROM {0} s WHERE s.IsDeleted = 0";
-        private const string SQL_SELECT_ALL_DELETED = "SELECT * FROM {0} s.IsDeleted = 1";
+        private const string SQL_SELECT_ALL_DELETED = "SELECT * FROM {0} s WHERE s.IsDeleted = 1";
         private const string SQL_SELECT_BY_TAXID = "SELECT * FROM {0} WHERE TaxNumber = @TaxNumber"; 
 
         public SupplierRepository(IApplicationSettings appSettings)
@@ -85,8 +85,15 @@ namespace DAL.Persistence.MicrosoftSQL
         public async Task<IEnumerable<Supplier>> GetAllDeletedAsync()
         {
             var suppliers = new List<Supplier>();
-            await ExecuteReaderAsync(string.Format(SQL_SELECT_ALL_DELETED, _appSettings.SupplierTableName),
-                null, reader => suppliers.Add(Map(reader)));
+            try
+            {
+                await ExecuteReaderAsync(string.Format(SQL_SELECT_ALL_DELETED, _appSettings.SupplierTableName),
+                    null, reader => suppliers.Add(Map(reader)));
+            }
+            catch (Exception ex)
+            {
+                var x = ex.Message;
+            }
             return suppliers;
         }
 
@@ -118,7 +125,8 @@ namespace DAL.Persistence.MicrosoftSQL
 
         private Supplier Map(SqlDataReader reader)
         {
-            return Supplier.Reconstitute(
+            return Supplier.Reconstitute
+             (
                 id: (Guid)reader["Id"],
                 rawCompanyName: reader["CompanyName"]?.ToString(),
                 rawContactName: reader["ContactName"]?.ToString(),

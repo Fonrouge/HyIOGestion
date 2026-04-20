@@ -11,7 +11,7 @@ namespace Domain.Repositories
         /// <summary>
         /// Obtiene la lista completa de Dígitos Verificadores Horizontales (DVH) de una tabla específica.
         /// </summary>
-        Task<List<string>> GetVerticalHashesAsync(string tableName, string connectionString);
+        Task<List<string>> GetVerticalHashesAsync(string tableName, string connectionString, bool hasId = true);
 
         /// <summary>
         /// Actualiza o inserta el Dígito Verificador Vertical (DVV) para una tabla en la tabla de control.

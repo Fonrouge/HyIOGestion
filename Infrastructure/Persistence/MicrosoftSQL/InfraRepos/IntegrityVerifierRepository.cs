@@ -26,7 +26,7 @@ namespace DAL.Persistence.MicrosoftSQL
         /// <summary>
         /// Obtiene todos los DVH de una tabla específica para recalcular el DVV de forma asíncrona.
         /// </summary>
-        public async Task<List<string>> GetVerticalHashesAsync(string tableName, string connectionString)
+        public async Task<List<string>> GetVerticalHashesAsync(string tableName, string connectionString, bool hasId = true)
         {
             List<string> hashes = new List<string>();
 
@@ -38,22 +38,26 @@ namespace DAL.Persistence.MicrosoftSQL
 
             try
             {
-                string query = $"SELECT DVH FROM [{tableName}] ORDER BY Id";
+                string query = "";
+                if (hasId)
+                    query = $"SELECT DVH FROM [{tableName}] ORDER BY Id";
+                else
+                    query = $"SELECT DVH FROM [{tableName}] ORDER BY DVH";
 
                 using (var cmd = new SqlCommand(query, conn))
-                {
-                    if (isExternalConn) cmd.Transaction = _currentTransaction;
-
-                    if (!isExternalConn) await conn.OpenAsync(); // Asíncrono
-
-                    using (var reader = await cmd.ExecuteReaderAsync()) // Asíncrono
                     {
-                        while (await reader.ReadAsync()) // Asíncrono
+                        if (isExternalConn) cmd.Transaction = _currentTransaction;
+
+                        if (!isExternalConn) await conn.OpenAsync(); // Asíncrono
+
+                        using (var reader = await cmd.ExecuteReaderAsync()) // Asíncrono
                         {
-                            hashes.Add(reader["DVH"].ToString());
+                            while (await reader.ReadAsync()) // Asíncrono
+                            {
+                                hashes.Add(reader["DVH"].ToString());
+                            }
                         }
                     }
-                }
             }
             finally
             {
