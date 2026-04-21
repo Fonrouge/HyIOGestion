@@ -28,7 +28,6 @@ namespace WinformsUI.Forms.Base
 
         // Controles comunes 
         protected CustomDGVRibbon _dgvRibbonControls;
-        protected TableLayoutPanel _miniCollapsedBar;
         protected EyeRestRibbon _eyeRestRibbonControls;
         protected CustomDGVForm _dgvForm;
         protected BindingList<TEntity> _entitiesList;
@@ -104,18 +103,22 @@ namespace WinformsUI.Forms.Base
        .Add("Ctrl+W+", () => HandleBaseFormClosed(this, null)) //Al ser un form inyectado dentro de otro (HostForm en esta implementación) debe poder notificarlo "hacia afuera", por tanto se termina enviando un pedido al Messenger.
        .Add("Ctrl+plus", () => _dgvForm.ZoomIn())
        .Add("Ctrl+minus", () => _dgvForm.ZoomOut())
-       .Add("Ctrl+H", () => ToolStripsPanelToggle(toolStripsPanel))
+       .Add("Ctrl+H", () => ToolStripsPanelToggle(gigaTLP))
        .Add("Ctrl+F", () => _dgvForm.ToggleFiltersPanel())
        .BindWheelZoom(() => _dgvForm.ZoomIn(), () => _dgvForm.ZoomOut()) // Ctrl + rueda
        ;
 
-        private byte _conditionalSearchBarStates = 0;
-        private Panel toolStripsPanel;
+        private Panel gigaTLP;
+        public TableLayoutPanel miniTLP;
+        public TextBox miniSearchBar;
+        public bool searchBarIsKidnapped = false;
+        
         private ToolStripButton btnToggleRibbon;
 
+        private byte _conditionalSearchBarStates = 0;
         private void BtnToggleRibbonClick(object sender, EventArgs e)
         {
-            ToolStripsPanelToggle(toolStripsPanel);
+            ToolStripsPanelToggle(gigaTLP);
 
         }
 
@@ -125,8 +128,6 @@ namespace WinformsUI.Forms.Base
 
             btnToggleRibbon.Click -= BtnToggleRibbon_Click;
             btnToggleRibbon.Click += BtnToggleRibbon_Click;
-
-
 
         }
 
@@ -140,14 +141,14 @@ namespace WinformsUI.Forms.Base
             if (tsPanel == null) return;
 
             SuspendLayout();
-            toolStripsPanel = tsPanel;
+            gigaTLP = tsPanel;
 
-            toolStripsPanel.Visible = !toolStripsPanel.Visible;
+            gigaTLP.Visible = !gigaTLP.Visible;
 
-            if (_miniCollapsedBar != null)
-                _miniCollapsedBar.Visible = !toolStripsPanel.Visible;
+            if (miniTLP != null)
+                miniTLP.Visible = !gigaTLP.Visible;
 
-            if (toolStripsPanel.Visible == true)
+            if (gigaTLP.Visible == true)
             {
                 if (miniTLP != null)
                 {
@@ -162,16 +163,13 @@ namespace WinformsUI.Forms.Base
                 {
                     miniTLP.Visible = true;
                     miniSearchBar = _dgvForm.AskForSearchBar();
-                    miniTLP.Controls.Add(miniSearchBar);
+                    miniTLP.Controls.Add(miniSearchBar, 1, 0);
                     searchBarIsKidnapped = true;
                 }
             }
             ResumeLayout();
         }
 
-        public TableLayoutPanel miniTLP;
-        public TextBox miniSearchBar;
-        public bool searchBarIsKidnapped = false;
 
         public void ConditionalSearchBarBehavior()
         {

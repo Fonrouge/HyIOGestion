@@ -861,6 +861,12 @@ namespace Winforms.Theme
                     continue;
                 }
 
+                if (pnl.Tag is "PanelAccentuable")
+                {
+                    ApplyGradientBackground(pnl, Color.Green, Color.Red, LinearGradientMode.Horizontal, false);
+                    return;
+                }
+
                 bool isDarkPalette = IsDarkPalette(p);
 
                 // Panel común 3D o plano - Revisa taggeos, de no haberlos, pinta por default.

@@ -14,6 +14,7 @@ namespace WinformsUI.Forms.ClientCRUDL
 {
     /*
     BaseManagementForm<ClientDTO>
+    Form
     */
     public partial class ClientForm : BaseManagementForm<ClientDTO>, IClientView
     {
@@ -41,10 +42,13 @@ namespace WinformsUI.Forms.ClientCRUDL
             InitializePanelToggle();
 
             this.Load += OnceLoaded;
-            _miniCollapsedBar = miniTableLayoutPanel;
-
-            miniTLP = miniTableLayoutPanel;
             
+            
+
+           
+
+            base.miniTLP = miniTLP;
+
 
         }
 
@@ -110,11 +114,11 @@ namespace WinformsUI.Forms.ClientCRUDL
             _dgvRibbonControls = DGVFunctionsControl;
             _eyeRestRibbonControls = eyeRestRibbon;
             base.InitializeRibbonControls();
-            
-            
+
+
         }
 
-        public void InitializePanelToggle() => base.ToolStripsPanelToggle(toolStripsPanel);
+        public void InitializePanelToggle() => base.ToolStripsPanelToggle(ribbonTLP);
 
 
         // =========================================================
@@ -149,6 +153,6 @@ namespace WinformsUI.Forms.ClientCRUDL
             }
         }
 
-
+  
     }
 }
