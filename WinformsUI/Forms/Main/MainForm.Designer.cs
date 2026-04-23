@@ -94,7 +94,7 @@
             this.tlpMenu.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 55F));
             this.tlpMenu.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 55F));
             this.tlpMenu.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tlpMenu.Size = new System.Drawing.Size(165, 837);
+            this.tlpMenu.Size = new System.Drawing.Size(165, 835);
             this.tlpMenu.TabIndex = 5;
             this.tlpMenu.Tag = "ExternalTitleBar";
             // 
@@ -127,7 +127,7 @@
             this.btnOpenClients.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnOpenClients.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnOpenClients.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.btnOpenClients.Location = new System.Drawing.Point(5, 328);
+            this.btnOpenClients.Location = new System.Drawing.Point(5, 327);
             this.btnOpenClients.Margin = new System.Windows.Forms.Padding(5);
             this.btnOpenClients.Name = "btnOpenClients";
             this.btnOpenClients.Padding = new System.Windows.Forms.Padding(43, 0, 0, 0);
@@ -150,7 +150,7 @@
             this.btnOpenEmployees.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnOpenEmployees.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnOpenEmployees.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.btnOpenEmployees.Location = new System.Drawing.Point(5, 383);
+            this.btnOpenEmployees.Location = new System.Drawing.Point(5, 382);
             this.btnOpenEmployees.Margin = new System.Windows.Forms.Padding(5);
             this.btnOpenEmployees.Name = "btnOpenEmployees";
             this.btnOpenEmployees.Padding = new System.Windows.Forms.Padding(43, 0, 0, 0);
@@ -173,7 +173,7 @@
             this.btnOpenProducts.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnOpenProducts.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnOpenProducts.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.btnOpenProducts.Location = new System.Drawing.Point(5, 548);
+            this.btnOpenProducts.Location = new System.Drawing.Point(5, 547);
             this.btnOpenProducts.Margin = new System.Windows.Forms.Padding(5);
             this.btnOpenProducts.Name = "btnOpenProducts";
             this.btnOpenProducts.Padding = new System.Windows.Forms.Padding(43, 0, 0, 0);
@@ -196,7 +196,7 @@
             this.btnOpenSuppliers.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnOpenSuppliers.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnOpenSuppliers.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.btnOpenSuppliers.Location = new System.Drawing.Point(5, 603);
+            this.btnOpenSuppliers.Location = new System.Drawing.Point(5, 602);
             this.btnOpenSuppliers.Margin = new System.Windows.Forms.Padding(5);
             this.btnOpenSuppliers.Name = "btnOpenSuppliers";
             this.btnOpenSuppliers.Padding = new System.Windows.Forms.Padding(43, 0, 0, 0);
@@ -219,7 +219,7 @@
             this.btnOpenSales.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnOpenSales.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnOpenSales.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.btnOpenSales.Location = new System.Drawing.Point(5, 438);
+            this.btnOpenSales.Location = new System.Drawing.Point(5, 437);
             this.btnOpenSales.Margin = new System.Windows.Forms.Padding(5);
             this.btnOpenSales.Name = "btnOpenSales";
             this.btnOpenSales.Padding = new System.Windows.Forms.Padding(43, 0, 0, 0);
@@ -242,7 +242,7 @@
             this.btnOpenPayments.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnOpenPayments.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnOpenPayments.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.btnOpenPayments.Location = new System.Drawing.Point(5, 493);
+            this.btnOpenPayments.Location = new System.Drawing.Point(5, 492);
             this.btnOpenPayments.Margin = new System.Windows.Forms.Padding(5);
             this.btnOpenPayments.Name = "btnOpenPayments";
             this.btnOpenPayments.Padding = new System.Windows.Forms.Padding(43, 0, 0, 0);
@@ -265,7 +265,7 @@
             this.btnOpenConfigs.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnOpenConfigs.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnOpenConfigs.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.btnOpenConfigs.Location = new System.Drawing.Point(5, 658);
+            this.btnOpenConfigs.Location = new System.Drawing.Point(5, 657);
             this.btnOpenConfigs.Margin = new System.Windows.Forms.Padding(5);
             this.btnOpenConfigs.Name = "btnOpenConfigs";
             this.btnOpenConfigs.Padding = new System.Windows.Forms.Padding(43, 0, 0, 0);
@@ -350,7 +350,7 @@
             this.pnlDashboard.Margin = new System.Windows.Forms.Padding(0);
             this.pnlDashboard.Name = "pnlDashboard";
             this.pnlDashboard.Padding = new System.Windows.Forms.Padding(0, 30, 0, 0);
-            this.pnlDashboard.Size = new System.Drawing.Size(1290, 762);
+            this.pnlDashboard.Size = new System.Drawing.Size(1288, 760);
             this.pnlDashboard.TabIndex = 14;
             this.pnlDashboard.Tag = "NonPaintable";
             // 
@@ -361,7 +361,7 @@
             this.pnlSlotForTabs.Location = new System.Drawing.Point(2, 2);
             this.pnlSlotForTabs.Margin = new System.Windows.Forms.Padding(2);
             this.pnlSlotForTabs.Name = "pnlSlotForTabs";
-            this.pnlSlotForTabs.Size = new System.Drawing.Size(1166, 40);
+            this.pnlSlotForTabs.Size = new System.Drawing.Size(1164, 40);
             this.pnlSlotForTabs.TabIndex = 6;
             this.pnlSlotForTabs.Tag = "NonPaintable";
             // 
@@ -383,7 +383,7 @@
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1290, 44);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1288, 44);
             this.tableLayoutPanel1.TabIndex = 12;
             this.tableLayoutPanel1.Tag = "ExternalTitleBar";
             // 
@@ -395,7 +395,7 @@
             this.btnClose.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnClose.FlatAppearance.BorderSize = 0;
             this.btnClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnClose.Location = new System.Drawing.Point(1253, 3);
+            this.btnClose.Location = new System.Drawing.Point(1251, 3);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(34, 38);
             this.btnClose.TabIndex = 18;
@@ -410,7 +410,7 @@
             this.btnExpand.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnExpand.FlatAppearance.BorderSize = 0;
             this.btnExpand.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnExpand.Location = new System.Drawing.Point(1213, 3);
+            this.btnExpand.Location = new System.Drawing.Point(1211, 3);
             this.btnExpand.Name = "btnExpand";
             this.btnExpand.Size = new System.Drawing.Size(34, 38);
             this.btnExpand.TabIndex = 17;
@@ -425,7 +425,7 @@
             this.btnMinimize.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnMinimize.FlatAppearance.BorderSize = 0;
             this.btnMinimize.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnMinimize.Location = new System.Drawing.Point(1173, 3);
+            this.btnMinimize.Location = new System.Drawing.Point(1171, 3);
             this.btnMinimize.Name = "btnMinimize";
             this.btnMinimize.Size = new System.Drawing.Size(34, 38);
             this.btnMinimize.TabIndex = 16;
@@ -435,9 +435,9 @@
             // customStatusBar
             // 
             this.customStatusBar.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.customStatusBar.Location = new System.Drawing.Point(165, 806);
+            this.customStatusBar.Location = new System.Drawing.Point(165, 804);
             this.customStatusBar.Name = "customStatusBar";
-            this.customStatusBar.Size = new System.Drawing.Size(1290, 31);
+            this.customStatusBar.Size = new System.Drawing.Size(1288, 31);
             this.customStatusBar.TabIndex = 15;
             // 
             // MainForm
@@ -455,6 +455,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "MainForm";
+            this.Padding = new System.Windows.Forms.Padding(0, 0, 2, 2);
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Tag = "NonPaintable";
             this.Text = "ITHES - Lector";

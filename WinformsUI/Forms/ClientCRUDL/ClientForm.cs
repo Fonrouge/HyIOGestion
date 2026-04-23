@@ -3,11 +3,12 @@ using Presenter.ForClient;
 using Presenter.Presenters.ForClient;
 using Shared;
 using System;
+using System.Threading.Tasks;
 using System.Windows.Forms;
-using Winforms.Theme;
 using WinformsUI.Forms.Base;
 using WinformsUI.Infrastructure.Factories;
 using WinformsUI.Infrastructure.Translations;
+using WinformsUI.UserControls;
 using WinformsUI.UserControls.CustomDGV;
 
 namespace WinformsUI.Forms.ClientCRUDL
@@ -42,15 +43,23 @@ namespace WinformsUI.Forms.ClientCRUDL
             InitializePanelToggle();
 
             this.Load += OnceLoaded;
-            
-            
-
-           
-
-            base.miniTLP = miniTLP;
 
 
+
+            base.gigaRibbonContainer = gigaRibbonPanel;
+            base.miniRibbonContainer = miniRibbonPanel;
+
+            base.miniRibbonTLP = miniTLP;
+
+
+            base.AttachBtnToggleRibbon(btnRibbonCollapser);
+            base.AttachBtnToggleRibbon(btnRibbonExpander);
+            base.AttachFeedbackBarContainer(panel1);
+
+            DoubleBuffering.TryForAllControls(this.Controls);
         }
+
+        public void IdleFeedbackPanel(object sender, EventArgs e) { } //borrar, es para que compile la poronga del diseñador. después sacar el enlace que tiene el botón a este método
 
         private void OnceLoaded(object sender, EventArgs e) => OnceLoadedAdvice?.Invoke(this, EventArgs.Empty);
 
@@ -111,14 +120,12 @@ namespace WinformsUI.Forms.ClientCRUDL
 
         private new void InitializeRibbonControls()
         {
-            _dgvRibbonControls = DGVFunctionsControl;
-            _eyeRestRibbonControls = eyeRestRibbon;
+            _dgvRibbonControls = DgvFunctionsRibbon;
+            _eyeRestRibbonControls = EyeRestRibbon;
             base.InitializeRibbonControls();
-
-
         }
 
-        public void InitializePanelToggle() => base.ToolStripsPanelToggle(ribbonTLP);
+        public void InitializePanelToggle() => base.ToolStripsPanelToggle(gigaRibbonPanel);
 
 
         // =========================================================
@@ -135,11 +142,11 @@ namespace WinformsUI.Forms.ClientCRUDL
                 if (btnRefresh != null) btnRefresh.Click -= OnListAllRequest;
 
                 // Limpieza del toolstrip
-                if (DGVFunctionsControl != null)
+                if (DgvFunctionsRibbon != null)
                 {
-                    DGVFunctionsControl.TargetDGV = null;
-                    DGVFunctionsControl.Dispose();
-                    DGVFunctionsControl = null;
+                    DgvFunctionsRibbon.TargetDGV = null;
+                    DgvFunctionsRibbon.Dispose();
+                    DgvFunctionsRibbon = null;
                 }
 
                 _entitiesList = null;
@@ -153,6 +160,23 @@ namespace WinformsUI.Forms.ClientCRUDL
             }
         }
 
-  
+
+
+        //====================================================================================
+        //                   PARA LLAMADOS INTERNOS DESDE BOTONES    (etapa debug y testing)
+        //====================================================================================
+        private void btnDebugCargar(object sender, EventArgs e) => SetFeedbackState(FeedbackState.Loading);
+        private void btnDebugSuccess(object sender, EventArgs e) => SetFeedbackState(FeedbackState.Success);
+        private void btnDebugError(object sender, EventArgs e) => SetFeedbackState(FeedbackState.Error);
+        private void btnDebugActiveToogle(object sender, EventArgs e) => base.ChangeActivationStateFeedbackBar();
+
+
+        //====================================================================================
+        //                   API PÚBLICA PARA PRESENTER (etapa debug y testing)
+        //====================================================================================       
+
+        public async Task TryLoadingState() => await SetFeedbackState(FeedbackState.Loading);
+        public async Task TrySuccessCommand() => await SetFeedbackState(FeedbackState.Success);
+        public async Task TryErrorCommand() => await SetFeedbackState(FeedbackState.Error);
     }
 }

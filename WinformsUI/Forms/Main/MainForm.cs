@@ -1,4 +1,5 @@
-﻿using Presenter.ForClient;
+﻿using BLL.DTOs;
+using Presenter.ForClient;
 using Presenter.ForEmployee;
 using Presenter.ForPayments;
 using Presenter.ForProducts;
@@ -12,21 +13,21 @@ using SharedAbstractions.ArchitecturalMarkers;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
 using Winforms.Theme;
-using WinformsUI.Forms.ConfigurationsMenu;
 using WinformsUI.Forms.Base;
+using WinformsUI.Forms.ConfigurationsMenu;
 using WinformsUI.Infrastructure;
 using WinformsUI.Infrastructure.Factories;
 using WinformsUI.Infrastructure.Translations;
 using WinformsUI.Infrastructure.UserInterface.Windowing;
 using WinformsUI.Properties;
-using WinformsUI.UserControls.CustomDGV;
-using static Winforms.Theme.DarkTheme;
 using WinformsUI.UserControls;
-using BLL.DTOs;
-using System.Drawing.Drawing2D;
+using WinformsUI.UserControls.CustomDGV;
+using static System.Net.WebRequestMethods;
+using static Winforms.Theme.DarkTheme;
 
 namespace WinformsUI.Forms.Main
 {
@@ -71,7 +72,16 @@ namespace WinformsUI.Forms.Main
         // Mapea la instancia del form con su LLAVE de traducción (ej: "MainForm._employeeTitle")
         private Dictionary<IHostFormActions, string> _formTranslationKeys = new Dictionary<IHostFormActions, string>();
 
-
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                CreateParams cp = base.CreateParams;
+                // 0x02000000 = WS_EX_COMPOSITED
+                cp.ExStyle |= 0x02000000;
+                return cp;
+            }
+        }
         #region Events (View to Presenter Communication)
 
         /// <summary>Fired when the user requests to close the application.</summary>
@@ -619,6 +629,50 @@ namespace WinformsUI.Forms.Main
             ResumeLayout();
         }
 
+        private const int _resizeBorder = 10;
+        private const int WM_NCHITTEST = 0x84;
+        private const int HTCLIENT = 0x1;
+        private const int HTLEFT = 10;
+        private const int HTRIGHT = 11;
+        private const int HTTOP = 12;
+        private const int HTTOPLEFT = 13;
+        private const int HTTOPRIGHT = 14;
+        private const int HTBOTTOM = 15;
+        private const int HTBOTTOMLEFT = 16;
+        private const int HTBOTTOMRIGHT = 17;
+        public bool IsMaximized { get; set; } = false;
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == WM_NCHITTEST)
+            {
+                base.WndProc(ref m);
 
+                if ((int)m.Result == HTCLIENT)
+                {
+                    if (IsMaximized) return;
+
+                    Point screenPoint = new Point(m.LParam.ToInt32());
+                    Point clientPoint = this.PointToClient(screenPoint);
+
+                    if (clientPoint.Y <= _resizeBorder)
+                    {
+                        if (clientPoint.X <= _resizeBorder) m.Result = (IntPtr)HTTOPLEFT;
+                        else if (clientPoint.X >= (this.Size.Width - _resizeBorder)) m.Result = (IntPtr)HTTOPRIGHT;
+                        else m.Result = (IntPtr)HTTOP;
+                    }
+                    else if (clientPoint.Y >= (this.Size.Height - _resizeBorder))
+                    {
+                        if (clientPoint.X <= _resizeBorder) m.Result = (IntPtr)HTBOTTOMLEFT;
+                        else if (clientPoint.X >= (this.Size.Width - _resizeBorder)) m.Result = (IntPtr)HTBOTTOMRIGHT;
+                        else m.Result = (IntPtr)HTBOTTOM;
+                    }
+                    else if (clientPoint.X <= _resizeBorder) m.Result = (IntPtr)HTLEFT;
+                    else if (clientPoint.X >= (this.Size.Width - _resizeBorder)) m.Result = (IntPtr)HTRIGHT;
+                }
+                return;
+            }
+
+            base.WndProc(ref m);
+        }
     }
 }

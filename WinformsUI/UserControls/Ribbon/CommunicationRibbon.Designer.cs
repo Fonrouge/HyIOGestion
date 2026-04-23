@@ -46,7 +46,7 @@
             this.btnDelete});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Padding = new System.Windows.Forms.Padding(0, 10, 0, 0);
+            this.toolStrip1.Padding = new System.Windows.Forms.Padding(0);
             this.toolStrip1.Size = new System.Drawing.Size(215, 82);
             this.toolStrip1.TabIndex = 34;
             this.toolStrip1.Text = "toolStrip1";
@@ -59,7 +59,7 @@
             this.btnCreate.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
             this.btnCreate.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.btnCreate.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnCreate.Margin = new System.Windows.Forms.Padding(0, -10, 0, 0);
+            this.btnCreate.Margin = new System.Windows.Forms.Padding(0);
             this.btnCreate.Name = "btnCreate";
             this.btnCreate.Padding = new System.Windows.Forms.Padding(15, 0, 15, 0);
             this.btnCreate.Size = new System.Drawing.Size(96, 82);
@@ -75,7 +75,7 @@
             this.btnDelete.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
             this.btnDelete.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.btnDelete.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnDelete.Margin = new System.Windows.Forms.Padding(0, -10, 0, 0);
+            this.btnDelete.Margin = new System.Windows.Forms.Padding(0);
             this.btnDelete.Name = "btnDelete";
             this.btnDelete.Padding = new System.Windows.Forms.Padding(25, 0, 25, 0);
             this.btnDelete.Size = new System.Drawing.Size(86, 82);

@@ -68,7 +68,7 @@ namespace Presenter.Presenters.ForProducts
         }
         private void SendRelistAsk()
         {
-            var relistSuppliersAsk = new ClientsRelistRequestMessage(this);
+            var relistSuppliersAsk = new ProductsRelistRequestMessage(this);
             _messenger.Send(relistSuppliersAsk);
         }
 

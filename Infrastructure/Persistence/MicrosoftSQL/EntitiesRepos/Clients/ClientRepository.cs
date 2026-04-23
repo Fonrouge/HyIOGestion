@@ -53,7 +53,6 @@ namespace DAL.Persistence.MicrosoftSQL
 
         public async Task DeleteAsync(Guid entityId)
         {
-            // Corregido el typo: "SET IsDeleted = 1 = 0" -> "SET IsDeleted = 1"
             string query = "UPDATE Clients SET IsDeleted = 1 WHERE Id = @Id";
             await ExecuteNonQueryAsync(query, cmd => cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = entityId }));
         }

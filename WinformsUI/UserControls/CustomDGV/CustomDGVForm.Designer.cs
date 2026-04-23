@@ -16,17 +16,16 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.mainDGV = new System.Windows.Forms.DataGridView();
             this.tableLayoutPanelSearchControls = new System.Windows.Forms.TableLayoutPanel();
             this.tbSearchBar = new System.Windows.Forms.TextBox();
-            this.btnShowFilters = new System.Windows.Forms.Button();
             this.cbColumnsNameSearch = new System.Windows.Forms.ComboBox();
             this.dateTimePickerUpTo = new System.Windows.Forms.DateTimePicker();
             this.dateTimePickerSince = new System.Windows.Forms.DateTimePicker();
             this.panelHorDivider = new System.Windows.Forms.Panel();
-            this.panel1 = new System.Windows.Forms.Panel();
+            this.horizontalDividerPanel = new System.Windows.Forms.Panel();
             this.tableLayoutPanelFilters = new System.Windows.Forms.TableLayoutPanel();
             this.checkedListBoxFilters = new System.Windows.Forms.CheckedListBox();
             this.btnApplyFilter = new System.Windows.Forms.Button();
@@ -43,6 +42,7 @@
             this.rbAtLeastOneCategory = new System.Windows.Forms.RadioButton();
             this.rbAllCategories = new System.Windows.Forms.RadioButton();
             this.label5 = new System.Windows.Forms.Label();
+            this.btnShowFilters = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.mainDGV)).BeginInit();
             this.tableLayoutPanelSearchControls.SuspendLayout();
             this.tableLayoutPanelFilters.SuspendLayout();
@@ -52,26 +52,26 @@
             // mainDGV
             // 
             this.mainDGV.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.ColumnHeader;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.mainDGV.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.mainDGV.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.mainDGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.mainDGV.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.mainDGV.DefaultCellStyle = dataGridViewCellStyle2;
             this.mainDGV.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mainDGV.Location = new System.Drawing.Point(251, 50);
-            this.mainDGV.Margin = new System.Windows.Forms.Padding(15, 3, 3, 3);
+            this.mainDGV.Margin = new System.Windows.Forms.Padding(15, 0, 3, 3);
             this.mainDGV.Name = "mainDGV";
             this.mainDGV.Size = new System.Drawing.Size(1125, 757);
             this.mainDGV.TabIndex = 23;
@@ -107,19 +107,6 @@
             this.tbSearchBar.Name = "tbSearchBar";
             this.tbSearchBar.Size = new System.Drawing.Size(1098, 26);
             this.tbSearchBar.TabIndex = 15;
-            // 
-            // btnShowFilters
-            // 
-            this.btnShowFilters.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnShowFilters.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnShowFilters.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnShowFilters.Image = global::WinformsUI.Properties.Resources.FiltersIcon;
-            this.btnShowFilters.Location = new System.Drawing.Point(3, 4);
-            this.btnShowFilters.Name = "btnShowFilters";
-            this.btnShowFilters.Size = new System.Drawing.Size(37, 37);
-            this.btnShowFilters.TabIndex = 12;
-            this.btnShowFilters.Tag = "IsImageColorable";
-            this.btnShowFilters.UseVisualStyleBackColor = true;
             // 
             // cbColumnsNameSearch
             // 
@@ -161,15 +148,16 @@
             this.panelHorDivider.TabIndex = 25;
             this.panelHorDivider.Tag = "";
             // 
-            // panel1
+            // horizontalDividerPanel
             // 
-            this.panel1.BackColor = System.Drawing.Color.Transparent;
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel1.Location = new System.Drawing.Point(0, 45);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1376, 5);
-            this.panel1.TabIndex = 28;
-            this.panel1.Tag = "";
+            this.horizontalDividerPanel.BackColor = System.Drawing.Color.Transparent;
+            this.horizontalDividerPanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.horizontalDividerPanel.Location = new System.Drawing.Point(0, 45);
+            this.horizontalDividerPanel.Margin = new System.Windows.Forms.Padding(0);
+            this.horizontalDividerPanel.Name = "horizontalDividerPanel";
+            this.horizontalDividerPanel.Size = new System.Drawing.Size(1376, 5);
+            this.horizontalDividerPanel.TabIndex = 28;
+            this.horizontalDividerPanel.Tag = "";
             // 
             // tableLayoutPanelFilters
             // 
@@ -194,7 +182,7 @@
             this.tableLayoutPanelFilters.Controls.Add(this.label5, 0, 5);
             this.tableLayoutPanelFilters.Dock = System.Windows.Forms.DockStyle.Left;
             this.tableLayoutPanelFilters.Location = new System.Drawing.Point(0, 50);
-            this.tableLayoutPanelFilters.Margin = new System.Windows.Forms.Padding(3, 10, 10, 3);
+            this.tableLayoutPanelFilters.Margin = new System.Windows.Forms.Padding(3, 0, 10, 3);
             this.tableLayoutPanelFilters.Name = "tableLayoutPanelFilters";
             this.tableLayoutPanelFilters.RowCount = 15;
             this.tableLayoutPanelFilters.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
@@ -422,6 +410,19 @@
             this.label5.Tag = "Accented";
             this.label5.Text = "Elegir periodo";
             // 
+            // btnShowFilters
+            // 
+            this.btnShowFilters.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnShowFilters.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnShowFilters.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnShowFilters.Image = global::WinformsUI.Properties.Resources.FiltersIcon;
+            this.btnShowFilters.Location = new System.Drawing.Point(3, 4);
+            this.btnShowFilters.Name = "btnShowFilters";
+            this.btnShowFilters.Size = new System.Drawing.Size(37, 37);
+            this.btnShowFilters.TabIndex = 12;
+            this.btnShowFilters.Tag = "IsImageColorable";
+            this.btnShowFilters.UseVisualStyleBackColor = true;
+            // 
             // CustomDGVForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -430,7 +431,7 @@
             this.Controls.Add(this.mainDGV);
             this.Controls.Add(this.panelHorDivider);
             this.Controls.Add(this.tableLayoutPanelFilters);
-            this.Controls.Add(this.panel1);
+            this.Controls.Add(this.horizontalDividerPanel);
             this.Controls.Add(this.tableLayoutPanelSearchControls);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "CustomDGVForm";
@@ -454,7 +455,7 @@
         private System.Windows.Forms.DateTimePicker dateTimePickerUpTo;
         private System.Windows.Forms.DateTimePicker dateTimePickerSince;
         private System.Windows.Forms.Panel panelHorDivider;
-        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Panel horizontalDividerPanel;
         private System.Windows.Forms.TextBox tbSearchBar;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanelFilters;
         private System.Windows.Forms.CheckedListBox checkedListBoxFilters;

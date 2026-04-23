@@ -307,4 +307,16 @@
   <data name="SmallEditIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SmallEditIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="BigIconPDF" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\BigIconPDF.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="BigIconCSV" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\BigIconCSV.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="bigIconExcel" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bigIconExcel.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="BigIconPrint" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\BigIconPrint.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

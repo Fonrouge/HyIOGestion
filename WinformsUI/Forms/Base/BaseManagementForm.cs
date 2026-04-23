@@ -4,6 +4,8 @@ using SharedAbstractions.ArchitecturalMarkers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Winforms.Theme;
 using WinformsUI.Infrastructure.Shortcuts;
@@ -21,34 +23,54 @@ namespace WinformsUI.Forms.Base
     /// <typeparam name="TEntity">El tipo de DTO que gestiona este formulario.</typeparam>
     public class BaseManagementForm<TEntity> : Form, IView where TEntity : IDto
     {
-        // Dependencias inyectadas
+        // DEPENDENCIAS INYECTADAS
         protected readonly IApplicationSettings _appSettings;
         protected readonly ITranslatableControlsManager _transMgr;
         protected readonly ICustomDGVFactory _dgvFactory;
 
-        // Controles comunes 
+
+        // CUSTOM CONTROLS 
+
+        //--Ribbons + Relacionados--
         protected CustomDGVRibbon _dgvRibbonControls;
         protected EyeRestRibbon _eyeRestRibbonControls;
-        protected CustomDGVForm _dgvForm;
-        protected BindingList<TEntity> _entitiesList;
-        protected TEntity _currentSelectedEntity;
+        protected ExportRibbon _exportRibbon; //Falta implementar
 
-        // Mensaje estándar para operaciones 
-        protected string _successOperationMessage;
+        protected Panel gigaRibbonContainer; //Contenedor Ribbon versión grande (con un TLP en autosize como contenedor macro, si se cambia la visibilidad del panel, automáticamente colapsa). Además, permite coloración uniforme al ser un bloque "sólido".
+        protected Panel miniRibbonContainer; //Contenedor de Ribbon versión mini - Mismo principio que giga.
+        protected TableLayoutPanel miniRibbonTLP; //TLP que va DENTRO del contenedor Giga. Otorga la cuadrícula sobre la que disponer los íconos.
+        protected TextBox miniSearchBar; //Dirección que apunta a la SearchBar original de CustomDGVForm. Se secuestra la SearchBar de CustomDGVForm removiéndola de su contenedor y añadiéndola en un contenedor de esta misma clase. Evita problemas de doble suscripción de eventos y persiste en el estado que el usuario la dejó.
+        protected Button btnToggleRibbon; //Botón que triggerea la misma acción que CTRL+H. Cambiar la visibilidad = !visibilidad de los contenedores mini y giga. Siempre distintos para simular colapso y extensión de uno y otro.
+        protected bool searchBarIsKidnapped = false; //Flag para diferenciar en qué control está incrustado el TextBox SearchBar.
 
-        // Eventos estándar
+
+        //--DataGridView + Relacionados--
+        protected CustomDGVForm _dgvForm; //Wrapper de DataGridView con funcionalidades añadidas.
+        protected BindingList<TEntity> _entitiesList; //Lista que se usa como contenido del DGV de CustomDGVForm.
+        protected TEntity _currentSelectedEntity; //Entidad reconstruida a partir de la fila seleccionada del DGV de CustomDGVForm.
+
+
+        // FEEDBACK
+        protected string _successOperationMessage; //Mensaje predeterminado para implementación en MessageBox o futuras implementaciones que no corten el flow de trabajo
+        private Panel _feedbackBarContainer; //Contenedor donde se dispondrá el custom control que hará de "barrita pintada" (Feedback Bar).
+        private SilentFeedbackBar _feedbackBar; //Lógica de pintado y animiación.
+        Size _originalFeedbackBarSize = new Size(); //Tamaño original del contenedor de Feedback Bar.
+
+
+        // EVENTOS ESTÁNDAR
         public event EventHandler CreateRequested;
         public event EventHandler<TEntity> UpdateRequested;
         public event EventHandler<TEntity> DeleteRequested;
         public event EventHandler ListAllRequested;
         public event EventHandler CloseRequested;
-        public virtual event EventHandler OnceLoadedAdvice;
+        public virtual event EventHandler OnceLoadedAdvice; //Virtual para que cada form hijo overrideé este evento indicando cuando terminó de cargar.
 
-        // Atajos de teclado
+        // ATAJOS DE TECLADO
         private ShortcutManager _shortcutMgr;
-        public Guid ViewId { get; set; } = Guid.NewGuid();
+        private byte _conditionalSearchBarStates = 0; //Mini máquina de estados para determinar qué hará el atajo condicional CTRL+B.
 
-        public BaseManagementForm() { }
+        public Guid ViewId { get; set; } = Guid.NewGuid(); //Al ser un formulario inyectado dentro de oro formulario, tiene que poder enviar un evento para que
+                                                           //su contenedor padre sepa que está solicitando el cierre. Al enviar todos los formularios el mismo tipo de mensaje, si no hay un ID único se cerrarían todos los formularios en vez del solicitado.
 
         public BaseManagementForm
         (
@@ -72,9 +94,20 @@ namespace WinformsUI.Forms.Base
         //====================================================
         public virtual void ThemingNotifiedByConfigurationsModule()
         {
-            DarkTheme.RedrawBorders = true;
-            DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
-            _dgvForm.RepaintSearchBarPlaceHolder(DarkTheme.GetCurrentPalette().TextSecondary);
+
+            try //No se busca catchear ningún error, simplemente evitar problemas en la Race-Condition de repintado del placeholder vs. el cambio global de tema.
+            {
+                SuspendLayout();
+                DarkTheme.RedrawBorders = true;
+                DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
+            }
+            catch { }
+            finally
+            {
+                _dgvForm.RepaintSearchBarPlaceHolder(DarkTheme.GetCurrentPalette().TextSecondary);
+                ResumeLayout();
+            }
+
         }
 
 
@@ -103,76 +136,93 @@ namespace WinformsUI.Forms.Base
        .Add("Ctrl+W+", () => HandleBaseFormClosed(this, null)) //Al ser un form inyectado dentro de otro (HostForm en esta implementación) debe poder notificarlo "hacia afuera", por tanto se termina enviando un pedido al Messenger.
        .Add("Ctrl+plus", () => _dgvForm.ZoomIn())
        .Add("Ctrl+minus", () => _dgvForm.ZoomOut())
-       .Add("Ctrl+H", () => ToolStripsPanelToggle(gigaTLP))
+       .Add("Ctrl+H", () => ToolStripsPanelToggle(gigaRibbonContainer))
        .Add("Ctrl+F", () => _dgvForm.ToggleFiltersPanel())
        .BindWheelZoom(() => _dgvForm.ZoomIn(), () => _dgvForm.ZoomOut()) // Ctrl + rueda
        ;
 
-        private Panel gigaTLP;
-        public TableLayoutPanel miniTLP;
-        public TextBox miniSearchBar;
-        public bool searchBarIsKidnapped = false;
-        
-        private ToolStripButton btnToggleRibbon;
 
-        private byte _conditionalSearchBarStates = 0;
-        private void BtnToggleRibbonClick(object sender, EventArgs e)
-        {
-            ToolStripsPanelToggle(gigaTLP);
 
-        }
 
-        public void SetBtnToggleRibbonClick(ToolStripButton btn)
+        /// <summary>
+        /// Recibe un botón de una clase hija para colapsar/restaurar una de las dos barras Ribbon. La "mini" o la "giga".
+        /// </summary>
+        /// <param name="btn"></param>
+        public void AttachBtnToggleRibbon(Button btn)
         {
             btnToggleRibbon = btn;
-
-            btnToggleRibbon.Click -= BtnToggleRibbon_Click;
             btnToggleRibbon.Click += BtnToggleRibbon_Click;
-
         }
 
-        private void BtnToggleRibbon_Click(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
-        }
 
+        private void BtnToggleRibbon_Click(object sender, EventArgs e) => ToolStripsPanelToggle(gigaRibbonContainer);
+
+
+        /// <summary>
+        /// Colapsa una Ribbon y restaura su versión opuesta. Si expande la pequeña, contrae la grande o viceversa. Además pide prestada la SearchBae a CustomDGVForm o la devuelve para moverla entre contenedores.
+        /// </summary>
+        /// <param name="tsPanel"></param>
         public void ToolStripsPanelToggle(Panel tsPanel = null)
         {
             if (tsPanel == null) return;
 
-            SuspendLayout();
-            gigaTLP = tsPanel;
-
-            gigaTLP.Visible = !gigaTLP.Visible;
-
-            if (miniTLP != null)
-                miniTLP.Visible = !gigaTLP.Visible;
-
-            if (gigaTLP.Visible == true)
+            try
             {
-                if (miniTLP != null)
+                SuspendLayout();
+
+                gigaRibbonContainer = tsPanel;
+                gigaRibbonContainer.Visible = !gigaRibbonContainer.Visible;
+
+                if (miniRibbonContainer != null)
+                    miniRibbonContainer.Visible = !gigaRibbonContainer.Visible;
+
+                if (gigaRibbonContainer.Visible == true)
                 {
-                    miniTLP.Visible = false;
-                    _dgvForm.ReturnSearchBar(miniSearchBar);
-                    searchBarIsKidnapped = false;
+                    if (miniRibbonContainer != null)
+                    {
+                        miniRibbonContainer.Visible = false;
+                        _dgvForm.ReturnSearchBar(miniSearchBar);
+                        searchBarIsKidnapped = false;
+                        _dgvForm.SwitchHorizontalDividerVisibility(true);
+                    }
+                }
+                else
+                {
+                    if (miniRibbonContainer != null)
+                    {
+                        miniRibbonContainer.Visible = true;
+                        miniSearchBar = _dgvForm.AskForSearchBar();
+                        miniRibbonTLP.Controls.Add(miniSearchBar, 1, 0);
+                        searchBarIsKidnapped = true;
+                        _dgvForm.SwitchHorizontalDividerVisibility(false);
+                    }
                 }
             }
-            else
-            {
-                if (miniTLP != null)
-                {
-                    miniTLP.Visible = true;
-                    miniSearchBar = _dgvForm.AskForSearchBar();
-                    miniTLP.Controls.Add(miniSearchBar, 1, 0);
-                    searchBarIsKidnapped = true;
-                }
-            }
-            ResumeLayout();
+            catch { }
+            finally { ResumeLayout(); }
+
+
         }
-
-
+      protected override CreateParams CreateParams
+      {
+          get
+          {
+              CreateParams cp = base.CreateParams;
+              // 0x02000000 = WS_EX_COMPOSITED
+              cp.ExStyle |= 0x02000000;
+              return cp;
+          }
+      }
+   
+        /// <summary>
+        /// Mini máquina de estados que controla el comportamiento edl atajo de teclado CTRL+B. Dependiendo donde esté el foco y cómo estén colapsadas o no las Ribbon, tendrá diferentes comportamientos. Se detalla su comportamiento
+        /// en el propio código. Ver método.
+        /// </summary>
         public void ConditionalSearchBarBehavior()
         {
+
+            SuspendLayout();
+
             if (_dgvForm.IsToggleSearchBarVisible() && _conditionalSearchBarStates < 1) //Si está visible y nada pasó
             {
                 if (!searchBarIsKidnapped)
@@ -204,7 +254,63 @@ namespace WinformsUI.Forms.Base
                     _dgvForm.FocusSearchBar();
                 }
             }
+
+            ResumeLayout();
         }
+
+
+
+        /// <summary>
+        /// Método para que clases hijas puedan "plug & play" un contenedor -Panel- para obtener la lógica de pintado y animado de una Silent Feedback Bar.
+        /// </summary>
+        /// <param name="feedbackBarPanel"></param>
+        protected void AttachFeedbackBarContainer(Panel feedbackBarPanel)
+        {
+            _feedbackBarContainer = feedbackBarPanel;
+            _originalFeedbackBarSize = _feedbackBarContainer.Size;
+
+            _feedbackBar = new SilentFeedbackBar();
+            _feedbackBarContainer.Controls.Add(_feedbackBar);
+            _feedbackBar.Dock = DockStyle.Fill;
+        }
+
+        /// <summary>
+        /// Método para disparar una vez el formulario activo pierda el foco. La idea es tener un feedback visual claro de qué formulario tiene el foco en qué momento.
+        /// </summary>
+        protected void ChangeActivationStateFeedbackBar() => _feedbackBar.IsActiveModule = !_feedbackBar.IsActiveModule;
+
+
+        /// <summary>
+        /// Método para cambiar el estado desde el Presenter según sea necesario (Cargando > Success en try/Error en catch). Se manejan automáticamente los tiempos de
+        /// notificación visual.
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        public async Task SetFeedbackState(FeedbackState state)
+        {
+            if (this.InvokeRequired)
+            {
+                await (Task)this.Invoke(new Func<Task>(() => SetFeedbackState(state)));
+                return;
+            }
+
+            try
+            {
+                _feedbackBarContainer.Size = new Size(_originalFeedbackBarSize.Width, _originalFeedbackBarSize.Height + 5);
+                await _feedbackBar.TriggerFeedbackAsync(state);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error en Feedback: {ex.Message}");
+            }
+            finally
+            {               
+                _feedbackBarContainer.Size = _originalFeedbackBarSize;
+                await _feedbackBar.TriggerFeedbackAsync(FeedbackState.Idle);
+            }
+        }
+        public void IdleFeedbackPanel(object sender, EventArgs e) => SetFeedbackState(FeedbackState.Idle);
+
 
 
         //====================================================
@@ -212,14 +318,17 @@ namespace WinformsUI.Forms.Base
         //====================================================
         protected override void OnLoad(EventArgs e)
         {
-            base.OnLoad(e);
             DoubleBuffering.TryForAllControls(this.Controls);
+            SuspendLayout();
+
+            base.OnLoad(e);
 
             if (!DesignMode)
             {
                 SetBaseFormAppearance();
                 ApplyTranslation();
             }
+            ResumeLayout();
         }
 
         protected override void OnShown(EventArgs e)
@@ -262,6 +371,7 @@ namespace WinformsUI.Forms.Base
             _eyeRestRibbonControls.TargetForm = this;
         }
 
+        //------------------------------REVISAR NUEVO SISTEMA DE FEEDBACK SILENCIOSO ----------------------------------------------
         public void ShowOperationResult(OperationResult<TEntity> opRes)
         {
             if (opRes.Success)

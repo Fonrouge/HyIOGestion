@@ -31,8 +31,15 @@ namespace WinformsUI.Forms.Base
         private string _title;
         public Guid _viewId { get; set; }
 
-        private readonly Guid _id = Guid.NewGuid();  // Nuevo: ID único
-        public Guid Id => _id;  // Nuevo: Exposición
+        //private readonly Guid _id = Guid.NewGuid();  // Nuevo: ID único    probar hasta confirmar que no sirven
+        //public Guid Id => _id;  // Nuevo: Exposición    probar hasta confirmar que no sirven
+
+        public event EventHandler ContractRequested;
+        public event EventHandler ExpandRequested;
+        public event EventHandler CloseWindowRequested;
+
+        public event EventHandler RestoreFromMinimizedRequested;
+        public event EventHandler MinimizeRequested;
 
         #region === Inicialización ===
 
@@ -264,12 +271,6 @@ namespace WinformsUI.Forms.Base
 
 
 
-        public event EventHandler ContractRequested;
-        public event EventHandler ExpandRequested;
-        public event EventHandler CloseWindowRequested;
-
-        public event EventHandler RestoreFromMinimizedRequested;
-        public event EventHandler MinimizeRequested;
 
 
 
@@ -383,6 +384,16 @@ namespace WinformsUI.Forms.Base
             this.Location = _previousLocation;
             IsMaximized = false;
             ResumeLayout();
+        }
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                CreateParams cp = base.CreateParams;
+                // 0x02000000 = WS_EX_COMPOSITED
+                cp.ExStyle |= 0x02000000;
+                return cp;
+            }
         }
 
         public void ExpandWindow()
@@ -618,7 +629,7 @@ namespace WinformsUI.Forms.Base
             this.BringToFront();
 
             // Opcional: Si quiero un efecto visual (ej. cambiar color del borde al tener foco)
-            // this.BorderColor = Color.Cyan; 
+             this.lblTitle.Text = "FOCOOOOOO"; 
         }
 
         #endregion
@@ -676,7 +687,7 @@ namespace WinformsUI.Forms.Base
         {
 
             btnClose.ForeColor = Darken(InternalPalette.TextSecondary, -0.4);
-            Color hoverColor = Darken(InternalPalette.LowAccent, 0.2);
+            Color hoverColor = Darken(InternalPalette.LowAccent, -0.2);
             Color pressColor = InternalPalette.LowAccent;
 
             btnClose.FlatAppearance.MouseOverBackColor = hoverColor;

@@ -65,11 +65,7 @@ namespace BLL.UseCases
         /// <exception cref="IntegrityException">Lanzada si se detecta una alteración en los datos.</exception>
         public async Task<bool> ExecuteAsync()
         {
-            // 1. Validar integridad fila por fila (DVH)
-
-
-
-
+            // 1. Validar integridad fila por fila (DVH
 
             //Clients
             await ValidateUsersDVHAsync((await _uow.ClientRepo.GetAllAsync()).ToList());
@@ -110,9 +106,7 @@ namespace BLL.UseCases
             await ValidateUsersDVHAsync((await _uow.PermisoRepo.GetAllAsync()).ToList());
             await ValidateUsersDVHAsync((await _uow.PermisoRepo.GetAllPermisoPermisoAsync()).ToList());
 
-
-
-
+            //Bitácora
             await ValidateUsersDVHAsync((await _uow.BitacoraRepo.GetAllAsync()).ToList());
 
 

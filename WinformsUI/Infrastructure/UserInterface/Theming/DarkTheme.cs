@@ -100,7 +100,19 @@ namespace Winforms.Theme
         {
             public static Palette Graphite() => new Palette("Graphite", "#16191F", "#171A21", "#1F2430", "#2B3240", "#E6EAF0", "#9AA4B2", "#6EA8FE", "#8DBBFF", "#2B3240", "#3B82F6");
             public static Palette Oceanic() => new Palette("Oceanic", "#161C26", "#161B22", "#1E2630", "#2A3441", "#E3E8EF", "#97A3B6", "#3DA1FF", "#69B6FF", "#2A3441", "#1E7EEB");
-            public static Palette Forest() => new Palette("Forest", "#0E1210", "#1F2620", "#2E3831", "#293128", "#E7EFE8", "#9DB3A4", "#44D18D", "#63E2A4", "#293128", "#1FA971");
+            public static Palette Forest() => new Palette(
+          "Forest",
+          "#080A09", // Background: Negro orgánico.
+          "#111613", // Surface: El cuerpo principal de la app.
+          "#1D2621", // SurfaceAlt: Aclarado para que los controles y campos resalten.
+          "#29332D", // Border: Un verde ceniza que delimita sin brillar.
+          "#E7EFE8", // TextPrimary
+          "#9DB3A4", // TextSecondary
+          "#44D18D", // Accent
+          "#63E2A4", // AccentHover
+          "#29332D", // GridLine
+          "#1FA971"  // LowAccent
+      );
             public static Palette Aubergine() => new Palette("Aubergine", "#18151F", "#0A060D", "#1F1B2B", "#302A40", "#EEE9F8", "#B6A9D0", "#C07DFF", "#D29EFF", "#302A40", "#9B5AE6");
             public static Palette EyeRest() => new Palette("DarkEyeRest", "#282420", "#3A3531", "#312D2A", "#4A443E", "#D8CFC3", "#8A7F72", "#D9A265", "#EAC189", "#4A443E");
             public static Palette Volcanic() => new Palette("Volcanic", "#120B0B", "#1F1616", "#2B1E1E", "#402E2E", "#F0E6E6", "#A89292", "#FF5F57", "#FF7B75", "#402E2E", "#D13830");
@@ -148,7 +160,9 @@ namespace Winforms.Theme
 
         public static void Apply(Form form, Palette p, VisualDepth depth = VisualDepth.ThreeD)
         {
-            form.SuspendLayout(); //Evitar flickering hasta el final del ciclo. Suspensión de dibujado
+            WindowHelper.SuspendDrawing(form); //Evitar flickering hasta el final del ciclo. Suspensión de dibujado
+
+
 
             if (form == null) return; //Fail fast sin exception
 
@@ -173,12 +187,17 @@ namespace Winforms.Theme
                         StyleDropDownMenu(dd, p, depth);
             }
 
-            if (depth == VisualDepth.ThreeD) StylePanels(form, p, depth); //Cambio en línea 916 para usar 'p' y no CurrentPalette
+            if (depth == VisualDepth.ThreeD)
+            {
+                StylePanels(form, p, depth); //Cambio en línea 916 para usar 'p' y no CurrentPalette
+            }
+
 
             foreach (var dgv in FindAll<DataGridView>(form))
                 DataGridViewThemer.StyleDgv(dgv, p, depth);
 
-            form.ResumeLayout();//Reanudación de dibujado de UI.
+
+            WindowHelper.ResumeDrawing(form);
 
 
 
@@ -187,10 +206,29 @@ namespace Winforms.Theme
                                    //1) Seteo el flag, 2) Aplico el tema a un formulario, 3) El flag se resetea automáticamente para que no afecte a otros formularios.
         }
 
+        public static class WindowHelper
+        {
+            [System.Runtime.InteropServices.DllImport("user32.dll")]
+            public static extern int SendMessage(IntPtr hWnd, Int32 wMsg, bool wParam, Int32 lParam);
 
+            private const int WM_SETREDRAW = 11;
+
+            public static void SuspendDrawing(Control parent)
+            {
+                SendMessage(parent.Handle, WM_SETREDRAW, false, 0);
+            }
+
+            public static void ResumeDrawing(Control parent)
+            {
+                SendMessage(parent.Handle, WM_SETREDRAW, true, 0);
+                parent.Refresh(); // Forzamos el repintado final
+            }
+        }
 
         public static void Apply(Control root, Palette p, VisualDepth depth = VisualDepth.ThreeD)
         {
+            WindowHelper.SuspendDrawing(root);
+
             //  var form = root as Form ?? root.FindForm();
             //  if (form != null) { Apply(form, p, depth); return; }
 
@@ -211,7 +249,7 @@ namespace Winforms.Theme
             foreach (var dgv in FindAll<DataGridView>(root)) DataGridViewThemer.StyleDgv(dgv, p, depth);
 
 
-
+            WindowHelper.ResumeDrawing(root);
 
             RedrawBorders = false; //Al ser una clase estática "singleton" de facto, es necesario resetear el flag para que cada formulario lo pueda usar libremente
                                    //sin depender de si otro formulario lo usó antes o no. Se asume que el uso típico será:
@@ -229,6 +267,7 @@ namespace Winforms.Theme
         // ============================
         public static void PaintControlTree(Control root, Palette p)
         {
+
             foreach (Control c in root.Controls)
             {
 
@@ -861,17 +900,20 @@ namespace Winforms.Theme
                     continue;
                 }
 
-                if (pnl.Tag is "PanelAccentuable")
-                {
-                    ApplyGradientBackground(pnl, Color.Green, Color.Red, LinearGradientMode.Horizontal, false);
-                    return;
-                }
+
 
                 bool isDarkPalette = IsDarkPalette(p);
 
                 // Panel común 3D o plano - Revisa taggeos, de no haberlos, pinta por default.
 
-                if (pnl.Tag is "SubPanel")
+                if (pnl.Tag is "PanelAccentuable")
+                {
+                    //ApplyGradientBackground(pnl, p.Accent, p.LowAccent, LinearGradientMode.Horizontal, false);
+                    ApplyGradientBackground(pnl, Color.Green, Color.Red, LinearGradientMode.Horizontal, false);
+
+                }
+
+                else if (pnl.Tag is "SubPanel")
                 {
                     if (isDarkPalette)
                         ApplyGradientBackground(pnl, Darken(p.Accent, 0.6), Darken(p.LowAccent, 0.6), LinearGradientMode.Horizontal, false);
@@ -879,8 +921,8 @@ namespace Winforms.Theme
                         ApplyGradientBackground(pnl, Darken(p.Accent, 0.6), Darken(p.LowAccent, 0.6), LinearGradientMode.Horizontal, false);
                 }
 
-                if (pnl.Tag is "SearchBar")
-                            {
+                else if (pnl.Tag is "SearchBar")
+                {
                     if (isDarkPalette)
                         ApplyGradientBackground(pnl, Darken(p.Surface, -0.05), Darken(p.Surface, 0.2), LinearGradientMode.Vertical, false);
                     else
@@ -1079,7 +1121,7 @@ namespace Winforms.Theme
 
         public static void ApplyGradientBackground(Control c, Color begin, Color end,
                                                 LinearGradientMode direction = LinearGradientMode.Vertical,
-                                                bool withBorder = true, Color? borderColor = null)
+                                                bool withBorder = false, Color? borderColor = null)
         {
             if (c == null || c.IsDisposed) return;
 

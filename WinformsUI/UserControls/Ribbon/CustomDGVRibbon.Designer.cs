@@ -55,7 +55,7 @@
             this.toolStrip6.Location = new System.Drawing.Point(0, 0);
             this.toolStrip6.Name = "toolStrip6";
             this.toolStrip6.Padding = new System.Windows.Forms.Padding(0);
-            this.toolStrip6.Size = new System.Drawing.Size(394, 87);
+            this.toolStrip6.Size = new System.Drawing.Size(358, 87);
             this.toolStrip6.TabIndex = 118;
             this.toolStrip6.Tag = "NoZoom";
             this.toolStrip6.Text = "Gestionar";
@@ -193,21 +193,21 @@
             // 
             this.btnAlignLeft.Image = global::WinformsUI.Properties.Resources.alinearIzqIcon;
             this.btnAlignLeft.Name = "btnAlignLeft";
-            this.btnAlignLeft.Size = new System.Drawing.Size(162, 22);
+            this.btnAlignLeft.Size = new System.Drawing.Size(180, 22);
             this.btnAlignLeft.Text = "Alinear izquierda";
             // 
             // btnAlignCenter
             // 
             this.btnAlignCenter.Image = global::WinformsUI.Properties.Resources.alinearCenIcon;
             this.btnAlignCenter.Name = "btnAlignCenter";
-            this.btnAlignCenter.Size = new System.Drawing.Size(162, 22);
+            this.btnAlignCenter.Size = new System.Drawing.Size(180, 22);
             this.btnAlignCenter.Text = "Alinear centro";
             // 
             // btnAlignRight
             // 
             this.btnAlignRight.Image = global::WinformsUI.Properties.Resources.alinearDerIcon;
             this.btnAlignRight.Name = "btnAlignRight";
-            this.btnAlignRight.Size = new System.Drawing.Size(162, 22);
+            this.btnAlignRight.Size = new System.Drawing.Size(180, 22);
             this.btnAlignRight.Text = "Alinear derecha";
             // 
             // btnCopy
@@ -239,14 +239,14 @@
             this.btnCopyAsCell.Size = new System.Drawing.Size(232, 22);
             this.btnCopyAsCell.Text = "Copiar para celda (Ctrl+C)";
             // 
-            // CustomDGVFunctions
+            // CustomDGVRibbon
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.Controls.Add(this.toolStrip6);
-            this.Name = "CustomDGVFunctions";
-            this.Size = new System.Drawing.Size(394, 87);
+            this.Name = "CustomDGVRibbon";
+            this.Size = new System.Drawing.Size(358, 87);
             this.toolStrip6.ResumeLayout(false);
             this.toolStrip6.PerformLayout();
             this.ResumeLayout(false);

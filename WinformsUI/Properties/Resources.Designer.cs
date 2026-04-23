@@ -193,6 +193,16 @@ namespace WinformsUI.Properties {
         /// <summary>
         ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap BigIconCSV {
+            get {
+                object obj = ResourceManager.GetObject("BigIconCSV", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap BigIconDeleteUser {
             get {
                 object obj = ResourceManager.GetObject("BigIconDeleteUser", resourceCulture);
@@ -203,9 +213,39 @@ namespace WinformsUI.Properties {
         /// <summary>
         ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap bigIconExcel {
+            get {
+                object obj = ResourceManager.GetObject("bigIconExcel", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap BigIconGrid {
             get {
                 object obj = ResourceManager.GetObject("BigIconGrid", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap BigIconPDF {
+            get {
+                object obj = ResourceManager.GetObject("BigIconPDF", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap BigIconPrint {
+            get {
+                object obj = ResourceManager.GetObject("BigIconPrint", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

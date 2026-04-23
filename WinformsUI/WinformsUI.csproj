@@ -254,6 +254,12 @@
     <Compile Include="UserControls\CustomDGV\DGVCellsStyle.cs" />
     <Compile Include="UserControls\CustomDGV\ICustomDGVFactory.cs" />
     <Compile Include="Helpers\DoubleBuffering.cs" />
+    <Compile Include="UserControls\Ribbon\ExportRibbon.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\Ribbon\ExportRibbon.Designer.cs">
+      <DependentUpon>ExportRibbon.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\Ribbon\EyeRestRibbon.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -261,6 +267,9 @@
       <DependentUpon>EyeRestRibbon.cs</DependentUpon>
     </Compile>
     <Compile Include="UserControls\SearchBar\SearchBehavior.cs" />
+    <Compile Include="UserControls\SilentFeedbackBar.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="UserControls\Wizard\IWizardPanelNavigator.cs" />
     <Compile Include="UserControls\Wizard\WizardPanelNavigator.cs" />
     <EmbeddedResource Include="Forms\Base\BaseManagementForm.resx">
@@ -351,6 +360,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\Ribbon\CustomDGVRibbon.resx">
       <DependentUpon>CustomDGVRibbon.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\Ribbon\ExportRibbon.resx">
+      <DependentUpon>ExportRibbon.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\Ribbon\EyeRestRibbon.resx">
       <DependentUpon>EyeRestRibbon.cs</DependentUpon>
