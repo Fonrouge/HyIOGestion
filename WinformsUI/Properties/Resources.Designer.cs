@@ -533,6 +533,16 @@ namespace WinformsUI.Properties {
         /// <summary>
         ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap HyIOOpening {
+            get {
+                object obj = ResourceManager.GetObject("HyIOOpening", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap HyIOWhite {
             get {
                 object obj = ResourceManager.GetObject("HyIOWhite", resourceCulture);

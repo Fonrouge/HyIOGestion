@@ -8,6 +8,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Winforms.Theme;
 using WinformsUI.Infrastructure.Shortcuts;
@@ -18,35 +19,7 @@ namespace WinformsUI.UserControls.CustomDGV
 {
     public partial class CustomDGVForm : Form, IDisposable
     {
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            base.OnPaint(e); // Primero que se pinte lo normal
-
-            // Forzamos la llamada para la prueba de laboratorio
-            PaintCustomLook(e.Graphics);
-        }
-
-        private void PaintCustomLook(Graphics g)
-        {
-            // Capturamos el área del control
-            Rectangle rect = this.ClientRectangle;
-
-            // 1. RENDERIZADO TOSCO (GDI estándar / ClearType)
-            // Es lo que ves normalmente con azul/naranja en los bordes
-            g.TextRenderingHint = TextRenderingHint.AntiAlias;
-            g.DrawString("Texto Estándar (ClearType)", this.Font, Brushes.Gray, new PointF(10, 10));
-            
-            // 2. RENDERIZADO ARTESANAL (High Quality)
-            // Aquí es donde sucede la magia del antialias puro
-            g.SmoothingMode = SmoothingMode.AntiAlias;
-            g.TextRenderingHint = TextRenderingHint.AntiAlias;
-
-            using (var brush = new SolidBrush(Color.White))
-            {
-                // Lo dibujamos un poco más abajo para comparar
-                g.DrawString("Texto Artesanal (AntiAliasGridFit)", this.Font, brush, new PointF(10, 30));
-            }
-        }
+       
         public event EventHandler<IDto> SelectedRowChanged;
 
         public readonly IListFilterSortProvider _listTools;
@@ -95,6 +68,7 @@ namespace WinformsUI.UserControls.CustomDGV
             _styleHelper.SetDGV(mainDGV);
             SetShortcuts();
             ResumeLayout();
+            
         }
         public DataGridView MainDGV => mainDGV;
         public TextBox AskForSearchBar()
@@ -106,7 +80,7 @@ namespace WinformsUI.UserControls.CustomDGV
         public void ReturnSearchBar(TextBox sb)
         {
             tbSearchBar = sb;
-            tableLayoutPanelSearchControls.Controls.Add(tbSearchBar, 2,0);
+            tableLayoutPanelSearchControls.Controls.Add(tbSearchBar, 2, 0);
             tableLayoutPanelSearchControls.Visible = true;
         }
         bool searchBarIsGone = false;
@@ -218,7 +192,16 @@ namespace WinformsUI.UserControls.CustomDGV
             else
                 FocusFirstDGVRow();
         }
-        public void RepaintSearchBarPlaceHolder(Color c) => tbSearchBar.ForeColor = c;
+
+  
+
+        public void RepaintSearchBarPlaceHolder(Color c)
+        {
+            if (_searchBehavior != null && tbSearchBar != null)
+                tbSearchBar.ForeColor = DarkTheme.GetCurrentPalette().TextSecondary;
+
+            //_searchBehavior.UpdatePlaceHolder(_transMgr.GetString("CustomDGVForm.TextBox.Placeholder"));
+        }
 
 
 
@@ -335,10 +318,20 @@ namespace WinformsUI.UserControls.CustomDGV
         /// </summary>
         public void EnsureDgvRowSelection()
         {
-            if (mainDGV.Rows.Count > 0 && mainDGV.SelectedRows.Count == 0)
+            if (mainDGV.Rows.Count > 0)
             {
-                mainDGV.Rows[0].Selected = true;
-                mainDGV.CurrentCell = mainDGV.Rows[0].Cells[0];
+                if (mainDGV.SelectedRows.Count == 0)
+                {
+                    mainDGV.Rows[0].Selected = true;
+                    mainDGV.CurrentCell = mainDGV.Rows[0].Cells[0];
+                }
+
+                mainDGV.Focus();
+
+
+                // Task.Delay(1000);
+                // tbSearchBar.Enabled = true;
+                // tbSearchBar.Enabled = false;
             }
         }
 

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Presenter.Messaging;
 using BLL.DTOs;
 using System;
+using SharedAbstractions.Enums;
 
 namespace Presenter.ForClient
 {
@@ -34,20 +35,44 @@ namespace Presenter.ForClient
 
 
         // =========================================================
-        // Mensajería global
+        // Estética general
+        // =========================================================
+        private void ApplyDarkTheme() => _view.ThemingNotifiedByConfigurationsModule();
+
+
+        // =========================================================
+        // Suscripción a mensajería global
         // =========================================================
         private void SubscribeMessages()
         {
-            _messenger.Subscribe<ClientsRelistRequestMessage>(OnGetAllRequested);            
+            _messenger.Subscribe<ClientsRelistRequestMessage>(OnGetAllRequested);
+            _messenger.Subscribe<ViewContainerGotFocusNotificationMessage>(OnHostFormGotFocus);
+            _messenger.Subscribe<ViewContainerLostFocusNotificacionMessage>(OnHostFormLostFocus);
             //Ready for more...
         }
-        private void CloseHostFormMessage(object viewId) => _messenger.Send(new HostFormCloseRequestMessage((Guid)viewId, this));
+        private void OnHostFormLostFocus(ViewContainerLostFocusNotificacionMessage message)
+        {
+          //var lostFocusFormId = message.Payload;
+          //
+          //if (lostFocusFormId == _view.ViewId)
+          //{
+          //    _view.ChangeActivationStateFeedbackBar(false);
+          //}
+        }
 
-
-        // =============================================================
-        // Estética general
-        // =============================================================
-        private void ApplyDarkTheme() => _view.ThemingNotifiedByConfigurationsModule();
+        private void CloseHostFormMessage(object viewId) => _messenger.Send(new ViewContainerCloseRequestMessage((Guid)viewId, this));
+        private async void OnHostFormGotFocus(ViewContainerGotFocusNotificationMessage message)
+        {
+            if (message.Payload == _view.ViewId)
+            {
+                _view.ChangeActivationStateFeedbackBar(true);
+                await _view.SetFeedbackState(FeedbackState.Idle);
+            }
+            else
+            {
+                _view.ChangeActivationStateFeedbackBar(false);
+            }
+        }
 
 
         // =============================================================
@@ -73,11 +98,14 @@ namespace Presenter.ForClient
         private async void HandleListAllRequested(object sender, EventArgs e) => await OnGetAllRequested();
         private void HandleCloseRequested(object sender, EventArgs e)
         {
-            CloseHostFormMessage((Guid)sender);
+            CloseHostFormMessage(_view.ViewId); // Más seguro
             Dispose();
             _view.Dispose();
-        }
 
+        //    CloseHostFormMessage((Guid)sender);    ASÍ ESTABA ANTES Y FUNCIONABA BIEN. POR SI LA RECOMENDACIÓN DE GEMINI FUE MIERDA
+        //    Dispose();  
+        //    _view.Dispose();  
+        }
         private void HandleLoadedOperations(object sender, EventArgs e) => _view.SelectFirstGridRow();
 
 
@@ -89,26 +117,37 @@ namespace Presenter.ForClient
             var opRes = await _ucDelete.ExecuteAsync(client);
             _view.ShowOperationResult(opRes);
 
-            if (opRes.Success) await OnGetAllRequested();
+            if (opRes.Success)
+            {
+                await OnGetAllRequested();
+            }
         }
 
         private async void OnGetAllRequested(ClientsRelistRequestMessage message) => await OnGetAllRequested();
 
         private async Task OnGetAllRequested()
         {
+            // 1. Iniciamos carga (Ahora no se cortará sola)
+            await _view.SetFeedbackState(FeedbackState.Loading);
+            
             var (clients, opResult) = await _ucGetAll.ExecuteAsync();
 
             if (opResult.Success)
             {
+                // 2. Cargamos datos
                 _view.CachingList(clients);
                 _view.FillDGV();
+
+                // 3. Mostramos éxito (Este sí se auto-limpiará según la nueva lógica)
+                await _view.SetFeedbackState(FeedbackState.Idle);
             }
             else
             {
                 _view.ShowOperationResult(opResult);
+                // 3. Mostramos error (Se auto-limpiará)
+                await _view.SetFeedbackState(FeedbackState.Error);
             }
         }
-
         private void OnUpdateRequested(ClientDTO client) => _view.OpenUpdateView();
 
 
@@ -125,6 +164,7 @@ namespace Presenter.ForClient
                 _view.ListAllRequested -= HandleListAllRequested;
                 _view.CloseRequested -= HandleCloseRequested;
                 _messenger.Unsubscribe<ClientsRelistRequestMessage>(OnGetAllRequested);
+                _messenger.Unsubscribe<ViewContainerGotFocusNotificationMessage>(OnHostFormGotFocus);
             }
         }
     }

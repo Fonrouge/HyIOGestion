@@ -36,7 +36,7 @@
             this.button2 = new System.Windows.Forms.Button();
             this.eyeRestRibbon = new WinformsUI.UserControls.Ribbon.EyeRestRibbon();
             this.toolStrip2 = new System.Windows.Forms.ToolStrip();
-            this.DGVFunctionsControl = new WinformsUI.UserControls.CustomDGV.CustomDGVRibbon();
+            this.DGVFunctionsControl = new WinformsUI.UserControls.CustomDGV.CustomDgvRibbon();
             this.communicationFunctions1 = new WinformsUI.UserControls.Ribbon.CommunicationRibbon();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.btnCreate = new System.Windows.Forms.ToolStripButton();
@@ -44,15 +44,21 @@
             this.btnRefresh = new System.Windows.Forms.ToolStripButton();
             this.btnUpdate = new System.Windows.Forms.ToolStripButton();
             this.label5 = new System.Windows.Forms.Label();
+            this.rjButton1 = new WinformsUI.UserControls.RJButton();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.pnlForRibonColorization.SuspendLayout();
             this.ribbonTLP.SuspendLayout();
             this.toolStrip1.SuspendLayout();
+            this.tabControl1.SuspendLayout();
+            this.tabPage1.SuspendLayout();
             this.SuspendLayout();
             // 
             // pnlForRibonColorization
             // 
             this.pnlForRibonColorization.Controls.Add(this.ribbonTLP);
-            this.pnlForRibonColorization.Location = new System.Drawing.Point(54, 97);
+            this.pnlForRibonColorization.Location = new System.Drawing.Point(6, 40);
             this.pnlForRibonColorization.Name = "pnlForRibonColorization";
             this.pnlForRibonColorization.Size = new System.Drawing.Size(1348, 108);
             this.pnlForRibonColorization.TabIndex = 0;
@@ -164,9 +170,8 @@
             this.eyeRestRibbon.Location = new System.Drawing.Point(999, 3);
             this.eyeRestRibbon.Margin = new System.Windows.Forms.Padding(0, 3, 0, 0);
             this.eyeRestRibbon.Name = "eyeRestRibbon";
-            this.eyeRestRibbon.Size = new System.Drawing.Size(278, 82);
+            this.eyeRestRibbon.Size = new System.Drawing.Size(277, 73);
             this.eyeRestRibbon.TabIndex = 45;
-            this.eyeRestRibbon.TargetForm = null;
             // 
             // toolStrip2
             // 
@@ -297,18 +302,70 @@
             this.label5.Margin = new System.Windows.Forms.Padding(0, 0, 5, 0);
             this.label5.Name = "label5";
             this.label5.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
-            this.label5.Size = new System.Drawing.Size(273, 20);
+            this.label5.Size = new System.Drawing.Size(272, 20);
             this.label5.TabIndex = 50;
             this.label5.Tag = "NonPaintable";
             this.label5.Text = "Modo descanso";
             this.label5.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            // 
+            // rjButton1
+            // 
+            this.rjButton1.BackColor = System.Drawing.Color.MediumSlateBlue;
+            this.rjButton1.BackgroundColor = System.Drawing.Color.MediumSlateBlue;
+            this.rjButton1.BorderColor = System.Drawing.Color.PaleVioletRed;
+            this.rjButton1.BorderRadius = 0;
+            this.rjButton1.BorderSize = 0;
+            this.rjButton1.FlatAppearance.BorderSize = 0;
+            this.rjButton1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.rjButton1.ForeColor = System.Drawing.Color.White;
+            this.rjButton1.Location = new System.Drawing.Point(267, 405);
+            this.rjButton1.Name = "rjButton1";
+            this.rjButton1.Size = new System.Drawing.Size(150, 40);
+            this.rjButton1.TabIndex = 1;
+            this.rjButton1.Text = "rjButton1";
+            this.rjButton1.TextColor = System.Drawing.Color.White;
+            this.rjButton1.UseVisualStyleBackColor = false;
+            // 
+            // tabControl1
+            // 
+            this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Location = new System.Drawing.Point(43, 12);
+            this.tabControl1.Margin = new System.Windows.Forms.Padding(0);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.Padding = new System.Drawing.Point(0, 0);
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(1422, 211);
+            this.tabControl1.TabIndex = 2;
+            // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.pnlForRibonColorization);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(1414, 185);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "tabPage1";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(283, 185);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "tabPage2";
+            this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // GenericCrudForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1474, 659);
-            this.Controls.Add(this.pnlForRibonColorization);
+            this.Controls.Add(this.tabControl1);
+            this.Controls.Add(this.rjButton1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "GenericCrudForm";
             this.Text = "GenericCrudForm";
@@ -317,6 +374,8 @@
             this.ribbonTLP.PerformLayout();
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
+            this.tabControl1.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -331,7 +390,7 @@
         private System.Windows.Forms.Button button2;
         private UserControls.Ribbon.EyeRestRibbon eyeRestRibbon;
         private System.Windows.Forms.ToolStrip toolStrip2;
-        private UserControls.CustomDGV.CustomDGVRibbon DGVFunctionsControl;
+        private UserControls.CustomDGV.CustomDgvRibbon DGVFunctionsControl;
         private UserControls.Ribbon.CommunicationRibbon communicationFunctions1;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripButton btnCreate;
@@ -339,5 +398,9 @@
         private System.Windows.Forms.ToolStripButton btnRefresh;
         private System.Windows.Forms.ToolStripButton btnUpdate;
         private System.Windows.Forms.Label label5;
+        private UserControls.RJButton rjButton1;
+        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TabPage tabPage2;
     }
 }

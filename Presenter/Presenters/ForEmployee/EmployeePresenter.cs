@@ -2,6 +2,7 @@
 using BLL.LogicLayers.Employees;
 using Presenter.Messaging;
 using SharedAbstractions.ArchitecturalMarkers;
+using SharedAbstractions.Enums;
 using System;
 using System.Threading.Tasks;
 
@@ -29,15 +30,8 @@ namespace Presenter.ForEmployee
 
             WireViewEvents();
             ApplyDarkTheme();
-            SubscribeRelistMessage();
+            SubscribeMessages();
         }
-
-        
-        // =========================================================
-        // Suscripción a mensajería global
-        // =========================================================
-        private void SubscribeRelistMessage() => _messenger.Subscribe<EmployeesRelistRequestMessage>(OnGetAllRequested);
-        private void CloseHostFormMessage(object viewId) => _messenger.Send(new HostFormCloseRequestMessage((Guid)viewId, this));
 
 
         // =========================================================
@@ -45,6 +39,29 @@ namespace Presenter.ForEmployee
         // =========================================================
         private void ApplyDarkTheme() => _view.ThemingNotifiedByConfigurationsModule();
 
+
+        // =========================================================
+        // Suscripción a mensajería global
+        // =========================================================
+        private void SubscribeMessages()
+        {
+            _messenger.Subscribe<EmployeesRelistRequestMessage>(OnGetAllRequested);
+            _messenger.Subscribe<ViewContainerGotFocusNotificationMessage>(GotFocusHostForm);
+            //Ready for more...
+        }
+        private void CloseHostFormMessage(object viewId) => _messenger.Send(new ViewContainerCloseRequestMessage((Guid)viewId, this));
+        private async void GotFocusHostForm(ViewContainerGotFocusNotificationMessage message)
+        {
+            if (message.Payload == _view.ViewId)
+            {
+                _view.ChangeActivationStateFeedbackBar(true);
+                await Task.WhenAll(_view.SetFeedbackState(FeedbackState.Idle));
+            }
+            else
+            {
+                _view.ChangeActivationStateFeedbackBar(false);
+            }
+        }
 
         // =========================================================
         // Mapeo de eventos de View
@@ -56,6 +73,7 @@ namespace Presenter.ForEmployee
             _view.DeleteRequested += HandleDeleteRequested;
             _view.ListAllRequested += HandleListAllRequested;
             _view.CloseRequested += HandleCloseRequested;
+            _view.OnceLoadedAdvice += HandleLoadedOperations;
         }
 
         private void HandleCreateRequested(object sender, EventArgs e) => _view.OpenCreationView();
@@ -68,6 +86,11 @@ namespace Presenter.ForEmployee
             Dispose();
         }
 
+        private void HandleLoadedOperations(object sender, EventArgs e)
+        {
+            _view.ChangeActivationStateFeedbackBar(false);
+            _view.SelectFirstGridRow();
+        }
 
         // =========================================================
         // Lógica de Casos de Uso (Task-based)

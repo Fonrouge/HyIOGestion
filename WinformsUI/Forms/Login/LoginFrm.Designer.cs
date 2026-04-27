@@ -29,9 +29,10 @@
         private void InitializeComponent()
         {
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.tbPass = new System.Windows.Forms.TextBox();
-            this.tbUser = new System.Windows.Forms.TextBox();
             this.btnEnter = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
+            this.tbUser = new System.Windows.Forms.TextBox();
+            this.tbPass = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
@@ -41,10 +42,10 @@
             this.tableLayoutPanel1.BackColor = System.Drawing.Color.Black;
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Controls.Add(this.tbPass, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.tbUser, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.btnEnter, 0, 3);
             this.tableLayoutPanel1.Controls.Add(this.button1, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.tbUser, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.tbPass, 0, 2);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -57,26 +58,6 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(351, 413);
             this.tableLayoutPanel1.TabIndex = 0;
             this.tableLayoutPanel1.Tag = "";
-            // 
-            // tbPass
-            // 
-            this.tbPass.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.tbPass.Font = new System.Drawing.Font("Microsoft YaHei UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tbPass.Location = new System.Drawing.Point(20, 258);
-            this.tbPass.Margin = new System.Windows.Forms.Padding(20, 3, 20, 3);
-            this.tbPass.Name = "tbPass";
-            this.tbPass.Size = new System.Drawing.Size(311, 28);
-            this.tbPass.TabIndex = 1;
-            // 
-            // tbUser
-            // 
-            this.tbUser.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.tbUser.Font = new System.Drawing.Font("Microsoft YaHei UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tbUser.Location = new System.Drawing.Point(20, 190);
-            this.tbUser.Margin = new System.Windows.Forms.Padding(20, 3, 20, 3);
-            this.tbUser.Name = "tbUser";
-            this.tbUser.Size = new System.Drawing.Size(311, 28);
-            this.tbUser.TabIndex = 0;
             // 
             // btnEnter
             // 
@@ -108,6 +89,34 @@
             this.button1.Tag = "NonPaintable";
             this.button1.UseVisualStyleBackColor = false;
             // 
+            // tbUser
+            // 
+            this.tbUser.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbUser.BackColor = System.Drawing.SystemColors.Window;
+            this.tbUser.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tbUser.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.tbUser.Location = new System.Drawing.Point(4, 189);
+            this.tbUser.Margin = new System.Windows.Forms.Padding(4);
+            this.tbUser.Multiline = false;
+            this.tbUser.Name = "tbUser";
+            this.tbUser.Padding = new System.Windows.Forms.Padding(10, 7, 10, 7);
+            this.tbUser.Size = new System.Drawing.Size(343, 31);
+            this.tbUser.TabIndex = 4;
+            // 
+            // tbPass
+            // 
+            this.tbPass.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbPass.BackColor = System.Drawing.SystemColors.Window;
+            this.tbPass.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tbPass.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.tbPass.Location = new System.Drawing.Point(4, 257);
+            this.tbPass.Margin = new System.Windows.Forms.Padding(4);
+            this.tbPass.Multiline = false;
+            this.tbPass.Name = "tbPass";
+            this.tbPass.Padding = new System.Windows.Forms.Padding(10, 7, 10, 7);            
+            this.tbPass.Size = new System.Drawing.Size(343, 31);
+            this.tbPass.TabIndex = 5;
+            // 
             // LoginFrm
             // 
             this.AcceptButton = this.btnEnter;
@@ -121,7 +130,6 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "LoginFrm";
             this.tableLayoutPanel1.ResumeLayout(false);
-            this.tableLayoutPanel1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -129,9 +137,9 @@
         #endregion
 
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.TextBox tbPass;
-        private System.Windows.Forms.TextBox tbUser;
         private System.Windows.Forms.Button btnEnter;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.TextBox tbUser;
+        private System.Windows.Forms.TextBox tbPass;
     }
 }

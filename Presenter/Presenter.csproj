@@ -58,18 +58,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Messaging\HostFormCloseRequestMessage.cs" />
-    <Compile Include="Messaging\HostFormClosedNotificationMessage.cs" />
-    <Compile Include="Messaging\IMessage.cs" />
-    <Compile Include="Messaging\IMessenger.cs" />
-    <Compile Include="Messaging\Message.cs" />
-    <Compile Include="Messaging\Messenger.cs" />
-    <Compile Include="Messaging\ClientsRelistRequestMessage.cs" />
-    <Compile Include="Messaging\EmployeesRelistRequestMessage.cs" />
-    <Compile Include="Messaging\ProductsRelistRequestMessage.cs" />
-    <Compile Include="Messaging\SuppliersRelistRequestMessage.cs" />
-    <Compile Include="Messaging\TranslationNotificationMessage.cs" />
-    <Compile Include="Messaging\TranslationRequestMessage.cs" />
+    <Compile Include="Messaging\HostForm\ViewContainerCloseRequestMessage.cs" />
+    <Compile Include="Messaging\HostForm\ViewContainerClosedNotificationMessage.cs" />
+    <Compile Include="Messaging\Entities\PaymentRelistRequestMessage.cs" />
+    <Compile Include="Messaging\HostForm\ViewContainerGotFocusNotificationMessage.cs" />
+    <Compile Include="Messaging\Base\IMessage.cs" />
+    <Compile Include="Messaging\Base\IMessenger.cs" />
+    <Compile Include="Messaging\Base\Message.cs" />
+    <Compile Include="Messaging\Base\Messenger.cs" />
+    <Compile Include="Messaging\Entities\ClientsRelistRequestMessage.cs" />
+    <Compile Include="Messaging\Entities\EmployeesRelistRequestMessage.cs" />
+    <Compile Include="Messaging\Entities\ProductsRelistRequestMessage.cs" />
+    <Compile Include="Messaging\Entities\SuppliersRelistRequestMessage.cs" />
+    <Compile Include="Messaging\I18n\TranslationNotificationMessage.cs" />
+    <Compile Include="Messaging\I18n\TranslationRequestMessage.cs" />
+    <Compile Include="Messaging\HostForm\ViewContainerLostFocusNotificacionMessage.cs" />
     <Compile Include="Presenters\ForClient\ClientPresenter.cs" />
     <Compile Include="Presenters\ForClient\CreateClientPresenter.cs" />
     <Compile Include="Presenters\ForClient\IClientView.cs" />

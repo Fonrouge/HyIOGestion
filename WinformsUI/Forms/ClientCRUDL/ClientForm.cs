@@ -2,25 +2,19 @@
 using Presenter.ForClient;
 using Presenter.Presenters.ForClient;
 using Shared;
-using System;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using WinformsUI.Forms.Base;
 using WinformsUI.Infrastructure.Factories;
 using WinformsUI.Infrastructure.Translations;
-using WinformsUI.UserControls;
 using WinformsUI.UserControls.CustomDGV;
 
 namespace WinformsUI.Forms.ClientCRUDL
 {
-    /*
-    BaseManagementForm<ClientDTO>
-    Form
-    */
+    //BaseManagementForm<ClientDTO>
     public partial class ClientForm : BaseManagementForm<ClientDTO>, IClientView
     {
         private readonly IFormsFactory _formsFact;
-        public override event EventHandler OnceLoadedAdvice;
+        
 
         public ClientForm
         (
@@ -35,35 +29,12 @@ namespace WinformsUI.Forms.ClientCRUDL
             _formsFact = formsFact;
 
             InitializeComponent();
-            InitializeDGV();
             WireSpecificEvents();
-            AddTranslatables();
-
-            InitializeRibbonControls();
-            InitializePanelToggle();
-
-            this.Load += OnceLoaded;
-
-
-
-            base.gigaRibbonContainer = gigaRibbonPanel;
-            base.miniRibbonContainer = miniRibbonPanel;
-
-            base.miniRibbonTLP = miniTLP;
-
-
-            base.AttachBtnToggleRibbon(btnRibbonCollapser);
-            base.AttachBtnToggleRibbon(btnRibbonExpander);
-            base.AttachFeedbackBarContainer(panel1);
-
-            DoubleBuffering.TryForAllControls(this.Controls);
+            AddTranslatables();            
+            InitializeBaseForm();        
         }
 
-        public void IdleFeedbackPanel(object sender, EventArgs e) { } //borrar, es para que compile la poronga del diseñador. después sacar el enlace que tiene el botón a este método
-
-        private void OnceLoaded(object sender, EventArgs e) => OnceLoadedAdvice?.Invoke(this, EventArgs.Empty);
-
-
+     
         // =========================================================
         // TRADUCCIONES
         // =========================================================
@@ -110,22 +81,28 @@ namespace WinformsUI.Forms.ClientCRUDL
             btnUpdate.Click += OnUpdateRequest;
             btnDelete.Click += OnDeleteRequest;
             btnRefresh.Click += OnListAllRequest;
+            this.Load += OnceLoaded;
         }
 
 
         // =============================================================================================================
         // LINKEO DE CONTROLES (instancia genérica -de BaseForm- ahora apunta a instancia específica de este formulario)
         // =============================================================================================================
-        private void InitializeDGV() => base.InitializeDGV(this.dgvPanel);
-
-        private new void InitializeRibbonControls()
+        private void InitializeBaseForm()
         {
-            _dgvRibbonControls = DgvFunctionsRibbon;
-            _eyeRestRibbonControls = EyeRestRibbon;
-            base.InitializeRibbonControls();
+            base.BaseFormInitializer
+            (            
+                CustomDgvContainer: pnlDgv,
+                ExpandedRibbonsContainer: pnlExpandedRibbons,
+                CollapsedRibbonsContainer: pnlCollapsedRibbons,
+                CollapsedRibbonTLP: miniTLP,
+                RibbonCollapserButton: btnRibbonCollapser,
+                RibbonExpanderButton: btnRibbonExpander,
+                DgvFunctionalitiesRibbon: ribbonDgvFunctions,
+                DirectButtonsToEyeRestModesRibbon: ribbonEyeRest,
+                FeedbackBarContainer: pnlFeedbackBar            
+            );
         }
-
-        public void InitializePanelToggle() => base.ToolStripsPanelToggle(gigaRibbonPanel);
 
 
         // =========================================================
@@ -142,41 +119,26 @@ namespace WinformsUI.Forms.ClientCRUDL
                 if (btnRefresh != null) btnRefresh.Click -= OnListAllRequest;
 
                 // Limpieza del toolstrip
-                if (DgvFunctionsRibbon != null)
+                if (ribbonDgvFunctions != null)
                 {
-                    DgvFunctionsRibbon.TargetDGV = null;
-                    DgvFunctionsRibbon.Dispose();
-                    DgvFunctionsRibbon = null;
+                    ribbonDgvFunctions.TargetDGV = null;
+                    ribbonDgvFunctions.Dispose();
+                    ribbonDgvFunctions = null;
                 }
 
                 _entitiesList = null;
                 _dgvForm = null;
                 _transMgr.RemoveFormNotify(this);
-                _dgvRibbonControls = null;
-                _eyeRestRibbonControls = null;
+
 
                 if (components != null)
                     components.Dispose();
+
             }
         }
 
 
 
-        //====================================================================================
-        //                   PARA LLAMADOS INTERNOS DESDE BOTONES    (etapa debug y testing)
-        //====================================================================================
-        private void btnDebugCargar(object sender, EventArgs e) => SetFeedbackState(FeedbackState.Loading);
-        private void btnDebugSuccess(object sender, EventArgs e) => SetFeedbackState(FeedbackState.Success);
-        private void btnDebugError(object sender, EventArgs e) => SetFeedbackState(FeedbackState.Error);
-        private void btnDebugActiveToogle(object sender, EventArgs e) => base.ChangeActivationStateFeedbackBar();
 
-
-        //====================================================================================
-        //                   API PÚBLICA PARA PRESENTER (etapa debug y testing)
-        //====================================================================================       
-
-        public async Task TryLoadingState() => await SetFeedbackState(FeedbackState.Loading);
-        public async Task TrySuccessCommand() => await SetFeedbackState(FeedbackState.Success);
-        public async Task TryErrorCommand() => await SetFeedbackState(FeedbackState.Error);
     }
 }

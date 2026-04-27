@@ -43,10 +43,10 @@
             this.btnChangeWindowManagementMode = new System.Windows.Forms.Button();
             this.btnAutoArragement = new System.Windows.Forms.Button();
             this.pnlDashboard = new System.Windows.Forms.Panel();
+            this.btnExpand = new System.Windows.Forms.Button();
+            this.btnClose = new System.Windows.Forms.Button();
             this.pnlSlotForTabs = new System.Windows.Forms.FlowLayoutPanel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.btnClose = new System.Windows.Forms.Button();
-            this.btnExpand = new System.Windows.Forms.Button();
             this.btnMinimize = new System.Windows.Forms.Button();
             this.customStatusBar = new WinformsUI.UserControls.CustomStatusBar.CustomStatusBar();
             this.tlpMenu.SuspendLayout();
@@ -57,7 +57,7 @@
             // 
             // tlpMenu
             // 
-            this.tlpMenu.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.tlpMenu.BackColor = System.Drawing.Color.Transparent;
             this.tlpMenu.ColumnCount = 2;
             this.tlpMenu.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 48F));
             this.tlpMenu.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
@@ -107,10 +107,10 @@
             this.btnMenu.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnMenu.FlatAppearance.BorderSize = 0;
             this.btnMenu.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnMenu.Location = new System.Drawing.Point(3, 55);
-            this.btnMenu.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
+            this.btnMenu.Location = new System.Drawing.Point(10, 60);
+            this.btnMenu.Margin = new System.Windows.Forms.Padding(10);
             this.btnMenu.Name = "btnMenu";
-            this.btnMenu.Size = new System.Drawing.Size(42, 42);
+            this.btnMenu.Size = new System.Drawing.Size(28, 30);
             this.btnMenu.TabIndex = 15;
             this.btnMenu.Tag = "NonPaintable";
             this.btnMenu.UseVisualStyleBackColor = false;
@@ -346,46 +346,30 @@
             // 
             this.pnlDashboard.BackColor = System.Drawing.Color.DarkGray;
             this.pnlDashboard.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlDashboard.Location = new System.Drawing.Point(165, 44);
-            this.pnlDashboard.Margin = new System.Windows.Forms.Padding(0);
+            this.pnlDashboard.Location = new System.Drawing.Point(165, 41);
+            this.pnlDashboard.Margin = new System.Windows.Forms.Padding(0, 0, 0, 0);
             this.pnlDashboard.Name = "pnlDashboard";
             this.pnlDashboard.Padding = new System.Windows.Forms.Padding(0, 30, 0, 0);
-            this.pnlDashboard.Size = new System.Drawing.Size(1288, 760);
+            this.pnlDashboard.Size = new System.Drawing.Size(1288, 763);
             this.pnlDashboard.TabIndex = 14;
             this.pnlDashboard.Tag = "NonPaintable";
             // 
-            // pnlSlotForTabs
+            // btnExpand
             // 
-            this.pnlSlotForTabs.BackColor = System.Drawing.Color.Transparent;
-            this.pnlSlotForTabs.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlSlotForTabs.Location = new System.Drawing.Point(2, 2);
-            this.pnlSlotForTabs.Margin = new System.Windows.Forms.Padding(2);
-            this.pnlSlotForTabs.Name = "pnlSlotForTabs";
-            this.pnlSlotForTabs.Size = new System.Drawing.Size(1164, 40);
-            this.pnlSlotForTabs.TabIndex = 6;
-            this.pnlSlotForTabs.Tag = "NonPaintable";
-            // 
-            // tableLayoutPanel1
-            // 
-            this.tableLayoutPanel1.ColumnCount = 4;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Controls.Add(this.btnClose, 3, 0);
-            this.tableLayoutPanel1.Controls.Add(this.pnlSlotForTabs, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.btnExpand, 2, 0);
-            this.tableLayoutPanel1.Controls.Add(this.btnMinimize, 1, 0);
-            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(165, 0);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 1;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1288, 44);
-            this.tableLayoutPanel1.TabIndex = 12;
-            this.tableLayoutPanel1.Tag = "ExternalTitleBar";
+            this.btnExpand.AutoSize = true;
+            this.btnExpand.BackColor = System.Drawing.Color.Transparent;
+            this.btnExpand.BackgroundImage = global::WinformsUI.Properties.Resources.btnRestoreClassic;
+            this.btnExpand.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.btnExpand.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnExpand.FlatAppearance.BorderSize = 0;
+            this.btnExpand.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnExpand.Location = new System.Drawing.Point(1208, 0);
+            this.btnExpand.Margin = new System.Windows.Forms.Padding(0);
+            this.btnExpand.Name = "btnExpand";
+            this.btnExpand.Size = new System.Drawing.Size(40, 41);
+            this.btnExpand.TabIndex = 17;
+            this.btnExpand.Tag = "NonPaintable";
+            this.btnExpand.UseVisualStyleBackColor = false;
             // 
             // btnClose
             // 
@@ -395,40 +379,75 @@
             this.btnClose.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnClose.FlatAppearance.BorderSize = 0;
             this.btnClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnClose.Location = new System.Drawing.Point(1251, 3);
+            this.btnClose.Location = new System.Drawing.Point(1248, 0);
+            this.btnClose.Margin = new System.Windows.Forms.Padding(0);
             this.btnClose.Name = "btnClose";
-            this.btnClose.Size = new System.Drawing.Size(34, 38);
-            this.btnClose.TabIndex = 18;
-            this.btnClose.Tag = "NonPaintable";
+            this.btnClose.Size = new System.Drawing.Size(40, 41);
+            this.btnClose.TabIndex = 19;
+            this.btnClose.Tag = "CloseButton";
             this.btnClose.UseVisualStyleBackColor = false;
             // 
-            // btnExpand
+            // pnlSlotForTabs
             // 
-            this.btnExpand.BackColor = System.Drawing.Color.Transparent;
-            this.btnExpand.BackgroundImage = global::WinformsUI.Properties.Resources.btnRestoreClassic;
-            this.btnExpand.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btnExpand.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnExpand.FlatAppearance.BorderSize = 0;
-            this.btnExpand.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnExpand.Location = new System.Drawing.Point(1211, 3);
-            this.btnExpand.Name = "btnExpand";
-            this.btnExpand.Size = new System.Drawing.Size(34, 38);
-            this.btnExpand.TabIndex = 17;
-            this.btnExpand.Tag = "NonPaintable";
-            this.btnExpand.UseVisualStyleBackColor = false;
+            this.pnlSlotForTabs.BackColor = System.Drawing.Color.Transparent;
+            this.pnlSlotForTabs.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlSlotForTabs.Location = new System.Drawing.Point(0, 0);
+            this.pnlSlotForTabs.Margin = new System.Windows.Forms.Padding(0);
+            this.pnlSlotForTabs.Name = "pnlSlotForTabs";
+            this.pnlSlotForTabs.Size = new System.Drawing.Size(1168, 41);
+            this.pnlSlotForTabs.TabIndex = 6;
+            this.pnlSlotForTabs.Tag = "ExternalTitleBar";
+            // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.BackColor = System.Drawing.Color.Transparent;
+            this.tableLayoutPanel1.ColumnCount = 4;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 40F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 40F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 40F));
+            this.tableLayoutPanel1.Controls.Add(this.btnMinimize, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.pnlSlotForTabs, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.btnClose, 3, 0);
+            this.tableLayoutPanel1.Controls.Add(this.btnExpand, 2, 0);
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(165, 0);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 1;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 41F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 41F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 41F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 41F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 41F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 41F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 41F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 41F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 41F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 41F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 41F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 41F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 41F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 41F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1288, 41);
+            this.tableLayoutPanel1.TabIndex = 7;
+            this.tableLayoutPanel1.Tag = "ExternalTitleBar";
             // 
             // btnMinimize
             // 
+            this.btnMinimize.AutoSize = true;
             this.btnMinimize.BackColor = System.Drawing.Color.Transparent;
             this.btnMinimize.BackgroundImage = global::WinformsUI.Properties.Resources.btnMinimizeClassic;
             this.btnMinimize.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.btnMinimize.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnMinimize.FlatAppearance.BorderSize = 0;
             this.btnMinimize.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnMinimize.Location = new System.Drawing.Point(1171, 3);
+            this.btnMinimize.Location = new System.Drawing.Point(1168, 0);
+            this.btnMinimize.Margin = new System.Windows.Forms.Padding(0);
             this.btnMinimize.Name = "btnMinimize";
-            this.btnMinimize.Size = new System.Drawing.Size(34, 38);
-            this.btnMinimize.TabIndex = 16;
+            this.btnMinimize.Size = new System.Drawing.Size(40, 41);
+            this.btnMinimize.TabIndex = 17;
             this.btnMinimize.Tag = "NonPaintable";
             this.btnMinimize.UseVisualStyleBackColor = false;
             // 
@@ -465,6 +484,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.tableLayoutPanel1.ResumeLayout(false);
+            this.tableLayoutPanel1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -479,18 +499,17 @@
         private System.Windows.Forms.Panel pnlDashboard;
         private System.Windows.Forms.Button btnOpenProducts;
         private System.Windows.Forms.Button btnOpenSuppliers;
-        private System.Windows.Forms.Button btnMinimize;
         private System.Windows.Forms.Button btnExpand;
-        private System.Windows.Forms.FlowLayoutPanel pnlSlotForTabs;
         private UserControls.CustomStatusBar.CustomStatusBar customStatusBar;
-        private System.Windows.Forms.Button btnClose;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Button btnOpenPayments;
         private System.Windows.Forms.Button btnOpenConfigs;
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.Button btnChangeWindowManagementMode;
         private System.Windows.Forms.Button btnAutoArragement;
-    
+        private System.Windows.Forms.Button btnClose;
+        private System.Windows.Forms.FlowLayoutPanel pnlSlotForTabs;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.Button btnMinimize;
     }
 }
 

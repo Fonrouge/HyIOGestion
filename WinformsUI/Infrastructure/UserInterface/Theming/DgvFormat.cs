@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -25,16 +26,26 @@ namespace Winforms.Theme
                 dgv.MultiSelect = true;
                 dgv.ReadOnly = true;
 
-                dgv.ScrollBars = ScrollBars.Both;                    // ← CLAVE: permite scrollbar horizontal
+                dgv.ScrollBars = ScrollBars.Both;
                 dgv.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None;
                 dgv.AllowUserToResizeColumns = true;
                 dgv.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.False;
                 dgv.ClipboardCopyMode = DataGridViewClipboardCopyMode.EnableAlwaysIncludeHeaderText;
 
-                dgv.CellBorderStyle = DataGridViewCellBorderStyle.SingleVertical;
+                
                 dgv.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
                 dgv.ColumnHeadersHeight = 30;
                 dgv.RowTemplate.Height = 40;
+
+               
+                dgv.EnableHeadersVisualStyles = false;
+
+                dgv.CellBorderStyle = DataGridViewCellBorderStyle.None;
+                dgv.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+                dgv.RowHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+
+
+                dgv.Invalidate();
 
                 // ====================== COLUMNA NATURAL + SCROLL HORIZONTAL ======================
                 // 1. Calculamos el tamaño exacto según contenido (AllCells)
@@ -52,8 +63,8 @@ namespace Winforms.Theme
 
                 if (!isMiniDgv)
                 {
-                    ColumnWidth = 300;
-                    ColumnMinimumWidth = 100;
+                    ColumnWidth = 200;
+                    ColumnMinimumWidth = 80;
                 }
                 else
                 {

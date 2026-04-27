@@ -1,21 +1,24 @@
 ﻿using BLL.DTOs;
+using Presenter.ForClient;
 using Presenter.ForSupplier;
+using Presenter.Presenters.ForClient;
 using Presenter.Presenters.ForSupplier;
 using Shared;
-using System;
 using System.Windows.Forms;
-using Winforms.Theme;
 using WinformsUI.Forms.Base;
+using WinformsUI.Forms.ClientCRUDL;
 using WinformsUI.Infrastructure.Factories;
 using WinformsUI.Infrastructure.Translations;
 using WinformsUI.UserControls.CustomDGV;
 
+
 namespace WinformsUI.Forms.SupplierCRUDL
 {
+    //BaseManagementForm<SupplierDTO>
     public partial class SupplierForm : BaseManagementForm<SupplierDTO>, ISupplierView
     {
         private readonly IFormsFactory _formsFact;
-        public override event EventHandler OnceLoadedAdvice;
+
 
         public SupplierForm
         (
@@ -23,24 +26,20 @@ namespace WinformsUI.Forms.SupplierCRUDL
             ITranslatableControlsManager transMgr,
             ICustomDGVFactory dgvFact,
             IFormsFactory formsFact
+
         ) : base(appSettings, transMgr, dgvFact)
+
         {
             _formsFact = formsFact;
 
             InitializeComponent();
-            InitializeDGV();
             WireSpecificEvents();
             AddTranslatables();
-
-            InitializeRibbonControls();
-            InitializePanelToggle();
-
-            this.Load += OnceLoaded;
+            InitializeBaseForm();
         }
 
-        private void OnceLoaded(object sender, EventArgs e) => OnceLoadedAdvice?.Invoke(this, EventArgs.Empty);
 
-
+        
         // =========================================================
         // TRADUCCIONES
         // =========================================================
@@ -61,11 +60,9 @@ namespace WinformsUI.Forms.SupplierCRUDL
 
 
         // =========================================================
-        // LÓGICA ESPECÍFICA DE PROVEEDORES
+        // LÓGICA ESPECÍFICA DE CLIENTE
         // =========================================================
-
-        public void OpenCreationView() => ((Form)_formsFact.SupplierCreationForm()).Show();
-
+        public void OpenCreationView() => ((Form)_formsFact.SupplierCreationForm()).ShowDialog();
         public void OpenUpdateView()
         {
             if (_currentSelectedEntity == null)
@@ -76,7 +73,6 @@ namespace WinformsUI.Forms.SupplierCRUDL
             var newUpdateForm = (UpdateSupplierForm)_formsFact.SupplierUpdateForm<IUpdateSupplierView>();
             newUpdateForm.SetSupplierData(_currentSelectedEntity);
             newUpdateForm.ShowDialog();
-
         }
 
         protected override void OnEntitySelected(SupplierDTO entity)
@@ -90,22 +86,28 @@ namespace WinformsUI.Forms.SupplierCRUDL
             btnUpdate.Click += OnUpdateRequest;
             btnDelete.Click += OnDeleteRequest;
             btnRefresh.Click += OnListAllRequest;
+            this.Load += OnceLoaded;
         }
 
 
         // =============================================================================================================
         // LINKEO DE CONTROLES (instancia genérica -de BaseForm- ahora apunta a instancia específica de este formulario)
         // =============================================================================================================
-        private void InitializeDGV() => base.InitializeDGV(this.dgvPanel);
-
-        private new void InitializeRibbonControls()
+        private void InitializeBaseForm()
         {
-            _dgvRibbonControls = DGVFunctionsControl;
-            _eyeRestRibbonControls = eyeRestRibbon;
-            base.InitializeRibbonControls();
+            base.BaseFormInitializer
+            (
+                CustomDgvContainer: pnlDgv,
+                ExpandedRibbonsContainer: pnlExpandedRibbons,
+                CollapsedRibbonsContainer: pnlCollapsedRibbons,
+                CollapsedRibbonTLP: miniTLP,
+                RibbonCollapserButton: btnRibbonCollapser,
+                RibbonExpanderButton: btnRibbonExpander,
+                DgvFunctionalitiesRibbon: ribbonDgvFunctions,
+                DirectButtonsToEyeRestModesRibbon: ribbonEyeRest,
+                FeedbackBarContainer: pnlFeedbackBar
+            );
         }
-
-        public void InitializePanelToggle() => base.ToolStripsPanelToggle(toolStripsPanel);
 
 
         // =========================================================
@@ -115,24 +117,32 @@ namespace WinformsUI.Forms.SupplierCRUDL
         {
             if (disposing)
             {
-                // 1. Desuscripción de eventos de controles internos
+                // Desuscripción de eventos
                 if (btnCreate != null) btnCreate.Click -= OnCreateRequest;
                 if (btnUpdate != null) btnUpdate.Click -= OnUpdateRequest;
                 if (btnDelete != null) btnDelete.Click -= OnDeleteRequest;
                 if (btnRefresh != null) btnRefresh.Click -= OnListAllRequest;
 
-                // 2. Limpieza de referencias para el Garbage Collector
+                // Limpieza del toolstrip
+                if (ribbonDgvFunctions != null)
+                {
+                    ribbonDgvFunctions.TargetDGV = null;
+                    ribbonDgvFunctions.Dispose();
+                    ribbonDgvFunctions = null;
+                }
+
                 _entitiesList = null;
                 _dgvForm = null;
                 _transMgr.RemoveFormNotify(this);
 
+
                 if (components != null)
-                {
                     components.Dispose();
-                }
+
             }
-            base.Dispose(disposing);
         }
+
+
 
 
     }

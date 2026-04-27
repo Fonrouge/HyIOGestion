@@ -1,4 +1,6 @@
-﻿namespace WinformsUI.Forms.SaleCRUDL
+﻿using WinformsUI.UserControls;
+
+namespace WinformsUI.Forms.SaleCRUDL
 {
     partial class CreateSaleForm
     {

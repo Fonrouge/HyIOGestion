@@ -3,14 +3,10 @@ using Bootstrapper;
 using Microsoft.Extensions.DependencyInjection;
 using Presenter.LoginScreen;
 using Presenter.MainFormNavigation;
-using Shared.Services;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using WinformsUI.Forms;
 using WinformsUI.Forms.ConfigurationsMenu;
 using WinformsUI.Forms.Login;
 using WinformsUI.Forms.Main;
@@ -26,37 +22,27 @@ namespace Winforms.Theme
         [STAThread]
         static void Main()
         {
-      
-
-
-      //      var aver= BLL.LogicLayers.IntegrityFacade.ProductsCategoriesDVHCalculator(Guid.Parse("e187fda9-19c0-459c-8e94-986d948bc844"), Guid.Parse("50e4beb0-bcd1-4e63-8a6c-a9dc94f01f93"));
-      //      Debugger.Break();
-
-
-
-
-
-
-            // 1. Configuración básica de WinForms
+            // 1. Configuración básica
             InitializeWinForms();
-
-            // 2. Estética y DI
             SetGlobalPalette();
             _serviceProvider = CreateServiceProvider();
 
-            // 3. Flujo de Integridad (Ahora sí es esperado/awaited)
-            bool xxx = !RunIntegrityCheckAsync();
-            if (xxx) return;
+            // 2. Ejecutar integridad con el LoadingForm
+            var checker = _serviceProvider.GetRequiredService<IVerifyDVH>();
 
-        //    Debugger.Break();
+            // Pasamos la ejecución como un delegado
+            using (var loading = new InitialLoadingForm(() => checker.ExecuteAsync()))
+            {
+                Application.Run(loading); // El programa se detiene aquí hasta que loading se cierre
 
-            // 4. Flujo de Login
+                if (!loading.Success) return; // Si falló la integridad, cerramos la app
+            }
+
+            // 3. Flujo de Login
             if (!RunLoginFlow()) return;
-        
-            // 5. Flujo Principal (Main Form)
+
+            // 4. Flujo Principal
             RunMainFlow();
-
-
 
         }
 

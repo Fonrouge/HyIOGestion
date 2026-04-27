@@ -1,10 +1,12 @@
 ﻿using BLL.DTOs;
 using BLL.LogicLayers;
 using Presenter.ForProducts;
+using SharedAbstractions.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Winforms.Theme;
 using WinformsUI.Infrastructure.Translations;
@@ -255,6 +257,8 @@ namespace WinformsUI.Forms.ProductCRUDL
         private void UpdateClientSize() => this.ClientSize = _wizard.GetPanelSize();
         private void InitializeWizard() => _wizard.Initialize(new Panel[] { pnlCreation, pnlCategories });
 
-
+        public Task SetFeedbackState(FeedbackState state) => throw new NotImplementedException(); //Implementación por compatibilidad de interfaz - No aplica porque no puede perder ni ganar el foco al ser un Dialog.        
+        public void ChangeActivationStateFeedbackBar() => throw new NotImplementedException(); //Implementación por compatibilidad de interfaz - No aplica porque no puede perder ni ganar el foco al ser un Dialog.
+        public void ChangeActivationStateFeedbackBar(bool isFocused) => throw new NotImplementedException(); //Implementación por compatibilidad de interfaz - No aplica porque no puede perder ni ganar el foco al ser un Dialog.
     }
 }

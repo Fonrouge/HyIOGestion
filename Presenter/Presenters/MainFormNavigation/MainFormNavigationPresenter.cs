@@ -17,7 +17,7 @@ namespace Presenter.MainFormNavigation
     {
         private readonly IMainFormNavigation _view;
         private LayoutTypeEnum _currentLayoutType;
-        private List<HostFormActionsPresenter> _hostPresenters;
+        private List<HostFormActionsPresenter> _hostPresenters; //Atender a las notas de HostFormActionsPresenter. Esto es acople Y ESTÁ MAL. Se van a crear mensajes para cada tipo de acción de HostFormActionsPresenter y desde acá nada más se deben suscribir.
         private readonly ISessionProvider _sessionProvider;
         private readonly IMessenger _messenger;
         private readonly IUCGetUserById _uCGetUserById;
@@ -45,10 +45,12 @@ namespace Presenter.MainFormNavigation
             _view.OnceLoadedAdvice += (sender, e) => Task.FromResult(MainMenuFirstTimeShow());
 
 
-            _messenger.Subscribe<HostFormClosedNotificationMessage>(OnHostFormClosed);
+            _messenger.Subscribe<ViewContainerClosedNotificationMessage>(OnHostFormClosed);
+             //Nota, mientras MainFormNavigation se suscribe a la pérdida de foco, cada Presenter individual de cada módulo se suscribe a la ganancia de foco.
         }
+ 
 
-        private void OnHostFormClosed(HostFormClosedNotificationMessage message)
+        private void OnHostFormClosed(ViewContainerClosedNotificationMessage message)
         {
             var closedFormId = message.Payload;
             var toRemove = _hostPresenters.FirstOrDefault(p => p.View.GetViewId() == closedFormId);
@@ -203,7 +205,7 @@ namespace Presenter.MainFormNavigation
                 {
                     if (window != _hostPresenters[0])
                     {
-                        window.MinimizeWindow();
+                        window.MinimizeWindow(null, null); //Deuda técnica. Hacer comunicación 100% por messenger. No método directo.
                         window.SetMaximizeStatus(false);
                     }
                 }
@@ -216,7 +218,7 @@ namespace Presenter.MainFormNavigation
                 {
                     if (window != excepted)
                     {
-                        window.MinimizeWindow();
+                        window.MinimizeWindow(null, null); //Deuda técnica. Hacer comunicación 100% por messenger. No método directo.
                         window.SetMaximizeStatus(false);
                     }
                 }
@@ -240,7 +242,7 @@ namespace Presenter.MainFormNavigation
                 var excepted = _hostPresenters[0];
 
                 MinimizeAllActiveWindows(null);
-                excepted.ExpandWindow();
+                excepted.ExpandWindow(null, null); //Deuda técnica. Hacer comunicación 100% por messenger. No método directo.
                 excepted.SetMaximizeStatus(true);
             }
 
@@ -296,7 +298,7 @@ namespace Presenter.MainFormNavigation
             {
                 if (disposing)
                 {
-                    _messenger.Unsubscribe<HostFormClosedNotificationMessage>(OnHostFormClosed);  // Ahora funciona con el constraint correcto
+                    _messenger.Unsubscribe<ViewContainerClosedNotificationMessage>(OnHostFormClosed);  // Ahora funciona con el constraint correcto
 
                     UnwireViewEvents();
                     if (_hostPresenters != null)

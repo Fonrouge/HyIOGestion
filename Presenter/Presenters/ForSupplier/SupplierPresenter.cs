@@ -1,8 +1,8 @@
 ﻿using BLL.DTOs;
-using BLL.LogicLayers.Clients;
 using BLL.LogicLayers.Suppliers;
 using Presenter.Messaging;
 using SharedAbstractions.ArchitecturalMarkers;
+using SharedAbstractions.Enums;
 using System;
 using System.Threading.Tasks;
 
@@ -12,38 +12,56 @@ namespace Presenter.ForSupplier
     {
         private readonly ISupplierView _view;
         private readonly IUCGetAllSuppliers _ucGetAll;
-        private readonly IUCUpdateSupplier _ucUpdate;
         private readonly IUCDeleteSupplier _ucDelete;
         private readonly IMessenger _messenger;
-
 
         public SupplierPresenter
         (
             ISupplierView view,
             IUCGetAllSuppliers ucGetAll,
-            IUCUpdateSupplier ucUpdate,
             IUCDeleteSupplier ucDelete,
             IMessenger messenger
         )
         {
             _view = view ?? throw new ArgumentNullException(nameof(view));
             _ucGetAll = ucGetAll ?? throw new ArgumentNullException(nameof(ucGetAll));
-            _ucUpdate = ucUpdate ?? throw new ArgumentNullException(nameof(ucUpdate));
             _ucDelete = ucDelete ?? throw new ArgumentNullException(nameof(ucDelete));
             _messenger = messenger ?? throw new ArgumentNullException(nameof(messenger));
 
             WireViewEvents();
             ApplyDarkTheme();
-            SubscribeToMessenger();
+            SubscribeMessages();
         }
 
-        // =========================================================
-        // SUSCRIPCIÓN A MENSAJERÍA GLOBAL
-        // =========================================================
-        private void SubscribeToMessenger() => _messenger.Subscribe<SuppliersRelistRequestMessage>(OnGetAllRequested);
 
-
+        // =========================================================
+        // Estética general
+        // =========================================================
         private void ApplyDarkTheme() => _view.ThemingNotifiedByConfigurationsModule();
+
+
+        // =========================================================
+        // Suscripción a mensajería global
+        // =========================================================
+        private void SubscribeMessages()
+        {
+            _messenger.Subscribe<SuppliersRelistRequestMessage>(OnGetAllRequested);
+            _messenger.Subscribe<ViewContainerGotFocusNotificationMessage>(GotFocusHostForm);
+            //Ready for more...
+        }
+        private void CloseHostFormMessage(object viewId) => _messenger.Send(new ViewContainerCloseRequestMessage((Guid)viewId, this));
+        private async void GotFocusHostForm(ViewContainerGotFocusNotificationMessage message)
+        {
+            if (message.Payload == _view.ViewId)
+            {
+                _view.ChangeActivationStateFeedbackBar(true);
+                await Task.WhenAll(_view.SetFeedbackState(FeedbackState.Idle));
+            }
+            else
+            {
+                _view.ChangeActivationStateFeedbackBar(false);
+            }
+        }
 
 
         // =============================================================
@@ -56,6 +74,7 @@ namespace Presenter.ForSupplier
             _view.DeleteRequested += HandleDeleteRequested;
             _view.ListAllRequested += HandleListAllRequested;
             _view.CloseRequested += HandleCloseRequested;
+            _view.OnceLoadedAdvice += HandleLoadedOperations;
         }
 
 
@@ -66,13 +85,19 @@ namespace Presenter.ForSupplier
         private void HandleUpdateRequested(object sender, SupplierDTO e) => OnUpdateRequested(e);
         private async void HandleDeleteRequested(object sender, SupplierDTO e) => await OnDeleteRequested(e);
         private async void HandleListAllRequested(object sender, EventArgs e) => await OnGetAllRequested();
-        private void HandleCloseRequested(object sender, EventArgs e) => Dispose();
+        private void HandleCloseRequested(object sender, EventArgs e)
+        {
+            CloseHostFormMessage((Guid)sender);
+            Dispose();
+            _view.Dispose();
+        }
+
+        private void HandleLoadedOperations(object sender, EventArgs e) => _view.SelectFirstGridRow();
 
 
         // =========================================================
         // Lógica de Casos de Uso
         // =========================================================
-
         private async Task OnDeleteRequested(SupplierDTO supplier)
         {
             var opRes = await _ucDelete.ExecuteAsync(supplier);
@@ -101,7 +126,6 @@ namespace Presenter.ForSupplier
         private void OnUpdateRequested(SupplierDTO client) =>  _view.OpenUpdateView();
 
 
-
         // =========================================================
         // IDisposable (Limpieza de Memoria)
         // =========================================================
@@ -114,6 +138,8 @@ namespace Presenter.ForSupplier
                 _view.DeleteRequested -= HandleDeleteRequested;
                 _view.ListAllRequested -= HandleListAllRequested;
                 _view.CloseRequested -= HandleCloseRequested;
+                _messenger.Unsubscribe<SuppliersRelistRequestMessage>(OnGetAllRequested);
+                _messenger.Unsubscribe<ViewContainerGotFocusNotificationMessage>(GotFocusHostForm);
             }
         }
     }

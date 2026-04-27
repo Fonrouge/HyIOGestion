@@ -93,6 +93,12 @@
     <Compile Include="Forms\GenericCrudForm.Designer.cs">
       <DependentUpon>GenericCrudForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\InitialLoadingForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\InitialLoadingForm.Designer.cs">
+      <DependentUpon>InitialLoadingForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\Main\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -196,6 +202,7 @@
       <DependentUpon>UpdateSupplierForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Helpers\TextBoxPlaceholder.cs" />
+    <Compile Include="Helpers\WindowBehaviorHelper.cs" />
     <Compile Include="Infrastructure\Culture\CultureProfile.cs" />
     <Compile Include="Infrastructure\Culture\ICultureSwitcher.cs" />
     <Compile Include="Infrastructure\DI\ServiceCollectionForUI.cs" />
@@ -210,8 +217,10 @@
     <Compile Include="Infrastructure\Shortcuts\ShortcutManager.cs" />
     <Compile Include="Infrastructure\Translations\ITranslatableControlsManager.cs" />
     <Compile Include="Infrastructure\Translations\TranslationsManager.cs" />
+    <Compile Include="Infrastructure\UserInterface\Theming\ButtonThemer.cs" />
     <Compile Include="Infrastructure\UserInterface\Theming\DataGridViewThemer.cs" />
     <Compile Include="Infrastructure\UserInterface\Theming\DgvFormat.cs" />
+    <Compile Include="Infrastructure\UserInterface\Theming\TextBoxThemer.cs" />
     <Compile Include="Infrastructure\UserInterface\Theming\ToolAndMenuStripThemer.cs" />
     <Compile Include="Infrastructure\UserInterface\Windowing\CascadeStrategy.cs" />
     <Compile Include="Infrastructure\UserInterface\Windowing\ILayoutStrategy.cs" />
@@ -266,6 +275,9 @@
     <Compile Include="UserControls\Ribbon\EyeRestRibbon.Designer.cs">
       <DependentUpon>EyeRestRibbon.cs</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\RJButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="UserControls\SearchBar\SearchBehavior.cs" />
     <Compile Include="UserControls\SilentFeedbackBar.cs">
       <SubType>Component</SubType>
@@ -286,6 +298,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\GenericCrudForm.resx">
       <DependentUpon>GenericCrudForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\InitialLoadingForm.resx">
+      <DependentUpon>InitialLoadingForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Main\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>

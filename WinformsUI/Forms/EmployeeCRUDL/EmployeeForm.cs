@@ -1,20 +1,20 @@
 ﻿using BLL.DTOs;
+using Presenter.ForClient;
 using Presenter.ForEmployee;
 using Shared;
-using System;
 using System.Windows.Forms;
-using Winforms.Theme;
 using WinformsUI.Forms.Base;
+using WinformsUI.Forms.EmployeeCRUDL;
 using WinformsUI.Infrastructure.Factories;
 using WinformsUI.Infrastructure.Translations;
 using WinformsUI.UserControls.CustomDGV;
 
-namespace WinformsUI.Forms.EmployeeCRUDL
+namespace WinformsUI.Forms.ClientCRUDL
 {
     public partial class EmployeeForm : BaseManagementForm<EmployeeDTO>, IEmployeeView
     {
-        private readonly IFormsFactory _formsFactory;
-        public override event EventHandler OnceLoadedAdvice;
+        private readonly IFormsFactory _formsFact;
+
 
         public EmployeeForm
         (
@@ -22,22 +22,18 @@ namespace WinformsUI.Forms.EmployeeCRUDL
             ITranslatableControlsManager transMgr,
             ICustomDGVFactory dgvFact,
             IFormsFactory formsFact
+
         ) : base(appSettings, transMgr, dgvFact)
+
         {
-            _formsFactory = formsFact;
+            _formsFact = formsFact;
 
             InitializeComponent();
-            InitializeDGV();
             WireSpecificEvents();
             AddTranslatables();
-
-            InitializeRibbonControls();
-            InitializePanelToggle();
-
-            this.Load += OnceLoaded;
+            InitializeBaseForm();
         }
 
-        private void OnceLoaded(object sender, EventArgs e) => OnceLoadedAdvice?.Invoke(this, EventArgs.Empty);
 
 
         // =========================================================
@@ -62,32 +58,7 @@ namespace WinformsUI.Forms.EmployeeCRUDL
         // =========================================================
         // LÓGICA ESPECÍFICA DE EMPLEADO
         // =========================================================
-        public void OpenCreationView() => ((Form)_formsFactory.EmployeeCreationForm()).Show();
-
-        private void WireSpecificEvents()
-        {
-            btnCreate.Click += OnCreateRequest;
-            btnUpdate.Click += OnUpdateRequest;
-            btnDelete.Click += OnDeleteRequest;
-            btnRefresh.Click += OnListAllRequest;
-        }
-
-        private void OpenUpdateModule(object sender, EventArgs e)
-        {
-            if (_currentSelectedEntity == null)
-            {
-                MessageBox.Show("Primero seleccione un cliente en la grilla");
-                return;
-            }
-
-            base.OnUpdateRequest(sender, e);
-        }
-
-        protected override void OnEntitySelected(EmployeeDTO entity)
-        {
-            // Hook opcional para acciones dependientes de selección
-        }
-
+        public void OpenCreationView() => ((Form)_formsFact.ClientCreationForm<ICreateClientView>()).ShowDialog();
         public void OpenUpdateView()
         {
             if (_currentSelectedEntity == null)
@@ -95,25 +66,44 @@ namespace WinformsUI.Forms.EmployeeCRUDL
                 MessageBox.Show("Primero seleccione un cliente en la grilla");
             }
 
-            var newUpdateForm = (UpdateEmployeeForm)_formsFactory.EmployeeUpdateForm<IUpdateEmployeeView>();
+            var newUpdateForm = (UpdateEmployeeForm)_formsFact.EmployeeUpdateForm<IUpdateEmployeeView>();
             newUpdateForm.SetEmployeeData(_currentSelectedEntity);
             newUpdateForm.ShowDialog();
+        }
+
+        protected override void OnEntitySelected(EmployeeDTO entity)
+        {
+            // Hook opcional para acciones dependientes de selección
+        }
+
+        private void WireSpecificEvents()
+        {
+            btnCreate.Click += OnCreateRequest;
+            btnUpdate.Click += OnUpdateRequest;
+            btnDelete.Click += OnDeleteRequest;
+            btnRefresh.Click += OnListAllRequest;
+            this.Load += OnceLoaded;
         }
 
 
         // =============================================================================================================
         // LINKEO DE CONTROLES (instancia genérica -de BaseForm- ahora apunta a instancia específica de este formulario)
         // =============================================================================================================
-        private void InitializeDGV() => base.InitializeDGV(this.dgvPanel);
-
-        private new void InitializeRibbonControls()
+        private void InitializeBaseForm()
         {
-            _dgvRibbonControls = DGVFunctionsControl;
-            _eyeRestRibbonControls = eyeRestRibbon;
-            base.InitializeRibbonControls();
+            base.BaseFormInitializer
+            (
+                CustomDgvContainer: pnlDgv,
+                ExpandedRibbonsContainer: pnlExpandedRibbons,
+                CollapsedRibbonsContainer: pnlCollapsedRibbons,
+                CollapsedRibbonTLP: miniTLP,
+                RibbonCollapserButton: btnRibbonCollapser,
+                RibbonExpanderButton: btnRibbonExpander,
+                DgvFunctionalitiesRibbon: ribbonDgvFunctions,
+                DirectButtonsToEyeRestModesRibbon: ribbonEyeRest,
+                FeedbackBarContainer: pnlFeedbackBar
+            );
         }
-
-        public void InitializePanelToggle() => base.ToolStripsPanelToggle(toolStripsPanel);
 
 
         // =========================================================
@@ -123,25 +113,33 @@ namespace WinformsUI.Forms.EmployeeCRUDL
         {
             if (disposing)
             {
-                // Desuscripción de eventos de botones específicos
+                // Desuscripción de eventos
                 if (btnCreate != null) btnCreate.Click -= OnCreateRequest;
                 if (btnUpdate != null) btnUpdate.Click -= OnUpdateRequest;
                 if (btnDelete != null) btnDelete.Click -= OnDeleteRequest;
                 if (btnRefresh != null) btnRefresh.Click -= OnListAllRequest;
 
-                // Limpieza de referencias
+                // Limpieza del toolstrip
+                if (ribbonDgvFunctions != null)
+                {
+                    ribbonDgvFunctions.TargetDGV = null;
+                    ribbonDgvFunctions.Dispose();
+                    ribbonDgvFunctions = null;
+                }
+
                 _entitiesList = null;
                 _dgvForm = null;
                 _transMgr.RemoveFormNotify(this);
 
+
                 if (components != null)
-                {
                     components.Dispose();
-                }
+
             }
-            base.Dispose(disposing); // La base desuscribe el cierre automático
         }
 
-      
+
+
+
     }
 }

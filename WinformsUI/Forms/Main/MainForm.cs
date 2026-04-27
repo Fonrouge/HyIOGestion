@@ -19,6 +19,7 @@ using System.Windows.Forms;
 using Winforms.Theme;
 using WinformsUI.Forms.Base;
 using WinformsUI.Forms.ConfigurationsMenu;
+using WinformsUI.Helpers;
 using WinformsUI.Infrastructure;
 using WinformsUI.Infrastructure.Factories;
 using WinformsUI.Infrastructure.Translations;
@@ -72,16 +73,6 @@ namespace WinformsUI.Forms.Main
         // Mapea la instancia del form con su LLAVE de traducción (ej: "MainForm._employeeTitle")
         private Dictionary<IHostFormActions, string> _formTranslationKeys = new Dictionary<IHostFormActions, string>();
 
-        protected override CreateParams CreateParams
-        {
-            get
-            {
-                CreateParams cp = base.CreateParams;
-                // 0x02000000 = WS_EX_COMPOSITED
-                cp.ExStyle |= 0x02000000;
-                return cp;
-            }
-        }
         #region Events (View to Presenter Communication)
 
         /// <summary>Fired when the user requests to close the application.</summary>
@@ -105,6 +96,7 @@ namespace WinformsUI.Forms.Main
         public event EventHandler OpenProductsModuleRequested;
         public event EventHandler OpenSuppliersModuleRequested;
         public event EventHandler OpenConfigsModuleRequested;
+
 
 
         /// <summary>Notifcation on creation of a form to wire it to it's forms events on Presenter layer </summary>
@@ -259,7 +251,11 @@ namespace WinformsUI.Forms.Main
             DarkTheme.ApplyGradientBackground(tableLayoutPanel1, darkerAccent, darkerAccent, LinearGradientMode.Vertical);
             
             DarkTheme.ApplyGradientBackground(customStatusBar.MainTableLayoutPnl, darkerAccent, Darken(darkerAccent, -0.05), LinearGradientMode.Vertical);
+            DarkTheme.Apply(tableLayoutPanel1, DarkTheme.GetCurrentPalette());
             customStatusBar.LblBackUpTrafficLight.ForeColor = Color.LimeGreen;
+            
+            DarkTheme.RemoveGradientBackground(pnlSlotForTabs);
+            pnlSlotForTabs.BackColor = Color.Transparent;
 
             ResumeLayout();
         }
@@ -274,17 +270,25 @@ namespace WinformsUI.Forms.Main
         /// <summary>Wires UI control events to trigger View-to-Presenter notifications.</summary>
         private void WireGeneralEvents()
         {
-            // Title bar actions
-            btnExpand.Click += (s, e) => ExecuteSingleInvoke(() => ExpandContractRequested?.Invoke(this, EventArgs.Empty));
-            btnMinimize.Click += (s, e) => ExecuteSingleInvoke(() => MinimizeRequested?.Invoke(this, EventArgs.Empty));
-            btnClose.Click += (s, e) => ExecuteSingleInvoke(() => CloseRequested?.Invoke(this, EventArgs.Empty));
+            // === Title bar actions (Delegadas al Helper) ===
+            // Asegúrate de cambiar 'tuPanelDeBarraDeTitulo' por el nombre del control que usas de cabecera.
+            WindowBehaviorHelper.EnableWindowBehaviors
+            (
+                form: this,
+                titleBar: this.pnlSlotForTabs,
+                btnClose: this.btnClose,
+                btnMaximize: this.btnExpand,
+                btnMinimize: this.btnMinimize,
+                onExpandContract: () => ExecuteSingleInvoke(() => ExpandContractRequested?.Invoke(this, EventArgs.Empty)),
+                onMinimize: () => ExecuteSingleInvoke(() => MinimizeRequested?.Invoke(this, EventArgs.Empty)),
+                onClose: () => ExecuteSingleInvoke(() => CloseRequested?.Invoke(this, EventArgs.Empty))
+            );
 
             // Menu actions
             btnMenu.Click += (s, e) => CollapseExpandMenu();
 
             // Window management actions
             btnAutoArragement.Click += (s, e) => ExecuteSingleInvoke(() => ApplyLayoutRequested?.Invoke(this, LayoutTypeEnum.VerticalTile));
-
             btnChangeWindowManagementMode.Click += (s, e) => ExecuteSingleInvoke(() => ChangeWindowManagementMode?.Invoke(this, EventArgs.Empty));
 
             // Module navigation actions
@@ -338,6 +342,7 @@ namespace WinformsUI.Forms.Main
                 ResumeLayout();
             };
         }
+        
 
         #endregion
 
@@ -383,7 +388,24 @@ namespace WinformsUI.Forms.Main
             }
             ResumeLayout();
         }
+        #region === Window Resizing (WndProc) ===
 
+        /// <summary>
+        /// Captura los mensajes de Windows para permitir redimensionar la ventana desde los bordes.
+        /// </summary>
+        protected override void WndProc(ref Message m)
+        {
+            // Si la ventana está maximizada (ocupa toda la pantalla), no permitimos redimensionar.
+            bool isMaximized = this.WindowState == FormWindowState.Maximized;
+
+            // Delegamos el cálculo de bordes al Helper
+            if (WindowBehaviorHelper.TryHandleResize(this, ref m, resizeBorder: 10, isCustomMaximized: isMaximized))
+                return;
+
+            base.WndProc(ref m);
+        }
+
+        #endregion
         private string InitialsExtracter(string words)
         {
             string[] shortName = words.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
@@ -629,50 +651,6 @@ namespace WinformsUI.Forms.Main
             ResumeLayout();
         }
 
-        private const int _resizeBorder = 10;
-        private const int WM_NCHITTEST = 0x84;
-        private const int HTCLIENT = 0x1;
-        private const int HTLEFT = 10;
-        private const int HTRIGHT = 11;
-        private const int HTTOP = 12;
-        private const int HTTOPLEFT = 13;
-        private const int HTTOPRIGHT = 14;
-        private const int HTBOTTOM = 15;
-        private const int HTBOTTOMLEFT = 16;
-        private const int HTBOTTOMRIGHT = 17;
-        public bool IsMaximized { get; set; } = false;
-        protected override void WndProc(ref Message m)
-        {
-            if (m.Msg == WM_NCHITTEST)
-            {
-                base.WndProc(ref m);
-
-                if ((int)m.Result == HTCLIENT)
-                {
-                    if (IsMaximized) return;
-
-                    Point screenPoint = new Point(m.LParam.ToInt32());
-                    Point clientPoint = this.PointToClient(screenPoint);
-
-                    if (clientPoint.Y <= _resizeBorder)
-                    {
-                        if (clientPoint.X <= _resizeBorder) m.Result = (IntPtr)HTTOPLEFT;
-                        else if (clientPoint.X >= (this.Size.Width - _resizeBorder)) m.Result = (IntPtr)HTTOPRIGHT;
-                        else m.Result = (IntPtr)HTTOP;
-                    }
-                    else if (clientPoint.Y >= (this.Size.Height - _resizeBorder))
-                    {
-                        if (clientPoint.X <= _resizeBorder) m.Result = (IntPtr)HTBOTTOMLEFT;
-                        else if (clientPoint.X >= (this.Size.Width - _resizeBorder)) m.Result = (IntPtr)HTBOTTOMRIGHT;
-                        else m.Result = (IntPtr)HTBOTTOM;
-                    }
-                    else if (clientPoint.X <= _resizeBorder) m.Result = (IntPtr)HTLEFT;
-                    else if (clientPoint.X >= (this.Size.Width - _resizeBorder)) m.Result = (IntPtr)HTRIGHT;
-                }
-                return;
-            }
-
-            base.WndProc(ref m);
-        }
+     
     }
 }

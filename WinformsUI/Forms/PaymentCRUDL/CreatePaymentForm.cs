@@ -3,6 +3,7 @@ using BLL.LogicLayers;
 using Presenter.ForEmployee;
 using Shared;
 using Shared.Services.Searching;
+using SharedAbstractions.Enums;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -240,7 +241,11 @@ namespace WinformsUI.Forms.PaymentCRUDL
 
 
             CreatePaymentRequested?.Invoke(this, dto);
-
         }
+
+        public Task SetFeedbackState(FeedbackState state) => throw new NotImplementedException(); //Implementación por compatibilidad de interfaz - No aplica porque no puede perder ni ganar el foco al ser un Dialog.        
+        public void ChangeActivationStateFeedbackBar() => throw new NotImplementedException(); //Implementación por compatibilidad de interfaz - No aplica porque no puede perder ni ganar el foco al ser un Dialog.
+        public void ChangeActivationStateFeedbackBar(bool isFocused) => throw new NotImplementedException(); //Implementación por compatibilidad de interfaz - No aplica porque no puede perder ni ganar el foco al ser un Dialog.
+
     }
 }

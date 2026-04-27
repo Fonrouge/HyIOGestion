@@ -9,7 +9,9 @@ namespace Shared.ArchitecturalMarkers
         event EventHandler ExpandRequested;
         event EventHandler CloseWindowRequested;
         event EventHandler RestoreFromMinimizedRequested;
-        event EventHandler MinimizeRequested;              
+        event EventHandler MinimizeRequested;
+        event EventHandler<Guid> ViewGotFocusNotificacionMessage;
+        event EventHandler<Guid> ViewLostFocusNotificacionMessage;
 
         bool IsMinimized { get; set; }
         bool IsMaximized { get; set; }
@@ -19,7 +21,7 @@ namespace Shared.ArchitecturalMarkers
         void CloseWindow();
         void RestoreWindowFromMinimized();
         void MinimizeWindow();
-        void CloseWholeForm(HostFormCloseRequestMessage message);
+        void CloseWholeForm(ViewContainerCloseRequestMessage message);
 
         void SetTitle(string Title);
         string GetTitle();

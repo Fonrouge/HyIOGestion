@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using WinformsUI.UserControls;
 
 namespace WinformsUI.Helpers
 {
@@ -17,13 +18,15 @@ namespace WinformsUI.Helpers
 
         #region API Pública
 
-        public static void WirePlaceholderBehavior(
+        public static void WirePlaceholderBehavior
+        (
             TextBox tb,
             string placeholderText,
             bool isPassword,
             Color? normalForeColor = null,
             Color? placeholderForeColor = null,
-            float? fontSize = null) // <--- 1. Nuevo parámetro opcional
+            float? fontSize = null
+        ) // <--- 1. Nuevo parámetro opcional
         {
             if (tb == null) return;
 
@@ -67,7 +70,13 @@ namespace WinformsUI.Helpers
             refreshState();
         }
 
-        public static void Apply(
+        public static void UpdateColor(System.Windows.Forms.TextBox tb, Color c)
+        {
+            tb.ForeColor = c;
+        }
+
+        public static void Apply
+        (
             TextBox tb,
             bool isPlaceholder,
             bool isPassword = false,
@@ -112,21 +121,21 @@ namespace WinformsUI.Helpers
                 char targetChar = isPlaceholder ? '\0' : '●';
                 bool targetSystemChar = !isPlaceholder;
 
-                if (tb.PasswordChar != targetChar)
-                    tb.PasswordChar = targetChar;
-
-                if (tb.UseSystemPasswordChar != targetSystemChar)
-                    tb.UseSystemPasswordChar = targetSystemChar;
+              //  if (tb.PasswordChar != targetChar)
+              //      tb.PasswordChar = targetChar;
+              //
+              //  if (tb.UseSystemPasswordChar != targetSystemChar)
+              //      tb.UseSystemPasswordChar = targetSystemChar;
             }
             else
             {
-                if (tb.UseSystemPasswordChar) tb.UseSystemPasswordChar = false;
-                if (tb.PasswordChar != '\0') tb.PasswordChar = '\0';
+                //if (tb.UseSystemPasswordChar) tb.UseSystemPasswordChar = false;
+                //if (tb.PasswordChar != '\0') tb.PasswordChar = '\0';
             }
 
             // 4. NAVEGACIÓN
-            if (tb.AcceptsTab) tb.AcceptsTab = false;
-            if (!tb.ShortcutsEnabled) tb.ShortcutsEnabled = true;
+           // if (tb.AcceptsTab) tb.AcceptsTab = false;
+           // if (!tb.ShortcutsEnabled) tb.ShortcutsEnabled = true;
 
             tb.KeyDown -= EnsureTabNavigates;
             tb.KeyDown += EnsureTabNavigates;

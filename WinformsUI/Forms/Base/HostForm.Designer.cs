@@ -18,11 +18,11 @@
         private void InitializeComponent()
         {
             this.internalContainer = new System.Windows.Forms.Panel();
-            this.btnClose = new System.Windows.Forms.Button();
-            this.btnExpand = new System.Windows.Forms.Button();
-            this.btnMinimize = new System.Windows.Forms.Button();
             this.lblTitle = new System.Windows.Forms.Label();
             this.tlpTitleBar = new System.Windows.Forms.TableLayoutPanel();
+            this.btnExpand = new System.Windows.Forms.Button();
+            this.btnClose = new System.Windows.Forms.Button();
+            this.btnMinimize = new System.Windows.Forms.Button();
             this.tlpTitleBar.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -30,62 +30,11 @@
             // 
             this.internalContainer.BackColor = System.Drawing.Color.DimGray;
             this.internalContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.internalContainer.Location = new System.Drawing.Point(0, 26);
+            this.internalContainer.Location = new System.Drawing.Point(0, 28);
             this.internalContainer.Name = "internalContainer";
-            this.internalContainer.Size = new System.Drawing.Size(1057, 516);
+            this.internalContainer.Size = new System.Drawing.Size(1057, 514);
             this.internalContainer.TabIndex = 7;
             this.internalContainer.Tag = "InternalTitleBar";
-            // 
-            // btnClose
-            // 
-            this.btnClose.BackColor = System.Drawing.Color.Transparent;
-            this.btnClose.BackgroundImage = global::WinformsUI.Properties.Resources.btnCloseModern;
-            this.btnClose.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btnClose.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnClose.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnClose.FlatAppearance.BorderSize = 0;
-            this.btnClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnClose.Location = new System.Drawing.Point(1025, 2);
-            this.btnClose.Margin = new System.Windows.Forms.Padding(2);
-            this.btnClose.Name = "btnClose";
-            this.btnClose.Size = new System.Drawing.Size(30, 22);
-            this.btnClose.TabIndex = 0;
-            this.btnClose.Tag = "NonPaintable";
-            this.btnClose.UseVisualStyleBackColor = false;
-            // 
-            // btnExpand
-            // 
-            this.btnExpand.BackColor = System.Drawing.Color.Transparent;
-            this.btnExpand.BackgroundImage = global::WinformsUI.Properties.Resources.btnRestoreNew;
-            this.btnExpand.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btnExpand.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnExpand.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnExpand.FlatAppearance.BorderSize = 0;
-            this.btnExpand.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnExpand.Location = new System.Drawing.Point(991, 2);
-            this.btnExpand.Margin = new System.Windows.Forms.Padding(2);
-            this.btnExpand.Name = "btnExpand";
-            this.btnExpand.Size = new System.Drawing.Size(30, 22);
-            this.btnExpand.TabIndex = 0;
-            this.btnExpand.Tag = "NonPaintable";
-            this.btnExpand.UseVisualStyleBackColor = false;
-            // 
-            // btnMinimize
-            // 
-            this.btnMinimize.BackColor = System.Drawing.Color.Transparent;
-            this.btnMinimize.BackgroundImage = global::WinformsUI.Properties.Resources.btnMinimizeNew;
-            this.btnMinimize.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btnMinimize.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnMinimize.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnMinimize.FlatAppearance.BorderSize = 0;
-            this.btnMinimize.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnMinimize.Location = new System.Drawing.Point(957, 2);
-            this.btnMinimize.Margin = new System.Windows.Forms.Padding(2);
-            this.btnMinimize.Name = "btnMinimize";
-            this.btnMinimize.Size = new System.Drawing.Size(30, 22);
-            this.btnMinimize.TabIndex = 0;
-            this.btnMinimize.Tag = "NonPaintable";
-            this.btnMinimize.UseVisualStyleBackColor = false;
             // 
             // lblTitle
             // 
@@ -96,7 +45,7 @@
             this.lblTitle.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblTitle.Name = "lblTitle";
             this.lblTitle.Padding = new System.Windows.Forms.Padding(81, 0, 0, 0);
-            this.lblTitle.Size = new System.Drawing.Size(947, 26);
+            this.lblTitle.Size = new System.Drawing.Size(947, 28);
             this.lblTitle.TabIndex = 6;
             this.lblTitle.Tag = "InternalTitleBar";
             this.lblTitle.Text = "Título ";
@@ -121,9 +70,60 @@
             this.tlpTitleBar.Name = "tlpTitleBar";
             this.tlpTitleBar.RowCount = 1;
             this.tlpTitleBar.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tlpTitleBar.Size = new System.Drawing.Size(1057, 26);
+            this.tlpTitleBar.Size = new System.Drawing.Size(1057, 28);
             this.tlpTitleBar.TabIndex = 12;
             this.tlpTitleBar.Tag = "InternalTitleBar";
+            // 
+            // btnExpand
+            // 
+            this.btnExpand.BackColor = System.Drawing.Color.Transparent;
+            this.btnExpand.BackgroundImage = global::WinformsUI.Properties.Resources.btnRestoreNew;
+            this.btnExpand.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.btnExpand.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnExpand.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnExpand.FlatAppearance.BorderSize = 0;
+            this.btnExpand.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnExpand.Location = new System.Drawing.Point(991, 2);
+            this.btnExpand.Margin = new System.Windows.Forms.Padding(2);
+            this.btnExpand.Name = "btnExpand";
+            this.btnExpand.Size = new System.Drawing.Size(30, 24);
+            this.btnExpand.TabIndex = 0;
+            this.btnExpand.Tag = "NonPaintable";
+            this.btnExpand.UseVisualStyleBackColor = false;
+            // 
+            // btnClose
+            // 
+            this.btnClose.BackColor = System.Drawing.Color.Transparent;
+            this.btnClose.BackgroundImage = global::WinformsUI.Properties.Resources.btnCloseModern;
+            this.btnClose.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.btnClose.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnClose.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnClose.FlatAppearance.BorderSize = 0;
+            this.btnClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnClose.Location = new System.Drawing.Point(1025, 2);
+            this.btnClose.Margin = new System.Windows.Forms.Padding(2);
+            this.btnClose.Name = "btnClose";
+            this.btnClose.Size = new System.Drawing.Size(30, 24);
+            this.btnClose.TabIndex = 0;
+            this.btnClose.Tag = "NonPaintable";
+            this.btnClose.UseVisualStyleBackColor = false;
+            // 
+            // btnMinimize
+            // 
+            this.btnMinimize.BackColor = System.Drawing.Color.Transparent;
+            this.btnMinimize.BackgroundImage = global::WinformsUI.Properties.Resources.btnMinimizeNew;
+            this.btnMinimize.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.btnMinimize.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnMinimize.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnMinimize.FlatAppearance.BorderSize = 0;
+            this.btnMinimize.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnMinimize.Location = new System.Drawing.Point(957, 2);
+            this.btnMinimize.Margin = new System.Windows.Forms.Padding(2);
+            this.btnMinimize.Name = "btnMinimize";
+            this.btnMinimize.Size = new System.Drawing.Size(30, 24);
+            this.btnMinimize.TabIndex = 0;
+            this.btnMinimize.Tag = "NonPaintable";
+            this.btnMinimize.UseVisualStyleBackColor = false;
             // 
             // HostForm
             // 
@@ -146,8 +146,8 @@
         private System.Windows.Forms.Panel internalContainer;
         private System.Windows.Forms.Button btnClose;
         private System.Windows.Forms.Button btnExpand;
-        private System.Windows.Forms.Button btnMinimize;
         private System.Windows.Forms.Label lblTitle;
         protected System.Windows.Forms.TableLayoutPanel tlpTitleBar;
+        private System.Windows.Forms.Button btnMinimize;
     }
 }

@@ -10,6 +10,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using WinformsUI.Infrastructure.UserInterface.Theming;
+using WinformsUI.UserControls;
 
 namespace Winforms.Theme
 {
@@ -160,10 +161,6 @@ namespace Winforms.Theme
 
         public static void Apply(Form form, Palette p, VisualDepth depth = VisualDepth.ThreeD)
         {
-            WindowHelper.SuspendDrawing(form); //Evitar flickering hasta el final del ciclo. Suspensión de dibujado
-
-
-
             if (form == null) return; //Fail fast sin exception
 
             var holder = _palettesByForm.GetOrCreateValue(form);
@@ -197,37 +194,35 @@ namespace Winforms.Theme
                 DataGridViewThemer.StyleDgv(dgv, p, depth);
 
 
-            WindowHelper.ResumeDrawing(form);
-
-
 
             RedrawBorders = false; //Al ser una clase estática "singleton" de facto, es necesario resetear el flag para que cada formulario lo pueda usar libremente
                                    //sin depender de si otro formulario lo usó antes o no. Se asume que el uso típico será:
                                    //1) Seteo el flag, 2) Aplico el tema a un formulario, 3) El flag se resetea automáticamente para que no afecte a otros formularios.
         }
 
-        public static class WindowHelper
-        {
-            [System.Runtime.InteropServices.DllImport("user32.dll")]
-            public static extern int SendMessage(IntPtr hWnd, Int32 wMsg, bool wParam, Int32 lParam);
-
-            private const int WM_SETREDRAW = 11;
-
-            public static void SuspendDrawing(Control parent)
-            {
-                SendMessage(parent.Handle, WM_SETREDRAW, false, 0);
-            }
-
-            public static void ResumeDrawing(Control parent)
-            {
-                SendMessage(parent.Handle, WM_SETREDRAW, true, 0);
-                parent.Refresh(); // Forzamos el repintado final
-            }
-        }
+        //Para no perder la clase - De todas formas ya se mitigò por lado del consumidor
+        // public static class WindowHelper
+        // {
+        //     [System.Runtime.InteropServices.DllImport("user32.dll")]
+        //     public static extern int SendMessage(IntPtr hWnd, Int32 wMsg, bool wParam, Int32 lParam);
+        //
+        //     private const int WM_SETREDRAW = 11;
+        //
+        //     public static void SuspendDrawing(Control parent)
+        //     {
+        //         SendMessage(parent.Handle, WM_SETREDRAW, false, 0);
+        //     }
+        //
+        //     public static void ResumeDrawing(Control parent)
+        //     {
+        //         SendMessage(parent.Handle, WM_SETREDRAW, true, 0);
+        //         parent.Refresh(); // Forzamos el repintado final
+        //     }
+        // }
 
         public static void Apply(Control root, Palette p, VisualDepth depth = VisualDepth.ThreeD)
         {
-            WindowHelper.SuspendDrawing(root);
+
 
             //  var form = root as Form ?? root.FindForm();
             //  if (form != null) { Apply(form, p, depth); return; }
@@ -249,7 +244,7 @@ namespace Winforms.Theme
             foreach (var dgv in FindAll<DataGridView>(root)) DataGridViewThemer.StyleDgv(dgv, p, depth);
 
 
-            WindowHelper.ResumeDrawing(root);
+
 
             RedrawBorders = false; //Al ser una clase estática "singleton" de facto, es necesario resetear el flag para que cada formulario lo pueda usar libremente
                                    //sin depender de si otro formulario lo usó antes o no. Se asume que el uso típico será:
@@ -275,10 +270,12 @@ namespace Winforms.Theme
                 //(por ejemplo, un botón no se pinta para ser transparentepero pero su texto sí y Hover sí lo hacen).
                 if (IsNonPaintable(c.Tag))
                 {
-                    if (c is Panel || c is TableLayoutPanel)
+
+
+                    if (c is Panel || c is TableLayoutPanel || c is FlowLayoutPanel)
                     {
                         HasChildren(c, p);
-                        continue; //No se rompe el bucle con Break para que los hijos continúen interando.
+                        continue; //No se rompe el bucle con Break para que los hijos continúen iterando.
                     }
                 }
 
@@ -328,9 +325,11 @@ namespace Winforms.Theme
                     }
                 }
 
-                else if (c is Button)
+                else if (c is RJButton)
                 {
-                    var b = (Button)c;
+                    var b = (RJButton)c;
+
+
 
                     if (b.Tag is "NonPaintable")
                     {
@@ -344,6 +343,8 @@ namespace Winforms.Theme
 
                         b.FlatAppearance.MouseOverBackColor = hoverColor;
                         b.FlatAppearance.MouseDownBackColor = pressColor;
+
+
 
                         continue;
                     }
@@ -365,7 +366,7 @@ namespace Winforms.Theme
                         b.ForeColor = p.TextSecondary;
 
 
-                        Color hoverColor = p.HighAccent;
+                        Color hoverColor = Color.Transparent;
                         Color pressColor = Color.Transparent;
 
                         b.FlatAppearance.MouseOverBackColor = hoverColor;
@@ -381,19 +382,145 @@ namespace Winforms.Theme
                         b.FlatAppearance.BorderSize = 1;
                         b.BackColor = p.HighAccent;
                         b.ForeColor = Darken(ChooseReadableForeground(p.TextSecondary), -0.25);
+
+                        //          buttonThemer.MakeRounded(b);
+
                         continue;
                     }
+
+                    //    b = buttonThemer.MakeRounded(b);
 
                     b.FlatStyle = FlatStyle.Flat;
                     b.FlatAppearance.BorderColor = p.Border;
                     b.FlatAppearance.BorderSize = 1;
                     b.BackColor = p.Surface;
                     b.ForeColor = p.TextSecondary;
+                    b.Cursor = Cursors.Hand;
+                    continue;
                 }
 
-                else if (c is TextBox)
+                else if (c is Button)
                 {
-                    var tb = (TextBox)c;
+
+                    //     var buttonThemer = new ButtonThemer { CornerRadius = 8f, BorderThickness = 2 };
+                    var b = (Button)c;
+
+
+
+                    if (b.Tag is "NonPaintable")
+                    {
+                        b.FlatStyle = FlatStyle.Flat;
+                        b.FlatAppearance.BorderSize = 0;
+                        b.BackColor = Color.Transparent;
+                        b.ForeColor = Darken(p.TextSecondary, -0.4);
+
+                        Color hoverColor = Darken(p.LowAccent, 0.2);
+                        Color pressColor = p.LowAccent;
+
+                        b.FlatAppearance.MouseOverBackColor = hoverColor;
+                        b.FlatAppearance.MouseDownBackColor = pressColor;
+
+
+
+                        continue;
+                    }
+
+                    if (b.Tag is "CloseButton")
+                    {
+                        b.FlatStyle = FlatStyle.Flat;
+                        b.FlatAppearance.BorderSize = 0;
+                        b.BackColor = Color.Transparent;
+                        b.ForeColor = Darken(p.TextSecondary, -0.4);
+
+                        Color hoverColor = Darken(Color.Red, 0.4);
+                        Color pressColor = Darken(Color.Red, 0.1);
+
+                        b.FlatAppearance.MouseOverBackColor = hoverColor;
+                        b.FlatAppearance.MouseDownBackColor = pressColor;
+
+
+
+                        continue;
+                    }
+
+                    if (b.Tag is "ExternalTitleBar")
+                    {
+                        b.BackColor = Darken(p.LowAccent, 0.8);
+                        continue;
+                    }
+
+                    if (b.Tag is "IsImageColorable")
+                    {
+                        MaybeRecolorControlImages(c, p, 1.6f, 0.10f);
+
+                        b.FlatStyle = FlatStyle.Flat;
+                        //b.FlatAppearance.BorderColor = p.Border;
+                        b.FlatAppearance.BorderSize = 0;
+                        b.BackColor = Color.Transparent;
+                        b.ForeColor = p.TextSecondary;
+
+
+                        Color hoverColor = Color.Transparent;
+                        Color pressColor = Color.Transparent;
+
+                        b.FlatAppearance.MouseOverBackColor = hoverColor;
+                        b.FlatAppearance.MouseDownBackColor = pressColor;
+
+                        continue;
+                    }
+
+                    if (b.Tag is "HighAccented")
+                    {
+                        b.FlatStyle = FlatStyle.Flat;
+                        b.FlatAppearance.BorderColor = p.HighAccent;
+                        b.FlatAppearance.BorderSize = 1;
+                        b.BackColor = p.HighAccent;
+                        b.ForeColor = Darken(ChooseReadableForeground(p.TextSecondary), -0.25);
+
+                        //          buttonThemer.MakeRounded(b);
+
+                        continue;
+                    }
+
+                    //    b = buttonThemer.MakeRounded(b);
+
+                    b.FlatStyle = FlatStyle.Flat;
+                    b.FlatAppearance.BorderColor = p.Border;
+                    b.FlatAppearance.BorderSize = 1;
+                    b.BackColor = p.Surface;
+                    b.ForeColor = p.TextSecondary;
+                    b.Cursor = Cursors.Hand;
+
+
+
+
+                }
+
+
+                else if (c is TextBox tb)
+                {
+
+                    //   TextBoxThemer themer = new TextBoxThemer
+                    //   {
+                    //       CornerRadius = 15f,
+                    //       BorderColor = p.Border,
+                    //       FocusBorder = p.Accent,
+                    //       BackgroundColor = p.Surface,
+                    //       BorderThickness = 2,
+                    //       InnerPadding = new Padding(12, 5, 8, 5)
+                    //   };
+                    //
+                    //   tb.AutoSize = false;
+                    //
+                    //   tb = themer.MakeRounded(tb);
+                    //   tb.ForeColor = p.TextPrimary;
+
+
+                    // themer.MakeRounded(tb, radius: 10f);
+
+
+
+
 
                     tb.BackColor = p.Surface;
                     tb.ForeColor = p.TextPrimary;
@@ -408,6 +535,7 @@ namespace Winforms.Theme
 
                         AttachCustomBorder(tb, borderColor);
                     }
+
                 }
 
                 else if (c is DateTimePicker)
@@ -891,10 +1019,13 @@ namespace Winforms.Theme
 
         private static void StylePanels(Form form, Palette p, VisualDepth depth)
         {
+
+
+
             foreach (var pnl in FindAll<Panel>(form))
             {
 
-                if (IsNonPaintable(pnl.Tag))
+                if (pnl.Tag is "NonPaintable")
                 {
                     RemoveGradientBackground(pnl);
                     continue;
@@ -932,14 +1063,15 @@ namespace Winforms.Theme
                 else if (pnl.Tag is "InternalTitleBar")
                 {
                     if (isDarkPalette)
-                        ApplyGradientBackground(pnl, Darken(p.LowAccent, 0.65), Darken(p.Accent, 0.65), LinearGradientMode.Vertical, false);
+                        ApplyGradientBackground(pnl, Darken(p.LowAccent, 0.7), Darken(p.Accent, 0.7), LinearGradientMode.Vertical, false);
                     else
-                        ApplyGradientBackground(pnl, Darken(p.LowAccent, 0.65), Darken(p.Accent, 0.65), LinearGradientMode.Vertical, false);
+                        ApplyGradientBackground(pnl, Darken(p.LowAccent, 0.7), Darken(p.Accent, 0.7), LinearGradientMode.Vertical, false);
                 }
 
 
                 else if (pnl.Tag is "ExternalTitleBar")
                 {
+                    if (pnl.Name is "pnlSlotForTabs") Debugger.Break();
                     ApplyGradientBackground(pnl, Darken(p.LowAccent, 0.8), Darken(p.Accent, 0.8), LinearGradientMode.Horizontal, false);
                 }
 

@@ -1,4 +1,6 @@
-﻿namespace WinformsUI.Forms.PaymentCRUDL
+﻿using WinformsUI.UserControls;
+
+namespace WinformsUI.Forms.PaymentCRUDL
 {
     partial class CreatePaymentForm
     {

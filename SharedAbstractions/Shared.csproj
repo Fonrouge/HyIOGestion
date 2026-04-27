@@ -69,6 +69,7 @@
     <Compile Include="Enums\CountriesEnum.cs" />
     <Compile Include="Enums\DocTypesEnum.cs" />
     <Compile Include="Enums\EnumExtensions.cs" />
+    <Compile Include="Enums\FeedbackState.cs" />
     <Compile Include="Enums\LayoutTypeEnum.cs" />
     <Compile Include="Enums\PaymentMethodsEnum.cs" />
     <Compile Include="Enums\WindowManagementModeEnum.cs" />

@@ -1,6 +1,8 @@
 ﻿using BLL.DTOs;
 using BLL.LogicLayers.Payments;
+using Presenter.Messaging;
 using SharedAbstractions.ArchitecturalMarkers;
+using SharedAbstractions.Enums;
 using System;
 using System.Threading.Tasks;
 
@@ -12,25 +14,56 @@ namespace Presenter.ForPayments
         private readonly IUCGetAllPayments _ucGetAll;
         private readonly IUCUpdatePayment _ucUpdate;
         private readonly IUCDeletePayment _ucDelete;
+        private readonly IMessenger _messenger;
 
         public PaymentPresenter
         (
             IPaymentView view,
             IUCGetAllPayments ucGetAll,
             IUCUpdatePayment ucUpdate,
-            IUCDeletePayment ucDelete
+            IUCDeletePayment ucDelete,
+            IMessenger messenger
         )
         {
             _view = view ?? throw new ArgumentNullException(nameof(view));
             _ucGetAll = ucGetAll ?? throw new ArgumentNullException(nameof(ucGetAll));
             _ucUpdate = ucUpdate ?? throw new ArgumentNullException(nameof(ucUpdate));
             _ucDelete = ucDelete ?? throw new ArgumentNullException(nameof(ucDelete));
+            _messenger = messenger ?? throw new ArgumentNullException(nameof(messenger));
 
             WireViewEvents();
             ApplyDarkTheme();
+            SubscribeMessages();
         }
 
+        // =========================================================
+        // Estética general
+        // =========================================================
         private void ApplyDarkTheme() => _view.ThemingNotifiedByConfigurationsModule();
+
+
+        // =========================================================
+        // Suscripción a mensajería global
+        // =========================================================
+        private void SubscribeMessages()
+        {
+            _messenger.Subscribe<PaymentsRelistRequestMessage>(OnGetAllRequested);
+            _messenger.Subscribe<ViewContainerGotFocusNotificationMessage>(GotFocusHostForm);
+            //Ready for more...
+        }
+        private void CloseHostFormMessage(object viewId) => _messenger.Send(new ViewContainerCloseRequestMessage((Guid)viewId, this));
+        private async void GotFocusHostForm(ViewContainerGotFocusNotificationMessage message)
+        {
+            if (message.Payload == _view.ViewId)
+            {
+                _view.ChangeActivationStateFeedbackBar(true);
+                await Task.WhenAll(_view.SetFeedbackState(FeedbackState.Idle));
+            }
+            else
+            {
+                _view.ChangeActivationStateFeedbackBar(false);
+            }
+        }
 
         private void WireViewEvents()
         {
@@ -50,7 +83,12 @@ namespace Presenter.ForPayments
         private async void HandleUpdateRequested(object sender, PaymentDTO e) => await OnUpdateRequested(e);
         private async void HandleDeleteRequested(object sender, PaymentDTO e) => await OnDeleteRequested(e);
         private async void HandleListAllRequested(object sender, EventArgs e) => await OnGetAllRequested();
-        private void HandleCloseRequested(object sender, EventArgs e) => Dispose();
+        private void HandleCloseRequested(object sender, EventArgs e)
+        {
+            CloseHostFormMessage((Guid)sender);
+            Dispose();
+        }
+
 
 
         // =========================================================
@@ -71,6 +109,8 @@ namespace Presenter.ForPayments
 
             if (opRes.Success) await OnGetAllRequested();
         }
+
+        private async void OnGetAllRequested(PaymentsRelistRequestMessage message) => await OnGetAllRequested();
 
         private async Task OnGetAllRequested()
         {

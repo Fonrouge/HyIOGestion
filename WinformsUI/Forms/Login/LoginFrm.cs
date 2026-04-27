@@ -39,10 +39,11 @@ namespace WinformsUI.Forms.Login
             tbUser.Focus();
         }
 
-    
+
         private void ApplyTheme()
         {
             _currentPalette = DarkTheme.GetCurrentPalette();
+            DarkTheme.RedrawBorders = true;
             DarkTheme.Apply(this, _currentPalette);
         }
 

@@ -15,8 +15,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ClientForm));
-            this.panel1 = new System.Windows.Forms.Panel();
+            this.pnlFeedbackBar = new System.Windows.Forms.Panel();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.btnCreate = new System.Windows.Forms.ToolStripButton();
             this.btnDelete = new System.Windows.Forms.ToolStripButton();
@@ -34,52 +33,44 @@
             this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
             this.miniTLP = new System.Windows.Forms.TableLayoutPanel();
             this.btnRibbonExpander = new System.Windows.Forms.Button();
-            this.miniRibbonPanel = new System.Windows.Forms.Panel();
+            this.pnlCollapsedRibbons = new System.Windows.Forms.Panel();
             this.btnRibbonCollapser = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.ribbonTLP = new System.Windows.Forms.TableLayoutPanel();
+            this.tlpExpandedRibbon = new System.Windows.Forms.TableLayoutPanel();
             this.label3 = new System.Windows.Forms.Label();
             this.toolStrip2 = new System.Windows.Forms.ToolStrip();
-            this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton9 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton11 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton10 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton13 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton12 = new System.Windows.Forms.ToolStripButton();
-            this.EyeRestRibbon = new WinformsUI.UserControls.Ribbon.EyeRestRibbon();
+            this.ribbonEyeRest = new WinformsUI.UserControls.Ribbon.EyeRestRibbon();
             this.communicationFunctions1 = new WinformsUI.UserControls.Ribbon.CommunicationRibbon();
-            this.DgvFunctionsRibbon = new WinformsUI.UserControls.CustomDGV.CustomDGVRibbon();
+            this.ribbonDgvFunctions = new WinformsUI.UserControls.CustomDGV.CustomDgvRibbon();
             this.ExportRibbon = new WinformsUI.UserControls.Ribbon.ExportRibbon();
-            this.gigaRibbonPanel = new System.Windows.Forms.Panel();
+            this.pnlExpandedRibbons = new System.Windows.Forms.Panel();
             this.mainTLP = new System.Windows.Forms.TableLayoutPanel();
-            this.dgvPanel = new System.Windows.Forms.Panel();
+            this.pnlDgv = new System.Windows.Forms.Panel();
             this.toolStrip1.SuspendLayout();
             this.collapsedRibbon.SuspendLayout();
             this.miniTLP.SuspendLayout();
-            this.miniRibbonPanel.SuspendLayout();
-            this.ribbonTLP.SuspendLayout();
-            this.toolStrip2.SuspendLayout();
-            this.gigaRibbonPanel.SuspendLayout();
+            this.pnlCollapsedRibbons.SuspendLayout();
+            this.tlpExpandedRibbon.SuspendLayout();
+            this.pnlExpandedRibbons.SuspendLayout();
             this.mainTLP.SuspendLayout();
             this.SuspendLayout();
             // 
-            // panel1
+            // pnlFeedbackBar
             // 
-            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.pnlFeedbackBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel1.BackColor = System.Drawing.Color.LawnGreen;
-            this.mainTLP.SetColumnSpan(this.panel1, 6);
-            this.panel1.ForeColor = System.Drawing.Color.LawnGreen;
-            this.panel1.Location = new System.Drawing.Point(0, 159);
-            this.panel1.Margin = new System.Windows.Forms.Padding(0);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1457, 3);
-            this.panel1.TabIndex = 58;
-            this.panel1.Tag = "PanelAccentuable";
+            this.pnlFeedbackBar.BackColor = System.Drawing.Color.LawnGreen;
+            this.mainTLP.SetColumnSpan(this.pnlFeedbackBar, 6);
+            this.pnlFeedbackBar.ForeColor = System.Drawing.Color.LawnGreen;
+            this.pnlFeedbackBar.Location = new System.Drawing.Point(0, 159);
+            this.pnlFeedbackBar.Margin = new System.Windows.Forms.Padding(0);
+            this.pnlFeedbackBar.Name = "pnlFeedbackBar";
+            this.pnlFeedbackBar.Size = new System.Drawing.Size(1896, 3);
+            this.pnlFeedbackBar.TabIndex = 58;
+            this.pnlFeedbackBar.Tag = "PanelAccentuable";
             // 
             // toolStrip1
             // 
@@ -316,7 +307,7 @@
             this.miniTLP.Name = "miniTLP";
             this.miniTLP.RowCount = 1;
             this.miniTLP.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.miniTLP.Size = new System.Drawing.Size(1457, 52);
+            this.miniTLP.Size = new System.Drawing.Size(1896, 52);
             this.miniTLP.TabIndex = 65;
             this.miniTLP.Tag = "NonPaintable";
             // 
@@ -327,7 +318,7 @@
             this.btnRibbonExpander.BackColor = System.Drawing.Color.Transparent;
             this.btnRibbonExpander.FlatAppearance.BorderSize = 0;
             this.btnRibbonExpander.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnRibbonExpander.Location = new System.Drawing.Point(1411, 6);
+            this.btnRibbonExpander.Location = new System.Drawing.Point(1850, 6);
             this.btnRibbonExpander.Margin = new System.Windows.Forms.Padding(0);
             this.btnRibbonExpander.MaximumSize = new System.Drawing.Size(46, 46);
             this.btnRibbonExpander.Name = "btnRibbonExpander";
@@ -337,20 +328,20 @@
             this.btnRibbonExpander.Text = "▼";
             this.btnRibbonExpander.UseVisualStyleBackColor = false;
             // 
-            // miniRibbonPanel
+            // pnlCollapsedRibbons
             // 
-            this.miniRibbonPanel.AutoSize = true;
-            this.miniRibbonPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.miniRibbonPanel.BackColor = System.Drawing.Color.Transparent;
-            this.miniRibbonPanel.Controls.Add(this.miniTLP);
-            this.miniRibbonPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.miniRibbonPanel.Location = new System.Drawing.Point(0, 0);
-            this.miniRibbonPanel.Margin = new System.Windows.Forms.Padding(0);
-            this.miniRibbonPanel.Name = "miniRibbonPanel";
-            this.miniRibbonPanel.Size = new System.Drawing.Size(1457, 52);
-            this.miniRibbonPanel.TabIndex = 0;
-            this.miniRibbonPanel.Tag = "";
-            this.miniRibbonPanel.Visible = false;
+            this.pnlCollapsedRibbons.AutoSize = true;
+            this.pnlCollapsedRibbons.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.pnlCollapsedRibbons.BackColor = System.Drawing.Color.Transparent;
+            this.pnlCollapsedRibbons.Controls.Add(this.miniTLP);
+            this.pnlCollapsedRibbons.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlCollapsedRibbons.Location = new System.Drawing.Point(0, 0);
+            this.pnlCollapsedRibbons.Margin = new System.Windows.Forms.Padding(0);
+            this.pnlCollapsedRibbons.Name = "pnlCollapsedRibbons";
+            this.pnlCollapsedRibbons.Size = new System.Drawing.Size(1896, 52);
+            this.pnlCollapsedRibbons.TabIndex = 0;
+            this.pnlCollapsedRibbons.Tag = "";
+            this.pnlCollapsedRibbons.Visible = false;
             // 
             // btnRibbonCollapser
             // 
@@ -358,7 +349,7 @@
             this.btnRibbonCollapser.BackColor = System.Drawing.Color.Transparent;
             this.btnRibbonCollapser.FlatAppearance.BorderSize = 0;
             this.btnRibbonCollapser.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnRibbonCollapser.Location = new System.Drawing.Point(1411, 32);
+            this.btnRibbonCollapser.Location = new System.Drawing.Point(1850, 32);
             this.btnRibbonCollapser.Margin = new System.Windows.Forms.Padding(0);
             this.btnRibbonCollapser.MaximumSize = new System.Drawing.Size(46, 46);
             this.btnRibbonCollapser.Name = "btnRibbonCollapser";
@@ -431,7 +422,7 @@
             this.label5.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.label5.Font = new System.Drawing.Font("Microsoft YaHei UI", 7F);
             this.label5.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(24)))), ((int)(((byte)(49)))), ((int)(((byte)(83)))));
-            this.label5.Location = new System.Drawing.Point(1130, 81);
+            this.label5.Location = new System.Drawing.Point(1569, 81);
             this.label5.Margin = new System.Windows.Forms.Padding(0, 0, 5, 0);
             this.label5.Name = "label5";
             this.label5.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
@@ -441,41 +432,41 @@
             this.label5.Text = "Modo descanso";
             this.label5.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // ribbonTLP
+            // tlpExpandedRibbon
             // 
-            this.ribbonTLP.AutoSize = true;
-            this.ribbonTLP.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ribbonTLP.BackColor = System.Drawing.Color.Transparent;
-            this.ribbonTLP.ColumnCount = 7;
-            this.ribbonTLP.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.ribbonTLP.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.ribbonTLP.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.ribbonTLP.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.ribbonTLP.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.ribbonTLP.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.ribbonTLP.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.ribbonTLP.Controls.Add(this.label3, 3, 1);
-            this.ribbonTLP.Controls.Add(this.toolStrip2, 4, 0);
-            this.ribbonTLP.Controls.Add(this.EyeRestRibbon, 5, 0);
-            this.ribbonTLP.Controls.Add(this.communicationFunctions1, 1, 0);
-            this.ribbonTLP.Controls.Add(this.DgvFunctionsRibbon, 2, 0);
-            this.ribbonTLP.Controls.Add(this.toolStrip1, 0, 0);
-            this.ribbonTLP.Controls.Add(this.btnRibbonCollapser, 6, 0);
-            this.ribbonTLP.Controls.Add(this.label2, 2, 1);
-            this.ribbonTLP.Controls.Add(this.label4, 1, 1);
-            this.ribbonTLP.Controls.Add(this.label1, 0, 1);
-            this.ribbonTLP.Controls.Add(this.label5, 5, 1);
-            this.ribbonTLP.Controls.Add(this.ExportRibbon, 3, 0);
-            this.ribbonTLP.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ribbonTLP.Location = new System.Drawing.Point(0, 0);
-            this.ribbonTLP.Margin = new System.Windows.Forms.Padding(0);
-            this.ribbonTLP.Name = "ribbonTLP";
-            this.ribbonTLP.RowCount = 2;
-            this.ribbonTLP.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 75F));
-            this.ribbonTLP.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.ribbonTLP.Size = new System.Drawing.Size(1457, 107);
-            this.ribbonTLP.TabIndex = 66;
-            this.ribbonTLP.Tag = "NonPaintable";
+            this.tlpExpandedRibbon.AutoSize = true;
+            this.tlpExpandedRibbon.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.tlpExpandedRibbon.BackColor = System.Drawing.Color.Transparent;
+            this.tlpExpandedRibbon.ColumnCount = 7;
+            this.tlpExpandedRibbon.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tlpExpandedRibbon.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tlpExpandedRibbon.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tlpExpandedRibbon.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tlpExpandedRibbon.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tlpExpandedRibbon.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tlpExpandedRibbon.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tlpExpandedRibbon.Controls.Add(this.label3, 3, 1);
+            this.tlpExpandedRibbon.Controls.Add(this.toolStrip2, 4, 0);
+            this.tlpExpandedRibbon.Controls.Add(this.ribbonEyeRest, 5, 0);
+            this.tlpExpandedRibbon.Controls.Add(this.communicationFunctions1, 1, 0);
+            this.tlpExpandedRibbon.Controls.Add(this.ribbonDgvFunctions, 2, 0);
+            this.tlpExpandedRibbon.Controls.Add(this.toolStrip1, 0, 0);
+            this.tlpExpandedRibbon.Controls.Add(this.btnRibbonCollapser, 6, 0);
+            this.tlpExpandedRibbon.Controls.Add(this.label2, 2, 1);
+            this.tlpExpandedRibbon.Controls.Add(this.label4, 1, 1);
+            this.tlpExpandedRibbon.Controls.Add(this.label1, 0, 1);
+            this.tlpExpandedRibbon.Controls.Add(this.label5, 5, 1);
+            this.tlpExpandedRibbon.Controls.Add(this.ExportRibbon, 3, 0);
+            this.tlpExpandedRibbon.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tlpExpandedRibbon.Location = new System.Drawing.Point(0, 0);
+            this.tlpExpandedRibbon.Margin = new System.Windows.Forms.Padding(0);
+            this.tlpExpandedRibbon.Name = "tlpExpandedRibbon";
+            this.tlpExpandedRibbon.RowCount = 2;
+            this.tlpExpandedRibbon.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 75F));
+            this.tlpExpandedRibbon.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tlpExpandedRibbon.Size = new System.Drawing.Size(1896, 107);
+            this.tlpExpandedRibbon.TabIndex = 66;
+            this.tlpExpandedRibbon.Tag = "NonPaintable";
             // 
             // label3
             // 
@@ -505,101 +496,24 @@
             this.toolStrip2.GripMargin = new System.Windows.Forms.Padding(0);
             this.toolStrip2.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.toolStrip2.ImageScalingSize = new System.Drawing.Size(19, 19);
-            this.toolStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripButton3,
-            this.toolStripButton4,
-            this.toolStripButton9,
-            this.toolStripButton11,
-            this.toolStripButton10,
-            this.toolStripButton13,
-            this.toolStripButton12});
             this.toolStrip2.Location = new System.Drawing.Point(1216, 1);
             this.toolStrip2.Margin = new System.Windows.Forms.Padding(0, 1, 0, 0);
             this.toolStrip2.Name = "toolStrip2";
             this.toolStrip2.Padding = new System.Windows.Forms.Padding(0);
-            this.toolStrip2.Size = new System.Drawing.Size(1, 74);
+            this.toolStrip2.Size = new System.Drawing.Size(353, 74);
             this.toolStrip2.TabIndex = 53;
             this.toolStrip2.Text = "toolStrip2";
             // 
-            // toolStripButton3
+            // ribbonEyeRest
             // 
-            this.toolStripButton3.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton3.Image")));
-            this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton3.Name = "toolStripButton3";
-            this.toolStripButton3.Size = new System.Drawing.Size(27, 71);
-            this.toolStripButton3.Text = "car";
-            this.toolStripButton3.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            this.toolStripButton3.Click += new System.EventHandler(this.btnDebugCargar);
-            // 
-            // toolStripButton4
-            // 
-            this.toolStripButton4.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton4.Image")));
-            this.toolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton4.Name = "toolStripButton4";
-            this.toolStripButton4.Size = new System.Drawing.Size(24, 71);
-            this.toolStripButton4.Text = "ok";
-            this.toolStripButton4.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            this.toolStripButton4.Click += new System.EventHandler(this.btnDebugSuccess);
-            // 
-            // toolStripButton9
-            // 
-            this.toolStripButton9.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton9.Image")));
-            this.toolStripButton9.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton9.Name = "toolStripButton9";
-            this.toolStripButton9.Size = new System.Drawing.Size(25, 71);
-            this.toolStripButton9.Text = "no";
-            this.toolStripButton9.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            this.toolStripButton9.Click += new System.EventHandler(this.btnDebugError);
-            // 
-            // toolStripButton11
-            // 
-            this.toolStripButton11.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton11.Image")));
-            this.toolStripButton11.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton11.Name = "toolStripButton11";
-            this.toolStripButton11.Size = new System.Drawing.Size(30, 71);
-            this.toolStripButton11.Text = "idle";
-            this.toolStripButton11.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            this.toolStripButton11.Click += new System.EventHandler(this.IdleFeedbackPanel);
-            // 
-            // toolStripButton10
-            // 
-            this.toolStripButton10.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton10.Image")));
-            this.toolStripButton10.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton10.Name = "toolStripButton10";
-            this.toolStripButton10.Size = new System.Drawing.Size(79, 71);
-            this.toolStripButton10.Text = "active switch";
-            this.toolStripButton10.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            this.toolStripButton10.Click += new System.EventHandler(this.btnDebugActiveToogle);
-            // 
-            // toolStripButton13
-            // 
-            this.toolStripButton13.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton13.Image")));
-            this.toolStripButton13.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton13.Name = "toolStripButton13";
-            this.toolStripButton13.Size = new System.Drawing.Size(23, 71);
-            this.toolStripButton13.Text = "+";
-            this.toolStripButton13.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            // 
-            // toolStripButton12
-            // 
-            this.toolStripButton12.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton12.Image")));
-            this.toolStripButton12.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton12.Name = "toolStripButton12";
-            this.toolStripButton12.Size = new System.Drawing.Size(23, 71);
-            this.toolStripButton12.Text = "-";
-            this.toolStripButton12.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            // 
-            // EyeRestRibbon
-            // 
-            this.EyeRestRibbon.AutoSize = true;
-            this.EyeRestRibbon.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.EyeRestRibbon.Font = new System.Drawing.Font("Microsoft YaHei UI", 8F);
-            this.EyeRestRibbon.Location = new System.Drawing.Point(1131, 1);
-            this.EyeRestRibbon.Margin = new System.Windows.Forms.Padding(1, 1, 3, 0);
-            this.EyeRestRibbon.Name = "EyeRestRibbon";
-            this.EyeRestRibbon.Size = new System.Drawing.Size(277, 73);
-            this.EyeRestRibbon.TabIndex = 46;
-            this.EyeRestRibbon.TargetForm = null;
+            this.ribbonEyeRest.AutoSize = true;
+            this.ribbonEyeRest.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.ribbonEyeRest.Font = new System.Drawing.Font("Microsoft YaHei UI", 8F);
+            this.ribbonEyeRest.Location = new System.Drawing.Point(1570, 1);
+            this.ribbonEyeRest.Margin = new System.Windows.Forms.Padding(1, 1, 3, 0);
+            this.ribbonEyeRest.Name = "ribbonEyeRest";
+            this.ribbonEyeRest.Size = new System.Drawing.Size(277, 73);
+            this.ribbonEyeRest.TabIndex = 46;
             // 
             // communicationFunctions1
             // 
@@ -612,18 +526,18 @@
             this.communicationFunctions1.Size = new System.Drawing.Size(184, 74);
             this.communicationFunctions1.TabIndex = 35;
             // 
-            // DgvFunctionsRibbon
+            // ribbonDgvFunctions
             // 
-            this.DgvFunctionsRibbon.AutoSize = true;
-            this.DgvFunctionsRibbon.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.DgvFunctionsRibbon.Font = new System.Drawing.Font("Microsoft YaHei UI", 8F);
-            this.DgvFunctionsRibbon.Location = new System.Drawing.Point(519, 1);
-            this.DgvFunctionsRibbon.Margin = new System.Windows.Forms.Padding(1, 1, 1, 0);
-            this.DgvFunctionsRibbon.Name = "DgvFunctionsRibbon";
-            this.DgvFunctionsRibbon.Size = new System.Drawing.Size(358, 74);
-            this.DgvFunctionsRibbon.TabIndex = 36;
-            this.DgvFunctionsRibbon.Tag = "";
-            this.DgvFunctionsRibbon.TargetDGV = null;
+            this.ribbonDgvFunctions.AutoSize = true;
+            this.ribbonDgvFunctions.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.ribbonDgvFunctions.Font = new System.Drawing.Font("Microsoft YaHei UI", 8F);
+            this.ribbonDgvFunctions.Location = new System.Drawing.Point(519, 1);
+            this.ribbonDgvFunctions.Margin = new System.Windows.Forms.Padding(1, 1, 1, 0);
+            this.ribbonDgvFunctions.Name = "ribbonDgvFunctions";
+            this.ribbonDgvFunctions.Size = new System.Drawing.Size(358, 74);
+            this.ribbonDgvFunctions.TabIndex = 36;
+            this.ribbonDgvFunctions.Tag = "";
+            this.ribbonDgvFunctions.TargetDGV = null;
             // 
             // ExportRibbon
             // 
@@ -636,27 +550,27 @@
             this.ExportRibbon.Size = new System.Drawing.Size(336, 74);
             this.ExportRibbon.TabIndex = 54;
             // 
-            // gigaRibbonPanel
+            // pnlExpandedRibbons
             // 
-            this.gigaRibbonPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.gigaRibbonPanel.BackColor = System.Drawing.Color.Transparent;
-            this.gigaRibbonPanel.Controls.Add(this.ribbonTLP);
-            this.gigaRibbonPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.gigaRibbonPanel.Location = new System.Drawing.Point(0, 52);
-            this.gigaRibbonPanel.Margin = new System.Windows.Forms.Padding(0);
-            this.gigaRibbonPanel.Name = "gigaRibbonPanel";
-            this.gigaRibbonPanel.Size = new System.Drawing.Size(1457, 107);
-            this.gigaRibbonPanel.TabIndex = 0;
-            this.gigaRibbonPanel.Tag = "";
+            this.pnlExpandedRibbons.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.pnlExpandedRibbons.BackColor = System.Drawing.Color.Transparent;
+            this.pnlExpandedRibbons.Controls.Add(this.tlpExpandedRibbon);
+            this.pnlExpandedRibbons.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlExpandedRibbons.Location = new System.Drawing.Point(0, 52);
+            this.pnlExpandedRibbons.Margin = new System.Windows.Forms.Padding(0);
+            this.pnlExpandedRibbons.Name = "pnlExpandedRibbons";
+            this.pnlExpandedRibbons.Size = new System.Drawing.Size(1896, 107);
+            this.pnlExpandedRibbons.TabIndex = 0;
+            this.pnlExpandedRibbons.Tag = "";
             // 
             // mainTLP
             // 
             this.mainTLP.ColumnCount = 1;
             this.mainTLP.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.mainTLP.Controls.Add(this.panel1, 0, 2);
-            this.mainTLP.Controls.Add(this.gigaRibbonPanel, 0, 1);
-            this.mainTLP.Controls.Add(this.miniRibbonPanel, 0, 0);
-            this.mainTLP.Controls.Add(this.dgvPanel, 0, 3);
+            this.mainTLP.Controls.Add(this.pnlFeedbackBar, 0, 2);
+            this.mainTLP.Controls.Add(this.pnlExpandedRibbons, 0, 1);
+            this.mainTLP.Controls.Add(this.pnlCollapsedRibbons, 0, 0);
+            this.mainTLP.Controls.Add(this.pnlDgv, 0, 3);
             this.mainTLP.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mainTLP.Location = new System.Drawing.Point(0, 0);
             this.mainTLP.Name = "mainTLP";
@@ -665,25 +579,25 @@
             this.mainTLP.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.mainTLP.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.mainTLP.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.mainTLP.Size = new System.Drawing.Size(1457, 760);
+            this.mainTLP.Size = new System.Drawing.Size(1896, 760);
             this.mainTLP.TabIndex = 65;
             // 
-            // dgvPanel
+            // pnlDgv
             // 
-            this.dgvPanel.BackColor = System.Drawing.Color.IndianRed;
-            this.dgvPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgvPanel.Location = new System.Drawing.Point(0, 162);
-            this.dgvPanel.Margin = new System.Windows.Forms.Padding(0);
-            this.dgvPanel.Name = "dgvPanel";
-            this.dgvPanel.Size = new System.Drawing.Size(1457, 598);
-            this.dgvPanel.TabIndex = 57;
+            this.pnlDgv.BackColor = System.Drawing.Color.IndianRed;
+            this.pnlDgv.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlDgv.Location = new System.Drawing.Point(0, 162);
+            this.pnlDgv.Margin = new System.Windows.Forms.Padding(0);
+            this.pnlDgv.Name = "pnlDgv";
+            this.pnlDgv.Size = new System.Drawing.Size(1896, 598);
+            this.pnlDgv.TabIndex = 57;
             // 
             // ClientForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(1457, 760);
+            this.ClientSize = new System.Drawing.Size(1896, 760);
             this.Controls.Add(this.mainTLP);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "ClientForm";
@@ -694,14 +608,12 @@
             this.collapsedRibbon.PerformLayout();
             this.miniTLP.ResumeLayout(false);
             this.miniTLP.PerformLayout();
-            this.miniRibbonPanel.ResumeLayout(false);
-            this.miniRibbonPanel.PerformLayout();
-            this.ribbonTLP.ResumeLayout(false);
-            this.ribbonTLP.PerformLayout();
-            this.toolStrip2.ResumeLayout(false);
-            this.toolStrip2.PerformLayout();
-            this.gigaRibbonPanel.ResumeLayout(false);
-            this.gigaRibbonPanel.PerformLayout();
+            this.pnlCollapsedRibbons.ResumeLayout(false);
+            this.pnlCollapsedRibbons.PerformLayout();
+            this.tlpExpandedRibbon.ResumeLayout(false);
+            this.tlpExpandedRibbon.PerformLayout();
+            this.pnlExpandedRibbons.ResumeLayout(false);
+            this.pnlExpandedRibbons.PerformLayout();
             this.mainTLP.ResumeLayout(false);
             this.mainTLP.PerformLayout();
             this.ResumeLayout(false);
@@ -710,10 +622,10 @@
 
         #endregion
         private System.Windows.Forms.TextBox tbSearchBarLocal;
-        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Panel pnlFeedbackBar;
         private System.Windows.Forms.TableLayoutPanel mainTLP;
-        private System.Windows.Forms.Panel gigaRibbonPanel;
-        private System.Windows.Forms.TableLayoutPanel ribbonTLP;
+        private System.Windows.Forms.Panel pnlExpandedRibbons;
+        private System.Windows.Forms.TableLayoutPanel tlpExpandedRibbon;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripButton btnCreate;
         private System.Windows.Forms.ToolStripButton btnDelete;
@@ -724,10 +636,10 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label5;
-        private UserControls.CustomDGV.CustomDGVRibbon DgvFunctionsRibbon;
+        private UserControls.CustomDGV.CustomDgvRibbon ribbonDgvFunctions;
         private UserControls.Ribbon.CommunicationRibbon communicationFunctions1;
-        private System.Windows.Forms.Panel dgvPanel;
-        private System.Windows.Forms.Panel miniRibbonPanel;
+        private System.Windows.Forms.Panel pnlDgv;
+        private System.Windows.Forms.Panel pnlCollapsedRibbons;
         private System.Windows.Forms.TableLayoutPanel miniTLP;
         private System.Windows.Forms.ToolStrip collapsedRibbon;
         private System.Windows.Forms.ToolStripButton toolStripButton8;
@@ -740,15 +652,8 @@
         private System.Windows.Forms.ToolStripMenuItem asdasdasdToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton toolStripButton5;
         private System.Windows.Forms.Button btnRibbonExpander;
-        private UserControls.Ribbon.EyeRestRibbon EyeRestRibbon;
+        private UserControls.Ribbon.EyeRestRibbon ribbonEyeRest;
         private System.Windows.Forms.ToolStrip toolStrip2;
-        private System.Windows.Forms.ToolStripButton toolStripButton3;
-        private System.Windows.Forms.ToolStripButton toolStripButton4;
-        private System.Windows.Forms.ToolStripButton toolStripButton9;
-        private System.Windows.Forms.ToolStripButton toolStripButton10;
-        private System.Windows.Forms.ToolStripButton toolStripButton11;
-        private System.Windows.Forms.ToolStripButton toolStripButton13;
-        private System.Windows.Forms.ToolStripButton toolStripButton12;
         private System.Windows.Forms.Label label3;
         private UserControls.Ribbon.ExportRibbon ExportRibbon;
     }

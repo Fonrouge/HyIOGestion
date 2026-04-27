@@ -45,7 +45,7 @@ namespace WinformsUI.UserControls.SearchBar
         // --- Estado de Filtros Avanzados ---
         private List<string> _advancedFilterValues = new List<string>();
         private bool _advancedMatchAll = false;
-        private bool _dateFilterEnabled = false;   
+        private bool _dateFilterEnabled = false;
 
         // --- Timer (debounce) ---
         private readonly Timer _debounce = new Timer();
@@ -100,7 +100,7 @@ namespace WinformsUI.UserControls.SearchBar
 
             _dgv.ColumnHeaderMouseClick -= DgvOnHeaderClick;
             _dgv.ColumnHeaderMouseClick += DgvOnHeaderClick;
-            _transMgr?.AddString("ColumnSelectorForSearchbar.all", _appSettings.ComboBoxPlaceholder); 
+            _transMgr?.AddString("ColumnSelectorForSearchbar.all", _appSettings.ComboBoxPlaceholder);
             SetupTranslationAndPlaceholder();
 
             // Cache de propiedades DateTime (solo una vez)
@@ -145,11 +145,6 @@ namespace WinformsUI.UserControls.SearchBar
             ApplyPlaceholder();
         }
 
-        public void UpdatePlaceHolder(string newPH)
-        {
-            _placeholder = newPH;
-            _tb.Text = _placeholder ?? "Error";
-        }
 
         /// <summary>
         /// Adjunta un ComboBox para seleccionar columna. Si no se adjunta, se filtra por todas.
@@ -221,7 +216,7 @@ namespace WinformsUI.UserControls.SearchBar
                 ? null
                 : columnName.Trim();
 
-            _dateFilterEnabled = true;       
+            _dateFilterEnabled = true;
             ApplyAllFilters();
         }
 
@@ -233,7 +228,7 @@ namespace WinformsUI.UserControls.SearchBar
             _dateFrom = null;
             _dateTo = null;
             _dateColumnName = null;
-            _dateFilterEnabled = false;           
+            _dateFilterEnabled = false;
             ApplyAllFilters();
         }
 
@@ -347,7 +342,16 @@ namespace WinformsUI.UserControls.SearchBar
             );
         }
 
-   
+        public void UpdatePlaceHolder(string newPH)
+        {
+            if (_placeholderActive)
+            {
+                _tb.ForeColor =  DarkTheme.GetCurrentPalette().TextSecondary; //Primera vez que se muestra el PH
+                _placeholder = newPH;
+                _tb.Text = _placeholder ?? "Error";
+            }          
+        }
+
 
         private void RemovePlaceholder()
         {
@@ -360,7 +364,7 @@ namespace WinformsUI.UserControls.SearchBar
                 tb: _tb,
                 isPlaceholder: false, // Corrección: acá va false porque estamos sacando el placeholder
                 isPassword: false,
-                normalForeColor: DarkTheme.GetCurrentPalette().TextPrimary, // Corrección sugerida de UI
+                normalForeColor: DarkTheme.GetCurrentPalette().TextSecondary,// DarkTheme.GetCurrentPalette().TextPrimary, // Corrección sugerida de UI
                 placeholderForeColor: null,
                 fontSize: _searchBarTextSize
             );
@@ -386,8 +390,8 @@ namespace WinformsUI.UserControls.SearchBar
         }
 
         private void Tb_Enter(object sender, EventArgs e)
-        {            
-            if (_placeholderActive) RemovePlaceholder();            
+        {
+            if (_placeholderActive) RemovePlaceholder();
         }
 
         private void Tb_Leave(object sender, EventArgs e)

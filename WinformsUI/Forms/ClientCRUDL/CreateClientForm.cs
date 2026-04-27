@@ -1,8 +1,10 @@
 ﻿using BLL.DTOs;
 using Presenter.ForClient;
 using Shared;
+using SharedAbstractions.Enums;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Winforms.Theme;
 using WinformsUI.Infrastructure.Translations;
@@ -171,6 +173,10 @@ namespace WinformsUI.Forms.ClientCRUDL
             this.Cursor = Cursors.WaitCursor;
             CreateClientRequested?.Invoke(this, dto);
         }
+
+        public Task SetFeedbackState(FeedbackState state) => throw new NotImplementedException(); //Implementación por compatibilidad de interfaz - No aplica porque no puede perder ni ganar el foco al ser un Dialog.        
+        public void ChangeActivationStateFeedbackBar() => throw new NotImplementedException(); //Implementación por compatibilidad de interfaz - No aplica porque no puede perder ni ganar el foco al ser un Dialog.
+        public void ChangeActivationStateFeedbackBar(bool isFocused) => throw new NotImplementedException(); //Implementación por compatibilidad de interfaz - No aplica porque no puede perder ni ganar el foco al ser un Dialog.
 
     }
 }

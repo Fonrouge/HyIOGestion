@@ -12,7 +12,7 @@ using static Winforms.Theme.DarkTheme;
 
 namespace WinformsUI.Forms.Base
 {
-    public partial class HostForm : Form, IHostFormActions
+    public partial class HostForm : Form, IHostFormActions, IMessageFilter
     {
         #region === Campos y Propiedades de Configuración ===
 
@@ -30,6 +30,7 @@ namespace WinformsUI.Forms.Base
 
         private string _title;
         public Guid _viewId { get; set; }
+        private const int WM_LBUTTONDOWN = 0x0201; // Constante del clic izquierdo
 
         //private readonly Guid _id = Guid.NewGuid();  // Nuevo: ID único    probar hasta confirmar que no sirven
         //public Guid Id => _id;  // Nuevo: Exposición    probar hasta confirmar que no sirven
@@ -40,6 +41,8 @@ namespace WinformsUI.Forms.Base
 
         public event EventHandler RestoreFromMinimizedRequested;
         public event EventHandler MinimizeRequested;
+        public event EventHandler<Guid> ViewGotFocusNotificacionMessage;
+        public event EventHandler<Guid> ViewLostFocusNotificacionMessage;
 
         #region === Inicialización ===
 
@@ -55,9 +58,73 @@ namespace WinformsUI.Forms.Base
             InitializeComponent();
             this.MinimumSize = new Size(100, 100); // Tamaño mínimo para evitar problemas de redimensionado
 
-
-        }
+            Application.AddMessageFilter(this);
      
+        }
+        public bool PreFilterMessage(ref System.Windows.Forms.Message m)
+        {
+            if (m.Msg == WM_LBUTTONDOWN)
+            {
+                Control clickedControl = Control.FromHandle(m.HWnd);
+
+                // ¿El clic fue dentro de esta vista o sus hijos?
+                bool isInside = clickedControl != null && (this.Contains(clickedControl) || clickedControl == this);
+
+                // ¿Estamos actualmente al frente de todos?
+                bool isAtFront = this.Parent != null && this.Parent.Controls.GetChildIndex(this) == 0;
+
+                if (isInside)
+                {
+                    // CASO: GANAR FOCO
+                    // Si hicimos clic adentro y NO estábamos al frente, nos traemos adelante y avisamos
+                    if (!isAtFront)
+                    {
+                        this.BringToFront();
+                        ViewGotFocusNotificacionMessage?.Invoke(this, _viewId);
+                    }
+                }
+                else
+                {
+                    // CASO: PERDER FOCO (La contraparte)
+                    // Si el clic fue afuera, pero nosotros éramos los que estábamos al frente...
+                    if (isAtFront)
+                    {
+                        // Notificamos que la vista ya no tiene la atención principal
+                        ViewLostFocusNotificacionMessage?.Invoke(this, _viewId);
+                    }
+                }
+            }
+            return false;
+        }
+
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            if (_minimizedWindowBtn != null)
+            {
+                if (_parentContainer != null && _upperMenuPanel.Controls.Contains(_minimizedWindowBtn))
+                {
+                    _upperMenuPanel.Controls.Remove(_minimizedWindowBtn);
+                }
+
+                _minimizedWindowBtn.Dispose();
+            }
+            if (_parentContainer != null)
+            {
+                _parentContainer.SizeChanged -= ContainerSizeChanged;
+            }
+
+            var closedMessage = new ViewContainerClosedNotificationMessage(_viewId, this);
+
+            _messenger.Send(closedMessage);
+
+            // 4. MUY IMPORTANTE: Desuscribir el filtro al cerrar para evitar memory leaks
+            Application.RemoveMessageFilter(this);
+
+            base.Dispose();
+            this.Close();
+        }
+
         public void SetTitle(string Title)
         {
             _title = Title;
@@ -66,6 +133,7 @@ namespace WinformsUI.Forms.Base
 
             if (_minimizedWindowBtn != null)
                 _minimizedWindowBtn.Text = Title;
+
         }
 
         public void SetViewId(Guid ViewId)
@@ -168,14 +236,13 @@ namespace WinformsUI.Forms.Base
             this._appEnv = appEnv ?? throw new ArgumentNullException(nameof(appEnv));
 
             // 2. Configuración de infraestructura - Como HostForm está en la capa UI, aquí es donde se procesa el entorno
-            ConfigureEnvironment(appEnv);
+            ConfigureEnvironment(_appEnv);
 
             // 3. Estética y eventos
             UIAesthetics();
             SetUpBasicEvents();
 
 
-            deudaTecnicaVerPorQuéBotonesNoPintanHover();
         }
 
         private void UIAesthetics()
@@ -217,41 +284,15 @@ namespace WinformsUI.Forms.Base
         private void SetUpBasicEvents()
         {
             WireTitleBarEvents();
-            CreateInstanceMinimizedWindow(); //Ya se deja instanciada su representación minimizada antes de asociarla a una acción que requiera su existencia en los eventos de botones.
+    //        CreateInstanceMinimizedWindow(); //Ya se deja instanciada su representación minimizada antes de asociarla a una acción que requiera su existencia en los eventos de botones.
             WireButtonsEvents();
         }
 
 
 
 
-        protected override void OnFormClosing(FormClosingEventArgs e)
-        {
-            if (_minimizedWindowBtn != null)
-            {
-                if (_parentContainer != null && _upperMenuPanel.Controls.Contains(_minimizedWindowBtn))
-                {
-                    _upperMenuPanel.Controls.Remove(_minimizedWindowBtn);
-                }
 
-                _minimizedWindowBtn.Dispose();
-            }
-            if (_parentContainer != null)
-            {
-                _parentContainer.SizeChanged -= ContainerSizeChanged;
-            }
-
-            var closedMessage = new HostFormClosedNotificationMessage(_viewId, this);
-
-            _messenger.Send(closedMessage);
-        
-          //  if (e != null)
-          //      base.OnFormClosing(e);
-
-            base.Dispose();
-            this.Close();
-        }
-     
-        public void CloseWholeForm(HostFormCloseRequestMessage message)
+        public void CloseWholeForm(ViewContainerCloseRequestMessage message)
         {
             if (message.Payload == _viewId)
             {
@@ -295,20 +336,15 @@ namespace WinformsUI.Forms.Base
                 ResumeLayout();
             };
 
-            _minimizedWindowBtn.Click += (s, e) =>
-            {
-                SuspendLayout();
-                RestoreFromMinimizedRequested?.Invoke(this, EventArgs.Empty);
-                ResumeLayout();
-            };
+ 
         }
 
-      //  public void ThemingNotifiedByConfigurationsModule() => DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
+        //  public void ThemingNotifiedByConfigurationsModule() => DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
 
         private void ApplyPalette(Palette p)
         {
             InternalPalette = p;
-           //             DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
+            //             DarkTheme.Apply(this, DarkTheme.GetCurrentPalette());
             DarkTheme.Apply(this, InternalPalette);
         }
 
@@ -332,9 +368,21 @@ namespace WinformsUI.Forms.Base
                 if (winEnv.RightMenu != null)
                     SetRightMenuControl(winEnv.RightMenu);
 
+
                 // 5. Configuración de Iconografía
                 if (winEnv.ModuleIcon != null)
                     _rightMenuButtonIcon = winEnv.ModuleIcon;
+
+                CreateInstanceMinimizedWindow();
+                _upperMenuPanel.Controls.Add(_minimizedWindowBtn);
+
+                _minimizedWindowBtn.Click += (s, e) =>
+                {
+                    SuspendLayout();
+                    RestoreFromMinimizedRequested?.Invoke(this, EventArgs.Empty);
+                    ResumeLayout();
+                };
+
             }
             else
             {
@@ -355,9 +403,13 @@ namespace WinformsUI.Forms.Base
             DarkTheme.ApplyGradientBackground
             (
                 c: _minimizedWindowBtn,
-                begin: Darken(InternalPalette.Accent, 0.8),
-                end: Color.Black
+                end: Darken(InternalPalette.LowAccent, 0.7),
+                begin: Darken(InternalPalette.LowAccent, 0.7)
             );
+
+
+            //var buttonThemer = new ButtonThemer { CornerRadius = 8f, BorderThickness = 2 };
+            //_minimizedWindowBtn = buttonThemer.MakeRounded(_minimizedWindowBtn);
 
             _minimizedWindowBtn.FlatAppearance.BorderSize = 2;
             _minimizedWindowBtn.FlatAppearance.BorderColor = Darken(InternalPalette.Accent, 0.6); //DarkTheme.Darken(InternalPalette.Accent, 0.5)
@@ -367,9 +419,13 @@ namespace WinformsUI.Forms.Base
             _minimizedWindowBtn.Image = _rightMenuButtonIcon ?? null;
             _minimizedWindowBtn.TextImageRelation = TextImageRelation.ImageBeforeText;
 
-            _minimizedWindowBtn.Padding = new Padding(10, 10, 10, 10);
-            _minimizedWindowBtn.Margin = new Padding(0, 0, 0, 0);
-            _minimizedWindowBtn.Font = new Font("Microsoft YaHei UI", 9f, FontStyle.Italic);
+            _minimizedWindowBtn.Padding = new Padding(0, 10, 10, 10);
+            _minimizedWindowBtn.Margin = new Padding(0, 0, 5, 0);
+            _minimizedWindowBtn.Font = new Font("Microsoft YaHei UI", 9f, FontStyle.Regular);
+            _minimizedWindowBtn.Tag = "NonPaintable";
+            
+
+
         }
 
 
@@ -414,31 +470,28 @@ namespace WinformsUI.Forms.Base
 
         public void RestoreWindowFromMinimized()
         {
-            if (_upperMenuPanel == null) return;
-            if (!IsMinimized) return;
+            if (_upperMenuPanel == null)
+                return;
+            if (!IsMinimized)
+                return;
 
             SuspendLayout();
-
-            _upperMenuPanel.Controls.Remove(_minimizedWindowBtn);
             this.Visible = true;
             IsMinimized = false;
-
             ResumeLayout();
         }
+
 
         public void MinimizeWindow()
         {
             if (IsMinimized) return;
 
+
             SuspendLayout();
 
-            try //DEUDA TÉCNICA IMPORTANTE - BYPASSEO UN BUG (con el try-catch) EN EL CUAL SE INTENTA MINIMIZAR UN OBJETO DESECHADO Y EL PROGRAMA COLAPSA. ATENDER ---IMPORTANTE--- A EVITAR FUGAS DE MEMORIA POSIBLEMENTE PROVENINENTES DEL PRESENTER DE HOSTFORM
-            {
-                _upperMenuPanel.Controls.Add(_minimizedWindowBtn);
-                this.Visible = false;
-                IsMinimized = true;
-            }
-            catch { }
+            this.Visible = false;
+            IsMinimized = true;
+
 
             ResumeLayout();
         }
@@ -622,16 +675,6 @@ namespace WinformsUI.Forms.Base
             }
         }
 
-        protected override void OnEnter(EventArgs e)
-        {
-            //Dar foco al form activo
-            base.OnEnter(e);
-            this.BringToFront();
-
-            // Opcional: Si quiero un efecto visual (ej. cambiar color del borde al tener foco)
-             this.lblTitle.Text = "FOCOOOOOO"; 
-        }
-
         #endregion
 
         #region === WndProc (Redimensionado desde bordes) ===
@@ -683,23 +726,7 @@ namespace WinformsUI.Forms.Base
             this.Invalidate();
         }
 
-        private void deudaTecnicaVerPorQuéBotonesNoPintanHover()
-        {
 
-            btnClose.ForeColor = Darken(InternalPalette.TextSecondary, -0.4);
-            Color hoverColor = Darken(InternalPalette.LowAccent, -0.2);
-            Color pressColor = InternalPalette.LowAccent;
-
-            btnClose.FlatAppearance.MouseOverBackColor = hoverColor;
-            btnClose.FlatAppearance.MouseDownBackColor = pressColor;
-            btnExpand.FlatAppearance.MouseOverBackColor = hoverColor;
-            btnExpand.FlatAppearance.MouseDownBackColor = pressColor;
-            btnMinimize.FlatAppearance.MouseOverBackColor = hoverColor;
-            btnMinimize.FlatAppearance.MouseDownBackColor = pressColor;
-
-        }
-
-     
     }
 }
 #endregion

@@ -1,12 +1,12 @@
-﻿using BLL.LogicLayers;
+﻿using BLL.DTOs;
+using BLL.LogicLayers;
+using Presenter.ForClient;
 using Presenter.ForProducts;
 using Presenter.Presenters.ForProducts;
 using Shared;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-using Winforms.Theme;
 using WinformsUI.Forms.Base;
 using WinformsUI.Infrastructure.Factories;
 using WinformsUI.Infrastructure.Translations;
@@ -14,10 +14,11 @@ using WinformsUI.UserControls.CustomDGV;
 
 namespace WinformsUI.Forms.ProductCRUDL
 {
+    //BaseManagementForm<ProductDTO>
     public partial class ProductForm : BaseManagementForm<ProductDTO>, IProductView
     {
-        private readonly IFormsFactory _formsFactory;
-        public override event EventHandler OnceLoadedAdvice;
+        private readonly IFormsFactory _formsFact;
+
 
         public ProductForm
         (
@@ -25,23 +26,21 @@ namespace WinformsUI.Forms.ProductCRUDL
             ITranslatableControlsManager transMgr,
             ICustomDGVFactory dgvFact,
             IFormsFactory formsFact
+
         ) : base(appSettings, transMgr, dgvFact)
+
         {
-            _formsFactory = formsFact;
+            _formsFact = formsFact;
+
             InitializeComponent();
-            InitializeDGV();
             WireSpecificEvents();
             AddTranslatables();
-
-            InitializeRibbonControls();
-            InitializePanelToggle();
-
-            this.Load += OnceLoaded;
+            InitializeBaseForm();
         }
 
-        private void OnceLoaded(object sender, EventArgs e) => OnceLoadedAdvice?.Invoke(this, EventArgs.Empty);
 
-        
+
+
         // =========================================================
         // TRADUCCIONES
         // =========================================================
@@ -62,20 +61,17 @@ namespace WinformsUI.Forms.ProductCRUDL
 
 
         // =========================================================
-        // LÓGICA ESPECÍFICA DE PRODUCTO
+        // LÓGICA ESPECÍFICA DE CLIENTE
         // =========================================================
-        public void SetSearchFilters<T>(IEnumerable<T> categories) where T : CategoryDTO
-            => _dgvForm.ConfigureFilters<CategoryDTO>(categories.ToList());
-
-        public void OpenCreationView() => ((Form)_formsFactory.ProductCreationForm()).Show();
+        public void OpenCreationView() => ((Form)_formsFact.ClientCreationForm<ICreateClientView>()).ShowDialog();
         public void OpenUpdateView()
         {
             if (_currentSelectedEntity == null)
             {
-                MessageBox.Show("Primero seleccione un producto en la grilla");
+                MessageBox.Show("Primero seleccione un cliente en la grilla");
             }
 
-            var newUpdateForm = (UpdateProductForm)_formsFactory.ProductUpdateForm<IUpdateProductView>();
+            var newUpdateForm = (UpdateProductForm)_formsFact.ProductUpdateForm<IUpdateProductView>();
             newUpdateForm.SetProductData(_currentSelectedEntity);
             newUpdateForm.ShowDialog();
         }
@@ -91,22 +87,28 @@ namespace WinformsUI.Forms.ProductCRUDL
             btnUpdate.Click += OnUpdateRequest;
             btnDelete.Click += OnDeleteRequest;
             btnRefresh.Click += OnListAllRequest;
+            this.Load += OnceLoaded;
         }
 
 
         // =============================================================================================================
         // LINKEO DE CONTROLES (instancia genérica -de BaseForm- ahora apunta a instancia específica de este formulario)
         // =============================================================================================================
-        private void InitializeDGV() => base.InitializeDGV(this.dgvPanel);
-
-        private new void InitializeRibbonControls()
+        private void InitializeBaseForm()
         {
-            _dgvRibbonControls = DGVFunctionsControl;
-            _eyeRestRibbonControls = eyeRestRibbon;
-            base.InitializeRibbonControls();
+            base.BaseFormInitializer
+            (
+                CustomDgvContainer: pnlDgv,
+                ExpandedRibbonsContainer: pnlExpandedRibbons,
+                CollapsedRibbonsContainer: pnlCollapsedRibbons,
+                CollapsedRibbonTLP: miniTLP,
+                RibbonCollapserButton: btnRibbonCollapser,
+                RibbonExpanderButton: btnRibbonExpander,
+                DgvFunctionalitiesRibbon: ribbonDgvFunctions,
+                DirectButtonsToEyeRestModesRibbon: ribbonEyeRest,
+                FeedbackBarContainer: pnlFeedbackBar
+            );
         }
-
-        public void InitializePanelToggle() => base.ToolStripsPanelToggle(toolStripsPanel);
 
 
         // =========================================================
@@ -116,24 +118,32 @@ namespace WinformsUI.Forms.ProductCRUDL
         {
             if (disposing)
             {
-                // Desuscripción de eventos de botones
+                // Desuscripción de eventos
                 if (btnCreate != null) btnCreate.Click -= OnCreateRequest;
                 if (btnUpdate != null) btnUpdate.Click -= OnUpdateRequest;
                 if (btnDelete != null) btnDelete.Click -= OnDeleteRequest;
                 if (btnRefresh != null) btnRefresh.Click -= OnListAllRequest;
 
-                // Limpieza de referencias
+                // Limpieza del toolstrip
+                if (ribbonDgvFunctions != null)
+                {
+                    ribbonDgvFunctions.TargetDGV = null;
+                    ribbonDgvFunctions.Dispose();
+                    ribbonDgvFunctions = null;
+                }
+
                 _entitiesList = null;
                 _dgvForm = null;
                 _transMgr.RemoveFormNotify(this);
 
+
                 if (components != null)
-                {
                     components.Dispose();
-                }
+
             }
-            base.Dispose(disposing); // La base se encarga de desuscribir el evento de cierre
         }
+
+        public void SetSearchFilters<T>(IEnumerable<T> categories) where T : CategoryDTO => _dgvForm.ConfigureFilters<CategoryDTO>(categories.ToList());
 
     }
 }

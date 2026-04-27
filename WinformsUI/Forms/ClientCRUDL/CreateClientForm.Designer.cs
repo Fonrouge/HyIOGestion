@@ -1,4 +1,6 @@
-﻿namespace WinformsUI.Forms.ClientCRUDL
+﻿using System.Windows.Forms;
+
+namespace WinformsUI.Forms.ClientCRUDL
 {
     partial class CreateClientForm
     {
@@ -17,16 +19,15 @@
         {
             this.pnlIdentification = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.btnNextId = new System.Windows.Forms.Button();
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.txtName = new System.Windows.Forms.TextBox();
             this.txtLastName = new System.Windows.Forms.TextBox();
-            this.cbTaxId = new System.Windows.Forms.ComboBox();
             this.label9 = new System.Windows.Forms.Label();
             this.txtDocNumber = new System.Windows.Forms.TextBox();
+            this.cbTaxId = new System.Windows.Forms.ComboBox();
+            this.label3 = new System.Windows.Forms.Label();
             this.pnlShipAddress = new System.Windows.Forms.Panel();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.btnBackShipAddress = new System.Windows.Forms.Button();
@@ -51,6 +52,9 @@
             this.txtPhone = new System.Windows.Forms.TextBox();
             this.btnFinish = new System.Windows.Forms.Button();
             this.txtObservations = new System.Windows.Forms.TextBox();
+            this.btnNextId = new System.Windows.Forms.Button();
+            this.rjButton1 = new WinformsUI.UserControls.RJButton();
+            this.txtName = new System.Windows.Forms.TextBox();
             this.pnlIdentification.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.pnlShipAddress.SuspendLayout();
@@ -73,16 +77,17 @@
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15.76433F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 84.23567F));
-            this.tableLayoutPanel1.Controls.Add(this.btnNextId, 0, 5);
             this.tableLayoutPanel1.Controls.Add(this.label7, 0, 3);
             this.tableLayoutPanel1.Controls.Add(this.label8, 0, 4);
             this.tableLayoutPanel1.Controls.Add(this.label1, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.label2, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.txtName, 1, 1);
-            this.tableLayoutPanel1.Controls.Add(this.txtLastName, 1, 2);
             this.tableLayoutPanel1.Controls.Add(this.label9, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.txtDocNumber, 1, 4);
             this.tableLayoutPanel1.Controls.Add(this.cbTaxId, 1, 3);
+            this.tableLayoutPanel1.Controls.Add(this.label3, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.rjButton1, 0, 5);
+            this.tableLayoutPanel1.Controls.Add(this.txtLastName, 1, 2);
+            this.tableLayoutPanel1.Controls.Add(this.txtName, 1, 1);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4);
@@ -97,19 +102,6 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 136F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(492, 563);
             this.tableLayoutPanel1.TabIndex = 5;
-            // 
-            // btnNextId
-            // 
-            this.btnNextId.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.tableLayoutPanel1.SetColumnSpan(this.btnNextId, 2);
-            this.btnNextId.Location = new System.Drawing.Point(14, 453);
-            this.btnNextId.Margin = new System.Windows.Forms.Padding(14, 4, 4, 4);
-            this.btnNextId.Name = "btnNextId";
-            this.btnNextId.Size = new System.Drawing.Size(464, 73);
-            this.btnNextId.TabIndex = 5;
-            this.btnNextId.Tag = "Accentuable";
-            this.btnNextId.Text = "Siguiente";
-            this.btnNextId.UseVisualStyleBackColor = true;
             // 
             // label7
             // 
@@ -159,23 +151,39 @@
             this.label2.Text = "Apellido";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // txtName
-            // 
-            this.txtName.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtName.Location = new System.Drawing.Point(79, 159);
-            this.txtName.Margin = new System.Windows.Forms.Padding(4);
-            this.txtName.Name = "txtName";
-            this.txtName.Size = new System.Drawing.Size(399, 24);
-            this.txtName.TabIndex = 0;
-            // 
             // txtLastName
             // 
             this.txtLastName.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtLastName.Location = new System.Drawing.Point(79, 233);
+            this.txtLastName.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtLastName.Location = new System.Drawing.Point(79, 236);
             this.txtLastName.Margin = new System.Windows.Forms.Padding(4);
             this.txtLastName.Name = "txtLastName";
-            this.txtLastName.Size = new System.Drawing.Size(399, 24);
+            this.txtLastName.Size = new System.Drawing.Size(399, 17);
             this.txtLastName.TabIndex = 0;
+            // 
+            // label9
+            // 
+            this.label9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.label9.AutoSize = true;
+            this.label9.Font = new System.Drawing.Font("Microsoft YaHei", 27.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label9.Location = new System.Drawing.Point(79, 46);
+            this.label9.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label9.Name = "label9";
+            this.label9.Padding = new System.Windows.Forms.Padding(0, 0, 37, 0);
+            this.label9.Size = new System.Drawing.Size(399, 48);
+            this.label9.TabIndex = 4;
+            this.label9.Text = "Identificación";
+            this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // txtDocNumber
+            // 
+            this.txtDocNumber.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtDocNumber.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtDocNumber.Location = new System.Drawing.Point(79, 378);
+            this.txtDocNumber.Margin = new System.Windows.Forms.Padding(4);
+            this.txtDocNumber.Name = "txtDocNumber";
+            this.txtDocNumber.Size = new System.Drawing.Size(399, 17);
+            this.txtDocNumber.TabIndex = 0;
             // 
             // cbTaxId
             // 
@@ -187,27 +195,15 @@
             this.cbTaxId.Size = new System.Drawing.Size(399, 27);
             this.cbTaxId.TabIndex = 1;
             // 
-            // label9
+            // label3
             // 
-            this.label9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.label9.AutoSize = true;
-            this.label9.Font = new System.Drawing.Font("Microsoft YaHei", 27.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label9.Location = new System.Drawing.Point(79, 46);
-            this.label9.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(399, 48);
-            this.label9.TabIndex = 4;
-            this.label9.Text = "Identificación";
-            this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // txtDocNumber
-            // 
-            this.txtDocNumber.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtDocNumber.Location = new System.Drawing.Point(79, 374);
-            this.txtDocNumber.Margin = new System.Windows.Forms.Padding(4);
-            this.txtDocNumber.Name = "txtDocNumber";
-            this.txtDocNumber.Size = new System.Drawing.Size(399, 24);
-            this.txtDocNumber.TabIndex = 0;
+            this.label3.AutoSize = true;
+            this.label3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label3.Location = new System.Drawing.Point(0, 5);
+            this.label3.Margin = new System.Windows.Forms.Padding(0);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(75, 130);
+            this.label3.TabIndex = 6;
             // 
             // pnlShipAddress
             // 
@@ -281,10 +277,11 @@
             // cbZipCode
             // 
             this.cbZipCode.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.cbZipCode.Location = new System.Drawing.Point(79, 374);
+            this.cbZipCode.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.cbZipCode.Location = new System.Drawing.Point(79, 378);
             this.cbZipCode.Margin = new System.Windows.Forms.Padding(4);
             this.cbZipCode.Name = "cbZipCode";
-            this.cbZipCode.Size = new System.Drawing.Size(399, 24);
+            this.cbZipCode.Size = new System.Drawing.Size(399, 17);
             this.cbZipCode.TabIndex = 0;
             // 
             // label13
@@ -352,7 +349,7 @@
             // 
             this.cbCountrySelector.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.cbCountrySelector.FormattingEnabled = true;
-            this.cbCountrySelector.Location = new System.Drawing.Point(79, 161);
+            this.cbCountrySelector.Location = new System.Drawing.Point(79, 158);
             this.cbCountrySelector.Margin = new System.Windows.Forms.Padding(4);
             this.cbCountrySelector.Name = "cbCountrySelector";
             this.cbCountrySelector.Size = new System.Drawing.Size(399, 27);
@@ -361,19 +358,21 @@
             // txtShipAddreess
             // 
             this.txtShipAddreess.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtShipAddreess.Location = new System.Drawing.Point(79, 305);
+            this.txtShipAddreess.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtShipAddreess.Location = new System.Drawing.Point(79, 308);
             this.txtShipAddreess.Margin = new System.Windows.Forms.Padding(4);
             this.txtShipAddreess.Name = "txtShipAddreess";
-            this.txtShipAddreess.Size = new System.Drawing.Size(399, 24);
+            this.txtShipAddreess.Size = new System.Drawing.Size(399, 17);
             this.txtShipAddreess.TabIndex = 0;
             // 
             // tbState
             // 
             this.tbState.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.tbState.Location = new System.Drawing.Point(79, 233);
+            this.tbState.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.tbState.Location = new System.Drawing.Point(79, 236);
             this.tbState.Margin = new System.Windows.Forms.Padding(4);
             this.tbState.Name = "tbState";
-            this.tbState.Size = new System.Drawing.Size(399, 24);
+            this.tbState.Size = new System.Drawing.Size(399, 17);
             this.tbState.TabIndex = 0;
             // 
             // pnlContact
@@ -433,10 +432,11 @@
             // txtEmail
             // 
             this.txtEmail.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtEmail.Location = new System.Drawing.Point(85, 159);
+            this.txtEmail.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtEmail.Location = new System.Drawing.Point(85, 163);
             this.txtEmail.Margin = new System.Windows.Forms.Padding(4);
             this.txtEmail.Name = "txtEmail";
-            this.txtEmail.Size = new System.Drawing.Size(393, 24);
+            this.txtEmail.Size = new System.Drawing.Size(393, 17);
             this.txtEmail.TabIndex = 0;
             // 
             // label21
@@ -491,10 +491,11 @@
             // txtPhone
             // 
             this.txtPhone.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtPhone.Location = new System.Drawing.Point(85, 233);
+            this.txtPhone.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtPhone.Location = new System.Drawing.Point(85, 236);
             this.txtPhone.Margin = new System.Windows.Forms.Padding(4);
             this.txtPhone.Name = "txtPhone";
-            this.txtPhone.Size = new System.Drawing.Size(393, 24);
+            this.txtPhone.Size = new System.Drawing.Size(393, 17);
             this.txtPhone.TabIndex = 0;
             // 
             // btnFinish
@@ -513,6 +514,7 @@
             // txtObservations
             // 
             this.txtObservations.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtObservations.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.txtObservations.Location = new System.Drawing.Point(85, 286);
             this.txtObservations.Margin = new System.Windows.Forms.Padding(4);
             this.txtObservations.Multiline = true;
@@ -521,11 +523,59 @@
             this.txtObservations.Size = new System.Drawing.Size(393, 131);
             this.txtObservations.TabIndex = 0;
             // 
+            // btnNextId
+            // 
+            this.btnNextId.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnNextId.Location = new System.Drawing.Point(371, 616);
+            this.btnNextId.Margin = new System.Windows.Forms.Padding(14, 4, 4, 4);
+            this.btnNextId.Name = "btnNextId";
+            this.btnNextId.Size = new System.Drawing.Size(464, 73);
+            this.btnNextId.TabIndex = 5;
+            this.btnNextId.Tag = "Accentuable";
+            this.btnNextId.Text = "Siguiente";
+            this.btnNextId.UseVisualStyleBackColor = true;
+            // 
+            // rjButton1
+            // 
+            this.rjButton1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.rjButton1.BackColor = System.Drawing.Color.MediumSlateBlue;
+            this.rjButton1.BackgroundColor = System.Drawing.Color.MediumSlateBlue;
+            this.rjButton1.BorderColor = System.Drawing.Color.PaleVioletRed;
+            this.rjButton1.BorderRadius = 30;
+            this.rjButton1.BorderSize = 0;
+            this.tableLayoutPanel1.SetColumnSpan(this.rjButton1, 2);
+            this.rjButton1.FlatAppearance.BorderSize = 0;
+            this.rjButton1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.rjButton1.ForeColor = System.Drawing.Color.White;
+            this.rjButton1.Location = new System.Drawing.Point(3, 453);
+            this.rjButton1.Name = "rjButton1";
+            this.rjButton1.Size = new System.Drawing.Size(476, 73);
+            this.rjButton1.TabIndex = 10;
+            this.rjButton1.Tag = "HighAccented";
+            this.rjButton1.Text = "rjButton1";
+            this.rjButton1.TextColor = System.Drawing.Color.White;
+            this.rjButton1.UseVisualStyleBackColor = false;
+            // 
+            // txtName
+            // 
+            this.txtName.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtName.BackColor = System.Drawing.SystemColors.Window;
+            this.txtName.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtName.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.txtName.Location = new System.Drawing.Point(79, 156);
+            this.txtName.Margin = new System.Windows.Forms.Padding(4);
+            this.txtName.Multiline = false;
+            this.txtName.Name = "txtName";
+            this.txtName.Padding = new System.Windows.Forms.Padding(10, 7, 10, 7);
+            this.txtName.Size = new System.Drawing.Size(399, 31);
+            this.txtName.TabIndex = 9;
+            // 
             // CreateClientForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 19F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1571, 605);
+            this.ClientSize = new System.Drawing.Size(1571, 868);
+            this.Controls.Add(this.btnNextId);
             this.Controls.Add(this.pnlContact);
             this.Controls.Add(this.pnlShipAddress);
             this.Controls.Add(this.pnlIdentification);
@@ -553,7 +603,6 @@
         #endregion
 
         private System.Windows.Forms.Panel pnlIdentification;
-        private System.Windows.Forms.TextBox txtName;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox cbTaxId;
@@ -562,7 +611,6 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.Button btnNextId;
         private System.Windows.Forms.Panel pnlShipAddress;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.Button btnNextShip;
@@ -588,5 +636,9 @@
         private System.Windows.Forms.Button btnBackShipAddress;
         private System.Windows.Forms.Button btnBackContact;
         private System.Windows.Forms.TextBox tbState;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Button btnNextId;
+        private UserControls.RJButton rjButton1;
+        private System.Windows.Forms.TextBox txtName;
     }
 }

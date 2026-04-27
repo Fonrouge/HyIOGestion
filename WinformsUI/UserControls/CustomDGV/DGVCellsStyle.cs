@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using Winforms.Theme;
 
 namespace WinformsUI.UserControls.CustomDGV
 {
@@ -77,7 +78,7 @@ namespace WinformsUI.UserControls.CustomDGV
         public void SetGridAllBorders()
         {
             if (_dgv == null) return;
-            _dgv.CellBorderStyle = DataGridViewCellBorderStyle.Single;
+            _dgv.CellBorderStyle = DataGridViewCellBorderStyle.None;
             _dgv.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
             _dgv.RowHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
             _dgv.Invalidate();
@@ -86,7 +87,7 @@ namespace WinformsUI.UserControls.CustomDGV
         public void SetGridVerticalBordersOnly()
         {
             if (_dgv == null) return;
-            _dgv.CellBorderStyle = DataGridViewCellBorderStyle.SingleVertical;
+            _dgv.CellBorderStyle = DataGridViewCellBorderStyle.None;
             _dgv.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
             _dgv.RowHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
             _dgv.Invalidate();
@@ -95,10 +96,17 @@ namespace WinformsUI.UserControls.CustomDGV
         public void SetGridNoBorders()
         {
             if (_dgv == null) return;
+            _dgv.EnableHeadersVisualStyles = false;
+
             _dgv.CellBorderStyle = DataGridViewCellBorderStyle.None;
             _dgv.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
             _dgv.RowHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+
+            _dgv.ColumnHeadersDefaultCellStyle.BackColor = Color.Green;
+            _dgv.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+
             _dgv.Invalidate();
+            
         }
 
         // ====================== NUEVO: COPIAR ======================

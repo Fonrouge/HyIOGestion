@@ -2,6 +2,7 @@
 using BLL.LogicLayers.Products;
 using BLL.LogicLayers.Products.Categories.UseCases;
 using Presenter.Messaging;
+using SharedAbstractions.Enums;
 using System;
 using System.Threading.Tasks;
 
@@ -9,7 +10,6 @@ namespace Presenter.ForProducts
 {
     public class ProductPresenter
     {
-
         private readonly IProductView _view;
         private readonly IUCGetAllProducts _ucGetAll;
         private readonly IUCDeleteProduct _ucDelete;
@@ -33,8 +33,9 @@ namespace Presenter.ForProducts
 
             WireViewEvents();
             ApplyDarkTheme();
-            SubscribeRelistMessage();
+            SubscribeMessages();
         }
+
 
         // =========================================================
         // Estética general
@@ -45,8 +46,25 @@ namespace Presenter.ForProducts
         // =========================================================
         // Suscripción a mensajería global
         // =========================================================
-        private void SubscribeRelistMessage() => _messenger.Subscribe<ProductsRelistRequestMessage>(OnGetAllRequested);
-        private void CloseHostFormMessage(object viewId) => _messenger.Send(new HostFormCloseRequestMessage((Guid)viewId, this));
+        private void SubscribeMessages()
+        {
+            _messenger.Subscribe<ProductsRelistRequestMessage>(OnGetAllRequested);
+            _messenger.Subscribe<ViewContainerGotFocusNotificationMessage>(GotFocusHostForm);
+            //Ready for more...
+        }
+        private void CloseHostFormMessage(object viewId) => _messenger.Send(new ViewContainerCloseRequestMessage((Guid)viewId, this));
+        private async void GotFocusHostForm(ViewContainerGotFocusNotificationMessage message)
+        {
+            if (message.Payload == _view.ViewId)
+            {
+                _view.ChangeActivationStateFeedbackBar(true);
+                await Task.WhenAll(_view.SetFeedbackState(FeedbackState.Idle));
+            }
+            else
+            {
+                _view.ChangeActivationStateFeedbackBar(false);
+            }
+        }
 
 
         // =========================================================
@@ -59,19 +77,25 @@ namespace Presenter.ForProducts
             _view.DeleteRequested += HandleDeleteRequested;
             _view.ListAllRequested += HandleListAllRequested;
             _view.CloseRequested += HandleCloseRequested;
+            _view.OnceLoadedAdvice += HandleLoadedOperations;
         }
 
+
+        // =========================================================
+        // Event Handlers (Orquestación de UI)
+        // =========================================================
         private void HandleCreateRequested(object sender, EventArgs e) => _view.OpenCreationView();
         private void HandleUpdateRequested(object sender, ProductDTO e) => OnUpdateRequested(e);
         private async void HandleDeleteRequested(object sender, ProductDTO e) => await OnDeleteRequested(e);
-        private async void HandleListAllRequested(object sender, EventArgs e) => await OnGetAllRequested();
-
+        private async void HandleListAllRequested(object sender, EventArgs e) => await OnGetAllRequested();        
         private void HandleCloseRequested(object sender, EventArgs e)
         {
             CloseHostFormMessage((Guid)sender);
             Dispose();
         }
+        private void HandleLoadedOperations(object sender, EventArgs e) => _view.SelectFirstGridRow();
 
+                
         // =========================================================
         // Lógica de Casos de Uso
         // =========================================================

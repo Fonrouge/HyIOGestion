@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace WinformsUI.UserControls.CustomDGV
 {
-    public partial class CustomDGVRibbon : UserControl
+    public partial class CustomDgvRibbon : UserControl, IDisposable
     {
         private CustomDGVForm _targetDGV;
 
@@ -44,7 +44,7 @@ namespace WinformsUI.UserControls.CustomDGV
             }
         }
 
-        public CustomDGVRibbon()
+        public CustomDgvRibbon()
         {
             SuspendLayout();
             InitializeComponent();

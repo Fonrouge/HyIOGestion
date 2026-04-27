@@ -1,6 +1,6 @@
 ﻿namespace WinformsUI.UserControls.CustomDGV
 {
-    partial class CustomDGVRibbon
+    partial class CustomDgvRibbon
     {
         /// <summary> 
         /// Variable del diseñador necesaria.
@@ -55,7 +55,7 @@
             this.toolStrip6.Location = new System.Drawing.Point(0, 0);
             this.toolStrip6.Name = "toolStrip6";
             this.toolStrip6.Padding = new System.Windows.Forms.Padding(0);
-            this.toolStrip6.Size = new System.Drawing.Size(358, 87);
+            this.toolStrip6.Size = new System.Drawing.Size(389, 87);
             this.toolStrip6.TabIndex = 118;
             this.toolStrip6.Tag = "NoZoom";
             this.toolStrip6.Text = "Gestionar";
@@ -155,21 +155,21 @@
             // 
             this.btnAllBorders.Image = global::WinformsUI.Properties.Resources.cellAllBordersIcon;
             this.btnAllBorders.Name = "btnAllBorders";
-            this.btnAllBorders.Size = new System.Drawing.Size(163, 22);
+            this.btnAllBorders.Size = new System.Drawing.Size(180, 22);
             this.btnAllBorders.Text = "Todos los bordes";
             // 
             // btnJustVerticalBorders
             // 
             this.btnJustVerticalBorders.Image = global::WinformsUI.Properties.Resources.cellVerticalBordersIcon;
             this.btnJustVerticalBorders.Name = "btnJustVerticalBorders";
-            this.btnJustVerticalBorders.Size = new System.Drawing.Size(163, 22);
+            this.btnJustVerticalBorders.Size = new System.Drawing.Size(180, 22);
             this.btnJustVerticalBorders.Text = "Sólo verticales";
             // 
             // btnNoBorders
             // 
             this.btnNoBorders.Image = global::WinformsUI.Properties.Resources.cellNoBordersIcon;
             this.btnNoBorders.Name = "btnNoBorders";
-            this.btnNoBorders.Size = new System.Drawing.Size(163, 22);
+            this.btnNoBorders.Size = new System.Drawing.Size(180, 22);
             this.btnNoBorders.Text = "Sin bordes";
             // 
             // btnText
@@ -239,14 +239,14 @@
             this.btnCopyAsCell.Size = new System.Drawing.Size(232, 22);
             this.btnCopyAsCell.Text = "Copiar para celda (Ctrl+C)";
             // 
-            // CustomDGVRibbon
+            // CustomDgvRibbon
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.Controls.Add(this.toolStrip6);
-            this.Name = "CustomDGVRibbon";
-            this.Size = new System.Drawing.Size(358, 87);
+            this.Name = "CustomDgvRibbon";
+            this.Size = new System.Drawing.Size(389, 87);
             this.toolStrip6.ResumeLayout(false);
             this.toolStrip6.PerformLayout();
             this.ResumeLayout(false);
